@@ -1,0 +1,102 @@
+import { useState, useEffect } from "react";
+import { DietTag } from "../filters/DietTag.jsx";
+import { Badge } from "../primitives/Badge.jsx";
+import { StarIcon } from "../Icons.jsx";
+
+function Placeholder({ category }) {
+  return (
+    <div className="shk-card__ph" aria-hidden="true">
+      <img className="shk-card__ph-logo" src="/assets/logo-mark-white.png" alt="" />
+      {category && <div className="shk-card__ph-cat">{category}</div>}
+    </div>
+  );
+}
+
+export function DishCard({
+  name,
+  description,
+  price,
+  currency = "฿",
+  image = null,
+  kcal,
+  protein = 0,
+  carbs = 0,
+  fat = 0,
+  diets = [],
+  badges = [],
+  rating,
+  category,
+  layout = "tile",
+  onClick,
+  className = "",
+  ...rest
+}) {
+  const [imgOk, setImgOk] = useState(true);
+  useEffect(() => setImgOk(true), [image]);
+  const showImg = image && imgOk;
+  const cls = ["shk-card", layout === "row" ? "shk-card--row" : "", className]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <button type="button" className={cls} onClick={onClick} {...rest}>
+      <div className="shk-card__media">
+        {showImg ? (
+          <>
+            <img
+              className="shk-card__img"
+              src={image}
+              alt={name}
+              loading="lazy"
+              onError={() => setImgOk(false)}
+            />
+            <span className="shk-card__media-scrim" />
+          </>
+        ) : (
+          <Placeholder category={category} />
+        )}
+
+        {badges.length > 0 && (
+          <div className="shk-card__flags">
+            {badges.map((b, i) => (
+              <Badge key={i} tone={b.tone || "solid-gold"} icon={b.icon}>
+                {b.label}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="shk-card__body">
+        <div className="shk-card__topline">
+          <span className="shk-card__name">{name}</span>
+          <span className="shk-card__priceblock">
+            {price != null && (
+              <span className="shk-card__price">
+                {currency}{price}
+              </span>
+            )}
+            {kcal != null && (
+              <span className="shk-card__kcal-inline">
+                <b>{kcal}</b> kcal
+              </span>
+            )}
+          </span>
+        </div>
+
+        {description && <p className="shk-card__desc">{description}</p>}
+
+        <div className="shk-card__foot">
+          <div className="shk-card__diets">
+            {diets.slice(0, 3).map((d) => (
+              <DietTag key={d} type={d} iconOnly />
+            ))}
+          </div>
+          {rating != null && (
+            <span className="shk-card__rating"><StarIcon />{rating}</span>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+}

@@ -1,0 +1,36 @@
+:root {
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  --ring: 0 0 0 2px var(--bg-page), 0 0 0 4px var(--gold-400);
+
+  --inset-line: inset 0 0 0 1px var(--border-subtle);
+
+  --blur-bar: blur(14px) saturate(1.2);
+  --blur-scrim: blur(3px);
+
+  --img-scrim: linear-gradient(
+    to top,
+    rgba(7, 10, 6, 0.88) 0%,
+    rgba(7, 10, 6, 0.45) 38%,
+    rgba(7, 10, 6, 0) 70%
+  );
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 130ms;
+  --dur-base: 220ms;
+  --dur-slow: 360ms;
+}

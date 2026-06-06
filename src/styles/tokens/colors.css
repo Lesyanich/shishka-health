@@ -1,0 +1,106 @@
+:root {
+  --green-900: #12170F;
+  --green-800: #1A2114;
+  --green-700: #243018;
+  --green-600: #2D3F1C;
+  --green-500: #3E5526;
+  --green-400: #5B7A3D;
+  --green-300: #7E9C5C;
+  --green-200: #A6BE86;
+
+  --cream-100: #F0EAD6;
+  --cream-200: #E2D9BF;
+  --cream-300: #C8BD9C;
+  --cream-400: #9C926F;
+
+  --royal-green: #34431E;
+  --royal-red:   #9E2528;
+  --anthocyanin: #8E1A6B;
+  --anthocyanin-400: #B23E8E;
+  --anthocyanin-300: #CD7BB3;
+
+  --gold-600: #8C6420;
+  --gold-500: #B88830;
+  --gold-400: #D2A24A;
+  --gold-300: #E6C078;
+
+  --red-700: #7A1418;
+  --red-600: #9B1C21;
+  --red-500: #C03036;
+
+  --ink-1000: #0B0F0A;
+
+  --macro-protein: #DD4B3E;
+  --macro-carbs:   #E07E33;
+  --macro-fat:     #EBC53F;
+  --macro-kcal:    #D2A24A;
+
+  --bg-page:        var(--ink-1000);
+  --surface-1:      var(--green-900);
+  --surface-2:      var(--green-800);
+  --surface-3:      var(--green-700);
+  --surface-inset:  rgba(0, 0, 0, 0.28);
+
+  --text-strong:    var(--cream-100);
+  --text-body:      var(--cream-200);
+  --text-muted:     var(--cream-300);
+  --text-faint:     var(--cream-400);
+  --text-on-gold:   var(--ink-1000);
+  --text-on-green:  var(--cream-100);
+
+  --accent:         var(--gold-500);
+  --accent-hover:   var(--gold-400);
+  --accent-press:   var(--gold-600);
+  --brand:          var(--green-600);
+  --brand-soft:     var(--green-400);
+  --spice:          var(--red-600);
+  --spice-hover:    var(--red-500);
+
+  --highlight:      #9FC169;
+  --highlight-ink:  var(--green-900);
+  --highlight-soft: rgba(159, 193, 105, 0.18);
+
+  --menu-price:     var(--green-200);
+  --menu-kcal:      var(--anthocyanin-400);
+
+  --border-subtle:  rgba(240, 234, 214, 0.10);
+  --border-default: rgba(240, 234, 214, 0.16);
+  --border-strong:  rgba(240, 234, 214, 0.28);
+  --border-gold:    rgba(184, 136, 48, 0.45);
+
+  --positive:       var(--green-300);
+  --warning:        var(--gold-400);
+  --danger:         var(--red-500);
+
+  --scrim:          rgba(7, 10, 6, 0.72);
+}
+
+.theme-light {
+  --bg-page:        #F4EFE3;
+  --surface-1:      #FFFFFF;
+  --surface-2:      #FBF7EC;
+  --surface-3:      #EFE8D6;
+  --surface-inset:  rgba(52, 67, 30, 0.06);
+
+  --text-strong:    #2B3A16;
+  --text-body:      #3D4F26;
+  --text-muted:     #6B7A52;
+  --text-faint:     #93A077;
+  --text-on-green:  var(--cream-100);
+
+  --border-subtle:  rgba(52, 67, 30, 0.12);
+  --border-default: rgba(52, 67, 30, 0.18);
+  --border-strong:  rgba(52, 67, 30, 0.30);
+
+  --highlight:      #9FC169;
+  --highlight-ink:  var(--green-900);
+
+  --menu-price:     var(--royal-green);
+  --menu-kcal:      #5E7D3C;
+
+  --macro-protein:  #B7CE96;
+  --macro-carbs:    #8AA962;
+  --macro-fat:      #5E7D3C;
+
+  --scrim:          rgba(40, 50, 22, 0.42);
+}
