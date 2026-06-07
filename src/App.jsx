@@ -6,6 +6,7 @@ import { DishCard } from "./components/menu/DishCard.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
+import { SiteFooter } from "./components/menu/SiteFooter.jsx";
 import { DEFAULT_CONTENT } from "./lib/content.js";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
@@ -224,11 +225,7 @@ export default function App() {
 
         {!loading && byCat.length > 0 && <MenuCTA wide={wide} content={content.cta} />}
 
-        {!loading && (
-          <footer className="shk-app__foot">
-            Nutrition &amp; prices update live · Shishka Healthy Kitchen · Phuket
-          </footer>
-        )}
+        {!loading && <SiteFooter wide={wide} instagramUrl={content.cta?.instagramUrl} />}
       </main>
 
       <FilterPanel

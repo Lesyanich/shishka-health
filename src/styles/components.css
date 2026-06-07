@@ -402,6 +402,38 @@
 }
 .shk-app__sec-count { font-size: var(--text-sm); color: var(--text-faint); }
 .shk-app__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-cards); align-items: start; }
+/* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
+.shk-foot { background: var(--green-950); color: var(--text-on-dark); }
+.shk-foot__inner {
+  max-width: var(--content-max); margin: 0 auto;
+  padding: var(--space-10) var(--page-pad-mobile) var(--space-8);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.shk-foot__mark { width: 48px; height: 48px; opacity: 0.95; }
+.shk-foot__name {
+  margin: var(--space-3) 0 0; font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: var(--text-lg); color: var(--cream-50); letter-spacing: var(--tracking-tight);
+}
+.shk-foot__tagline {
+  margin: var(--space-1) 0 0; font-size: var(--text-sm); color: var(--text-on-dark-muted);
+}
+.shk-foot__links {
+  margin-top: var(--space-4); display: flex; gap: var(--space-5);
+  font-size: var(--text-sm); font-weight: var(--fw-bold);
+}
+.shk-foot__links a {
+  color: var(--text-on-dark); text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.shk-foot__links a:hover { color: var(--honey-300); }
+.shk-foot__rule {
+  width: 100%; max-width: 320px; height: 1px; margin: var(--space-6) 0 var(--space-5);
+  background: var(--border-on-dark);
+}
+.shk-foot__fine { margin: 0; font-size: var(--text-xs); line-height: 1.6; color: var(--text-on-dark-faint); }
+.shk-foot__copy { margin-top: var(--space-1); }
+.shk-foot--wide .shk-foot__inner { padding: var(--space-12) var(--space-8) var(--space-10); }
+
 .shk-app__foot { text-align: center; padding: 30px 24px 24px; color: var(--text-faint); font-size: var(--text-xs); line-height: 1.6; }
 .shk-app__empty { text-align: center; padding: 60px 24px; color: var(--text-muted); }
 .shk-app__clear {
