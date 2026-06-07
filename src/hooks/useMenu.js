@@ -7,10 +7,13 @@ import { MOCK_DATA } from "../lib/mockData.js";
     apps/admin-panel/src/hooks/useMenuDishes.ts
     apps/admin-panel/src/pages/menu/components/CustomerPreview.tsx
 
-  Table: nomenclature
-    Filter: product_code LIKE 'SALE-%' AND pos_status = 'synced' AND is_available = true
-      pos_status = 'synced' means the item has been pushed to / is available in
-      Loyverse (the POS) — only those are shown on the public site.
+  View: menu_public  (customer-safe projection of nomenclature)
+    The view already bakes in the row filter
+      product_code LIKE 'SALE-%' AND pos_status = 'synced' AND is_available = true
+      (pos_status = 'synced' means the item is live in Loyverse, the POS).
+    It exposes ONLY public columns — no cost_per_unit / markup_pct / cost_source /
+    internal ops fields are reachable by the anon key. Category fields are
+    flattened onto each row (category_code, category_name, category_sort_order).
     Customer fields: customer_short_name (fallback name),
                      customer_photo_url → image_url (photo fallback),
                      customer_description, calories, protein, carbs, fat,
@@ -19,17 +22,14 @@ import { MOCK_DATA } from "../lib/mockData.js";
       tag_group !== 'allergen' → diets
       tag_group === 'allergen' → allergens
 
-  Categories: product_categories (2 levels via parent_id)
-    Collected from each dish's category_id join.
-
-  RLS: anon key needs SELECT on nomenclature (SALE-% rows), nomenclature_tags,
-       tags, and product_categories.
+  RLS: anon key needs SELECT on menu_public, nomenclature_tags, and tags.
+       (menu_public is security_invoker, so the nomenclature row RLS still applies.)
 */
 
 async function fetchFromSupabase() {
   const [dishResult, tagResult] = await Promise.all([
     supabase
-      .from("nomenclature")
+      .from("menu_public")
       .select(`
         id, name, product_code,
         customer_short_name, customer_photo_url, image_url, customer_description,
@@ -37,11 +37,8 @@ async function fetchFromSupabase() {
         calories, protein, carbs, fat,
         portion_size, portion_unit,
         category_id, display_order,
-        product_categories!category_id(id, code, name, sort_order)
+        category_code, category_name, category_sort_order
       `)
-      .like("product_code", "SALE-%")
-      .eq("pos_status", "synced")   // only items pushed to / available in Loyverse
-      .eq("is_available", true)
       .order("display_order", { ascending: true, nullsFirst: false }),
 
     supabase
@@ -64,7 +61,9 @@ async function fetchFromSupabase() {
   // Collect unique categories from dish rows
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    const cat = d.product_categories;
+    const cat = d.category_id
+      ? { id: d.category_id, code: d.category_code, name: d.category_name, sort_order: d.category_sort_order }
+      : null;
     if (cat && !catMap.has(cat.id)) {
       catMap.set(cat.id, { id: cat.id, code: cat.code, name: cat.name, sort_order: cat.sort_order });
     }
