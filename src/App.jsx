@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, Fragment } from "react";
 import { useMenu } from "./hooks/useMenu.js";
 import { MenuHeader } from "./components/menu/MenuHeader.jsx";
 import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
+import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import {
@@ -176,36 +177,40 @@ export default function App() {
           </div>
         )}
 
-        {byCat.map((cat) => (
-          <section
-            key={cat.id}
-            ref={(el) => (sectionRefs.current[cat.id] = el)}
-            className="shk-app__section"
-          >
-            <div className="shk-app__sec-head">
-              <h2 className="shk-app__sec-title">{cat.label}</h2>
-              <span className="shk-app__sec-count num">{cat.items.length}</span>
-            </div>
-            <div className="shk-app__grid">
-              {cat.items.map((dish) => (
-                <DishCard
-                  key={dish.id}
-                  name={dish.name}
-                  description={dish.description}
-                  price={dish.price}
-                  image={dish.image_url}
-                  kcal={dish.calories}
-                  protein={dish.protein}
-                  carbs={dish.carbs}
-                  fat={dish.fat}
-                  diets={dish.diets ?? []}
-                  badges={dish.badges ?? []}
-                  category={cat.label}
-                  onClick={() => setSelected(dish)}
-                />
-              ))}
-            </div>
-          </section>
+        {byCat.map((cat, i) => (
+          <Fragment key={cat.id}>
+            <section
+              ref={(el) => (sectionRefs.current[cat.id] = el)}
+              className="shk-app__section"
+            >
+              <div className="shk-app__sec-head">
+                <h2 className="shk-app__sec-title">{cat.label}</h2>
+                <span className="shk-app__sec-count num">{cat.items.length}</span>
+              </div>
+              <div className="shk-app__grid">
+                {cat.items.map((dish) => (
+                  <DishCard
+                    key={dish.id}
+                    name={dish.name}
+                    description={dish.description}
+                    price={dish.price}
+                    image={dish.image_url}
+                    kcal={dish.calories}
+                    protein={dish.protein}
+                    carbs={dish.carbs}
+                    fat={dish.fat}
+                    diets={dish.diets ?? []}
+                    badges={dish.badges ?? []}
+                    category={cat.label}
+                    onClick={() => setSelected(dish)}
+                  />
+                ))}
+              </div>
+            </section>
+
+            {/* Brand accent block after the first category */}
+            {i === 0 && <BrandRule wide={wide} />}
+          </Fragment>
         ))}
 
         {!loading && (

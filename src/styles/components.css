@@ -483,3 +483,42 @@
 .shk-hero--wide .shk-hero__inner { padding: var(--space-16) var(--space-8) var(--space-20); }
 .shk-hero--wide .shk-hero__title { font-size: var(--text-5xl); }
 .shk-hero--wide .shk-hero__sub { font-size: var(--text-lg); }
+
+/* ---- Brand accent: The Rule (red band between categories) ---- */
+.shk-rule { background: var(--bg-accent); color: var(--text-on-dark); }
+.shk-rule__inner {
+  max-width: var(--content-max); margin: 0 auto;
+  padding: var(--space-10) var(--page-pad-mobile) var(--space-12);
+}
+.shk-rule__eyebrow {
+  margin: 0 0 var(--space-2); font-family: var(--font-body);
+  font-size: var(--text-2xs); font-weight: var(--fw-bold); letter-spacing: var(--tracking-wider);
+  text-transform: uppercase; color: var(--honey-300);
+}
+.shk-rule__title {
+  margin: 0 0 var(--space-3); font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(2rem, 8vw, var(--text-4xl)); line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight); color: var(--cream-50);
+}
+.shk-rule__lead {
+  margin: 0 0 var(--space-6); max-width: 54ch; font-size: var(--text-md);
+  line-height: var(--leading-snug); color: var(--text-on-dark-muted);
+}
+.shk-rule__grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3);
+}
+.shk-rule__pill {
+  display: flex; align-items: baseline; gap: 8px;
+  border: 1.5px solid var(--border-on-dark); border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-4);
+}
+.shk-rule__no {
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: var(--text-sm); color: var(--white); letter-spacing: 0.02em;
+}
+.shk-rule__what { font-size: var(--text-sm); color: var(--text-on-dark-muted); text-transform: lowercase; }
+.shk-rule--wide .shk-rule__inner { padding: var(--space-16) var(--space-8); }
+.shk-rule--wide .shk-rule__grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+.shk-rule--wide .shk-rule__title { font-size: var(--text-5xl); }
+.shk-rule--wide .shk-rule__lead { font-size: var(--text-lg); }
