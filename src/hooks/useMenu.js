@@ -28,7 +28,7 @@ import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
 */
 
 async function fetchFromSupabase() {
-  const [dishResult, tagResult, contentResult] = await Promise.all([
+  const [dishResult, tagResult, contentResult, modResult] = await Promise.all([
     supabase
       .from("menu_public")
       .select(`
@@ -50,9 +50,37 @@ async function fetchFromSupabase() {
     supabase
       .from("site_content")
       .select("key, data"),
+
+    supabase
+      .from("menu_modifiers")
+      .select("dish_id, group_name, group_sort, option_name, option_emoji, price_delta, is_default, sort_order"),
   ]);
 
   if (dishResult.error) throw dishResult.error;
+
+  // Build modifier map: dish_id → grouped builder options
+  const modMap = new Map();
+  for (const r of modResult.data ?? []) {
+    if (!modMap.has(r.dish_id)) modMap.set(r.dish_id, new Map());
+    const groups = modMap.get(r.dish_id);
+    if (!groups.has(r.group_name)) {
+      groups.set(r.group_name, { name: r.group_name, sort: r.group_sort ?? 0, options: [] });
+    }
+    groups.get(r.group_name).options.push({
+      name: r.option_name,
+      emoji: r.option_emoji || null,
+      priceDelta: Number(r.price_delta) || 0,
+      isDefault: !!r.is_default,
+      sort: r.sort_order ?? 0,
+    });
+  }
+  const modifiersFor = (dishId) => {
+    const groups = modMap.get(dishId);
+    if (!groups) return [];
+    return Array.from(groups.values())
+      .sort((a, b) => a.sort - b.sort || a.name.localeCompare(b.name))
+      .map((g) => ({ ...g, options: g.options.sort((x, y) => x.sort - y.sort) }));
+  };
 
   // Build tag map: nomenclature_id → tags[]
   const tagMap = new Map();
@@ -87,6 +115,7 @@ async function fetchFromSupabase() {
       name: d.customer_short_name || d.name,
       description: d.customer_description ?? null,
       ingredients: d.customer_ingredients ?? null,
+      modifierGroups: modifiersFor(d.id),
       price: d.price != null ? Number(d.price) : null,
       image_url: d.customer_photo_url ?? d.image_url ?? null,
       is_featured: d.is_featured,
