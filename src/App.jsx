@@ -3,6 +3,7 @@ import { useMenu } from "./hooks/useMenu.js";
 import { MenuHeader } from "./components/menu/MenuHeader.jsx";
 import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
+import { Hero } from "./components/menu/Hero.jsx";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import {
@@ -151,6 +152,8 @@ export default function App() {
         onOpenFilters={() => setFilterOpen(true)}
         wide={wide}
       />
+
+      <Hero wide={wide} />
 
       <CategoryTabs
         categories={byCat.map((c) => ({ id: c.id, label: c.label, count: c.items.length }))}

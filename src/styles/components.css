@@ -452,3 +452,33 @@
   text-align: center; padding: 60px 24px; color: var(--text-muted);
 }
 .shk-error h3 { font-family: var(--font-display); color: var(--text-strong); margin-bottom: 8px; }
+
+/* ---- Hero (dark "life green" brand band) ---- */
+.shk-hero { position: relative; overflow: hidden; background: var(--bg-dark); color: var(--text-on-dark); border-bottom: 1px solid var(--border-on-dark); }
+.shk-hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.42; }
+.shk-hero__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(33, 44, 14, 0.62) 0%, rgba(22, 29, 10, 0.86) 100%);
+}
+.shk-hero__inner {
+  position: relative; z-index: 1; max-width: var(--content-max); margin: 0 auto;
+  padding: var(--space-10) var(--page-pad-mobile) var(--space-12); text-align: center;
+}
+.shk-hero__eyebrow {
+  margin: 0 0 var(--space-3); font-family: var(--font-body);
+  font-size: var(--text-2xs); font-weight: var(--fw-bold); letter-spacing: var(--tracking-wider);
+  text-transform: uppercase; color: var(--text-on-dark-muted);
+}
+.shk-hero__title {
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(2.25rem, 9vw, var(--text-4xl)); line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight); color: var(--cream-50); text-wrap: balance;
+}
+.shk-hero__title span { color: var(--honey-300); }
+.shk-hero__sub {
+  margin: var(--space-4) auto 0; max-width: 42ch; font-size: var(--text-md);
+  line-height: var(--leading-snug); color: var(--text-on-dark-muted);
+}
+.shk-hero--wide .shk-hero__inner { padding: var(--space-16) var(--space-8) var(--space-20); }
+.shk-hero--wide .shk-hero__title { font-size: var(--text-5xl); }
+.shk-hero--wide .shk-hero__sub { font-size: var(--text-lg); }
