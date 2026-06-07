@@ -430,7 +430,7 @@
   width: 100%; max-width: 320px; height: 1px; margin: var(--space-6) 0 var(--space-5);
   background: var(--border-on-dark);
 }
-.shk-foot__fine { margin: 0; font-size: var(--text-xs); line-height: 1.6; color: var(--text-on-dark-faint); }
+.shk-foot__fine { margin: 0; font-size: var(--text-xs); line-height: 1.6; color: var(--text-on-dark-muted); }
 .shk-foot__copy { margin-top: var(--space-1); }
 .shk-foot--wide .shk-foot__inner { padding: var(--space-12) var(--space-8) var(--space-10); }
 
@@ -534,7 +534,7 @@
 }
 .shk-rule__lead {
   margin: 0 0 var(--space-6); max-width: 54ch; font-size: var(--text-md);
-  line-height: var(--leading-snug); color: var(--text-on-dark-muted);
+  line-height: var(--leading-snug); color: var(--cream-200); /* AA on red bg */
 }
 .shk-rule__grid {
   list-style: none; margin: 0; padding: 0;
@@ -549,7 +549,7 @@
   font-family: var(--font-display); font-weight: var(--fw-display);
   font-size: var(--text-sm); color: var(--white); letter-spacing: 0.02em;
 }
-.shk-rule__what { font-size: var(--text-sm); color: var(--text-on-dark-muted); text-transform: lowercase; }
+.shk-rule__what { font-size: var(--text-sm); color: var(--cream-200); text-transform: lowercase; }
 .shk-rule--wide .shk-rule__inner { padding: var(--space-16) var(--space-8); }
 .shk-rule--wide .shk-rule__grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
 .shk-rule--wide .shk-rule__title { font-size: var(--text-5xl); }
@@ -590,6 +590,12 @@
 .shk-cta__btn--primary:hover { background: var(--accent-hover); }
 .shk-cta__btn--ghost { background: transparent; color: var(--text-on-dark); border: 1.5px solid var(--border-on-dark); }
 .shk-cta__btn--ghost:hover { border-color: var(--honey-300); color: var(--honey-300); }
+/* High-contrast focus ring for controls on dark/red surfaces */
+.shk-cta__btn:focus-visible,
+.shk-foot__links a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(240, 206, 131, 0.75);
+}
 .shk-cta__hours {
   display: inline-flex; align-items: baseline; gap: var(--space-3);
   border: 1.5px solid var(--border-on-dark); border-radius: var(--radius-pill);
@@ -597,7 +603,7 @@
 }
 .shk-cta__hours-label {
   font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase;
-  color: var(--text-on-dark-faint);
+  color: var(--text-on-dark-muted);
 }
 .shk-cta__hours-time {
   font-family: var(--font-display); font-weight: var(--fw-display);

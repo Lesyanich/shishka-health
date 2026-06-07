@@ -6,7 +6,8 @@ export function SiteFooter({ wide = false, instagramUrl }) {
         <img
           className="shk-foot__mark"
           src="/assets/logo-mark-white.png"
-          alt="Shishka"
+          alt=""
+          aria-hidden="true"
           width="48"
           height="48"
         />
