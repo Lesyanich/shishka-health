@@ -149,6 +149,7 @@ export default function App() {
       diets={dish.diets ?? []}
       badges={dish.badges ?? []}
       category={catName}
+      comingSoon={dish.comingSoon ?? false}
       onClick={() => setSelected(dish)}
     />
   );

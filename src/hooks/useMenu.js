@@ -35,7 +35,7 @@ async function fetchFromSupabase() {
         id, name, product_code,
         customer_short_name, customer_photo_url, image_url, customer_description,
         customer_ingredients,
-        price, is_available, is_featured, pos_status,
+        price, is_available, is_featured, pos_status, stock_state,
         calories, protein, carbs, fat,
         portion_size, portion_unit,
         category_id, display_order,
@@ -110,6 +110,17 @@ async function fetchFromSupabase() {
       .filter((t) => t.tag_group === "allergen")
       .map((t) => t.slug);
 
+    // Stock state (mig 249): coming_soon / out_of_stock dishes stay on the menu
+    // but render greyed + non-orderable with a badge, so guests see what's next.
+    const stockState = d.stock_state ?? "in_stock";
+    const comingSoon = stockState !== "in_stock";
+    const stockLabel = stockState === "out_of_stock" ? "Out of stock" : "Coming soon";
+    const badges = comingSoon
+      ? [{ label: stockLabel, tone: "neutral" }]
+      : d.is_featured
+        ? [{ label: "Featured", tone: "gold" }]
+        : [];
+
     return {
       id: d.id,
       name: d.customer_short_name || d.name,
@@ -119,6 +130,8 @@ async function fetchFromSupabase() {
       price: d.price != null ? Number(d.price) : null,
       image_url: d.customer_photo_url ?? d.image_url ?? null,
       is_featured: d.is_featured,
+      stockState,
+      comingSoon,
       calories: d.calories != null ? Number(d.calories) : null,
       protein: d.protein != null ? Number(d.protein) : null,
       carbs: d.carbs != null ? Number(d.carbs) : null,
@@ -130,7 +143,7 @@ async function fetchFromSupabase() {
       diets,
       allergens,
       tags: allTags,
-      badges: d.is_featured ? [{ label: "Featured", tone: "gold" }] : [],
+      badges,
     };
   });
 
