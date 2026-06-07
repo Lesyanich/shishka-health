@@ -298,7 +298,7 @@
 .shk-card:active { transform: translateY(-1px) scale(0.995); }
 
 .shk-card__media { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--bg-surface); }
-.shk-card__img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--dur-slow) var(--ease-out); }
+.shk-card__img { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: multiply; transition: transform var(--dur-slow) var(--ease-out); }
 .shk-card:hover .shk-card__img { transform: scale(1.04); }
 .shk-card__media-scrim { position: absolute; inset: 0; background: none; pointer-events: none; }
 
@@ -355,7 +355,7 @@
   .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; }
 }
 .shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden; }
-.shk-dlg__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.shk-dlg__img { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: multiply; }
 .shk-dlg__media-scrim { position: absolute; inset: 0; background: none; }
 .shk-dlg__ph {
   position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; justify-items: center;
