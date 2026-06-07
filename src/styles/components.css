@@ -478,6 +478,7 @@
 .shk-hero__sub {
   margin: var(--space-4) auto 0; max-width: 42ch; font-size: var(--text-md);
   line-height: var(--leading-snug); color: var(--text-on-dark-muted);
+  letter-spacing: normal; word-spacing: normal;
 }
 .shk-hero--wide .shk-hero__inner { padding: var(--space-16) var(--space-8) var(--space-20); }
 .shk-hero--wide .shk-hero__title { font-size: var(--text-5xl); }
