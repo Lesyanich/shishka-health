@@ -8,8 +8,11 @@ import { MOCK_DATA } from "../lib/mockData.js";
     apps/admin-panel/src/pages/menu/components/CustomerPreview.tsx
 
   Table: nomenclature
-    Filter: product_code LIKE 'SALE-%' AND is_available = true
-    Customer fields: customer_short_name (fallback name), customer_photo_url,
+    Filter: product_code LIKE 'SALE-%' AND pos_status = 'synced' AND is_available = true
+      pos_status = 'synced' means the item has been pushed to / is available in
+      Loyverse (the POS) — only those are shown on the public site.
+    Customer fields: customer_short_name (fallback name),
+                     customer_photo_url → image_url (photo fallback),
                      customer_description, calories, protein, carbs, fat,
                      portion_size, portion_unit
     Tags: nomenclature_tags → tags(slug, name, tag_group, color)
@@ -29,14 +32,15 @@ async function fetchFromSupabase() {
       .from("nomenclature")
       .select(`
         id, name, product_code,
-        customer_short_name, customer_photo_url, customer_description,
-        price, is_available, is_featured,
+        customer_short_name, customer_photo_url, image_url, customer_description,
+        price, is_available, is_featured, pos_status,
         calories, protein, carbs, fat,
         portion_size, portion_unit,
         category_id, display_order,
         product_categories!category_id(id, code, name, sort_order)
       `)
       .like("product_code", "SALE-%")
+      .eq("pos_status", "synced")   // only items pushed to / available in Loyverse
       .eq("is_available", true)
       .order("display_order", { ascending: true, nullsFirst: false }),
 
@@ -78,7 +82,7 @@ async function fetchFromSupabase() {
       name: d.customer_short_name || d.name,
       description: d.customer_description ?? null,
       price: d.price != null ? Number(d.price) : null,
-      image_url: d.customer_photo_url ?? null,
+      image_url: d.customer_photo_url ?? d.image_url ?? null,
       is_featured: d.is_featured,
       calories: d.calories != null ? Number(d.calories) : null,
       protein: d.protein != null ? Number(d.protein) : null,
