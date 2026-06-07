@@ -19,6 +19,8 @@ export function DishCard({
   currency = "฿",
   image = null,
   kcal,
+  weight,
+  weightUnit = "g",
   protein = 0,
   carbs = 0,
   fat = 0,
@@ -27,6 +29,7 @@ export function DishCard({
   rating,
   category,
   layout = "tile",
+  comingSoon = false,
   onClick,
   className = "",
   ...rest
@@ -34,12 +37,23 @@ export function DishCard({
   const [imgOk, setImgOk] = useState(true);
   useEffect(() => setImgOk(true), [image]);
   const showImg = image && imgOk;
-  const cls = ["shk-card", layout === "row" ? "shk-card--row" : "", className]
+  const cls = [
+    "shk-card",
+    layout === "row" ? "shk-card--row" : "",
+    comingSoon ? "shk-card--coming-soon" : "",
+    className,
+  ]
     .filter(Boolean)
     .join(" ");
 
   return (
-    <button type="button" className={cls} onClick={onClick} {...rest}>
+    <button
+      type="button"
+      className={cls}
+      onClick={comingSoon ? undefined : onClick}
+      aria-disabled={comingSoon || undefined}
+      {...rest}
+    >
       <div className="shk-card__media">
         {showImg ? (
           <>
@@ -76,13 +90,23 @@ export function DishCard({
                 {currency}{price}
               </span>
             )}
+          </span>
+        </div>
+
+        {(kcal != null || weight != null) && (
+          <div className="shk-card__meta">
             {kcal != null && (
-              <span className="shk-card__kcal-inline">
+              <span className="shk-card__meta-item shk-card__meta-item--kcal">
                 <b>{kcal}</b> kcal
               </span>
             )}
-          </span>
-        </div>
+            {weight != null && (
+              <span className="shk-card__meta-item">
+                <b>{weight}</b>{weightUnit}
+              </span>
+            )}
+          </div>
+        )}
 
         {description && <p className="shk-card__desc">{description}</p>}
 

@@ -1,0 +1,121 @@
+/* ===========================================================================
+   SHISHKA — COMPATIBILITY BRIDGE
+   ---------------------------------------------------------------------------
+   The new SHiSHKA design system (colors/typography/spacing/fonts) is the single
+   source of truth. The existing components (components.css + a few inline styles
+   in /components) were written against the PREVIOUS token names. Rather than
+   rewrite every component, this file aliases each legacy token to its new
+   design-system equivalent, so the whole UI adopts the new brand automatically.
+
+   When components are migrated to the new names directly, entries here can be
+   dropped. Everything below references tokens defined in:
+     colors.css · typography.css · spacing.css · fonts.css
+   =========================================================================== */
+:root {
+  /* ---- Fonts ---------------------------------------------------------------
+     (--font-display / --font-mono already exist in the new fonts.css) */
+  --font-body: var(--font-sans);
+
+  /* ---- Font weights (legacy --fw-* → new --weight-*) ---------------------- */
+  --fw-regular:  var(--weight-regular);
+  --fw-medium:   var(--weight-medium);
+  --fw-semibold: var(--weight-semibold);
+  --fw-bold:     var(--weight-bold);
+  --fw-display:  var(--weight-black);
+
+  /* ---- Numeric figure features (legacy helper) --------------------------- */
+  --num-feature: "tnum" 1, "lnum" 1;
+
+  /* ---- Letter spacing (legacy "overline" eyebrow) ------------------------ */
+  --tracking-overline: var(--tracking-widest);
+
+  /* ---- Spacing (legacy --space-* → new 4px grid --sp-*) ------------------ */
+  --space-0:  var(--sp-0);
+  --space-1:  var(--sp-1);
+  --space-2:  var(--sp-2);
+  --space-3:  var(--sp-3);
+  --space-4:  var(--sp-4);
+  --space-5:  var(--sp-5);
+  --space-6:  var(--sp-6);
+  --space-8:  var(--sp-8);
+  --space-10: var(--sp-10);
+  --space-12: var(--sp-12);
+  --space-16: var(--sp-16);
+  --space-20: var(--sp-20);
+
+  /* ---- Layout helpers (not in new spacing.css) -------------------------- */
+  --hit-min:           44px;
+  --header-h:          60px;
+  --sticky-tabs-h:     52px;
+  --content-max:       var(--container-lg);
+  --page-pad-mobile:   var(--sp-4);
+  --page-pad-desktop:  var(--sp-8);
+  --gap-cards:         var(--sp-3);
+  --gap-cards-desktop: var(--sp-5);
+
+  /* ---- Shadows / motion (legacy extras) --------------------------------- */
+  --shadow-card-hover: var(--shadow-lg);
+  --ease-spring:       var(--ease-out);
+
+  /* ---- Effects (blurs, scrims) not carried by the new system ------------ */
+  --blur-bar:   blur(14px) saturate(1.2);
+  --blur-scrim: blur(3px);
+  --scrim:      rgba(20, 22, 13, 0.55);
+  --img-scrim:  linear-gradient(
+                  to top,
+                  rgba(20, 22, 13, 0.88) 0%,
+                  rgba(20, 22, 13, 0.42) 42%,
+                  rgba(20, 22, 13, 0) 72%
+                );
+
+  /* ---- Legacy color scale: gold → brand HONEY/amber --------------------- */
+  --gold-300: var(--honey-300);
+  --gold-400: var(--honey-500);
+  --gold-500: var(--honey-500);
+  --gold-600: var(--honey-600);
+
+  /* ---- Legacy semantic surfaces (now light/cream-first) ----------------- */
+  --bg-page:       var(--bg-canvas);   /* warm white page background */
+  --surface-1:     var(--bg-surface);  /* white cards/sheets        */
+  --surface-2:     var(--bg-surface-alt);
+  --surface-3:     var(--cream-200);   /* recessed / hover panels   */
+  --surface-inset: rgba(20, 22, 13, 0.05);
+  --ink-1000:      var(--ink-950);
+
+  /* ---- Legacy text aliases --------------------------------------------- */
+  /* --text-strong / --text-body / --text-muted already exist in colors.css */
+  --text-faint:    var(--ink-400);
+  --text-on-gold:  var(--cream-50);    /* text on accent (now red) buttons */
+  --text-on-green: var(--cream-50);
+
+  /* ---- Legacy interaction / brand accents ------------------------------- */
+  /* --accent / --accent-hover / --accent-press already exist (energy red) */
+  --brand:       var(--brand-green);
+  --brand-soft:  var(--green-400);
+  --spice:       var(--red-600);
+  --spice-hover: var(--red-500);
+
+  --highlight:      var(--green-500);
+  --highlight-ink:  var(--cream-50);
+  --highlight-soft: rgba(92, 113, 41, 0.16);
+
+  --menu-price: var(--brand-green);
+  --menu-kcal:  var(--purple-600);
+
+  /* ---- Legacy borders --------------------------------------------------- */
+  --border-subtle:  var(--border);
+  --border-default: var(--border);
+  /* --border-strong already exists in colors.css */
+  --border-gold:    rgba(182, 42, 35, 0.40);  /* accent-tinted hairline */
+
+  /* ---- Legacy status ---------------------------------------------------- */
+  --positive: var(--ok);
+  --warning:  var(--warn);
+  --danger:   var(--error);
+
+  /* ---- Macro / nutrition data colors (used by MacroBar / CalorieDonut) -- */
+  --macro-protein: var(--red-500);
+  --macro-carbs:   var(--honey-500);
+  --macro-fat:     var(--green-500);
+  --macro-kcal:    var(--purple-600);
+}

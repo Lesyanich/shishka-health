@@ -1,8 +1,13 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, Fragment } from "react";
 import { useMenu } from "./hooks/useMenu.js";
 import { MenuHeader } from "./components/menu/MenuHeader.jsx";
 import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
+import { Hero } from "./components/menu/Hero.jsx";
+import { BrandRule } from "./components/menu/BrandRule.jsx";
+import { MenuCTA } from "./components/menu/MenuCTA.jsx";
+import { SiteFooter } from "./components/menu/SiteFooter.jsx";
+import { DEFAULT_CONTENT } from "./lib/content.js";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import {
@@ -33,6 +38,23 @@ function dishPasses(dish, diets, excl) {
   for (const id of diets) if (!d.includes(id)) return false;
   for (const id of excl) if (a.includes(id)) return false;
   return true;
+}
+
+// Manaish is shown as one category split into 3 price tiers.
+const MANAKISH_TIERS = [
+  { key: "classic", label: "Classic" },
+  { key: "signature", label: "Signature" },
+  { key: "premium", label: "Premium" },
+];
+const isManakish = (cat) =>
+  cat?.code === "KP-FIN-MAN" || /mana(i|ee|o)?/i.test(cat?.name || "");
+const manakishTier = (price) =>
+  price == null ? "signature" : price <= 59 ? "classic" : price <= 69 ? "signature" : "premium";
+function priceHint(items) {
+  const prices = items.map((d) => d.price).filter((p) => p != null);
+  if (prices.length === 0) return "";
+  const min = Math.min(...prices), max = Math.max(...prices);
+  return min === max ? `฿${min}` : `฿${min}–${max}`;
 }
 
 function LoadingSkeleton() {
@@ -73,6 +95,7 @@ export default function App() {
 
   const categories = data?.categories ?? [];
   const dishes = data?.dishes ?? [];
+  const content = data?.content ?? DEFAULT_CONTENT;
 
   // Build unique diet and allergen options from actual tags on dishes
   const dietOptions = useMemo(() => {
@@ -103,6 +126,33 @@ export default function App() {
   const byCat = categories
     .map((c) => ({ ...c, items: filtered.filter((d) => d.category_id === c.id) }))
     .filter((c) => c.items.length > 0);
+
+  // Index after which the "the RULE" accent block is inserted (1-based in config).
+  const ruleAfter = Math.min(
+    Math.max((content.rule?.afterCategory ?? 1) - 1, 0),
+    Math.max(byCat.length - 1, 0)
+  );
+
+  const renderDish = (dish, catName) => (
+    <DishCard
+      key={dish.id}
+      name={dish.name}
+      description={dish.description}
+      price={dish.price}
+      image={dish.image_url}
+      kcal={dish.calories}
+      protein={dish.protein}
+      carbs={dish.carbs}
+      fat={dish.fat}
+      weight={dish.portion_size}
+      weightUnit={dish.portion_unit}
+      diets={dish.diets ?? []}
+      badges={dish.badges ?? []}
+      category={catName}
+      comingSoon={dish.comingSoon ?? false}
+      onClick={() => setSelected(dish)}
+    />
+  );
 
   useEffect(() => {
     if (!active && byCat.length > 0) setActive(byCat[0].id);
@@ -152,8 +202,10 @@ export default function App() {
         wide={wide}
       />
 
+      <Hero wide={wide} content={content.hero} />
+
       <CategoryTabs
-        categories={byCat.map((c) => ({ id: c.id, label: c.label, count: c.items.length }))}
+        categories={byCat.map((c) => ({ id: c.id, label: c.name, count: c.items.length }))}
         active={active}
         onChange={goToCat}
       />
@@ -173,43 +225,48 @@ export default function App() {
           </div>
         )}
 
-        {byCat.map((cat) => (
-          <section
-            key={cat.id}
-            ref={(el) => (sectionRefs.current[cat.id] = el)}
-            className="shk-app__section"
-          >
-            <div className="shk-app__sec-head">
-              <h2 className="shk-app__sec-title">{cat.label}</h2>
-              <span className="shk-app__sec-count num">{cat.items.length}</span>
-            </div>
-            <div className="shk-app__grid">
-              {cat.items.map((dish) => (
-                <DishCard
-                  key={dish.id}
-                  name={dish.name}
-                  description={dish.description}
-                  price={dish.price}
-                  image={dish.image_url}
-                  kcal={dish.calories}
-                  protein={dish.protein}
-                  carbs={dish.carbs}
-                  fat={dish.fat}
-                  diets={dish.diets ?? []}
-                  badges={dish.badges ?? []}
-                  category={cat.label}
-                  onClick={() => setSelected(dish)}
-                />
-              ))}
-            </div>
-          </section>
+        {byCat.map((cat, i) => (
+          <Fragment key={cat.id}>
+            <section
+              ref={(el) => (sectionRefs.current[cat.id] = el)}
+              className="shk-app__section"
+            >
+              <div className="shk-app__sec-head">
+                <h2 className="shk-app__sec-title">{cat.name}</h2>
+                <span className="shk-app__sec-count num">{cat.items.length}</span>
+              </div>
+
+              {isManakish(cat) ? (
+                MANAKISH_TIERS.map((tier) => {
+                  const tierItems = cat.items.filter((d) => manakishTier(d.price) === tier.key);
+                  if (tierItems.length === 0) return null;
+                  return (
+                    <div key={tier.key} className="shk-app__tier">
+                      <div className="shk-app__subhead">
+                        <h3 className="shk-app__sub-title">{tier.label}</h3>
+                        <span className="shk-app__sub-price num">{priceHint(tierItems)}</span>
+                      </div>
+                      <div className="shk-app__grid">
+                        {tierItems.map((dish) => renderDish(dish, cat.name))}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="shk-app__grid">
+                  {cat.items.map((dish) => renderDish(dish, cat.name))}
+                </div>
+              )}
+            </section>
+
+            {/* Brand accent block after the configured category */}
+            {i === ruleAfter && <BrandRule wide={wide} content={content.rule} />}
+          </Fragment>
         ))}
 
-        {!loading && (
-          <footer className="shk-app__foot">
-            Nutrition &amp; prices update live · Shishka Healthy Kitchen · Phuket
-          </footer>
-        )}
+        {!loading && byCat.length > 0 && <MenuCTA wide={wide} content={content.cta} />}
+
+        {!loading && <SiteFooter wide={wide} instagramUrl={content.cta?.instagramUrl} />}
       </main>
 
       <FilterPanel

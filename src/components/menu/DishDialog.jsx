@@ -4,6 +4,7 @@ import { MacroBar } from "../nutrition/MacroBar.jsx";
 import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
 import { IconButton } from "../primitives/IconButton.jsx";
+import { ModifierBuilder } from "./ModifierBuilder.jsx";
 import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
 
 export function DishDialog({ open, onClose, dish, onShare }) {
@@ -15,15 +16,17 @@ export function DishDialog({ open, onClose, dish, onShare }) {
   }, [open, onClose]);
 
   const [imgOk, setImgOk] = useState(true);
-  useEffect(() => setImgOk(true), [dish?.image]);
+  useEffect(() => setImgOk(true), [dish?.image_url]);
 
   if (!open || !dish) return null;
   const {
-    name, description, price, currency = "฿", image,
+    name, description, price, currency = "฿", image, image_url,
     calories, protein = 0, carbs = 0, fat = 0,
     diets = [], allergens = [], tags = [], badges = [],
-    category, portion_size, portion_unit,
+    category, portion_size, portion_unit, ingredients,
+    modifierGroups = [],
   } = dish;
+  const photo = image ?? image_url;
 
   return (
     <div className="shk-dlg__scrim" onClick={onClose}>
@@ -35,11 +38,11 @@ export function DishDialog({ open, onClose, dish, onShare }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="shk-dlg__media">
-          {image && imgOk ? (
+          {photo && imgOk ? (
             <>
               <img
                 className="shk-dlg__img"
-                src={image}
+                src={photo}
                 alt={name}
                 onError={() => setImgOk(false)}
               />
@@ -86,6 +89,15 @@ export function DishDialog({ open, onClose, dish, onShare }) {
           )}
 
           {description && <p className="shk-dlg__desc">{description}</p>}
+
+          {modifierGroups.length > 0 && (
+            <ModifierBuilder
+              key={dish.id}
+              basePrice={price ?? 0}
+              currency={currency}
+              groups={modifierGroups}
+            />
+          )}
 
           <div className="shk-dlg__nutri">
             <CalorieDonut kcal={calories} protein={protein} carbs={carbs} fat={fat} size={104} thickness={11} />
