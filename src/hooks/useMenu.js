@@ -40,7 +40,8 @@ async function fetchFromSupabase() {
         calories, protein, carbs, fat,
         portion_size, portion_unit,
         category_id, display_order,
-        category_code, category_name, category_sort_order
+        category_code, category_name, category_sort_order,
+        section_id, section_name, section_sort_order
       `)
       .order("display_order", { ascending: true, nullsFirst: false }),
 
@@ -93,14 +94,18 @@ async function fetchFromSupabase() {
     tagMap.set(row.nomenclature_id, list);
   }
 
-  // Collect unique categories from dish rows
+  // Collect unique SECTIONS (umbrellas) from dish rows. The menu groups by the
+  // section a dish rolls up to (Manakish, Drinks, …); the dish's own category is
+  // the SUBCATEGORY rendered as a subheader inside that section. menu_public
+  // exposes both via the is_menu_section rollup (see shishka-os mig 257/258).
+  // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    const cat = d.category_id
-      ? { id: d.category_id, code: d.category_code, name: d.category_name, sort_order: d.category_sort_order }
-      : null;
-    if (cat && !catMap.has(cat.id)) {
-      catMap.set(cat.id, { id: cat.id, code: cat.code, name: cat.name, sort_order: cat.sort_order });
+    const sectionId = d.section_id ?? d.category_id;
+    const sectionName = d.section_name ?? d.category_name;
+    const sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
+    if (sectionId && !catMap.has(sectionId)) {
+      catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }
 
     const allTags = tagMap.get(d.id) ?? [];
@@ -140,7 +145,13 @@ async function fetchFromSupabase() {
       portion_size: d.portion_size != null ? Number(d.portion_size) : null,
       portion_unit: d.portion_unit ?? null,
       category_id: d.category_id ?? null,
-      category_name: cat?.name ?? null,
+      category_name: d.category_name ?? null,
+      // Section (umbrella) the dish groups under + its subcategory (leaf).
+      section_id: sectionId,
+      section_name: sectionName,
+      subcategory_id: d.category_id ?? sectionId,
+      subcategory_name: d.category_name ?? sectionName,
+      subcategory_sort: d.category_sort_order ?? 0,
       diets,
       allergens,
       tags: allTags,

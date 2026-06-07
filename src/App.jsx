@@ -40,16 +40,27 @@ function dishPasses(dish, diets, excl) {
   return true;
 }
 
-// Manaish is shown as one category split into 3 price tiers.
-const MANAKISH_TIERS = [
-  { key: "classic", label: "Classic" },
-  { key: "signature", label: "Signature" },
-  { key: "premium", label: "Premium" },
-];
-const isManakish = (cat) =>
-  cat?.code === "KP-FIN-MAN" || /mana(i|ee|o)?/i.test(cat?.name || "");
-const manakishTier = (price) =>
-  price == null ? "signature" : price <= 59 ? "classic" : price <= 69 ? "signature" : "premium";
+// A section (umbrella, e.g. Manakish / Drinks) groups its dishes into
+// subcategories (Classic / Signature / Premium, Coffee / Lemonades / …) coming
+// straight from the data (menu_public section/subcategory rollup). Flat sections
+// resolve to a single subcategory whose id === the section id → rendered without
+// a subheader. Subcategories sort by their own sort_order, dishes keep theirs.
+function subcategoriesOf(items, sectionId) {
+  const map = new Map();
+  for (const d of items) {
+    const id = d.subcategory_id ?? sectionId;
+    if (!map.has(id)) {
+      map.set(id, { id, name: d.subcategory_name ?? "", sort: d.subcategory_sort ?? 0, items: [] });
+    }
+    map.get(id).items.push(d);
+  }
+  return Array.from(map.values()).sort((a, b) => a.sort - b.sort);
+}
+// True when the section is a real umbrella (its dishes carry a subcategory
+// distinct from the section itself), vs a flat section (one self-subcategory).
+function hasSubcategories(subs, sectionId) {
+  return subs.length > 1 || (subs.length === 1 && subs[0].id !== sectionId);
+}
 function priceHint(items) {
   const prices = items.map((d) => d.price).filter((p) => p != null);
   if (prices.length === 0) return "";
@@ -124,7 +135,7 @@ export default function App() {
 
   const filtered = dishes.filter((d) => dishPasses(d, diets, excl));
   const byCat = categories
-    .map((c) => ({ ...c, items: filtered.filter((d) => d.category_id === c.id) }))
+    .map((c) => ({ ...c, items: filtered.filter((d) => (d.section_id ?? d.category_id) === c.id) }))
     .filter((c) => c.items.length > 0);
 
   // Index after which the "the RULE" accent block is inserted (1-based in config).
@@ -236,27 +247,26 @@ export default function App() {
                 <span className="shk-app__sec-count num">{cat.items.length}</span>
               </div>
 
-              {isManakish(cat) ? (
-                MANAKISH_TIERS.map((tier) => {
-                  const tierItems = cat.items.filter((d) => manakishTier(d.price) === tier.key);
-                  if (tierItems.length === 0) return null;
-                  return (
-                    <div key={tier.key} className="shk-app__tier">
+              {(() => {
+                const subs = subcategoriesOf(cat.items, cat.id);
+                return hasSubcategories(subs, cat.id) ? (
+                  subs.map((sub) => (
+                    <div key={sub.id} className="shk-app__tier">
                       <div className="shk-app__subhead">
-                        <h3 className="shk-app__sub-title">{tier.label}</h3>
-                        <span className="shk-app__sub-price num">{priceHint(tierItems)}</span>
+                        <h3 className="shk-app__sub-title">{sub.name}</h3>
+                        <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
                       </div>
                       <div className="shk-app__grid">
-                        {tierItems.map((dish) => renderDish(dish, cat.name))}
+                        {sub.items.map((dish) => renderDish(dish, cat.name))}
                       </div>
                     </div>
-                  );
-                })
-              ) : (
-                <div className="shk-app__grid">
-                  {cat.items.map((dish) => renderDish(dish, cat.name))}
-                </div>
-              )}
+                  ))
+                ) : (
+                  <div className="shk-app__grid">
+                    {cat.items.map((dish) => renderDish(dish, cat.name))}
+                  </div>
+                );
+              })()}
             </section>
 
             {/* Brand accent block after the configured category */}
