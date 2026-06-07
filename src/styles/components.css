@@ -297,7 +297,7 @@
 .shk-card:hover { transform: translateY(-3px); border-color: var(--border-default); }
 .shk-card:active { transform: translateY(-1px) scale(0.995); }
 
-.shk-card__media { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--green-800); }
+.shk-card__media { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--bg-surface); }
 .shk-card__img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--dur-slow) var(--ease-out); }
 .shk-card:hover .shk-card__img { transform: scale(1.04); }
 .shk-card__media-scrim { position: absolute; inset: 0; background: none; pointer-events: none; }
@@ -354,9 +354,9 @@
   .shk-dlg__scrim { align-items: center; }
   .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; }
 }
-.shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--green-800); overflow: hidden; }
+.shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden; }
 .shk-dlg__img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.shk-dlg__media-scrim { position: absolute; inset: 0; background: var(--img-scrim); }
+.shk-dlg__media-scrim { position: absolute; inset: 0; background: none; }
 .shk-dlg__ph {
   position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; justify-items: center;
   background: var(--green-600);
@@ -372,7 +372,7 @@
 .shk-dlg__body { overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
 .shk-dlg__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
 .shk-dlg__title { font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--text-2xl); line-height: var(--leading-tight); color: var(--text-strong); }
-.shk-dlg__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-xl); color: var(--gold-300); white-space: nowrap; font-feature-settings: var(--num-feature); }
+.shk-dlg__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-xl); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
 .shk-dlg__desc { font-size: var(--text-base); color: var(--text-body); line-height: var(--leading-relaxed); text-wrap: pretty; }
 
 .shk-dlg__nutri {
