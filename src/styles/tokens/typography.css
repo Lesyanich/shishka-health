@@ -1,34 +1,93 @@
+/* ===========================================================================
+   SHISHKA — TYPOGRAPHY SCALE
+   Voice: BOLD · PRECISE · ANALYTICAL · VIBRANT.
+   Display set is set TIGHT and often UPPERCASE for headline "stamp" energy
+   (echoing the brand seal); running copy is lowercase, calm, generous.
+   =========================================================================== */
 :root {
-  --font-display: "Alegreya", Georgia, "Times New Roman", serif;
-  --font-body: "Geist", "Helvetica Neue", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  /* ---- Font sizes (px-based, fluid-friendly) ---- */
+  --text-2xs: 0.6875rem;  /* 11 — micro labels                */
+  --text-xs:  0.75rem;    /* 12 — captions, tags              */
+  --text-sm:  0.875rem;   /* 14 — secondary / meta            */
+  --text-base:1rem;       /* 16 — body                        */
+  --text-md:  1.125rem;   /* 18 — lead body                   */
+  --text-lg:  1.375rem;   /* 22 — small headings              */
+  --text-xl:  1.75rem;    /* 28 — card titles                 */
+  --text-2xl: 2.25rem;    /* 36 — section titles              */
+  --text-3xl: 3rem;       /* 48 — page titles                 */
+  --text-4xl: 4rem;       /* 64 — hero                        */
+  --text-5xl: 5.5rem;     /* 88 — billboard / signage         */
 
-  --fw-regular: 400;
-  --fw-medium: 500;
-  --fw-semibold: 600;
-  --fw-bold: 700;
-  --fw-display: 800;
+  /* ---- Weights ---- */
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-black:    800;
 
-  --text-2xs: 0.6875rem;
-  --text-xs:  0.75rem;
-  --text-sm:  0.8125rem;
-  --text-base: 0.9375rem;
-  --text-md:  1.0625rem;
-  --text-lg:  1.25rem;
-  --text-xl:  1.5rem;
-  --text-2xl: 1.9375rem;
-  --text-3xl: 2.5rem;
-  --text-4xl: clamp(2.75rem, 6vw, 4rem);
+  /* ---- Line heights ---- */
+  --leading-none:    1;
+  --leading-tight:   1.08;
+  --leading-snug:    1.22;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
 
-  --leading-tight: 1.08;
-  --leading-snug: 1.22;
-  --leading-normal: 1.45;
-  --leading-relaxed: 1.6;
+  /* ---- Letter spacing ---- */
+  --tracking-tighter: -0.03em;
+  --tracking-tight:   -0.015em;
+  --tracking-normal:  0em;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.12em;  /* uppercase eyebrows / "stamp" labels */
+  --tracking-widest:  0.22em;
 
-  --tracking-tight: -0.02em;
-  --tracking-normal: 0em;
-  --tracking-wide: 0.04em;
-  --tracking-overline: 0.18em;
+  /* ---- Composed semantic roles ---- */
+  --type-hero-size:    var(--text-5xl);
+  --type-hero-weight:  var(--weight-bold);
+  --type-display-size: var(--text-4xl);
+  --type-title-size:   var(--text-2xl);
+  --type-body-size:    var(--text-base);
+  --type-eyebrow-size: var(--text-xs);
+}
 
-  --num-feature: "tnum" 1, "lnum" 1;
+/* ---- Optional helper classes (foundation specimens / quick use) ---- */
+.shk-hero {
+  font-family: var(--font-display);
+  font-size: var(--type-hero-size);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tighter);
+}
+.shk-display {
+  font-family: var(--font-display);
+  font-size: var(--type-display-size);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+.shk-title {
+  font-family: var(--font-display);
+  font-size: var(--type-title-size);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+.shk-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--type-eyebrow-size);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+}
+.shk-body {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-relaxed);
+}
+.shk-data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-tight);
 }

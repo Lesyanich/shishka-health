@@ -1,25 +1,69 @@
+/* ===========================================================================
+   SHISHKA — SPACING, RADII, SHADOWS, MOTION
+   System is built on a 4px grid. The brand reads as flat, confident and
+   "mathematically balanced": generous whitespace, large soft radii on cards,
+   pills for tags & buttons, and quiet warm shadows (photography sits on
+   solid color, not floating UI).
+   =========================================================================== */
 :root {
-  --space-0: 0;
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
+  /* ---- Spacing (4px base grid) ---- */
+  --sp-0:   0; /* @kind spacing */
+  --sp-1:   0.25rem;  /* 4  */
+  --sp-2:   0.5rem;   /* 8  */
+  --sp-3:   0.75rem;  /* 12 */
+  --sp-4:   1rem;     /* 16 */
+  --sp-5:   1.25rem;  /* 20 */
+  --sp-6:   1.5rem;   /* 24 */
+  --sp-8:   2rem;     /* 32 */
+  --sp-10:  2.5rem;   /* 40 */
+  --sp-12:  3rem;     /* 48 */
+  --sp-16:  4rem;     /* 64 */
+  --sp-20:  5rem;     /* 80 */
+  --sp-24:  6rem;     /* 96 */
+  --sp-32:  8rem;     /* 128 */
 
-  --hit-min: 44px;
+  /* ---- Layout ---- */
+  --container-sm:  640px;
+  --container-md:  920px;
+  --container-lg:  1200px;
+  --container-xl:  1400px;
+  --gutter:        var(--sp-6);
 
-  --page-pad-mobile: var(--space-4);
-  --page-pad-desktop: var(--space-8);
-  --content-max: 1200px;
-  --sticky-tabs-h: 52px;
-  --header-h: 60px;
+  /* ---- Radii ---- */
+  --radius-xs:   6px;
+  --radius-sm:   10px;
+  --radius-md:   16px;
+  --radius-lg:   24px;   /* default card radius          */
+  --radius-xl:   32px;   /* feature callout cards         */
+  --radius-2xl:  44px;
+  --radius-pill: 999px;  /* tags, category chips, buttons */
+  --radius-circle: 50%;
 
-  --gap-cards: var(--space-3);
-  --gap-cards-desktop: var(--space-5);
+  /* ---- Borders ---- */
+  --border-width: 1px;
+  --border-width-bold: 2px;
+
+  /* ---- Shadows (warm, low, on-brand) ---- */
+  --shadow-xs: 0 1px 2px rgba(20, 22, 13, 0.06);
+  --shadow-sm: 0 1px 2px rgba(20, 22, 13, 0.08), 0 1px 3px rgba(20, 22, 13, 0.05);
+  --shadow-md: 0 4px 14px rgba(20, 22, 13, 0.10);
+  --shadow-lg: 0 12px 34px rgba(20, 22, 13, 0.14);
+  --shadow-xl: 0 24px 60px rgba(20, 22, 13, 0.18);
+  --shadow-card: 0 2px 10px rgba(20, 22, 13, 0.07);
+  --shadow-focus: 0 0 0 3px var(--focus-ring);
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.22, 0.61, 0.36, 1); /* @kind other */
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --ease-in-out:   cubic-bezier(0.65, 0, 0.35, 1); /* @kind other */
+  --dur-fast:   120ms; /* @kind other */
+  --dur-base:   220ms; /* @kind other */
+  --dur-slow:   400ms; /* @kind other */
+
+  /* ---- Z-index ---- */
+  --z-base: 1;    /* @kind other */
+  --z-sticky: 100;  /* @kind other */
+  --z-overlay: 1000; /* @kind other */
+  --z-modal: 1100;  /* @kind other */
+  --z-toast: 1200;  /* @kind other */
 }
