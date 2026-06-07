@@ -1,12 +1,7 @@
-// Contact / order links. TODO: replace placeholders with the real ones.
+// Contact / order links. TODO: add the WhatsApp ordering number when ready.
 // WhatsApp uses the wa.me format: https://wa.me/<countrycode+number, digits only>
-const WHATSAPP_URL = ""; // e.g. "https://wa.me/66812345678"
-const INSTAGRAM_URL = "https://instagram.com/shishka.health";
-
-const BRANCHES = [
-  { name: "2 Tops branch", note: "Phuket" },
-  { name: "9 Kitchen branch", note: "Phuket" },
-];
+const WHATSAPP_URL = ""; // e.g. "https://wa.me/66812345678" — button is hidden while empty
+const INSTAGRAM_URL = "https://www.instagram.com/shishka_phuket";
 
 export function MenuCTA({ wide = false }) {
   return (
@@ -15,7 +10,7 @@ export function MenuCTA({ wide = false }) {
         <p className="shk-cta__eyebrow">visit us in phuket</p>
         <h2 className="shk-cta__title">come hungry.</h2>
         <p className="shk-cta__sub">
-          Real food, made fresh every day across our two Phuket kitchens.
+          Real food, made fresh every day — drop by our Phuket kitchen.
         </p>
 
         <div className="shk-cta__actions">
@@ -35,18 +30,14 @@ export function MenuCTA({ wide = false }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Instagram
+            Instagram <span aria-hidden="true">→</span>
           </a>
         </div>
 
-        <ul className="shk-cta__branches">
-          {BRANCHES.map((b) => (
-            <li key={b.name} className="shk-cta__branch">
-              <span className="shk-cta__branch-name">{b.name}</span>
-              <span className="shk-cta__branch-note">{b.note}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="shk-cta__hours">
+          <span className="shk-cta__hours-label">open daily</span>
+          <span className="shk-cta__hours-time num">9:00 – 18:00</span>
+        </div>
       </div>
     </section>
   );
