@@ -6,6 +6,7 @@ import { DishCard } from "./components/menu/DishCard.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
+import { DEFAULT_CONTENT } from "./lib/content.js";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import {
@@ -76,6 +77,7 @@ export default function App() {
 
   const categories = data?.categories ?? [];
   const dishes = data?.dishes ?? [];
+  const content = data?.content ?? DEFAULT_CONTENT;
 
   // Build unique diet and allergen options from actual tags on dishes
   const dietOptions = useMemo(() => {
@@ -106,6 +108,12 @@ export default function App() {
   const byCat = categories
     .map((c) => ({ ...c, items: filtered.filter((d) => d.category_id === c.id) }))
     .filter((c) => c.items.length > 0);
+
+  // Index after which the "the RULE" accent block is inserted (1-based in config).
+  const ruleAfter = Math.min(
+    Math.max((content.rule?.afterCategory ?? 1) - 1, 0),
+    Math.max(byCat.length - 1, 0)
+  );
 
   useEffect(() => {
     if (!active && byCat.length > 0) setActive(byCat[0].id);
@@ -155,7 +163,7 @@ export default function App() {
         wide={wide}
       />
 
-      <Hero wide={wide} />
+      <Hero wide={wide} content={content.hero} />
 
       <CategoryTabs
         categories={byCat.map((c) => ({ id: c.id, label: c.label, count: c.items.length }))}
@@ -209,12 +217,12 @@ export default function App() {
               </div>
             </section>
 
-            {/* Brand accent block after the first category */}
-            {i === 0 && <BrandRule wide={wide} />}
+            {/* Brand accent block after the configured category */}
+            {i === ruleAfter && <BrandRule wide={wide} content={content.rule} />}
           </Fragment>
         ))}
 
-        {!loading && byCat.length > 0 && <MenuCTA wide={wide} />}
+        {!loading && byCat.length > 0 && <MenuCTA wide={wide} content={content.cta} />}
 
         {!loading && (
           <footer className="shk-app__foot">

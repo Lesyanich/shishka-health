@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase, hasSupabase } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
+import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -27,7 +28,7 @@ import { MOCK_DATA } from "../lib/mockData.js";
 */
 
 async function fetchFromSupabase() {
-  const [dishResult, tagResult] = await Promise.all([
+  const [dishResult, tagResult, contentResult] = await Promise.all([
     supabase
       .from("menu_public")
       .select(`
@@ -44,6 +45,10 @@ async function fetchFromSupabase() {
     supabase
       .from("nomenclature_tags")
       .select("nomenclature_id, tags(slug, name, tag_group, color)"),
+
+    supabase
+      .from("site_content")
+      .select("key, data"),
   ]);
 
   if (dishResult.error) throw dishResult.error;
@@ -101,7 +106,9 @@ async function fetchFromSupabase() {
   const categories = Array.from(catMap.values())
     .sort((a, b) => a.sort_order - b.sort_order);
 
-  return { dishes, categories };
+  const content = mergeContent(contentResult.error ? [] : contentResult.data);
+
+  return { dishes, categories, content };
 }
 
 export function useMenu() {
@@ -113,11 +120,13 @@ export function useMenu() {
     setLoading(true);
     setError(null);
     try {
-      const result = hasSupabase ? await fetchFromSupabase() : MOCK_DATA;
+      const result = hasSupabase
+        ? await fetchFromSupabase()
+        : { ...MOCK_DATA, content: DEFAULT_CONTENT };
       setData(result);
     } catch (err) {
       console.error("Menu fetch failed, using mock data:", err);
-      setData(MOCK_DATA);
+      setData({ ...MOCK_DATA, content: DEFAULT_CONTENT });
       setError(err);
     } finally {
       setLoading(false);
@@ -133,6 +142,7 @@ export function useMenu() {
       .channel("menu-live")
       .on("postgres_changes", { event: "*", schema: "public", table: "nomenclature" }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "nomenclature_tags" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_content" }, load)
       .subscribe();
 
     return () => supabase.removeChannel(channel);
