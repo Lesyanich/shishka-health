@@ -40,6 +40,23 @@ function dishPasses(dish, diets, excl) {
   return true;
 }
 
+// Manaish is shown as one category split into 3 price tiers.
+const MANAKISH_TIERS = [
+  { key: "classic", label: "Classic" },
+  { key: "signature", label: "Signature" },
+  { key: "premium", label: "Premium" },
+];
+const isManakish = (cat) =>
+  cat?.code === "KP-FIN-MAN" || /mana(i|ee|o)?/i.test(cat?.name || "");
+const manakishTier = (price) =>
+  price == null ? "signature" : price <= 59 ? "classic" : price <= 69 ? "signature" : "premium";
+function priceHint(items) {
+  const prices = items.map((d) => d.price).filter((p) => p != null);
+  if (prices.length === 0) return "";
+  const min = Math.min(...prices), max = Math.max(...prices);
+  return min === max ? `฿${min}` : `฿${min}–${max}`;
+}
+
 function LoadingSkeleton() {
   return (
     <div className="shk-app__section">
@@ -114,6 +131,26 @@ export default function App() {
   const ruleAfter = Math.min(
     Math.max((content.rule?.afterCategory ?? 1) - 1, 0),
     Math.max(byCat.length - 1, 0)
+  );
+
+  const renderDish = (dish, catName) => (
+    <DishCard
+      key={dish.id}
+      name={dish.name}
+      description={dish.description}
+      price={dish.price}
+      image={dish.image_url}
+      kcal={dish.calories}
+      protein={dish.protein}
+      carbs={dish.carbs}
+      fat={dish.fat}
+      weight={dish.portion_size}
+      weightUnit={dish.portion_unit}
+      diets={dish.diets ?? []}
+      badges={dish.badges ?? []}
+      category={catName}
+      onClick={() => setSelected(dish)}
+    />
   );
 
   useEffect(() => {
@@ -197,27 +234,28 @@ export default function App() {
                 <h2 className="shk-app__sec-title">{cat.name}</h2>
                 <span className="shk-app__sec-count num">{cat.items.length}</span>
               </div>
-              <div className="shk-app__grid">
-                {cat.items.map((dish) => (
-                  <DishCard
-                    key={dish.id}
-                    name={dish.name}
-                    description={dish.description}
-                    price={dish.price}
-                    image={dish.image_url}
-                    kcal={dish.calories}
-                    protein={dish.protein}
-                    carbs={dish.carbs}
-                    fat={dish.fat}
-                    weight={dish.portion_size}
-                    weightUnit={dish.portion_unit}
-                    diets={dish.diets ?? []}
-                    badges={dish.badges ?? []}
-                    category={cat.name}
-                    onClick={() => setSelected(dish)}
-                  />
-                ))}
-              </div>
+
+              {isManakish(cat) ? (
+                MANAKISH_TIERS.map((tier) => {
+                  const tierItems = cat.items.filter((d) => manakishTier(d.price) === tier.key);
+                  if (tierItems.length === 0) return null;
+                  return (
+                    <div key={tier.key} className="shk-app__tier">
+                      <div className="shk-app__subhead">
+                        <h3 className="shk-app__sub-title">{tier.label}</h3>
+                        <span className="shk-app__sub-price num">{priceHint(tierItems)}</span>
+                      </div>
+                      <div className="shk-app__grid">
+                        {tierItems.map((dish) => renderDish(dish, cat.name))}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="shk-app__grid">
+                  {cat.items.map((dish) => renderDish(dish, cat.name))}
+                </div>
+              )}
             </section>
 
             {/* Brand accent block after the configured category */}

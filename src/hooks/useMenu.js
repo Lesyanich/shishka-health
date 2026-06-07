@@ -34,6 +34,7 @@ async function fetchFromSupabase() {
       .select(`
         id, name, product_code,
         customer_short_name, customer_photo_url, image_url, customer_description,
+        customer_ingredients,
         price, is_available, is_featured, pos_status,
         calories, protein, carbs, fat,
         portion_size, portion_unit,
@@ -85,6 +86,7 @@ async function fetchFromSupabase() {
       id: d.id,
       name: d.customer_short_name || d.name,
       description: d.customer_description ?? null,
+      ingredients: d.customer_ingredients ?? null,
       price: d.price != null ? Number(d.price) : null,
       image_url: d.customer_photo_url ?? d.image_url ?? null,
       is_featured: d.is_featured,

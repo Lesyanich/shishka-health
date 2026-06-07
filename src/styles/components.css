@@ -413,6 +413,17 @@
   font-weight: 700; font-size: var(--text-2xl); color: var(--text-strong); letter-spacing: -0.02em;
 }
 .shk-app__sec-count { font-size: var(--text-sm); color: var(--text-faint); }
+.shk-app__tier { margin-bottom: 18px; }
+.shk-app__subhead {
+  display: flex; align-items: baseline; gap: 8px; margin: 4px 0 12px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--border-subtle);
+}
+.shk-app__sub-title {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--text-md); color: var(--text-strong);
+  text-transform: uppercase; letter-spacing: var(--tracking-wide);
+}
+.shk-app__sub-price { margin-left: auto; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); font-feature-settings: var(--num-feature); }
 .shk-app__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-cards); align-items: start; }
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
 .shk-foot { background: var(--green-950); color: var(--text-on-dark); }
