@@ -5,6 +5,7 @@ import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
+import { MenuCTA } from "./components/menu/MenuCTA.jsx";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import {
@@ -212,6 +213,8 @@ export default function App() {
             {i === 0 && <BrandRule wide={wide} />}
           </Fragment>
         ))}
+
+        {!loading && byCat.length > 0 && <MenuCTA wide={wide} />}
 
         {!loading && (
           <footer className="shk-app__foot">
