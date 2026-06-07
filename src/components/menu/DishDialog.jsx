@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CalorieDonut } from "../nutrition/CalorieDonut.jsx";
 import { MacroBar } from "../nutrition/MacroBar.jsx";
 import { DietTag } from "../filters/DietTag.jsx";
@@ -8,11 +8,36 @@ import { ModifierBuilder } from "./ModifierBuilder.jsx";
 import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
 
 export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
+  const dialogRef = useRef(null);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
+    const prevFocus = document.activeElement;
+    document.body.style.overflow = "hidden";
+    const node = dialogRef.current;
+    node?.focus();
+    const onKey = (e) => {
+      if (e.key === "Escape") return onClose?.();
+      if (e.key !== "Tab" || !node) return;
+      const f = node.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!f.length) return;
+      const first = f[0];
+      const last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+      prevFocus?.focus?.();
+    };
   }, [open, onClose]);
 
   const [imgOk, setImgOk] = useState(true);
@@ -52,6 +77,8 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
     <div className="shk-dlg__scrim" onClick={onClose}>
       <div
         className="shk-dlg"
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={name}
