@@ -29,6 +29,7 @@ export function DishCard({
   rating,
   category,
   layout = "tile",
+  comingSoon = false,
   onClick,
   className = "",
   ...rest
@@ -36,12 +37,23 @@ export function DishCard({
   const [imgOk, setImgOk] = useState(true);
   useEffect(() => setImgOk(true), [image]);
   const showImg = image && imgOk;
-  const cls = ["shk-card", layout === "row" ? "shk-card--row" : "", className]
+  const cls = [
+    "shk-card",
+    layout === "row" ? "shk-card--row" : "",
+    comingSoon ? "shk-card--coming-soon" : "",
+    className,
+  ]
     .filter(Boolean)
     .join(" ");
 
   return (
-    <button type="button" className={cls} onClick={onClick} {...rest}>
+    <button
+      type="button"
+      className={cls}
+      onClick={comingSoon ? undefined : onClick}
+      aria-disabled={comingSoon || undefined}
+      {...rest}
+    >
       <div className="shk-card__media">
         {showImg ? (
           <>
