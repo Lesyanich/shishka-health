@@ -19,6 +19,8 @@ export function DishCard({
   currency = "฿",
   image = null,
   kcal,
+  weight,
+  weightUnit = "g",
   protein = 0,
   carbs = 0,
   fat = 0,
@@ -76,13 +78,23 @@ export function DishCard({
                 {currency}{price}
               </span>
             )}
+          </span>
+        </div>
+
+        {(kcal != null || weight != null) && (
+          <div className="shk-card__meta">
             {kcal != null && (
-              <span className="shk-card__kcal-inline">
+              <span className="shk-card__meta-item shk-card__meta-item--kcal">
                 <b>{kcal}</b> kcal
               </span>
             )}
-          </span>
-        </div>
+            {weight != null && (
+              <span className="shk-card__meta-item">
+                <b>{weight}</b>{weightUnit}
+              </span>
+            )}
+          </div>
+        )}
 
         {description && <p className="shk-card__desc">{description}</p>}
 

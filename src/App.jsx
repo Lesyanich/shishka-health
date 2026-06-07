@@ -167,7 +167,7 @@ export default function App() {
       <Hero wide={wide} content={content.hero} />
 
       <CategoryTabs
-        categories={byCat.map((c) => ({ id: c.id, label: c.label, count: c.items.length }))}
+        categories={byCat.map((c) => ({ id: c.id, label: c.name, count: c.items.length }))}
         active={active}
         onChange={goToCat}
       />
@@ -194,7 +194,7 @@ export default function App() {
               className="shk-app__section"
             >
               <div className="shk-app__sec-head">
-                <h2 className="shk-app__sec-title">{cat.label}</h2>
+                <h2 className="shk-app__sec-title">{cat.name}</h2>
                 <span className="shk-app__sec-count num">{cat.items.length}</span>
               </div>
               <div className="shk-app__grid">
@@ -209,9 +209,11 @@ export default function App() {
                     protein={dish.protein}
                     carbs={dish.carbs}
                     fat={dish.fat}
+                    weight={dish.portion_size}
+                    weightUnit={dish.portion_unit}
                     diets={dish.diets ?? []}
                     badges={dish.badges ?? []}
-                    category={cat.label}
+                    category={cat.name}
                     onClick={() => setSelected(dish)}
                   />
                 ))}
