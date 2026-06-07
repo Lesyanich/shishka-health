@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase, hasSupabase } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
 import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
+import { deepStripEmoji } from "../lib/text.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -152,7 +153,10 @@ async function fetchFromSupabase() {
 
   const content = mergeContent(contentResult.error ? [] : contentResult.data);
 
-  return { dishes, categories, content };
+  // The customer site shows emoji-free text only. Source data keeps emojis
+  // for the admin panel + Loyverse POS, so strip them here — the single
+  // boundary where all Supabase menu data is assembled. (See lib/text.js.)
+  return deepStripEmoji({ dishes, categories, content });
 }
 
 export function useMenu() {
