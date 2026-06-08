@@ -659,6 +659,7 @@
   text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--space-2);
 }
 .shk-build__group-req { font-weight: var(--fw-regular); color: var(--menu-price); text-transform: none; letter-spacing: 0; }
+.shk-build__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); opacity: 0.75; }
 .shk-build__opts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .shk-build__opt {
   display: inline-flex; align-items: center; gap: 6px;
