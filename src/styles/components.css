@@ -715,8 +715,8 @@
   border-radius: var(--radius-pill); padding: 0 var(--space-5);
   transition: background .15s ease;
 }
-.shk-dlg__add:hover, .shk-bundle__add:hover:not(:disabled) { background: var(--accent-hover); }
-.shk-bundle__add:disabled { opacity: .45; cursor: not-allowed; }
+.shk-dlg__add:hover:not(:disabled), .shk-bundle__add:hover:not(:disabled) { background: var(--accent-hover); }
+.shk-dlg__add:disabled, .shk-bundle__add:disabled { opacity: .45; cursor: not-allowed; }
 
 /* Bundle constructor dialog (reuses .shk-dlg__scrim / .shk-dlg shell) */
 .shk-bundle { display: flex; flex-direction: column; max-height: 88vh; }

@@ -336,7 +336,14 @@ export default function App() {
         onShare={selected ? () => handleShare(selected) : undefined}
         onAdd={
           selected && !selected.comingSoon && selected.price != null
-            ? () => { cart.addDish(selected); setSelected(null); }
+            ? (build) => {
+                if (selected.modifierGroups?.length && build) {
+                  cart.addConfiguredDish(selected, build);
+                } else {
+                  cart.addDish(selected);
+                }
+                setSelected(null);
+              }
             : undefined
         }
       />

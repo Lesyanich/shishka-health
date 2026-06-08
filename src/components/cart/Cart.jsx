@@ -60,7 +60,19 @@ export function Cart({ currency = "฿" }) {
                     <div className="shk-cart__line-main">
                       <div className="shk-cart__line-info">
                         <span className="shk-cart__line-name">{l.dish.name}</span>
-                        <span className="shk-cart__line-unit num">{currency}{l.dish.price}</span>
+                        {l.config?.options?.length > 0 && (
+                          <ul className="shk-cart__sub">
+                            {l.config.options.map((o, i) => (
+                              <li key={`${o.name}-${i}`}>
+                                + {o.name}
+                                {o.priceDelta > 0 ? ` (${currency}${o.priceDelta})` : ""}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <span className="shk-cart__line-unit num">
+                          {currency}{l.price != null ? l.price : l.dish.price}
+                        </span>
                       </div>
                       <div className="shk-cart__stepper">
                         <button type="button" aria-label="decrease" onClick={() => cart.setQty(l.id, l.qty - 1)}>–</button>
