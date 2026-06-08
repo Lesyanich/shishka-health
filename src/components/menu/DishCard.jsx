@@ -16,6 +16,7 @@ export function DishCard({
   name,
   description,
   price,
+  priceFrom = null,
   currency = "฿",
   image = null,
   kcal,
@@ -85,10 +86,16 @@ export function DishCard({
         <div className="shk-card__topline">
           <span className="shk-card__name">{name}</span>
           <span className="shk-card__priceblock">
-            {price != null && (
+            {priceFrom != null ? (
               <span className="shk-card__price">
-                {currency}{price}
+                <span className="shk-card__from">from </span>{currency}{priceFrom}
               </span>
+            ) : (
+              price != null && (
+                <span className="shk-card__price">
+                  {currency}{price}
+                </span>
+              )
             )}
           </span>
         </div>

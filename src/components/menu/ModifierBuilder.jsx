@@ -1,24 +1,49 @@
 import { useState, useMemo } from "react";
 
 // Interactive "build your own" panel. Toggle options, see a live total.
-// Loyverse has no min/max-select configured, so every option is a toggle.
+// Most options are free toggles, but a group can be REQUIRED (minSelect > 0):
+// the guest must keep at least N picks (e.g. "Pick Fruits" needs 2). Required
+// groups start pre-filled with their cheapest options so the live total matches
+// the "from ฿X" floor shown on the card, and they can't be emptied below min.
 export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }) {
   const initial = useMemo(() => {
     const s = new Set();
-    groups.forEach((g, gi) =>
+    groups.forEach((g, gi) => {
       g.options.forEach((o, oi) => {
         if (o.isDefault) s.add(`${gi}:${oi}`);
-      })
-    );
+      });
+      const min = g.minSelect ?? 0;
+      const chosen = g.options.filter((_, oi) => s.has(`${gi}:${oi}`)).length;
+      if (min > chosen) {
+        // Fill up to the minimum with the cheapest unpicked options.
+        g.options
+          .map((o, oi) => ({ oi, delta: Number(o.priceDelta) || 0 }))
+          .filter(({ oi }) => !s.has(`${gi}:${oi}`))
+          .sort((a, b) => a.delta - b.delta)
+          .slice(0, min - chosen)
+          .forEach(({ oi }) => s.add(`${gi}:${oi}`));
+      }
+    });
     return s;
   }, [groups]);
 
   const [selected, setSelected] = useState(initial);
 
-  const toggle = (key) =>
+  const groupCount = (set, gi) =>
+    groups[gi].options.reduce((n, _, oi) => (set.has(`${gi}:${oi}`) ? n + 1 : n), 0);
+
+  const toggle = (gi, oi) =>
     setSelected((prev) => {
+      const key = `${gi}:${oi}`;
       const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
+      if (next.has(key)) {
+        // Don't let a required group drop below its minimum.
+        const min = groups[gi]?.minSelect ?? 0;
+        if (min > 0 && groupCount(prev, gi) <= min) return prev;
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
       return next;
     });
 
@@ -40,15 +65,20 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
       <div className="shk-build__head">
         <span className="shk-build__title">Build your own</span>
         {count > 0 && (
-          <button type="button" className="shk-build__reset" onClick={() => setSelected(new Set())}>
+          <button type="button" className="shk-build__reset" onClick={() => setSelected(initial)}>
             Reset
           </button>
         )}
       </div>
 
-      {groups.map((g, gi) => (
+      {groups.map((g, gi) => {
+        const min = g.minSelect ?? 0;
+        return (
         <div key={gi} className="shk-build__group">
-          <div className="shk-build__group-name">{g.name}</div>
+          <div className="shk-build__group-name">
+            {g.name}
+            {min > 0 && <span className="shk-build__group-req"> · pick at least {min}</span>}
+          </div>
           <div className="shk-build__opts">
             {g.options.map((o, oi) => {
               const key = `${gi}:${oi}`;
@@ -58,7 +88,7 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
                   type="button"
                   key={oi}
                   className={`shk-build__opt ${on ? "is-on" : ""}`}
-                  onClick={() => toggle(key)}
+                  onClick={() => toggle(gi, oi)}
                   aria-pressed={on}
                 >
                   {o.emoji && <span className="shk-build__opt-emoji" aria-hidden="true">{o.emoji}</span>}
@@ -71,7 +101,8 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
             })}
           </div>
         </div>
-      ))}
+        );
+      })}
 
       <div className="shk-build__total">
         <span className="shk-build__total-label">

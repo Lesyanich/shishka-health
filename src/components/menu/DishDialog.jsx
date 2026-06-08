@@ -20,13 +20,16 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
   if (!open || !dish) return null;
   const {
-    name, description, price, currency = "฿", image, image_url,
+    name, description, price, priceFrom = null, currency = "฿", image, image_url,
     calories, protein = 0, carbs = 0, fat = 0,
     diets = [], allergens = [], tags = [], badges = [],
     category, portion_size, portion_unit, ingredients,
     modifierGroups = [],
   } = dish;
   const photo = image ?? image_url;
+  // Build-your-own dishes (a required modifier group) price "from ฿X": the base
+  // plus the cheapest mandatory add-ons. The flat base alone isn't orderable.
+  const buildYourOwn = priceFrom != null;
 
   return (
     <div className="shk-dlg__scrim" onClick={onClose}>
@@ -76,8 +79,14 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
         <div className="shk-dlg__body">
           <div className="shk-dlg__head">
             <h2 className="shk-dlg__title">{name}</h2>
-            {price != null && (
-              <span className="shk-dlg__price">{currency}{price}</span>
+            {buildYourOwn ? (
+              <span className="shk-dlg__price">
+                <span className="shk-dlg__from">from </span>{currency}{priceFrom}
+              </span>
+            ) : (
+              price != null && (
+                <span className="shk-dlg__price">{currency}{price}</span>
+              )
             )}
           </div>
 
@@ -101,7 +110,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
           {onAdd && (
             <button type="button" className="shk-dlg__add" onClick={onAdd}>
-              Add to order{price != null ? ` · ${currency}${price}` : ""}
+              Add to order{buildYourOwn ? ` · from ${currency}${priceFrom}` : price != null ? ` · ${currency}${price}` : ""}
             </button>
           )}
 

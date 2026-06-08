@@ -3,6 +3,7 @@ import { supabase, hasSupabase } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
 import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
 import { deepStripEmoji } from "../lib/text.js";
+import { dishFloor } from "../lib/modifiers.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -55,7 +56,7 @@ async function fetchFromSupabase() {
 
     supabase
       .from("menu_modifiers")
-      .select("dish_id, group_name, group_sort, option_name, option_emoji, price_delta, is_default, sort_order"),
+      .select("dish_id, group_name, group_sort, group_min_select, option_name, option_emoji, price_delta, is_default, sort_order"),
 
     // Manakish bundle tiers (the "Manakish set of N" sets). Discount escalates
     // with size; the constructor + cards price entirely from this.
@@ -75,7 +76,12 @@ async function fetchFromSupabase() {
     if (!modMap.has(r.dish_id)) modMap.set(r.dish_id, new Map());
     const groups = modMap.get(r.dish_id);
     if (!groups.has(r.group_name)) {
-      groups.set(r.group_name, { name: r.group_name, sort: r.group_sort ?? 0, options: [] });
+      groups.set(r.group_name, {
+        name: r.group_name,
+        sort: r.group_sort ?? 0,
+        minSelect: r.group_min_select ?? 0,
+        options: [],
+      });
     }
     groups.get(r.group_name).options.push({
       name: r.option_name,
@@ -136,13 +142,18 @@ async function fetchFromSupabase() {
         ? [{ label: "Featured", tone: "gold" }]
         : [];
 
+    const modifierGroups = modifiersFor(d.id);
+    const price = d.price != null ? Number(d.price) : null;
     return {
       id: d.id,
       name: d.customer_short_name || d.name,
       description: d.customer_description ?? null,
       ingredients: d.customer_ingredients ?? null,
-      modifierGroups: modifiersFor(d.id),
-      price: d.price != null ? Number(d.price) : null,
+      modifierGroups,
+      price,
+      // "From ฿X" floor for build-your-own dishes (a required modifier group):
+      // base + cheapest mandatory add-ons. null for ordinary fixed-price dishes.
+      priceFrom: dishFloor(price, modifierGroups),
       image_url: d.customer_photo_url ?? d.image_url ?? null,
       is_featured: d.is_featured,
       stockState,
