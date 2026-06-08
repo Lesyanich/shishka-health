@@ -7,7 +7,7 @@ import { IconButton } from "../primitives/IconButton.jsx";
 import { ModifierBuilder } from "./ModifierBuilder.jsx";
 import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
 
-export function DishDialog({ open, onClose, dish, onShare }) {
+export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose?.();
@@ -97,6 +97,12 @@ export function DishDialog({ open, onClose, dish, onShare }) {
               currency={currency}
               groups={modifierGroups}
             />
+          )}
+
+          {onAdd && (
+            <button type="button" className="shk-dlg__add" onClick={onAdd}>
+              Add to order{price != null ? ` · ${currency}${price}` : ""}
+            </button>
           )}
 
           <div className="shk-dlg__nutri">

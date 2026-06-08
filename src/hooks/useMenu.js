@@ -29,7 +29,7 @@ import { deepStripEmoji } from "../lib/text.js";
 */
 
 async function fetchFromSupabase() {
-  const [dishResult, tagResult, contentResult, modResult] = await Promise.all([
+  const [dishResult, tagResult, contentResult, modResult, tierResult] = await Promise.all([
     supabase
       .from("menu_public")
       .select(`
@@ -56,6 +56,15 @@ async function fetchFromSupabase() {
     supabase
       .from("menu_modifiers")
       .select("dish_id, group_name, group_sort, option_name, option_emoji, price_delta, is_default, sort_order"),
+
+    // Manakish bundle tiers (the "Manakish set of N" sets). Discount escalates
+    // with size; the constructor + cards price entirely from this.
+    supabase
+      .from("price_tiers")
+      .select("tier_code, label, discount_pct, bundle_manakish_count, bundle_sauce_count, sort_order")
+      .not("bundle_dish_code", "is", null)
+      .eq("is_active", true)
+      .order("sort_order"),
   ]);
 
   if (dishResult.error) throw dishResult.error;
@@ -145,6 +154,7 @@ async function fetchFromSupabase() {
       portion_size: d.portion_size != null ? Number(d.portion_size) : null,
       portion_unit: d.portion_unit ?? null,
       category_id: d.category_id ?? null,
+      category_code: d.category_code ?? null,
       category_name: d.category_name ?? null,
       // Section (umbrella) the dish groups under + its subcategory (leaf).
       section_id: sectionId,
@@ -164,10 +174,19 @@ async function fetchFromSupabase() {
 
   const content = mergeContent(contentResult.error ? [] : contentResult.data);
 
+  // Manakish bundle tiers ("Manakish set of N"), discount escalates with size.
+  const bundles = (tierResult?.error ? [] : tierResult?.data ?? []).map((t) => ({
+    tierCode: t.tier_code,
+    label: t.label,
+    discountPct: Number(t.discount_pct),
+    manakishCount: t.bundle_manakish_count,
+    sauceCount: t.bundle_sauce_count,
+  }));
+
   // The customer site shows emoji-free text only. Source data keeps emojis
   // for the admin panel + Loyverse POS, so strip them here — the single
   // boundary where all Supabase menu data is assembled. (See lib/text.js.)
-  return deepStripEmoji({ dishes, categories, content });
+  return deepStripEmoji({ dishes, categories, content, bundles });
 }
 
 export function useMenu() {
