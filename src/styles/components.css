@@ -339,6 +339,7 @@
 }
 .shk-card__name { font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--text-lg); line-height: var(--leading-snug); color: var(--text-strong); }
 .shk-card__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-md); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
+.shk-card__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); color: var(--menu-muted, var(--menu-price)); opacity: 0.75; }
 .shk-card__desc {
   font-size: var(--text-sm); color: var(--text-muted); line-height: var(--leading-normal);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-wrap: pretty;
@@ -391,6 +392,7 @@
 .shk-dlg__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
 .shk-dlg__title { font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--text-2xl); line-height: var(--leading-tight); color: var(--text-strong); }
 .shk-dlg__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-xl); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
+.shk-dlg__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-sm); color: var(--menu-muted, var(--menu-price)); opacity: 0.75; }
 .shk-dlg__desc { font-size: var(--text-base); color: var(--text-body); line-height: var(--leading-relaxed); text-wrap: pretty; }
 
 .shk-dlg__nutri {
@@ -656,6 +658,7 @@
   font-size: var(--text-2xs); font-weight: var(--fw-bold); letter-spacing: var(--tracking-wider);
   text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--space-2);
 }
+.shk-build__group-req { font-weight: var(--fw-regular); color: var(--menu-price); text-transform: none; letter-spacing: 0; }
 .shk-build__opts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .shk-build__opt {
   display: inline-flex; align-items: center; gap: 6px;
