@@ -56,7 +56,7 @@ async function fetchFromSupabase() {
 
     supabase
       .from("menu_modifiers")
-      .select("dish_id, group_name, group_sort, group_min_select, option_name, option_emoji, price_delta, is_default, sort_order"),
+      .select("dish_id, group_name, group_sort, group_min_select, group_max_select, option_name, option_emoji, price_delta, is_default, sort_order"),
 
     // Manakish bundle tiers (the "Manakish set of N" sets). Discount escalates
     // with size; the constructor + cards price entirely from this.
@@ -80,6 +80,7 @@ async function fetchFromSupabase() {
         name: r.group_name,
         sort: r.group_sort ?? 0,
         minSelect: r.group_min_select ?? 0,
+        maxSelect: r.group_max_select ?? null,
         options: [],
       });
     }
