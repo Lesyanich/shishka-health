@@ -273,22 +273,6 @@ export default function App() {
                 </p>
               )}
 
-              {cat.name === "Manakish" && bundleCards.length > 0 && (
-                <div className="shk-app__bundles">
-                  {bundleCards.map((b) => (
-                    <BundleCard
-                      key={b.tierCode}
-                      label={b.label}
-                      manakishCount={b.manakishCount}
-                      sauceCount={b.sauceCount}
-                      discountPct={b.discountPct}
-                      from={b.from}
-                      onClick={() => setActiveBundle(b)}
-                    />
-                  ))}
-                </div>
-              )}
-
               {(() => {
                 const subs = subcategoriesOf(cat.items, cat.id);
                 return hasSubcategories(subs, cat.id) ? (
@@ -309,6 +293,35 @@ export default function App() {
                   </div>
                 );
               })()}
+
+              {cat.name === "Manakish" && bundleCards.length > 0 && (
+                <div className="shk-app__tier shk-app__bundles-block">
+                  <div className="shk-app__subhead shk-app__bundles-head">
+                    <h3 className="shk-app__sub-title">
+                      {content.bundles?.title ?? "Buy more, save more"}
+                    </h3>
+                    {content.bundles?.badge && (
+                      <span className="shk-app__bundles-badge">{content.bundles.badge}</span>
+                    )}
+                  </div>
+                  {content.bundles?.sub && (
+                    <p className="shk-app__bundles-sub">{content.bundles.sub}</p>
+                  )}
+                  <div className="shk-app__bundles">
+                    {bundleCards.map((b) => (
+                      <BundleCard
+                        key={b.tierCode}
+                        label={b.label}
+                        manakishCount={b.manakishCount}
+                        sauceCount={b.sauceCount}
+                        discountPct={b.discountPct}
+                        from={b.from}
+                        onClick={() => setActiveBundle(b)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </section>
 
             {/* Brand accent block after the configured category */}
