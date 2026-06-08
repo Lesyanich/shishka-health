@@ -2,11 +2,12 @@ import { useState, useMemo } from "react";
 import { requiredAddOnFloor } from "../../lib/modifiers.js";
 
 // Interactive "build your own" panel. Toggle options, see a live total.
-// Most options are free toggles, but a group can be REQUIRED (minSelect > 0):
-// the guest must pick at least N (e.g. "Pick Fruits" needs 2). Nothing is
-// pre-selected — the guest builds from scratch. Until every required minimum is
-// met, the total shows the "from ฿X" floor (base + cheapest mandatory add-ons),
-// matching the card; once met, it shows the live total.
+// A group can be REQUIRED (minSelect > 0) and/or CAPPED (maxSelect): e.g.
+// "Pick Fruits" needs 2 and allows at most 4. Nothing is pre-selected — the
+// guest builds from scratch. Until every required minimum is met, the total
+// shows the "from ฿X" floor (base + cheapest mandatory add-ons), matching the
+// card; once met, it shows the live total. At a group's cap, its unpicked
+// options are disabled.
 export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }) {
   const initial = useMemo(() => {
     const s = new Set();
@@ -27,7 +28,14 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
     setSelected((prev) => {
       const key = `${gi}:${oi}`;
       const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        // Don't let a capped group exceed its maximum.
+        const max = groups[gi]?.maxSelect ?? null;
+        if (max != null && groupCount(prev, gi) >= max) return prev;
+        next.add(key);
+      }
       return next;
     });
 
@@ -63,23 +71,32 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
 
       {groups.map((g, gi) => {
         const min = g.minSelect ?? 0;
+        const max = g.maxSelect ?? null;
+        const atMax = max != null && groupCount(selected, gi) >= max;
+        const req =
+          min > 0 && max != null ? `pick ${min}–${max}`
+          : min > 0 ? `pick at least ${min}`
+          : max != null ? `pick up to ${max}`
+          : null;
         return (
         <div key={gi} className="shk-build__group">
           <div className="shk-build__group-name">
             {g.name}
-            {min > 0 && <span className="shk-build__group-req"> · pick at least {min}</span>}
+            {req && <span className="shk-build__group-req"> · {req}</span>}
           </div>
           <div className="shk-build__opts">
             {g.options.map((o, oi) => {
               const key = `${gi}:${oi}`;
               const on = selected.has(key);
+              const blocked = atMax && !on;
               return (
                 <button
                   type="button"
                   key={oi}
-                  className={`shk-build__opt ${on ? "is-on" : ""}`}
+                  className={`shk-build__opt ${on ? "is-on" : ""} ${blocked ? "is-disabled" : ""}`}
                   onClick={() => toggle(gi, oi)}
                   aria-pressed={on}
+                  disabled={blocked}
                 >
                   {o.emoji && <span className="shk-build__opt-emoji" aria-hidden="true">{o.emoji}</span>}
                   <span className="shk-build__opt-name">{o.name}</span>
