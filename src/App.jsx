@@ -10,6 +10,11 @@ import { SiteFooter } from "./components/menu/SiteFooter.jsx";
 import { DEFAULT_CONTENT } from "./lib/content.js";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
+import { BundleCard } from "./components/menu/BundleCard.jsx";
+import { BundleDialog } from "./components/menu/BundleDialog.jsx";
+import { Cart } from "./components/cart/Cart.jsx";
+import { useCart } from "./state/cart.jsx";
+import { manakishPool as getManakishPool, saucePool as getSaucePool, bundleFloor } from "./lib/bundles.js";
 import {
   SproutIcon, LeafIcon, WheatIcon, MilkIcon, NutIcon,
   EggIcon, DropletIcon, BeefIcon, HalalIcon,
@@ -86,6 +91,8 @@ function LoadingSkeleton() {
 
 export default function App() {
   const { data, loading } = useMenu();
+  const cart = useCart();
+  const [activeBundle, setActiveBundle] = useState(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [diets, setDiets] = useState([]);
   const [excl, setExcl] = useState([]);
@@ -107,6 +114,18 @@ export default function App() {
   const categories = data?.categories ?? [];
   const dishes = data?.dishes ?? [];
   const content = data?.content ?? DEFAULT_CONTENT;
+  const bundles = data?.bundles ?? [];
+
+  // Bundle pools (manakish + free sauces) + the "from ฿X" floor per size.
+  const manaPool = useMemo(() => getManakishPool(dishes), [dishes]);
+  const saucePoolList = useMemo(() => getSaucePool(dishes), [dishes]);
+  const bundleCards = useMemo(
+    () =>
+      manaPool.length > 0
+        ? bundles.map((b) => ({ ...b, from: bundleFloor(manaPool, b.manakishCount, b.discountPct) }))
+        : [],
+    [bundles, manaPool],
+  );
 
   // Build unique diet and allergen options from actual tags on dishes
   const dietOptions = useMemo(() => {
@@ -247,6 +266,22 @@ export default function App() {
                 <span className="shk-app__sec-count num">{cat.items.length}</span>
               </div>
 
+              {cat.name === "Manakish" && bundleCards.length > 0 && (
+                <div className="shk-app__bundles">
+                  {bundleCards.map((b) => (
+                    <BundleCard
+                      key={b.tierCode}
+                      label={b.label}
+                      manakishCount={b.manakishCount}
+                      sauceCount={b.sauceCount}
+                      discountPct={b.discountPct}
+                      from={b.from}
+                      onClick={() => setActiveBundle(b)}
+                    />
+                  ))}
+                </div>
+              )}
+
               {(() => {
                 const subs = subcategoriesOf(cat.items, cat.id);
                 return hasSubcategories(subs, cat.id) ? (
@@ -298,7 +333,23 @@ export default function App() {
         dish={selected}
         onClose={() => setSelected(null)}
         onShare={selected ? () => handleShare(selected) : undefined}
+        onAdd={
+          selected && !selected.comingSoon && selected.price != null
+            ? () => { cart.addDish(selected); setSelected(null); }
+            : undefined
+        }
       />
+
+      <BundleDialog
+        open={!!activeBundle}
+        bundle={activeBundle}
+        manakishPool={manaPool}
+        saucePool={saucePoolList}
+        onClose={() => setActiveBundle(null)}
+        onAdd={cart.addBundle}
+      />
+
+      <Cart />
     </div>
   );
 }
