@@ -56,7 +56,7 @@ async function fetchFromSupabase() {
 
     supabase
       .from("menu_modifiers")
-      .select("dish_id, group_name, group_sort, group_min_select, group_max_select, option_name, option_emoji, price_delta, is_default, sort_order"),
+      .select("dish_id, group_name, group_sort, group_min_select, group_max_select, option_name, option_emoji, price_delta, is_default, sort_order, calories, protein, carbs, fat"),
 
     // Manakish bundle tiers (the "Manakish set of N" sets). Discount escalates
     // with size; the constructor + cards price entirely from this.
@@ -90,6 +90,12 @@ async function fetchFromSupabase() {
       priceDelta: Number(r.price_delta) || 0,
       isDefault: !!r.is_default,
       sort: r.sort_order ?? 0,
+      // Per-portion nutrition (menu_modifiers, scaled by quantity_per_unit) for
+      // the live KBJU counter in the builder.
+      calories: r.calories != null ? Number(r.calories) : 0,
+      protein: r.protein != null ? Number(r.protein) : 0,
+      carbs: r.carbs != null ? Number(r.carbs) : 0,
+      fat: r.fat != null ? Number(r.fat) : 0,
     });
   }
   const modifiersFor = (dishId) => {

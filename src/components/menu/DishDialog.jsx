@@ -18,6 +18,11 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const [imgOk, setImgOk] = useState(true);
   useEffect(() => setImgOk(true), [dish?.image_url]);
 
+  // Nutrition of the currently selected add-ons (reported by the builder), added
+  // onto the base dish for a live KBJU counter. Reset when the dish changes.
+  const [addedNutri, setAddedNutri] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+  useEffect(() => setAddedNutri({ calories: 0, protein: 0, carbs: 0, fat: 0 }), [dish?.id]);
+
   if (!open || !dish) return null;
   const {
     name, description, price, priceFrom = null, currency = "฿", image, image_url,
@@ -30,6 +35,13 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   // Build-your-own dishes (a required modifier group) price "from ฿X": the base
   // plus the cheapest mandatory add-ons. The flat base alone isn't orderable.
   const buildYourOwn = priceFrom != null;
+
+  // Base dish nutrition + selected add-ons → live values for the donut/macros.
+  const round1 = (n) => Math.round(n * 10) / 10;
+  const liveCalories = calories != null ? calories + addedNutri.calories : (addedNutri.calories || null);
+  const liveProtein = round1((protein || 0) + addedNutri.protein);
+  const liveCarbs = round1((carbs || 0) + addedNutri.carbs);
+  const liveFat = round1((fat || 0) + addedNutri.fat);
 
   return (
     <div className="shk-dlg__scrim" onClick={onClose}>
@@ -105,6 +117,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
               basePrice={price ?? 0}
               currency={currency}
               groups={modifierGroups}
+              onNutritionChange={setAddedNutri}
             />
           )}
 
@@ -115,9 +128,9 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
           )}
 
           <div className="shk-dlg__nutri">
-            <CalorieDonut kcal={calories} protein={protein} carbs={carbs} fat={fat} size={104} thickness={11} />
+            <CalorieDonut kcal={liveCalories} protein={liveProtein} carbs={liveCarbs} fat={liveFat} size={104} thickness={11} />
             <div className="shk-dlg__nutri-bars">
-              <MacroBar protein={protein} carbs={carbs} fat={fat} />
+              <MacroBar protein={liveProtein} carbs={liveCarbs} fat={liveFat} />
             </div>
           </div>
 

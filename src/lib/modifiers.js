@@ -45,3 +45,27 @@ export function dishFloor(basePrice, groups = []) {
   if (basePrice == null || !hasRequiredGroup(groups)) return null;
   return Number(basePrice) + requiredAddOnFloor(groups);
 }
+
+/**
+ * Sum the per-portion nutrition of the currently selected options. `selected` is
+ * the Set of "${groupIndex}:${optionIndex}" keys used by the ModifierBuilder.
+ * Returns rounded {calories, protein, carbs, fat} to add onto the base dish.
+ */
+export function selectedNutrition(groups = [], selected = new Set()) {
+  const acc = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+  groups.forEach((g, gi) =>
+    g.options.forEach((o, oi) => {
+      if (!selected.has(`${gi}:${oi}`)) return;
+      acc.calories += Number(o.calories) || 0;
+      acc.protein += Number(o.protein) || 0;
+      acc.carbs += Number(o.carbs) || 0;
+      acc.fat += Number(o.fat) || 0;
+    })
+  );
+  return {
+    calories: Math.round(acc.calories),
+    protein: Math.round(acc.protein * 10) / 10,
+    carbs: Math.round(acc.carbs * 10) / 10,
+    fat: Math.round(acc.fat * 10) / 10,
+  };
+}
