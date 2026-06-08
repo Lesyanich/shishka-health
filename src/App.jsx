@@ -267,6 +267,12 @@ export default function App() {
                 <span className="shk-app__sec-count num">{cat.items.length}</span>
               </div>
 
+              {content.sectionIntros?.[cat.name] && (
+                <p className="shk-app__sec-intro">
+                  {content.sectionIntros[cat.name]}
+                </p>
+              )}
+
               {cat.name === "Manakish" && bundleCards.length > 0 && (
                 <div className="shk-app__bundles">
                   {bundleCards.map((b) => (
