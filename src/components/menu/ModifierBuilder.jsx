@@ -1,29 +1,20 @@
 import { useState, useMemo } from "react";
+import { requiredAddOnFloor } from "../../lib/modifiers.js";
 
 // Interactive "build your own" panel. Toggle options, see a live total.
 // Most options are free toggles, but a group can be REQUIRED (minSelect > 0):
-// the guest must keep at least N picks (e.g. "Pick Fruits" needs 2). Required
-// groups start pre-filled with their cheapest options so the live total matches
-// the "from ฿X" floor shown on the card, and they can't be emptied below min.
+// the guest must pick at least N (e.g. "Pick Fruits" needs 2). Nothing is
+// pre-selected — the guest builds from scratch. Until every required minimum is
+// met, the total shows the "from ฿X" floor (base + cheapest mandatory add-ons),
+// matching the card; once met, it shows the live total.
 export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }) {
   const initial = useMemo(() => {
     const s = new Set();
-    groups.forEach((g, gi) => {
+    groups.forEach((g, gi) =>
       g.options.forEach((o, oi) => {
         if (o.isDefault) s.add(`${gi}:${oi}`);
-      });
-      const min = g.minSelect ?? 0;
-      const chosen = g.options.filter((_, oi) => s.has(`${gi}:${oi}`)).length;
-      if (min > chosen) {
-        // Fill up to the minimum with the cheapest unpicked options.
-        g.options
-          .map((o, oi) => ({ oi, delta: Number(o.priceDelta) || 0 }))
-          .filter(({ oi }) => !s.has(`${gi}:${oi}`))
-          .sort((a, b) => a.delta - b.delta)
-          .slice(0, min - chosen)
-          .forEach(({ oi }) => s.add(`${gi}:${oi}`));
-      }
-    });
+      })
+    );
     return s;
   }, [groups]);
 
@@ -36,14 +27,7 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
     setSelected((prev) => {
       const key = `${gi}:${oi}`;
       const next = new Set(prev);
-      if (next.has(key)) {
-        // Don't let a required group drop below its minimum.
-        const min = groups[gi]?.minSelect ?? 0;
-        if (min > 0 && groupCount(prev, gi) <= min) return prev;
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
+      next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
 
@@ -59,6 +43,12 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
 
   const total = (basePrice || 0) + extra;
   const count = selected.size;
+
+  // Required minimums not yet satisfied → show the "from ฿X" floor instead of a
+  // not-yet-orderable live total.
+  const requiredMet = groups.every((g, gi) => groupCount(selected, gi) >= (g.minSelect ?? 0));
+  const floor = (basePrice || 0) + requiredAddOnFloor(groups);
+  const displayTotal = requiredMet ? total : floor;
 
   return (
     <div className="shk-build">
@@ -108,7 +98,10 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [] }
         <span className="shk-build__total-label">
           Total{count > 0 ? ` · ${count} add-on${count > 1 ? "s" : ""}` : ""}
         </span>
-        <span className="shk-build__total-val num">{currency}{total}</span>
+        <span className="shk-build__total-val num">
+          {!requiredMet && <span className="shk-build__from">from </span>}
+          {currency}{displayTotal}
+        </span>
       </div>
     </div>
   );
