@@ -5,7 +5,7 @@ export function MenuHeader({ filterCount = 0, onOpenFilters, wide = false }) {
   return (
     <header className={`shk-header ${wide ? "shk-header--wide" : "shk-header--mobile"}`}>
       <img
-        src="/assets/logo-full-color.png"
+        src="/assets/logo-full-white.png"
         alt="Shishka Healthy Kitchen"
         style={{ height: wide ? 80 : 66, width: "auto", display: "block" }}
       />
