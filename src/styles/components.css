@@ -304,7 +304,7 @@
 .shk-card--coming-soon:active { transform: none; }
 
 .shk-card__media { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--bg-surface); }
-.shk-card__img { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: multiply; transition: transform var(--dur-slow) var(--ease-out); }
+.shk-card__img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--dur-slow) var(--ease-out); }
 .shk-card:hover .shk-card__img { transform: scale(1.04); }
 .shk-card__media-scrim { position: absolute; inset: 0; background: none; pointer-events: none; }
 
@@ -374,7 +374,7 @@
   .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; }
 }
 .shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden; }
-.shk-dlg__img { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: multiply; }
+.shk-dlg__img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .shk-dlg__media-scrim { position: absolute; inset: 0; background: none; }
 .shk-dlg__ph {
   position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; justify-items: center;
@@ -793,3 +793,105 @@
 .shk-cart__total-row { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-size: var(--text-lg); color: var(--text-strong); font-feature-settings: var(--num-feature); }
 .shk-cart__note { font-size: var(--text-xs); color: var(--text-mute); }
 .shk-cart__clear { align-self: flex-start; background: none; border: none; cursor: pointer; color: var(--text-mute); font-size: var(--text-sm); padding: 0; text-decoration: underline; }
+
+/* ===========================================================================
+   MANAKEESH — poster layout (see components/menu/ManakishTiers.jsx)
+   Big "manakish" title + tagline, a lighter-green tier band, then 3 columns of
+   CLEAN cutout photos (no shadow/scrim) on green with the name beneath, and a
+   dietary footer with the logo. Matches the shop poster.
+   =========================================================================== */
+.shk-mana { color: var(--text-strong); }
+
+/* ---- Heading: big title + tagline to the right ------------------------ */
+.shk-mana__head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--space-4); padding: 0 0 var(--space-8);
+}
+.shk-mana__title {
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(2.6rem, 8vw, 5rem); line-height: 0.9; color: var(--white);
+  letter-spacing: var(--tracking-tight); text-transform: lowercase;
+}
+.shk-mana__tag {
+  margin: 0; max-width: 26ch; text-align: right;
+  font-size: clamp(var(--text-md), 1.4vw, var(--text-xl));
+  font-weight: var(--fw-semibold); color: var(--white); line-height: 1.18;
+}
+
+/* ---- Three columns: one per tier -------------------------------------- */
+.shk-mana__cols {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2.4vw, 40px);
+}
+.shk-mana__col { display: flex; flex-direction: column; }
+
+/* Tier band header — the three sit side by side and read as one band */
+.shk-mana__colhead {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--royal-green-soft);
+  padding: 12px clamp(12px, 1.4vw, 20px);
+  border-radius: var(--radius-md, 10px);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.shk-mana__price {
+  display: flex; flex-direction: column; line-height: 0.95; color: var(--white);
+  font-family: var(--font-mono); font-feature-settings: var(--num-feature);
+}
+.shk-mana__price b { font-size: clamp(1.6rem, 2.6vw, 2.4rem); font-weight: var(--fw-bold); }
+.shk-mana__price small { font-size: var(--text-xs); color: rgba(255, 255, 255, 0.75); font-weight: var(--fw-medium); }
+.shk-mana__tier-name {
+  font-family: var(--font-sans); font-weight: var(--fw-bold);
+  font-size: clamp(var(--text-md), 1.6vw, var(--text-xl)); color: var(--white);
+}
+
+/* ---- Items: clean cutouts, no card/shadow ----------------------------- */
+.shk-mana__list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(20px, 3vh, 40px);
+}
+.shk-mana__list > li { width: 100%; display: flex; justify-content: center; }
+.shk-mana__item {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  width: 100%; max-width: 180px;
+  background: none; border: none; padding: 0; cursor: pointer; color: inherit;
+  transition: transform 0.18s var(--ease-out);
+}
+.shk-mana__item:hover { transform: scale(1.05); }
+.shk-mana__item:active { transform: scale(1.0); }
+.shk-mana__item.is-soon { opacity: 0.5; }
+
+.shk-mana__disc { width: clamp(96px, 9vw, 150px); aspect-ratio: 1; display: grid; place-items: center; }
+.shk-mana__disc img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.shk-mana__disc-ph {
+  width: 88%; height: 88%; border-radius: 50%;
+  border: 1.5px dashed var(--border-strong); background: rgba(255, 255, 255, 0.04);
+}
+.shk-mana__item-name {
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-medium);
+  color: var(--white); text-align: center; line-height: 1.18;
+}
+
+/* ---- Dietary footer ---------------------------------------------------- */
+.shk-mana__foot {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: clamp(16px, 3vw, 48px); margin-top: clamp(32px, 5vh, 64px);
+  padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);
+}
+.shk-mana__foot-logo { height: clamp(40px, 4vw, 56px); width: auto; }
+.shk-mana__claims {
+  display: flex; flex-wrap: wrap; gap: clamp(14px, 2.5vw, 40px);
+  list-style: none; margin: 0; padding: 0;
+}
+.shk-mana__claims li {
+  font-family: var(--font-sans); font-weight: var(--fw-bold);
+  font-size: var(--text-sm); letter-spacing: 0.04em; text-transform: lowercase;
+  color: var(--white);
+}
+
+@media (max-width: 760px) {
+  .shk-mana__head { flex-direction: column; }
+  .shk-mana__tag { text-align: left; }
+  .shk-mana__cols { grid-template-columns: 1fr; gap: var(--space-6); }
+  .shk-mana__list { gap: var(--space-5); }
+}

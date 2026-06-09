@@ -4,6 +4,7 @@ import { MenuHeader } from "./components/menu/MenuHeader.jsx";
 import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
+import { ManakishTiers } from "./components/menu/ManakishTiers.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
 import { SiteFooter } from "./components/menu/SiteFooter.jsx";
@@ -262,37 +263,43 @@ export default function App() {
               ref={(el) => (sectionRefs.current[cat.id] = el)}
               className="shk-app__section"
             >
-              <div className="shk-app__sec-head">
-                <h2 className="shk-app__sec-title">{cat.name}</h2>
-                <span className="shk-app__sec-count num">{cat.items.length}</span>
-              </div>
-
-              {content.sectionIntros?.[cat.name] && (
-                <p className="shk-app__sec-intro">
-                  {content.sectionIntros[cat.name]}
-                </p>
-              )}
-
-              {(() => {
-                const subs = subcategoriesOf(cat.items, cat.id);
-                return hasSubcategories(subs, cat.id) ? (
-                  subs.map((sub) => (
-                    <div key={sub.id} className="shk-app__tier">
-                      <div className="shk-app__subhead">
-                        <h3 className="shk-app__sub-title">{sub.name}</h3>
-                        <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
-                      </div>
-                      <div className="shk-app__grid">
-                        {sub.items.map((dish) => renderDish(dish, cat.name))}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="shk-app__grid">
-                    {cat.items.map((dish) => renderDish(dish, cat.name))}
+              {cat.name === "Manakish" ? (
+                <ManakishTiers section={cat} onSelect={setSelected} />
+              ) : (
+                <>
+                  <div className="shk-app__sec-head">
+                    <h2 className="shk-app__sec-title">{cat.name}</h2>
+                    <span className="shk-app__sec-count num">{cat.items.length}</span>
                   </div>
-                );
-              })()}
+
+                  {content.sectionIntros?.[cat.name] && (
+                    <p className="shk-app__sec-intro">
+                      {content.sectionIntros[cat.name]}
+                    </p>
+                  )}
+
+                  {(() => {
+                    const subs = subcategoriesOf(cat.items, cat.id);
+                    return hasSubcategories(subs, cat.id) ? (
+                      subs.map((sub) => (
+                        <div key={sub.id} className="shk-app__tier">
+                          <div className="shk-app__subhead">
+                            <h3 className="shk-app__sub-title">{sub.name}</h3>
+                            <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
+                          </div>
+                          <div className="shk-app__grid">
+                            {sub.items.map((dish) => renderDish(dish, cat.name))}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="shk-app__grid">
+                        {cat.items.map((dish) => renderDish(dish, cat.name))}
+                      </div>
+                    );
+                  })()}
+                </>
+              )}
 
               {cat.name === "Manakish" && bundleCards.length > 0 && (
                 <div className="shk-app__tier shk-app__bundles-block">
