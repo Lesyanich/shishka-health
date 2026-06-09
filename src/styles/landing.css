@@ -43,54 +43,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(18px, 3vh, 32px);
   width: 100%;
   padding: clamp(24px, 5vh, 56px) 0;
-}
-
-.shk-landing__eyebrow {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: var(--text-sm, 14px);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-/* Offer slot — holds the monthly poster, or a placeholder until supplied */
-.shk-landing__offer {
-  width: min(560px, 90vw);
-}
-.shk-landing__offer-img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
-}
-.shk-landing__offer-ph {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  aspect-ratio: 16 / 7;
-  border: 1.5px dashed var(--royal-green-line);
-  border-radius: var(--radius-lg, 16px);
-  background: rgba(255, 255, 255, 0.04);
-}
-.shk-landing__offer-ph-title {
-  font-family: var(--font-sans);
-  font-weight: var(--fw-semibold, 600);
-  font-size: var(--text-lg, 20px);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92);
-}
-.shk-landing__offer-ph-sub {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm, 13px);
-  color: rgba(255, 255, 255, 0.55);
 }
 
 /* Enter button — solid warm-white pill */

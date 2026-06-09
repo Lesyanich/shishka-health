@@ -1,23 +1,16 @@
 import { useMenu } from "../../hooks/useMenu.js";
 
 /*
-  SHISHKA splash / landing page.
-
-  Shown before the menu site (see main.jsx gate). Matches the brand mockup:
-  royal-green canvas, centered white logo, a slot for the month's offer poster,
-  an "Enter the menu" button, the category icon row, and the full-bleed salad
-  bar along the bottom.
-
-  Monthly offer: drop a poster PNG into /public/assets and point OFFER_IMAGE at
-  it (e.g. "/assets/offer-june.png"). While it's null we show a placeholder.
+  SHISHKA home / landing page — the brand mockup as-is: royal-green canvas,
+  centered white logo, the category icon row, and the full-bleed salad bar
+  along the bottom, with a single "Enter the site" button in the open space.
+  (See main.jsx for the gate that reveals the menu site.)
 
   Category icons live in /public/assets/cat. Three of the nine categories in the
   mockup (mana keesh, super wrap, hot meals) don't have a dedicated icon in the
   repo yet — marked `placeholder` below and using the closest existing icon
   until the real ones are supplied.
 */
-
-const OFFER_IMAGE = null; // e.g. "/assets/offer-june.png"
 
 const CATEGORIES = [
   { label: "daily breakfast",      icon: "breakfast.png" },
@@ -47,31 +40,12 @@ export function Landing({ onEnter }) {
         </header>
 
         <div className="shk-landing__center">
-          <p className="shk-landing__eyebrow">This month at SHISHKA</p>
-
-          <div className="shk-landing__offer">
-            {OFFER_IMAGE ? (
-              <img
-                className="shk-landing__offer-img"
-                src={OFFER_IMAGE}
-                alt="This month's offer"
-              />
-            ) : (
-              <div className="shk-landing__offer-ph">
-                <span className="shk-landing__offer-ph-title">Monthly offer</span>
-                <span className="shk-landing__offer-ph-sub">
-                  Drop this month's offer poster here
-                </span>
-              </div>
-            )}
-          </div>
-
           <button
             type="button"
             className="shk-landing__enter"
             onClick={onEnter}
           >
-            Enter the menu
+            Enter the site
             <span className="shk-landing__enter-arrow" aria-hidden="true">→</span>
           </button>
         </div>
