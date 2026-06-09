@@ -106,7 +106,7 @@
 /* --- Salad bar (full-bleed, anchored to the bottom) -------------------- */
 .shk-landing__saladbar {
   width: 100%;
-  height: clamp(180px, 34vh, 360px);
+  height: clamp(240px, 50vh, 600px);
   flex: none;
 }
 .shk-landing__saladbar img {
