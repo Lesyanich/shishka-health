@@ -5,13 +5,13 @@ import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
 import { ManakishTiers } from "./components/menu/ManakishTiers.jsx";
+import { ManakishSets } from "./components/menu/ManakishSets.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
 import { SiteFooter } from "./components/menu/SiteFooter.jsx";
 import { DEFAULT_CONTENT } from "./lib/content.js";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
-import { BundleCard } from "./components/menu/BundleCard.jsx";
 import { BundleDialog } from "./components/menu/BundleDialog.jsx";
 import { Cart } from "./components/cart/Cart.jsx";
 import { useCart } from "./state/cart.jsx";
@@ -302,32 +302,12 @@ export default function App() {
               )}
 
               {cat.name === "Manakish" && bundleCards.length > 0 && (
-                <div className="shk-app__tier shk-app__bundles-block">
-                  <div className="shk-app__subhead shk-app__bundles-head">
-                    <h3 className="shk-app__sub-title">
-                      {content.bundles?.title ?? "Buy more, save more"}
-                    </h3>
-                    {content.bundles?.badge && (
-                      <span className="shk-app__bundles-badge">{content.bundles.badge}</span>
-                    )}
-                  </div>
-                  {content.bundles?.sub && (
-                    <p className="shk-app__bundles-sub">{content.bundles.sub}</p>
-                  )}
-                  <div className="shk-app__bundles">
-                    {bundleCards.map((b) => (
-                      <BundleCard
-                        key={b.tierCode}
-                        label={b.label}
-                        manakishCount={b.manakishCount}
-                        sauceCount={b.sauceCount}
-                        discountPct={b.discountPct}
-                        from={b.from}
-                        onClick={() => setActiveBundle(b)}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <ManakishSets
+                  bundles={bundleCards}
+                  pool={manaPool}
+                  sauces={saucePoolList}
+                  onSelect={setActiveBundle}
+                />
               )}
             </section>
 
