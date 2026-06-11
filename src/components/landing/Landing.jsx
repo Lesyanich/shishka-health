@@ -15,7 +15,10 @@ export function Landing({ onEnter }) {
   return (
     <div className="shk-landing">
       <div className="shk-landing__bg" aria-hidden="true">
-        <img src="/assets/hero-saladbar.jpg" alt="" />
+        <img
+          src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/main-salad-bar.webp?v=20260611"
+          alt=""
+        />
       </div>
       <div className="shk-landing__wash" aria-hidden="true" />
 
