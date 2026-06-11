@@ -3,6 +3,7 @@ import { useMenu } from "./hooks/useMenu.js";
 import { MenuHeader } from "./components/menu/MenuHeader.jsx";
 import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
+import { DishRows } from "./components/menu/DishRows.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
 import { ManakishTiers } from "./components/menu/ManakishTiers.jsx";
 import { ManakishSets } from "./components/menu/ManakishSets.jsx";
@@ -73,6 +74,9 @@ function priceHint(items) {
   const min = Math.min(...prices), max = Math.max(...prices);
   return min === max ? `฿${min}` : `฿${min}–${max}`;
 }
+// A subsection with zero photography renders as classic menu rows instead of
+// a grid of placeholder discs (photo coverage is still catching up).
+const photoless = (items) => items.every((d) => !d.image_url);
 
 function LoadingSkeleton() {
   return (
@@ -287,11 +291,17 @@ export default function App() {
                             <h3 className="shk-app__sub-title">{sub.name}</h3>
                             <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
                           </div>
-                          <div className="shk-app__grid">
-                            {sub.items.map((dish) => renderDish(dish, cat.name))}
-                          </div>
+                          {photoless(sub.items) ? (
+                            <DishRows items={sub.items} onSelect={setSelected} />
+                          ) : (
+                            <div className="shk-app__grid">
+                              {sub.items.map((dish) => renderDish(dish, cat.name))}
+                            </div>
+                          )}
                         </div>
                       ))
+                    ) : photoless(cat.items) ? (
+                      <DishRows items={cat.items} onSelect={setSelected} />
                     ) : (
                       <div className="shk-app__grid">
                         {cat.items.map((dish) => renderDish(dish, cat.name))}
