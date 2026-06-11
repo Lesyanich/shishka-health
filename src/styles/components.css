@@ -113,7 +113,7 @@
 .shk-donut { display: inline-grid; place-items: center; position: relative; }
 .shk-donut__svg { transform: rotate(-90deg); display: block; }
 .shk-donut__track { stroke: var(--surface-3); }
-.shk-donut__seg { transition: stroke-dashoffset var(--dur-slow) var(--ease-out); }
+.shk-donut__seg { transition: stroke-dasharray 0.7s var(--ease-out), stroke-dashoffset 0.7s var(--ease-out); }
 .shk-donut__center {
   position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
   gap: 1px;
@@ -287,11 +287,11 @@
   background: none; border: none; border-radius: 0; overflow: visible;
   cursor: pointer; text-align: center; box-shadow: none; padding: 0; width: 100%;
   gap: 12px; color: inherit; font-family: var(--font-body);
-  transition: transform var(--dur-base) var(--ease-out);
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
 }
 .shk-card:hover { transform: scale(1.05); }
-.shk-card:active { transform: scale(0.99); }
+.shk-card:active { transform: scale(0.97); }
 
 /* Coming soon / out of stock: visible but not orderable. */
 .shk-card--coming-soon { cursor: default; opacity: 0.55; }
@@ -834,10 +834,10 @@
   display: flex; flex-direction: column; align-items: center; gap: 12px;
   width: 100%; max-width: 180px;
   background: none; border: none; padding: 0; cursor: pointer; color: inherit;
-  transition: transform 0.18s var(--ease-out);
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .shk-mana__item:hover { transform: scale(1.05); }
-.shk-mana__item:active { transform: scale(1.0); }
+.shk-mana__item:active { transform: scale(0.97); }
 .shk-mana__item.is-soon { opacity: 0.5; }
 
 .shk-mana__disc { width: clamp(96px, 9vw, 150px); aspect-ratio: 1; display: grid; place-items: center; }
@@ -994,4 +994,31 @@
     gap: var(--space-5) var(--space-3);
   }
   .shk-mana__list > li { width: auto; }
+}
+
+/* ===========================================================================
+   MOTION POLISH — scroll-reveal stagger, dialog entrance, spring press.
+   All animation collapses under prefers-reduced-motion (base.css kill-switch).
+   =========================================================================== */
+
+/* Scroll-reveal: items rise in with a per-group stagger (useReveal.js).
+   One-shot animation; classes are removed on animationend so hover/press
+   transforms are never fought by animation fill. */
+.shk-reveal { opacity: 0; }
+.shk-reveal.is-in {
+  animation: shk-rise var(--dur-slow) var(--ease-out) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+@keyframes shk-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Dish/bundle dialog entrance: scrim fades, sheet rises from its trigger.
+   Exit stays instant (React unmounts on close). */
+.shk-dlg__scrim { animation: shk-fade var(--dur-base) var(--ease-out); }
+.shk-dlg { animation: shk-dlg-in 0.22s var(--ease-out); }
+@keyframes shk-fade { from { opacity: 0; } }
+@keyframes shk-dlg-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
 }
