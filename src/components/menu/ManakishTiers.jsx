@@ -31,6 +31,7 @@ function tiersOf(items) {
   for (const t of tiers) {
     const prices = t.items.map((d) => d.price).filter((p) => p != null);
     t.minPrice = prices.length ? Math.min(...prices) : null;
+    t.maxPrice = prices.length ? Math.max(...prices) : null;
   }
   return tiers;
 }
@@ -51,8 +52,8 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
             <div className="shk-mana__colhead">
               {t.minPrice != null && (
                 <span className="shk-mana__price">
-                  <b>{t.minPrice}</b>
-                  <small>thb</small>
+                  <b>฿{t.minPrice}</b>
+                  {t.maxPrice !== t.minPrice && <small>and up</small>}
                 </span>
               )}
               <span className="shk-mana__tier-name">{tierLabel(t.name)}</span>
@@ -75,6 +76,9 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
                       )}
                     </span>
                     <span className="shk-mana__item-name">{d.name}</span>
+                    {d.price != null && d.price !== t.minPrice && (
+                      <span className="shk-mana__item-price num">฿{d.price}</span>
+                    )}
                   </button>
                 </li>
               ))}
