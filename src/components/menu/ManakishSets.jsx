@@ -42,7 +42,10 @@ export function ManakishSets({ bundles, pool = [], sauces = [], onSelect, curren
                   <span className="shk-set__sauce-ph" aria-hidden="true" />
                 )}
               </span>
-              <span className="shk-set__pct">{b.discountPct}%</span>
+              <span className="shk-set__pct">
+                <small>save</small>
+                {b.discountPct}%
+              </span>
             </div>
 
             <div className="shk-set__grid">
@@ -59,6 +62,10 @@ export function ManakishSets({ bundles, pool = [], sauces = [], onSelect, curren
                 </span>
               ))}
             </div>
+
+            <span className="shk-set__cta">
+              build your set <span aria-hidden="true">→</span>
+            </span>
           </button>
         );
       })}
