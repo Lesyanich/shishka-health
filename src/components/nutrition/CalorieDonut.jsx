@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 export function CalorieDonut({
   kcal,
   protein = 0,
@@ -7,6 +9,14 @@ export function CalorieDonut({
   thickness = 12,
   className = "",
 }) {
+  // Segments draw in from zero on mount (the dialog mounts a fresh donut each
+  // open). Reduced motion collapses the transition globally (base.css).
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setDrawn(true), 60);
+    return () => clearTimeout(t);
+  }, []);
+
   const r = (size - thickness) / 2;
   const c = 2 * Math.PI * r;
 
@@ -47,7 +57,7 @@ export function CalorieDonut({
           strokeWidth={thickness}
         />
         {segs.map((s, i) => {
-          const len = Math.max(0, s.frac * c - gap);
+          const len = drawn ? Math.max(0, s.frac * c - gap) : 0;
           const dash = `${len} ${c - len}`;
           const dashoffset = -offsetAccum;
           offsetAccum += s.frac * c;

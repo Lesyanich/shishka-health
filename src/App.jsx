@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo, Fragment } from "react";
 import { useMenu } from "./hooks/useMenu.js";
+import { useReveal } from "./hooks/useReveal.js";
 import { MenuHeader } from "./components/menu/MenuHeader.jsx";
 import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
@@ -193,6 +194,10 @@ export default function App() {
   useEffect(() => {
     if (!active && byCat.length > 0) setActive(byCat[0].id);
   }, [byCat.length]);
+
+  // Stagger-reveal menu items as they scroll into view (re-arms when the
+  // rendered set changes — data load, filters).
+  useReveal([loading, byCat.map((c) => `${c.id}:${c.items.length}`).join()]);
 
   const toggle = (arr, set, id) =>
     set(arr.includes(id) ? arr.filter((x) => x !== id) : [...arr, id]);
