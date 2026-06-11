@@ -972,3 +972,26 @@
   font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-xs);
   color: var(--menu-price); font-feature-settings: var(--num-feature);
 }
+
+/* ---- Set card: "save N%" + explicit CTA affordance --------------------- */
+.shk-set__pct { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.shk-set__pct small {
+  font-family: var(--font-sans); font-size: var(--text-2xs); font-weight: var(--fw-semibold);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--menu-price);
+}
+.shk-set__cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: clamp(14px, 2vw, 20px);
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  color: var(--menu-price);
+}
+.shk-set:hover .shk-set__cta { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- Manakish poster on mobile: 2-up grid instead of one-per-screen ---- */
+@media (max-width: 760px) {
+  .shk-mana__list {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5) var(--space-3);
+  }
+  .shk-mana__list > li { width: auto; }
+}
