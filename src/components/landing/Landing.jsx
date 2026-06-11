@@ -20,13 +20,12 @@ export function Landing({ onEnter }) {
           alt=""
         />
       </div>
-      <div className="shk-landing__wash" aria-hidden="true" />
-
       <div className="shk-landing__content">
-        <p className="shk-landing__tagline">
-          Fresh, unprocessed, scientifically balanced
-          {" "}— real food, made daily.
-        </p>
+        <h1 className="shk-landing__tagline">
+          Seed oil &amp; gluten free
+          <br />
+          unprocessed real food, made daily.
+        </h1>
 
         <div className="shk-landing__brand">
           <img
