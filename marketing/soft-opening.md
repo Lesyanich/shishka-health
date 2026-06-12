@@ -4,7 +4,7 @@
 **date / time:** sunday 14 june · 9am – 6pm
 **location:** soi naya 2, rawai, phuket (next to tops daily)
 **offer:** 20% off for the first 50 guests
-**brand line:** from the soil to the soul · seed oil & gluten free · real food, made daily
+**brand line:** from the SOIL to the SOUL · seed oil & gluten free · potato & rice base, gluten-free
 
 render-ready graphics: `marketing/posts/` (png files) and `marketing/posts/index.html` (brand-font version — open in a browser, screenshot each frame). re-run `python3 marketing/posts/render.py` after editing the date/offer.
 brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf pro / albert sans.
@@ -17,12 +17,12 @@ brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf p
 |---|---|---|---|
 | 1 | `main-salad-bar.webp` (push-in, green wash) | **soft opening** | 0–2s |
 | 2 | `dish-manakeesh.png` | *seed oil & gluten free* | 2–4s |
-| 3 | `menu/manakish-zaatar.png` | *manakish* | 4–6s |
+| 3 | lamb / za'atar / pumpkin manakish | *manakish — potato & rice, gluten free* | 4–6s |
 | 4 | `cat/salad-bowl.png` | *fresh salads* | 6–8s |
-| 5 | `cat/fresh-juice.png` | *cold-pressed juice* | 8–10s |
-| 6 | `cat/nutrition-bowl.png` | *real food, made daily* | 10–12s |
-| 7 | `cat/healthy-desserts.png` | *from the soil to the soul* | 12–14s |
-| 8 | green + `logo-full-white.png` | **soft opening · sun 14 june · 9am–6pm · rawai, soi naya 2** | 14–18s |
+| 5 | smoothies | *smoothies, juices & coffee* | 8–10s |
+| 6 | `cat/nutrition-bowl.png` | *real food, fresh daily* | 10–12s |
+| 7 | `cat/healthy-desserts.png` | *from the SOIL to the SOUL* | 12–14s |
+| 8 | green + `logo-full-white.png` | **soft opening · sun 14 june · 9am–6pm · rawai, soi naya 2 (next to TOPS)** | 14–18s |
 | 9 | `dish-manakeesh-cut.png` | **20% off — first 50 guests 🎉** | 18–20s |
 
 **caption**
@@ -30,9 +30,9 @@ brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf p
 > seed oil & gluten free. unprocessed, real food, made fresh daily.
 > manakish · salads · mezze · cold-pressed juice · coffee.
 > 📅 sun 14 june · 9am–6pm
-> 📍 soi naya 2, rawai (next to tops daily)
+> 📍 soi naya 2, rawai (next to TOPS daily)
 > 🎁 20% off for our first 50 guests!
-> from the soil to the soul. come hungry 👇
+> from the SOIL to the SOUL. come hungry 👇
 
 **hashtags**
 `#shishkahealthykitchen #soiltosoul #rawaiphuket #phuketfood #phuketfoodie #phukethealthyfood #rawai #healthyeating #glutenfree #seedoilfree #manakish #cleaneating #eatcleanphuket #thailandfood #phuketcafe #softopening`
@@ -41,14 +41,14 @@ brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf p
 
 ## 📸 feed posts (4:5 — 1080×1350)
 
-**post a — announcement** · `hero-saladbar.jpg` + white logo · overlay **"soft opening · 14 june"**
-> we're open in rawai 🌿 sun 14 june, 9am–6pm. real, unprocessed, gluten-free & seed-oil-free food made daily. 🎁 20% off our first 50 guests. 📍soi naya 2 (next to tops daily). #shishkahealthykitchen #rawaiphuket #softopening
+**post a — announcement** · solid green + white logo · **"soft opening"**
+> we're open in rawai 🌿 sun 14 june, 9am–6pm. real, unprocessed, gluten-free & seed-oil-free food, fresh daily. 🎁 20% off our first 50 guests. 📍soi naya 2 (next to TOPS daily). #shishkahealthykitchen #rawaiphuket #softopening
 
-**post b — manakish carousel** · `manakish-zaatar` → `manakish-cheese-olive` → `manakish-beef` · overlay **"manakish, done right"**
-> sourdough base, clean ingredients, zero seed oils. za'atar 🌿 cheese & olive 🧀 or beef 🥩 — which is yours? soft opening 14 june in rawai. #manakish #glutenfree #phuketfood #phuketfoodie
+**post b — manakish carousel** · lamb → za'atar → pumpkin · overlay **"manakish, done right"**
+> potato & rice base, gluten free, zero seed oils. lamb 🐑 za'atar 🌿 or pumpkin 🎃 — which is yours? soft opening 14 june in rawai. #manakish #glutenfree #phuketfood #phuketfoodie
 
-**post c — brand story** · `cat/nutrition-bowl.png` · overlay **"from the soil to the soul"**
-> healthy should taste incredible. unprocessed, gluten-free, seed-oil free — food that loves you back. 🌿 soft opening sun 14 june, rawai phuket. #cleaneating #phukethealthyfood #soiltosoul #shishkahealthykitchen
+**post c — smoothies** · 3 smoothies on green · overlay **"from the SOIL to the SOUL"**
+> smoothies, juices & coffee — real, unprocessed, gluten-free. food that loves you back. 🌿 soft opening sun 14 june, rawai phuket. #cleaneating #phukethealthyfood #soiltosoul #shishkahealthykitchen
 
 ---
 
@@ -56,7 +56,7 @@ brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf p
 
 1. **countdown** — `main-salad-bar.webp` + ig countdown sticker → "soft opening · 14 june"
 2. **sneak peek** — `dish-manakeesh-cut.png` close-up → *made fresh, daily 🌿*
-3. **details** — green bg + white logo → "sun 14 june · 9am–6pm" + location sticker "📍soi naya 2, rawai (next to tops daily)"
+3. **details** — green bg + white logo → "sun 14 june · 9am–6pm" + location sticker "📍soi naya 2, rawai (next to TOPS daily)"
 4. **offer** — red bg → "20% off — first 50 guests 🎉" + "tap to find us" link sticker
 
 ---

@@ -1,4 +1,9 @@
 # Renders SHISHKA soft-opening posts (1080x1350). Re-run after editing details below.
+# Post B/C need menu photos from Supabase storage placed in marketing/posts/_img/ :
+#   manakish-zaatar.webp  manakish-lamb.webp  manakish-pumpkin.webp
+#   smoothie-1.webp smoothie-2.webp smoothie-3.webp
+# (download_assets.sh fetches them once the storage host is allowlisted)
+import os
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 W,H=1080,1350
@@ -6,9 +11,12 @@ GREEN=(58,74,28); GREEN9=(33,44,14); RED=(182,42,35); CREAM=(245,238,223); CREAM
 FB="/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 FR="/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
 def f(p,s): return ImageFont.truetype(p,s)
+HERE=os.path.dirname(os.path.abspath(__file__)); IMG=os.path.join(HERE,"_img")
+def asset(p): return os.path.join(HERE,"../../public/assets",p)
 
 # ----- editable details -----
-DATE="sun 14 june · 9am–6pm"; PLACE="soi naya 2, rawai · next to tops daily"; OFFER="20% off · first 50 guests"
+DATE="sun 14 june · 9am–6pm"; PLACE="soi naya 2, rawai · next to TOPS daily"; OFFER="20% off · first 50 guests"
+SOUL="from the SOIL to the SOUL"
 
 def ctext(d,y,t,font,fill,ww=W,ls=0):
     if ls:
@@ -17,60 +25,68 @@ def ctext(d,y,t,font,fill,ww=W,ls=0):
     else:
         w=d.textlength(t,font=font); d.text(((ww-w)/2,y),t,font=font,fill=fill)
 
-def fit_alpha(path,wmax,hmax):
+def fit(path,wmax,hmax):
     im=Image.open(path).convert("RGBA")
-    r=min(wmax/im.width,hmax/im.height); im=im.resize((int(im.width*r),int(im.height*r)),Image.LANCZOS)
-    return im
+    r=min(wmax/im.width,hmax/im.height); return im.resize((int(im.width*r),int(im.height*r)),Image.LANCZOS)
 
-# ================= POST A — announcement (photo) =================
-bg=ImageOps.fit(Image.open("public/assets/hero-saladbar.jpg").convert("RGB"),(W,H),Image.LANCZOS)
-wash=Image.new("RGBA",(W,H)); wd=ImageDraw.Draw(wash)
-for y in range(H):
-    t=y/H; a=int(150-60*(t/0.4)) if t<0.4 else int(150*(1-t)+228*t)
-    wd.line([(0,y),(W,y)],fill=(*GREEN9,max(70,min(232,a))))
-img=Image.alpha_composite(bg.convert("RGBA"),wash).convert("RGB"); d=ImageDraw.Draw(img)
-logo=fit_alpha("public/assets/logo-full-white.png",420,200); img.paste(logo,((W-logo.width)//2,96),logo)
-y=96+logo.height+44
-ctext(d,y,"seed oil & gluten free",f(FR,32),CREAM,ls=8); y+=78
-ctext(d,y,"soft",f(FB,152),CREAM); y+=150
-ctext(d,y,"opening",f(FB,152),CREAM); y+=170
+def circle(path,size):
+    im=Image.open(path).convert("RGB"); im=ImageOps.fit(im,(size,size),Image.LANCZOS)
+    mask=Image.new("L",(size,size),0); ImageDraw.Draw(mask).ellipse([0,0,size,size],fill=255)
+    out=Image.new("RGBA",(size,size),(0,0,0,0)); out.paste(im,(0,0),mask); return out
+
+# ================= POST A — announcement (solid green, no photo) =================
+img=Image.new("RGB",(W,H),GREEN); d=ImageDraw.Draw(img)
+logo=fit(asset("logo-full-white.png"),440,210); img.paste(logo,((W-logo.width)//2,120),logo)
+y=120+logo.height+56
+ctext(d,y,"seed oil & gluten free",f(FR,32),CREAM,ls=8); y+=86
+ctext(d,y,"soft",f(FB,158),CREAM); y+=156
+ctext(d,y,"opening",f(FB,158),CREAM); y+=176
 ctext(d,y,"rawai · phuket",f(FR,42),CREAM)
-yb=908; d.line([(W/2-60,yb),(W/2+60,yb)],fill=CREAM,width=4); yb+=46
-ctext(d,yb,DATE,f(FB,52),CREAM); yb+=82
-ctext(d,yb,"📍 "+PLACE,f(FR,32),CREAM); yb+=96
-pf=f(FB,44); pw=d.textlength(OFFER,font=pf); px=(W-pw)/2-46
-d.rounded_rectangle([px,yb,px+pw+92,yb+98],radius=49,fill=RED); d.text(((W-pw)/2,yb+24),OFFER,font=pf,fill=(255,255,255))
-ctext(d,H-100,"from the soil to the soul",f(FR,30),CREAM,ls=6)
-img.save("marketing/posts/post-a-announcement.png"); print("post-a")
+yb=890; d.line([(W/2-60,yb),(W/2+60,yb)],fill=CREAM,width=4); yb+=48
+ctext(d,yb,DATE,f(FB,54),CREAM); yb+=86
+ctext(d,yb,"📍 "+PLACE,f(FR,32),CREAM); yb+=100
+pf=f(FB,46); pw=d.textlength(OFFER,font=pf); px=(W-pw)/2-48
+d.rounded_rectangle([px,yb,px+pw+96,yb+102],radius=51,fill=RED); d.text(((W-pw)/2,yb+26),OFFER,font=pf,fill=(255,255,255))
+ctext(d,H-104,SOUL,f(FR,30),CREAM,ls=4)
+img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green)")
 
-# ================= POST B — manakish (cream, no white behind pics) =================
-b=Image.new("RGB",(W,H),CREAM50); d=ImageDraw.Draw(b)
-y=128
-ctext(d,y,"made daily",f(FR,32),GREEN,ls=8); y+=82
-ctext(d,y,"manakish,",f(FB,112),GREEN); y+=116
-ctext(d,y,"done right",f(FB,112),GREEN); y+=140
-ctext(d,y,"sourdough base · clean ingredients · zero seed oils",f(FR,32),MUTED); y+=130
-imgs=["menu/manakish-zaatar.png","menu/manakish-cheese-olive.png","menu/manakish-beef.png"]
-labels=["za'atar","cheese & olive","beef"]
-cell=300; gap=40; total=3*cell+2*gap; x0=(W-total)//2
-for i,(p,lab) in enumerate(zip(imgs,labels)):
-    pic=fit_alpha("public/assets/"+p,cell,cell)
-    cx=x0+i*(cell+gap)+(cell-pic.width)//2
-    b.paste(pic,(cx,y+(cell-pic.height)//2),pic)
-    lf=f(FB,32); lw=d.textlength(lab,font=lf); d.text((x0+i*(cell+gap)+(cell-lw)/2,y+cell+20),lab,font=lf,fill=GREEN)
-bh=150; d.rectangle([0,H-bh,W,H],fill=GREEN)
-d.text((64,H-bh+52),"soft opening · sun 14 june",font=f(FB,40),fill=CREAM)
-lg=fit_alpha("public/assets/logo-full-white.png",240,100); b.paste(lg,(W-lg.width-64,H-bh+(bh-lg.height)//2),lg)
-b.save("marketing/posts/post-b-manakish.png"); print("post-b")
+# ================= POST B — manakish (cream) =================
+trio=[("manakish-lamb.webp","lamb"),("manakish-zaatar.webp","za'atar"),("manakish-pumpkin.webp","pumpkin")]
+if all(os.path.exists(os.path.join(IMG,fn)) for fn,_ in trio):
+    b=Image.new("RGB",(W,H),CREAM50); d=ImageDraw.Draw(b)
+    y=150
+    ctext(d,y,"manakish,",f(FB,116),GREEN); y+=120
+    ctext(d,y,"done right",f(FB,116),GREEN); y+=146
+    ctext(d,y,"potato & rice base · gluten free · zero seed oils",f(FR,32),MUTED); y+=140
+    cell=300; gap=40; total=3*cell+2*gap; x0=(W-total)//2
+    for i,(fn,lab) in enumerate(trio):
+        pic=circle(os.path.join(IMG,fn),cell)
+        b.paste(pic,(x0+i*(cell+gap),y),pic)
+        lf=f(FB,32); lw=d.textlength(lab,font=lf); d.text((x0+i*(cell+gap)+(cell-lw)/2,y+cell+22),lab,font=lf,fill=GREEN)
+    bh=150; d.rectangle([0,H-bh,W,H],fill=GREEN)
+    d.text((64,H-bh+52),"soft opening · sun 14 june",font=f(FB,40),fill=CREAM)
+    lg=fit(asset("logo-full-white.png"),240,100); b.paste(lg,(W-lg.width-64,H-bh+(bh-lg.height)//2),lg)
+    b.save(os.path.join(HERE,"post-b-manakish.png")); print("post-b OK")
+else:
+    print("post-b SKIP - needs _img/manakish-{zaatar,lamb,pumpkin}.webp")
 
-# ================= POST C — brand story (green) =================
-c=Image.new("RGB",(W,H),GREEN); d=ImageDraw.Draw(c)
-lg=fit_alpha("public/assets/logo-full-white.png",240,100); c.paste(lg,((W-lg.width)//2,120),lg)
-bowl=fit_alpha("public/assets/cat/nutrition-bowl.png",470,470); c.paste(bowl,((W-bowl.width)//2,360),bowl)
-y=900
-ctext(d,y,"from the soil",f(FB,96),CREAM); y+=104
-ctext(d,y,"to the soul",f(FB,96),CREAM); y+=150
-ctext(d,y,"unprocessed, gluten-free, seed-oil-free —",f(FR,34),CREAM); y+=48
-ctext(d,y,"food that loves you back.",f(FR,34),CREAM); y+=120
-ctext(d,y,"soft opening · sun 14 june · rawai",f(FB,40),CREAM)
-c.save("marketing/posts/post-c-story.png"); print("post-c")
+# ================= POST C — smoothies (green) =================
+sm=["smoothie-1.webp","smoothie-2.webp","smoothie-3.webp"]
+if all(os.path.exists(os.path.join(IMG,fn)) for fn in sm):
+    c=Image.new("RGB",(W,H),GREEN); d=ImageDraw.Draw(c)
+    lg=fit(asset("logo-full-white.png"),240,100); c.paste(lg,((W-lg.width)//2,120),lg)
+    cell=330; gap=36; total=3*cell+2*gap; x0=(W-total)//2; ytop=360
+    for i,fn in enumerate(sm):
+        sz=cell if i==1 else cell-30
+        pic=circle(os.path.join(IMG,fn),sz)
+        off=0 if i==1 else 40
+        c.paste(pic,(x0+i*(cell+gap)+(0 if i==1 else 15),ytop+off),pic)
+    y=780
+    ctext(d,y,"from the SOIL",f(FB,96),CREAM); y+=104
+    ctext(d,y,"to the SOUL",f(FB,96),CREAM); y+=150
+    ctext(d,y,"smoothies, juices & coffee — real, unprocessed,",f(FR,34),CREAM); y+=48
+    ctext(d,y,"gluten-free. food that loves you back.",f(FR,34),CREAM); y+=120
+    ctext(d,y,"soft opening · sun 14 june · rawai",f(FB,40),CREAM)
+    c.save(os.path.join(HERE,"post-c-story.png")); print("post-c OK (smoothies)")
+else:
+    print("post-c SKIP - needs _img/smoothie-{1,2,3}.webp")
