@@ -60,49 +60,32 @@ d.rounded_rectangle([px,yb,px+pw+96,yb+102],radius=51,fill=RED); d.text(((W-pw)/
 ctext(d,H-104,SOUL,f(FR,30),CREAM,ls=4)
 img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green)")
 
-# ================= POST B — manakish (cream, BIG photos) =================
-trio=[("manakish-lamb.webp","lamb"),("manakish-zaatar.webp","za'atar"),("manakish-cheese.webp","chilli cheese")]
-if all(os.path.exists(os.path.join(IMG,fn)) for fn,_ in trio):
-    b=Image.new("RGB",(W,H),CREAM50); d=ImageDraw.Draw(b)
-    y=120
-    ctext(d,y,"manakish,",f(FB,108),GREEN); y+=112
-    ctext(d,y,"done right",f(FB,108),GREEN); y+=128
-    ctext(d,y,"potato & rice base · gluten free · zero seed oils",f(FR,30),MUTED); y+=92
-    # big slices, slightly overlapping, center one raised
-    cell=400; gap=-34; total=3*cell+2*gap; x0=(W-total)//2; ytop=y+30
-    order=[0,2,1]  # draw sides first so the centre overlaps on top
-    for i in order:
-        fn,lab=trio[i]; sz=cell if i==1 else cell-46
-        pic=circle(os.path.join(IMG,fn),sz)
-        cx=x0+i*(cell+gap)+(cell-sz)//2; cy=ytop+(0 if i==1 else 70)
-        b.paste(pic,(cx,cy),pic)
-    for i,(fn,lab) in enumerate(trio):
-        lf=f(FB,34); lw=d.textlength(lab,font=lf)
-        d.text((x0+i*(cell+gap)+(cell-lw)/2, ytop+cell+30),lab,font=lf,fill=GREEN)
-    bh=152; d.rectangle([0,H-bh,W,H],fill=GREEN)
-    d.text((64,H-bh+54),"soft opening · sun 14 june",font=f(FB,40),fill=CREAM)
-    lg=fit(asset("logo-full-white.png"),240,100); b.paste(lg,(W-lg.width-64,H-bh+(bh-lg.height)//2),lg)
-    b.save(os.path.join(HERE,"post-b-manakish.png")); print("post-b OK (big)")
-else:
-    print("post-b SKIP - needs _img/manakish-{lamb,zaatar,cheese}.webp")
+# ================= POST B — manakish (cream, BIG, local photos) =================
+# Local transparent product PNGs — paste straight on cream (no white, no black-corner crop).
+trio=[("menu/manakish-zaatar.png","za'atar"),("menu/manakish-beef.png","beef")]
+b=Image.new("RGB",(W,H),CREAM50); d=ImageDraw.Draw(b)
+y=150
+ctext(d,y,"manakish,",f(FB,116),GREEN); y+=120
+ctext(d,y,"done right",f(FB,116),GREEN); y+=146
+ctext(d,y,"potato & rice base · gluten free · zero seed oils",f(FR,32),MUTED); y+=150
+sz=440; gap=40; total=len(trio)*sz+(len(trio)-1)*gap; x0=(W-total)//2; ytop=y+10
+for i,(fn,lab) in enumerate(trio):
+    pic=fit(asset(fn),sz,sz); cx=x0+i*(sz+gap)+(sz-pic.width)//2
+    b.paste(pic,(cx,ytop+(sz-pic.height)//2),pic)
+    lf=f(FB,36); lw=d.textlength(lab,font=lf); d.text((x0+i*(sz+gap)+(sz-lw)/2,ytop+sz+24),lab,font=lf,fill=GREEN)
+bh=152; d.rectangle([0,H-bh,W,H],fill=GREEN)
+d.text((64,H-bh+54),"soft opening · sun 14 june",font=f(FB,40),fill=CREAM)
+lg=fit(asset("logo-full-white.png"),240,100); b.paste(lg,(W-lg.width-64,H-bh+(bh-lg.height)//2),lg)
+b.save(os.path.join(HERE,"post-b-manakish.png")); print("post-b OK (local: za'atar + beef)")
 
-# ================= POST C — smoothies (green) =================
-sm=["smoothie-1.webp","smoothie-2.webp","smoothie-3.webp"]
-if all(os.path.exists(os.path.join(IMG,fn)) for fn in sm):
-    c=Image.new("RGB",(W,H),GREEN); d=ImageDraw.Draw(c)
-    lg=fit(asset("logo-full-white.png"),240,100); c.paste(lg,((W-lg.width)//2,120),lg)
-    cell=330; gap=36; total=3*cell+2*gap; x0=(W-total)//2; ytop=360
-    for i,fn in enumerate(sm):
-        sz=cell if i==1 else cell-30
-        pic=circle(os.path.join(IMG,fn),sz)
-        off=0 if i==1 else 40
-        c.paste(pic,(x0+i*(cell+gap)+(0 if i==1 else 15),ytop+off),pic)
-    y=780
-    ctext(d,y,"from the SOIL",f(FB,96),CREAM); y+=104
-    ctext(d,y,"to the SOUL",f(FB,96),CREAM); y+=150
-    ctext(d,y,"smoothies, juices & coffee — real, unprocessed,",f(FR,34),CREAM); y+=48
-    ctext(d,y,"gluten-free. food that loves you back.",f(FR,34),CREAM); y+=120
-    ctext(d,y,"soft opening · sun 14 june · rawai",f(FB,40),CREAM)
-    c.save(os.path.join(HERE,"post-c-story.png")); print("post-c OK (smoothies)")
-else:
-    print("post-c SKIP - needs _img/smoothie-{1,2,3}.webp")
+# ================= POST C — drinks (green, local juice photo) =================
+c=Image.new("RGB",(W,H),GREEN); d=ImageDraw.Draw(c)
+lg=fit(asset("logo-full-white.png"),240,100); c.paste(lg,((W-lg.width)//2,120),lg)
+juice=fit(asset("cat/fresh-juice.png"),520,520); c.paste(juice,((W-juice.width)//2,300),juice)
+y=860
+ctext(d,y,"from the SOIL",f(FB,96),CREAM); y+=104
+ctext(d,y,"to the SOUL",f(FB,96),CREAM); y+=150
+ctext(d,y,"smoothies, juices & coffee — real, unprocessed,",f(FR,34),CREAM); y+=48
+ctext(d,y,"gluten-free. food that loves you back.",f(FR,34),CREAM); y+=120
+ctext(d,y,"soft opening · sun 14 june · rawai",f(FB,40),CREAM)
+c.save(os.path.join(HERE,"post-c-story.png")); print("post-c OK (local: fresh juice)")

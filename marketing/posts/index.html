@@ -44,8 +44,8 @@
   .cream-bg{background:var(--cream-50);color:var(--ink)}
   .row3{display:flex;gap:40px;width:100%;justify-content:center}
   .chip{flex:1;display:flex;flex-direction:column;align-items:center;gap:18px}
-  /* menu photos cropped to a clean circle (no added white) — big */
-  .chip img{width:360px;height:360px;object-fit:cover;border-radius:50%}
+  /* manakish sit straight on the cream, transparent, big — no white, no crop */
+  .chip img{width:420px;height:420px;object-fit:contain;background:transparent}
   .chip span{font-size:32px;font-weight:700;color:var(--green)}
   .smoothies{display:flex;gap:30px;justify-content:center;align-items:flex-end}
   .smoothies img{width:300px;height:300px;object-fit:cover;border-radius:50%}
@@ -103,9 +103,8 @@
         <div class="meta-sub" style="color:var(--muted);opacity:1;font-size:34px;max-width:820px">potato &amp; rice base · gluten free · zero seed oils</div>
         <div style="height:80px"></div>
         <div class="row3">
-          <div class="chip"><img src="_img/manakish-lamb.webp" alt="lamb"><span>lamb</span></div>
-          <div class="chip"><img src="_img/manakish-zaatar.webp" alt="za'atar"><span>za'atar</span></div>
-          <div class="chip"><img src="_img/manakish-cheese.webp" alt="chilli cheese"><span>chilli cheese</span></div>
+          <div class="chip"><img src="../../public/assets/menu/manakish-zaatar.png" alt="za'atar"><span>za'atar</span></div>
+          <div class="chip"><img src="../../public/assets/menu/manakish-beef.png" alt="beef"><span>beef</span></div>
         </div>
       </div>
       <div class="bottombar">
@@ -122,11 +121,7 @@
       <div class="pad">
         <img class="logo-sm" src="../../public/assets/logo-full-white.png" alt="shishka" />
         <div class="spacer"></div>
-        <div class="smoothies">
-          <img src="_img/smoothie-1.webp" alt="smoothie">
-          <img class="mid" src="_img/smoothie-2.webp" alt="smoothie">
-          <img src="_img/smoothie-3.webp" alt="smoothie">
-        </div>
+        <img class="bowl" src="../../public/assets/cat/fresh-juice.png" alt="" />
         <div style="height:56px"></div>
         <div class="quote">from the SOIL<br>to the SOUL</div>
         <div style="height:28px"></div>
