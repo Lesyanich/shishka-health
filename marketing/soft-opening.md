@@ -1,67 +1,67 @@
-# SHISHKA — Grand Opening Social Pack
+# shishka — soft opening social pack
 
-**Event:** Grand opening weekend
-**Date / time:** Sunday 14 June · 9am – 6pm
-**Location:** Soi Naya 2, Rawai, Phuket (next to TOPS Daily)
-**Offer:** 20% OFF for the first 50 guests
-**Brand line:** from the SOIL to the SOUL · seed oil & gluten free · real food, made daily
+**event:** soft opening
+**date / time:** sunday 14 june · 9am – 6pm
+**location:** soi naya 2, rawai, phuket (next to tops daily)
+**offer:** 20% off for the first 50 guests
+**brand line:** from the soil to the soul · seed oil & gluten free · real food, made daily
 
-Render-ready graphics live in `marketing/posts/index.html` (open in a browser, screenshot each frame).
-Brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. Font: SF Pro / Albert Sans.
+render-ready graphics: `marketing/posts/` (png files) and `marketing/posts/index.html` (brand-font version — open in a browser, screenshot each frame). re-run `python3 marketing/posts/render.py` after editing the date/offer.
+brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf pro / albert sans.
 
 ---
 
-## 🎬 Reel (9:16, ~20s — fresh & energetic, fast cuts on the beat)
+## 🎬 reel (9:16, ~20s — fresh & energetic, fast cuts on the beat)
 
-| # | Photo (`public/assets/`) | On-screen text | Time |
+| # | photo (`public/assets/`) | on-screen text | time |
 |---|---|---|---|
-| 1 | `main-salad-bar.webp` (push-in, green wash) | **GRAND OPENING** | 0–2s |
+| 1 | `main-salad-bar.webp` (push-in, green wash) | **soft opening** | 0–2s |
 | 2 | `dish-manakeesh.png` | *seed oil & gluten free* | 2–4s |
 | 3 | `menu/manakish-zaatar.png` | *manakish* | 4–6s |
 | 4 | `cat/salad-bowl.png` | *fresh salads* | 6–8s |
 | 5 | `cat/fresh-juice.png` | *cold-pressed juice* | 8–10s |
 | 6 | `cat/nutrition-bowl.png` | *real food, made daily* | 10–12s |
-| 7 | `cat/healthy-desserts.png` | *from the SOIL to the SOUL* | 12–14s |
-| 8 | green + `logo-full-white.png` | **GRAND OPENING · SUN 14 JUNE · 9AM–6PM · Rawai, Soi Naya 2** | 14–18s |
-| 9 | `dish-manakeesh-cut.png` | **20% OFF — first 50 guests 🎉** | 18–20s |
+| 7 | `cat/healthy-desserts.png` | *from the soil to the soul* | 12–14s |
+| 8 | green + `logo-full-white.png` | **soft opening · sun 14 june · 9am–6pm · rawai, soi naya 2** | 14–18s |
+| 9 | `dish-manakeesh-cut.png` | **20% off — first 50 guests 🎉** | 18–20s |
 
-**Caption**
-> 🌿 Grand opening weekend! SHISHKA Healthy Kitchen — Rawai, Phuket.
-> Seed oil & gluten free. Unprocessed, real food, made fresh daily.
-> Manakish · salads · mezze · cold-pressed juice · coffee.
-> 📅 Sun 14 June · 9am–6pm
-> 📍 Soi Naya 2, Rawai (next to TOPS Daily)
-> 🎁 20% OFF for our first 50 guests!
-> From the soil to the soul. Come hungry 👇
+**caption**
+> 🌿 we're open! shishka healthy kitchen — rawai, phuket.
+> seed oil & gluten free. unprocessed, real food, made fresh daily.
+> manakish · salads · mezze · cold-pressed juice · coffee.
+> 📅 sun 14 june · 9am–6pm
+> 📍 soi naya 2, rawai (next to tops daily)
+> 🎁 20% off for our first 50 guests!
+> from the soil to the soul. come hungry 👇
 
-**Hashtags**
-`#ShishkaHealthyKitchen #SoilToSoul #RawaiPhuket #PhuketFood #PhuketFoodie #PhuketHealthyFood #Rawai #HealthyEating #GlutenFree #SeedOilFree #Manakish #CleanEating #EatCleanPhuket #ThailandFood #PhuketCafe #GrandOpening`
-
----
-
-## 📸 Feed posts (4:5 — 1080×1350)
-
-**Post A — Announcement** · `hero-saladbar.jpg` + white logo · overlay **"GRAND OPENING · 14 JUNE"**
-> We're celebrating our grand opening in Rawai 🌿 Sun 14 June, 9am–6pm. Real, unprocessed, gluten-free & seed-oil-free food made daily. 🎁 20% off our first 50 guests. 📍Soi Naya 2 (next to TOPS Daily). #ShishkaHealthyKitchen #RawaiPhuket #GrandOpening
-
-**Post B — Manakish carousel** · `manakish-zaatar` → `manakish-cheese-olive` → `manakish-beef` · overlay **"MANAKISH, DONE RIGHT"**
-> Sourdough base, clean ingredients, zero seed oils. Za'atar 🌿 cheese & olive 🧀 or beef 🥩 — which is yours? Opening 14 June in Rawai. #Manakish #GlutenFree #PhuketFood #PhuketFoodie
-
-**Post C — Brand story** · `cat/nutrition-bowl.png` · overlay **"FROM THE SOIL TO THE SOUL"**
-> Healthy should taste incredible. Unprocessed, gluten-free, seed-oil free — food that loves you back. 🌿 Grand opening Sun 14 June, Rawai Phuket. #CleanEating #PhuketHealthyFood #SoilToSoul #ShishkaHealthyKitchen
+**hashtags**
+`#shishkahealthykitchen #soiltosoul #rawaiphuket #phuketfood #phuketfoodie #phukethealthyfood #rawai #healthyeating #glutenfree #seedoilfree #manakish #cleaneating #eatcleanphuket #thailandfood #phuketcafe #softopening`
 
 ---
 
-## 📲 Story frames (9:16)
+## 📸 feed posts (4:5 — 1080×1350)
 
-1. **Countdown** — `main-salad-bar.webp` + IG countdown sticker → "GRAND OPENING · 14 JUNE"
-2. **Sneak peek** — `dish-manakeesh-cut.png` close-up → *made fresh, daily 🌿*
-3. **Details** — green bg + white logo → "SUN 14 JUNE · 9AM–6PM" + location sticker "📍Soi Naya 2, Rawai (next to TOPS Daily)"
-4. **Offer** — red bg → "20% OFF — FIRST 50 GUESTS 🎉" + "Tap to find us" link sticker
+**post a — announcement** · `hero-saladbar.jpg` + white logo · overlay **"soft opening · 14 june"**
+> we're open in rawai 🌿 sun 14 june, 9am–6pm. real, unprocessed, gluten-free & seed-oil-free food made daily. 🎁 20% off our first 50 guests. 📍soi naya 2 (next to tops daily). #shishkahealthykitchen #rawaiphuket #softopening
+
+**post b — manakish carousel** · `manakish-zaatar` → `manakish-cheese-olive` → `manakish-beef` · overlay **"manakish, done right"**
+> sourdough base, clean ingredients, zero seed oils. za'atar 🌿 cheese & olive 🧀 or beef 🥩 — which is yours? soft opening 14 june in rawai. #manakish #glutenfree #phuketfood #phuketfoodie
+
+**post c — brand story** · `cat/nutrition-bowl.png` · overlay **"from the soil to the soul"**
+> healthy should taste incredible. unprocessed, gluten-free, seed-oil free — food that loves you back. 🌿 soft opening sun 14 june, rawai phuket. #cleaneating #phukethealthyfood #soiltosoul #shishkahealthykitchen
 
 ---
 
-## ▶️ When Higgsfield credits are topped up
-- Generate an original, copyright-free music track for the Reel (≈122 BPM, upbeat tropical/Mediterranean).
-- Auto-crop every dish photo to clean 9:16 and 4:5 frames (reframe / upscale).
-- Optionally turn stills into short motion clips for the Reel.
+## 📲 story frames (9:16)
+
+1. **countdown** — `main-salad-bar.webp` + ig countdown sticker → "soft opening · 14 june"
+2. **sneak peek** — `dish-manakeesh-cut.png` close-up → *made fresh, daily 🌿*
+3. **details** — green bg + white logo → "sun 14 june · 9am–6pm" + location sticker "📍soi naya 2, rawai (next to tops daily)"
+4. **offer** — red bg → "20% off — first 50 guests 🎉" + "tap to find us" link sticker
+
+---
+
+## ▶️ when higgsfield credits are topped up
+- generate an original, copyright-free music track for the reel (≈122 bpm, upbeat tropical/mediterranean).
+- auto-crop every dish photo to clean 9:16 and 4:5 frames (reframe / upscale).
+- optionally turn stills into short motion clips for the reel.
