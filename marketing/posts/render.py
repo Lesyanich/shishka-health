@@ -5,8 +5,6 @@
 # (download_assets.sh fetches them once the storage host is allowlisted)
 import os, sys
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import fruit
 
 W,H=1080,1350
 GREEN=(58,74,28); GREEN9=(33,44,14); RED=(182,42,35); CREAM=(245,238,223); CREAM50=(251,248,240); INK=(27,30,20); MUTED=(90,94,80)
@@ -60,14 +58,7 @@ ctext(d,yb,"📍 "+PLACE,f(FR,32),CREAM); yb+=100
 pf=f(FB,46); pw=d.textlength(OFFER,font=pf); px=(W-pw)/2-48
 d.rounded_rectangle([px,yb,px+pw+96,yb+102],radius=51,fill=RED); d.text(((W-pw)/2,yb+26),OFFER,font=pf,fill=(255,255,255))
 ctext(d,H-104,SOUL,f(FR,30),CREAM,ls=4)
-# a few small, settled cut-fruit accents tucked into the corners
-F=fruit.make(180)
-scatter(img,[
-    (F["lime"],    44,   44, 150, -6, 0.85),
-    (F["orange"], 1042, 1306, 160,  6, 0.85),
-    (F["lemon"],    40, 1300, 138, -4, 0.80),
-])
-img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green + fruit)")
+img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green)")
 
 # ================= POST B — manakish (cream, BIG photos) =================
 trio=[("manakish-lamb.webp","lamb"),("manakish-zaatar.webp","za'atar"),("manakish-cheese.webp","chilli cheese")]
