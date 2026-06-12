@@ -3,8 +3,10 @@
 #   manakish-zaatar.webp  manakish-lamb.webp  manakish-pumpkin.webp
 #   smoothie-1.webp smoothie-2.webp smoothie-3.webp
 # (download_assets.sh fetches them once the storage host is allowlisted)
-import os
+import os, sys
 from PIL import Image, ImageDraw, ImageFont, ImageOps
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fruit
 
 W,H=1080,1350
 GREEN=(58,74,28); GREEN9=(33,44,14); RED=(182,42,35); CREAM=(245,238,223); CREAM50=(251,248,240); INK=(27,30,20); MUTED=(90,94,80)
@@ -34,6 +36,13 @@ def circle(path,size):
     mask=Image.new("L",(size,size),0); ImageDraw.Draw(mask).ellipse([0,0,size,size],fill=255)
     out=Image.new("RGBA",(size,size),(0,0,0,0)); out.paste(im,(0,0),mask); return out
 
+def scatter(base, items):
+    """items: list of (slice_img, cx, cy, size, rotation) — little fruit accents peeking from edges."""
+    for sl,cx,cy,sz,rot in items:
+        s=sl.resize((sz,sz),Image.LANCZOS)
+        if rot: s=s.rotate(rot,expand=True,resample=Image.BICUBIC)
+        base.paste(s,(int(cx-s.width/2),int(cy-s.height/2)),s)
+
 # ================= POST A — announcement (solid green, no photo) =================
 img=Image.new("RGB",(W,H),GREEN); d=ImageDraw.Draw(img)
 logo=fit(asset("logo-full-white.png"),440,210); img.paste(logo,((W-logo.width)//2,120),logo)
@@ -48,7 +57,17 @@ ctext(d,yb,"📍 "+PLACE,f(FR,32),CREAM); yb+=100
 pf=f(FB,46); pw=d.textlength(OFFER,font=pf); px=(W-pw)/2-48
 d.rounded_rectangle([px,yb,px+pw+96,yb+102],radius=51,fill=RED); d.text(((W-pw)/2,yb+26),OFFER,font=pf,fill=(255,255,255))
 ctext(d,H-104,SOUL,f(FR,30),CREAM,ls=4)
-img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green)")
+# little cut-fruit accents peeking from the edges
+F=fruit.make(260)
+scatter(img,[
+    (F["lime"],       60,  64, 250, -12),
+    (F["orange"],   1028, 150, 270,  10),
+    (F["watermelon"], 26, 560, 210, -18),
+    (F["lemon"],    1060, 600, 220,  16),
+    (F["kiwi"],       78,1286, 240,  14),
+    (F["blood"],    1018,1296, 230, -10),
+])
+img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green + fruit)")
 
 # ================= POST B — manakish (cream) =================
 trio=[("manakish-lamb.webp","lamb"),("manakish-zaatar.webp","za'atar"),("manakish-pumpkin.webp","pumpkin")]
