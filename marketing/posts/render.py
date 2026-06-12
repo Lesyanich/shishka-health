@@ -69,25 +69,31 @@ scatter(img,[
 ])
 img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green + fruit)")
 
-# ================= POST B — manakish (cream) =================
-trio=[("manakish-lamb.webp","lamb"),("manakish-zaatar.webp","za'atar"),("manakish-pumpkin.webp","pumpkin")]
+# ================= POST B — manakish (cream, BIG photos) =================
+trio=[("manakish-lamb.webp","lamb"),("manakish-zaatar.webp","za'atar"),("manakish-cheese.webp","chilli cheese")]
 if all(os.path.exists(os.path.join(IMG,fn)) for fn,_ in trio):
     b=Image.new("RGB",(W,H),CREAM50); d=ImageDraw.Draw(b)
-    y=150
-    ctext(d,y,"manakish,",f(FB,116),GREEN); y+=120
-    ctext(d,y,"done right",f(FB,116),GREEN); y+=146
-    ctext(d,y,"potato & rice base · gluten free · zero seed oils",f(FR,32),MUTED); y+=140
-    cell=300; gap=40; total=3*cell+2*gap; x0=(W-total)//2
+    y=120
+    ctext(d,y,"manakish,",f(FB,108),GREEN); y+=112
+    ctext(d,y,"done right",f(FB,108),GREEN); y+=128
+    ctext(d,y,"potato & rice base · gluten free · zero seed oils",f(FR,30),MUTED); y+=92
+    # big slices, slightly overlapping, center one raised
+    cell=400; gap=-34; total=3*cell+2*gap; x0=(W-total)//2; ytop=y+30
+    order=[0,2,1]  # draw sides first so the centre overlaps on top
+    for i in order:
+        fn,lab=trio[i]; sz=cell if i==1 else cell-46
+        pic=circle(os.path.join(IMG,fn),sz)
+        cx=x0+i*(cell+gap)+(cell-sz)//2; cy=ytop+(0 if i==1 else 70)
+        b.paste(pic,(cx,cy),pic)
     for i,(fn,lab) in enumerate(trio):
-        pic=circle(os.path.join(IMG,fn),cell)
-        b.paste(pic,(x0+i*(cell+gap),y),pic)
-        lf=f(FB,32); lw=d.textlength(lab,font=lf); d.text((x0+i*(cell+gap)+(cell-lw)/2,y+cell+22),lab,font=lf,fill=GREEN)
-    bh=150; d.rectangle([0,H-bh,W,H],fill=GREEN)
-    d.text((64,H-bh+52),"soft opening · sun 14 june",font=f(FB,40),fill=CREAM)
+        lf=f(FB,34); lw=d.textlength(lab,font=lf)
+        d.text((x0+i*(cell+gap)+(cell-lw)/2, ytop+cell+30),lab,font=lf,fill=GREEN)
+    bh=152; d.rectangle([0,H-bh,W,H],fill=GREEN)
+    d.text((64,H-bh+54),"soft opening · sun 14 june",font=f(FB,40),fill=CREAM)
     lg=fit(asset("logo-full-white.png"),240,100); b.paste(lg,(W-lg.width-64,H-bh+(bh-lg.height)//2),lg)
-    b.save(os.path.join(HERE,"post-b-manakish.png")); print("post-b OK")
+    b.save(os.path.join(HERE,"post-b-manakish.png")); print("post-b OK (big)")
 else:
-    print("post-b SKIP - needs _img/manakish-{zaatar,lamb,pumpkin}.webp")
+    print("post-b SKIP - needs _img/manakish-{lamb,zaatar,cheese}.webp")
 
 # ================= POST C — smoothies (green) =================
 sm=["smoothie-1.webp","smoothie-2.webp","smoothie-3.webp"]

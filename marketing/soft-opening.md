@@ -17,7 +17,7 @@ brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf p
 |---|---|---|---|
 | 1 | `main-salad-bar.webp` (push-in, green wash) | **soft opening** | 0–2s |
 | 2 | `dish-manakeesh.png` | *seed oil & gluten free* | 2–4s |
-| 3 | lamb / za'atar / pumpkin manakish | *manakish — potato & rice, gluten free* | 4–6s |
+| 3 | lamb / za'atar / chilli cheese manakish | *manakish — potato & rice, gluten free* | 4–6s |
 | 4 | `cat/salad-bowl.png` | *fresh salads* | 6–8s |
 | 5 | smoothies | *smoothies, juices & coffee* | 8–10s |
 | 6 | `cat/nutrition-bowl.png` | *real food, fresh daily* | 10–12s |
@@ -44,8 +44,8 @@ brand tokens: green `#3A4A1C`, energy red `#B62A23`, cream `#F5EEDF`. font: sf p
 **post a — announcement** · solid green + white logo · **"soft opening"**
 > we're open in rawai 🌿 sun 14 june, 9am–6pm. real, unprocessed, gluten-free & seed-oil-free food, fresh daily. 🎁 20% off our first 50 guests. 📍soi naya 2 (next to TOPS daily). #shishkahealthykitchen #rawaiphuket #softopening
 
-**post b — manakish carousel** · lamb → za'atar → pumpkin · overlay **"manakish, done right"**
-> potato & rice base, gluten free, zero seed oils. lamb 🐑 za'atar 🌿 or pumpkin 🎃 — which is yours? soft opening 14 june in rawai. #manakish #glutenfree #phuketfood #phuketfoodie
+**post b — manakish carousel** · lamb → za'atar → chilli cheese (big photos) · overlay **"manakish, done right"**
+> potato & rice base, gluten free, zero seed oils. lamb 🐑 za'atar 🌿 or chilli cheese 🌶️🧀 — which is yours? soft opening 14 june in rawai. #manakish #glutenfree #phuketfood #phuketfoodie
 
 **post c — smoothies** · 3 smoothies on green · overlay **"from the SOIL to the SOUL"**
 > smoothies, juices & coffee — real, unprocessed, gluten-free. food that loves you back. 🌿 soft opening sun 14 june, rawai phuket. #cleaneating #phukethealthyfood #soiltosoul #shishkahealthykitchen

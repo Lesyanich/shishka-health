@@ -7,9 +7,9 @@ cd "$(dirname "$0")"; mkdir -p _img
 B="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos"
 dl(){ curl -fsS -o "_img/$1" "$2" && echo "got $1"; }
 
-dl manakish-zaatar.webp  "$B/40024674-0be3-4e0e-ba0c-f44547b2ad54/menu-1XfRn_22MClnd3CfFsJWGShw-OYndHnzJ.webp"
-dl manakish-lamb.webp    "$B/51891d3c-8596-4e21-b07a-c82505d356de/menu-1jBkCBYQd0Jrh7bxKwpKQHOr_66ZeY3bl.webp"
-dl manakish-pumpkin.webp "$B/ef73e54e-28c4-480c-8908-d8f8194a0d70/menu-1MZy-iTkFLKIRLbetg8WKWt0nZ9m5uL4e.webp"
+dl manakish-zaatar.webp "$B/40024674-0be3-4e0e-ba0c-f44547b2ad54/menu-1XfRn_22MClnd3CfFsJWGShw-OYndHnzJ.webp"
+dl manakish-lamb.webp   "$B/51891d3c-8596-4e21-b07a-c82505d356de/menu-1jBkCBYQd0Jrh7bxKwpKQHOr_66ZeY3bl.webp"
+dl manakish-cheese.webp "$B/110b6ab6-2904-468e-8ea5-64f356e1ed43/menu-1kR1vmwr8u2-417Jid0g59UbCi8FAL3P6.webp"  # chilli & cheese
 # smoothies (colourful trio)
 dl smoothie-1.webp "$B/b42dc655-60bc-434e-a82a-b9c09a7d589a/menu-1fjRbQ2UZXwe1pVAyOvOyO-wTfBdAbJaG.webp"  # mango strawberry
 dl smoothie-2.webp "$B/8055f4d5-33df-46f6-8b3e-833d6c9a4c2d/menu-1Kzq6rifdrGyEILpjpyHsJFl0bljeD-4I.webp"  # mixed berry
