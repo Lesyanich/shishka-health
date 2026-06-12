@@ -37,10 +37,13 @@ def circle(path,size):
     out=Image.new("RGBA",(size,size),(0,0,0,0)); out.paste(im,(0,0),mask); return out
 
 def scatter(base, items):
-    """items: list of (slice_img, cx, cy, size, rotation) — little fruit accents peeking from edges."""
-    for sl,cx,cy,sz,rot in items:
+    """items: list of (slice_img, cx, cy, size, rotation, opacity) — subtle fruit accents."""
+    for it in items:
+        sl,cx,cy,sz,rot = it[:5]; op = it[5] if len(it)>5 else 1.0
         s=sl.resize((sz,sz),Image.LANCZOS)
         if rot: s=s.rotate(rot,expand=True,resample=Image.BICUBIC)
+        if op<1.0:
+            a=s.getchannel("A").point(lambda v:int(v*op)); s.putalpha(a)
         base.paste(s,(int(cx-s.width/2),int(cy-s.height/2)),s)
 
 # ================= POST A — announcement (solid green, no photo) =================
@@ -57,15 +60,12 @@ ctext(d,yb,"📍 "+PLACE,f(FR,32),CREAM); yb+=100
 pf=f(FB,46); pw=d.textlength(OFFER,font=pf); px=(W-pw)/2-48
 d.rounded_rectangle([px,yb,px+pw+96,yb+102],radius=51,fill=RED); d.text(((W-pw)/2,yb+26),OFFER,font=pf,fill=(255,255,255))
 ctext(d,H-104,SOUL,f(FR,30),CREAM,ls=4)
-# little cut-fruit accents peeking from the edges
-F=fruit.make(260)
+# a few small, settled cut-fruit accents tucked into the corners
+F=fruit.make(180)
 scatter(img,[
-    (F["lime"],       60,  64, 250, -12),
-    (F["orange"],   1028, 150, 270,  10),
-    (F["watermelon"], 26, 560, 210, -18),
-    (F["lemon"],    1060, 600, 220,  16),
-    (F["kiwi"],       78,1286, 240,  14),
-    (F["blood"],    1018,1296, 230, -10),
+    (F["lime"],    44,   44, 150, -6, 0.85),
+    (F["orange"], 1042, 1306, 160,  6, 0.85),
+    (F["lemon"],    40, 1300, 138, -4, 0.80),
 ])
 img.save(os.path.join(HERE,"post-a-announcement.png")); print("post-a OK (green + fruit)")
 
