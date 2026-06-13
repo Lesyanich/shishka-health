@@ -55,17 +55,30 @@
   color: var(--honey-300, #f0ce83);
 }
 
-.shk-landing__product {
+.shk-landing__drinks {
   display: flex;
+  align-items: flex-end;
   justify-content: center;
+  gap: clamp(4px, 1.5vw, 28px);
 }
 .shk-landing__drink {
-  height: clamp(260px, 52vh, 560px);
   width: auto;
-  max-width: 86vw;
   object-fit: contain;
   display: block;
   filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.45));
+}
+.shk-landing__drink--hero {
+  height: clamp(300px, 60vh, 620px);
+  max-width: 60vw;
+  position: relative;
+  z-index: 2;
+}
+.shk-landing__drink--side {
+  height: clamp(190px, 38vh, 400px);
+  max-width: 30vw;
+  margin-bottom: clamp(6px, 2vh, 28px);
+  opacity: 0.97;
+  z-index: 1;
 }
 
 .shk-landing__tagline {
@@ -78,6 +91,7 @@
   color: var(--cream-50, #fff);
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
 }
+.shk-landing__tagline span { color: var(--honey-300, #f0ce83); }
 
 /* Brand block — logo stacked above the CTA, pinned to the bottom-right. */
 .shk-landing__brand {
@@ -122,12 +136,19 @@
 .shk-landing__enter:active { transform: translateY(0); }
 .shk-landing__enter-arrow { font-size: 1.1em; line-height: 1; }
 
-/* --- Mobile: keep the drink centred, give the corner brand room ---------- */
+/* --- Mobile: keep the drinks centred, give the corner brand room --------- */
 @media (max-width: 720px) {
   .shk-landing__content {
     align-items: flex-start;
-    padding-top: clamp(40px, 9vh, 96px);
+    padding-top: clamp(36px, 8vh, 96px);
   }
-  .shk-landing__drink { height: clamp(220px, 42vh, 380px); }
+  .shk-landing__drink--hero { height: clamp(240px, 44vh, 420px); max-width: 64vw; }
+  .shk-landing__drink--side { height: clamp(150px, 28vh, 300px); max-width: 32vw; }
   .shk-landing__tagline { font-size: clamp(30px, 9vw, 44px); }
+}
+
+/* Very narrow phones: drop the side drinks so the hero stays bold. */
+@media (max-width: 440px) {
+  .shk-landing__drink--side { display: none; }
+  .shk-landing__drink--hero { max-width: 80vw; }
 }
