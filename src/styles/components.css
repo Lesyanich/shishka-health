@@ -541,8 +541,8 @@
 .shk-hero--wide .shk-hero__title { font-size: var(--text-5xl); }
 .shk-hero--wide .shk-hero__sub { font-size: var(--text-lg); }
 
-/* ---- Brand accent: The Rule (red band between categories) ---- */
-.shk-rule { background: var(--bg-accent); color: var(--text-on-dark); }
+/* ---- Brand accent: The Rule (green, no panel/box between categories) ---- */
+.shk-rule { background: transparent; color: var(--text-on-dark); }
 .shk-rule__inner {
   max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-10) var(--page-pad-mobile) var(--space-12);
@@ -567,8 +567,7 @@
 }
 .shk-rule__pill {
   display: flex; align-items: baseline; gap: 8px;
-  border: 1.5px solid var(--border-on-dark); border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) 0;
 }
 .shk-rule__no {
   font-family: var(--font-display); font-weight: var(--fw-display);
@@ -613,8 +612,8 @@
 }
 .shk-cta__btn--primary { background: var(--accent); color: var(--cream-50); }
 .shk-cta__btn--primary:hover { background: var(--accent-hover); }
-.shk-cta__btn--ghost { background: transparent; color: var(--text-on-dark); border: 1.5px solid var(--border-on-dark); }
-.shk-cta__btn--ghost:hover { border-color: var(--honey-300); color: var(--honey-300); }
+.shk-cta__btn--ghost { background: transparent; color: var(--text-on-dark); border: none; padding-inline: var(--space-2); }
+.shk-cta__btn--ghost:hover { color: var(--honey-300); text-decoration: underline; text-underline-offset: 4px; }
 /* High-contrast focus ring for controls on dark/red surfaces */
 .shk-cta__btn:focus-visible,
 .shk-foot__links a:focus-visible {
@@ -623,8 +622,7 @@
 }
 .shk-cta__hours {
   display: inline-flex; align-items: baseline; gap: var(--space-3);
-  border: 1.5px solid var(--border-on-dark); border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-2) 0;
 }
 .shk-cta__hours-label {
   font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase;
@@ -807,9 +805,8 @@
 /* Tier band header — the three sit side by side and read as one band */
 .shk-mana__colhead {
   display: flex; align-items: center; gap: 10px;
-  background: var(--royal-green-soft);
-  padding: 12px clamp(12px, 1.4vw, 20px);
-  border-radius: var(--radius-md, 10px);
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--border-subtle);
   margin-bottom: clamp(20px, 3vh, 40px);
 }
 .shk-mana__price {
@@ -880,56 +877,46 @@
    Outlined cards: big count + "from ฿X" + "manakish" + "set of N + M sauce
    free" + sauce cutout + discount %, over a grid of the included cutouts.
    =========================================================================== */
+/* Borderless cards that scroll sideways (swipe) — no thumbnails. */
 .shk-sets {
-  display: flex; flex-direction: column; gap: clamp(20px, 3vh, 36px);
-  max-width: 760px; margin: clamp(28px, 5vh, 56px) auto 0;
+  display: flex; gap: clamp(8px, 2vw, 20px);
+  margin: clamp(28px, 5vh, 56px) 0 0;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch; padding-bottom: 12px;
+  scroll-padding-inline: var(--page-pad-mobile);
 }
+.shk-sets::-webkit-scrollbar { height: 6px; }
+.shk-sets::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
 .shk-set {
-  display: block; width: 100%; text-align: left; cursor: pointer; color: inherit;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1.5px solid var(--royal-green-line);
-  border-radius: clamp(20px, 3vw, 32px);
-  padding: clamp(18px, 2.4vw, 30px);
-  transition: transform 0.16s var(--ease-out), border-color 0.16s var(--ease-out), background 0.16s var(--ease-out);
+  position: relative; flex: 0 0 auto;
+  width: clamp(220px, 70vw, 280px); scroll-snap-align: start;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  background: none; border: none; border-radius: 0;
+  padding: clamp(14px, 2vw, 20px) clamp(16px, 2vw, 22px) clamp(14px, 2vw, 20px) 0;
+  text-align: left; cursor: pointer; color: inherit;
+  transition: transform 0.18s var(--ease-out);
 }
-.shk-set:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.42); background: rgba(255, 255, 255, 0.06); }
+.shk-set:hover { transform: translateY(-4px); }
 .shk-set:active { transform: translateY(-1px); }
+.shk-set + .shk-set { border-left: 1px solid var(--border-subtle); padding-left: clamp(16px, 2vw, 22px); }
 
-.shk-set__head { display: flex; align-items: center; gap: clamp(12px, 2vw, 22px); }
 .shk-set__num {
-  flex: none; font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(3rem, 8vw, 5.5rem); line-height: 0.85; color: var(--white);
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(4.5rem, 17vw, 7rem); line-height: 0.82; color: var(--white);
   font-feature-settings: var(--num-feature);
 }
-.shk-set__copy { display: flex; flex-direction: column; line-height: 1.05; }
-.shk-set__from { font-size: var(--text-sm); color: var(--text-muted); font-family: var(--font-mono); }
 .shk-set__title {
   font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(1.8rem, 5vw, 3.2rem); color: var(--white); text-transform: lowercase;
-  letter-spacing: var(--tracking-tight); line-height: 1;
+  font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--white); text-transform: lowercase;
+  letter-spacing: var(--tracking-tight); line-height: 1; margin-top: 4px;
 }
-.shk-set__sub { font-size: var(--text-sm); color: var(--white); font-weight: var(--fw-medium); }
-.shk-set__sauce { position: relative; flex: none; width: clamp(48px, 6vw, 76px); aspect-ratio: 1; margin-left: auto; display: grid; place-items: center; }
-.shk-set__sauce img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.shk-set__sauce-ph { width: 84%; height: 84%; border-radius: 50%; background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03) 72%); }
+.shk-set__sub { font-size: var(--text-sm); color: var(--text-body); font-weight: var(--fw-medium); margin-top: 4px; }
+.shk-set__from { font-size: var(--text-sm); color: var(--menu-price); font-family: var(--font-mono); margin-top: 6px; }
 .shk-set__pct {
-  flex: none; font-family: var(--font-display); font-weight: var(--fw-bold);
-  font-size: clamp(1.2rem, 2.6vw, 2rem); color: var(--white); font-feature-settings: var(--num-feature);
-}
-
-.shk-set__grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 1.6vw, 22px);
-  margin-top: clamp(16px, 2.4vw, 28px);
-}
-.shk-set__item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.shk-set__disc { position: relative; width: clamp(52px, 6vw, 84px); aspect-ratio: 1; display: grid; place-items: center; }
-.shk-set__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.shk-set__disc-ph { width: 86%; height: 86%; border-radius: 50%; background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03) 72%); }
-.shk-set__item-name { font-size: var(--text-xs); color: var(--white); text-align: center; line-height: 1.12; }
-
-@media (max-width: 560px) {
-  .shk-set__grid { grid-template-columns: repeat(3, 1fr); }
-  .shk-set__head { flex-wrap: wrap; }
+  position: absolute; top: clamp(14px, 2vw, 20px); right: clamp(0px, 1vw, 6px);
+  display: flex; flex-direction: column; align-items: flex-end; line-height: 1;
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: clamp(1.1rem, 3.4vw, 1.6rem); color: var(--menu-price); font-feature-settings: var(--num-feature);
 }
 
 /* ===========================================================================
@@ -973,8 +960,7 @@
   color: var(--menu-price); font-feature-settings: var(--num-feature);
 }
 
-/* ---- Set card: "save N%" + explicit CTA affordance --------------------- */
-.shk-set__pct { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+/* ---- Set card: "save N%" badge label + explicit CTA affordance --------- */
 .shk-set__pct small {
   font-family: var(--font-sans); font-size: var(--text-2xs); font-weight: var(--fw-semibold);
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--menu-price);

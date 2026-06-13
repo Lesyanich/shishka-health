@@ -11,7 +11,7 @@ export function MenuHeader({ filterCount = 0, onOpenFilters, wide = false }) {
       />
       <div className="shk-header__filter">
         <div className="shk-header__filter-wrap">
-          <IconButton label="Filter menu" variant="solid" onClick={onOpenFilters}>
+          <IconButton label="Filter menu" variant="plain" onClick={onOpenFilters}>
             <FilterIcon />
           </IconButton>
           {filterCount > 0 && (

@@ -15,8 +15,6 @@ const tierLabel = (name) => {
   return TIER_LABEL[n] ?? n;
 };
 
-const CLAIMS = ["gluten free", "zero seed oils", "grass-fed", "halal"];
-
 // Group a section's dishes into tiers (subcategories), ordered by their sort.
 function tiersOf(items) {
   const map = new Map();
@@ -86,13 +84,6 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
           </div>
         ))}
       </div>
-
-      <footer className="shk-mana__foot">
-        <img className="shk-mana__foot-logo" src="/assets/logo-full-white.png" alt="Shishka Healthy Kitchen" />
-        <ul className="shk-mana__claims">
-          {CLAIMS.map((c) => <li key={c}>{c}</li>)}
-        </ul>
-      </footer>
     </div>
   );
 }
