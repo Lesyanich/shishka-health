@@ -85,8 +85,8 @@
   --bg-canvas:      var(--cream-50);   /* default app/page background        */
   --bg-surface:     var(--white);      /* cards, sheets                      */
   --bg-surface-alt: var(--cream-100);  /* recessed / subtle panels           */
-  --bg-dark:        var(--green-700);  /* hero / signage — life green        */
-  --bg-dark-deep:   var(--green-900);  /* deepest section                    */
+  --bg-dark:        var(--royal-green);        /* hero / signage — royal green       */
+  --bg-dark-deep:   var(--royal-green-deeper); /* deepest section — royal green      */
   --bg-accent:      var(--red-700);    /* energy-red feature panels          */
   --bg-grape:       var(--purple-700); /* antioxidant feature panels         */
 

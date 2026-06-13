@@ -1,9 +1,10 @@
 /* ===========================================================================
    SHISHKA — SPLASH / LANDING PAGE
    Advertising promo: SOLID royal-green canvas (no gradients) · white logo
-   centred at the top · "New on the menu" eyebrow · a single-line strip of
-   equally-sized drink cutouts (coffee + smoothies) · one centred
-   "Enter the kitchen" button. (See components/landing/Landing.jsx)
+   centred at the top · the featured pair (one coffee + one smoothie) as
+   equally-sized, bottom-flush cutouts with their names directly underneath ·
+   "New on the menu" eyebrow right above them · one centred "Enter the kitchen"
+   button. (See components/landing/Landing.jsx)
    =========================================================================== */
 
 .shk-landing {
@@ -18,21 +19,29 @@
   align-items: center;
   justify-content: space-between;
   padding: clamp(28px, 6vh, 64px) clamp(20px, 4vw, 64px);
-  gap: clamp(20px, 4vh, 48px);
+  gap: clamp(18px, 3.5vh, 40px);
 }
 
-/* --- Top: centred logo + eyebrow ---------------------------------------- */
+/* --- Top: centred logo --------------------------------------------------- */
 .shk-landing__top {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(10px, 2vh, 20px);
-  text-align: center;
+  justify-content: center;
 }
 .shk-landing__logo {
   width: clamp(170px, 22vw, 300px);
   height: auto;
   display: block;
+}
+
+/* --- Feature: eyebrow sits right above the drinks ------------------------ */
+.shk-landing__feature {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vh, 34px);
 }
 .shk-landing__eyebrow {
   margin: 0;
@@ -44,27 +53,40 @@
   color: var(--honey-300, #f0ce83);
 }
 
-/* --- Drink strip: one line, all the same size --------------------------- */
+/* --- The featured pair: equal size, names underneath at a fixed gap ------ */
 .shk-landing__strip {
-  flex: 1 1 auto;
-  width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  gap: clamp(2px, 1vw, 22px);
-  min-height: 0;
+  gap: clamp(24px, 7vw, 110px);
+}
+.shk-landing__item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* identical gap between every drink and the copy underneath it */
+  gap: clamp(14px, 2.4vh, 26px);
 }
 .shk-landing__drink {
-  height: clamp(150px, 34vh, 440px);
+  height: clamp(240px, 44vh, 520px);
   width: auto;
-  flex: 0 1 auto;
-  min-width: 0;
   object-fit: contain;
+  object-position: bottom;
   display: block;
-  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.40));
+  filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.42));
+}
+.shk-landing__name {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold, 600);
+  font-size: clamp(20px, 2.6vw, 34px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--cream-50, #fff);
+  text-align: center;
 }
 
-/* --- Single centred CTA ------------------------------------------------- */
+/* --- Single centred CTA -------------------------------------------------- */
 .shk-landing__enter {
   display: inline-flex;
   align-items: center;
@@ -89,15 +111,9 @@
 .shk-landing__enter:active { transform: translateY(0); }
 .shk-landing__enter-arrow { font-size: 1.1em; line-height: 1; }
 
-/* --- Mobile: let the strip scroll sideways rather than crush the cutouts -- */
+/* --- Mobile ------------------------------------------------------------- */
 @media (max-width: 720px) {
-  .shk-landing__strip {
-    justify-content: flex-start;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 4px;
-  }
-  .shk-landing__strip::-webkit-scrollbar { display: none; }
-  .shk-landing__drink { height: clamp(150px, 30vh, 280px); }
+  .shk-landing__drink { height: clamp(190px, 34vh, 360px); }
+  .shk-landing__strip { gap: clamp(18px, 6vw, 48px); }
+  .shk-landing__name { font-size: clamp(17px, 4.6vw, 24px); }
 }
