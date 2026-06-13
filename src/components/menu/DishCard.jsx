@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
-import { StarIcon } from "../Icons.jsx";
+import { StarIcon, PlusIcon } from "../Icons.jsx";
 
 function Placeholder({ category }) {
   return (
@@ -32,6 +32,7 @@ export function DishCard({
   layout = "tile",
   comingSoon = false,
   onClick,
+  onQuickAdd,
   className = "",
   ...rest
 }) {
@@ -48,6 +49,7 @@ export function DishCard({
     .join(" ");
 
   return (
+    <div className={`shk-card-wrap ${layout === "row" ? "shk-card-wrap--row" : ""}`}>
     <button
       type="button"
       className={cls}
@@ -129,5 +131,18 @@ export function DishCard({
         </div>
       </div>
     </button>
+
+      {!comingSoon && onQuickAdd && price != null && (
+        <button
+          type="button"
+          className="shk-quickadd"
+          onClick={(e) => { e.stopPropagation(); onQuickAdd(); }}
+          aria-label={`Add ${name} to order`}
+          title={`Add ${name} to order`}
+        >
+          <PlusIcon size={16} strokeWidth={2.5} />
+        </button>
+      )}
+    </div>
   );
 }

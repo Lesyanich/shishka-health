@@ -5,11 +5,13 @@
   of placeholder discs while photography catches up.
 */
 
-export function DishRows({ items, currency = "฿", onSelect }) {
+import { PlusIcon } from "../Icons.jsx";
+
+export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
   return (
     <ul className="shk-rows">
       {items.map((d) => (
-        <li key={d.id}>
+        <li key={d.id} className="shk-row-wrap">
           <button
             type="button"
             className={`shk-row ${d.comingSoon ? "is-soon" : ""}`}
@@ -45,6 +47,18 @@ export function DishRows({ items, currency = "฿", onSelect }) {
               ) : null}
             </span>
           </button>
+
+          {!d.comingSoon && onQuickAdd && d.price != null && (
+            <button
+              type="button"
+              className="shk-quickadd shk-quickadd--row"
+              onClick={(e) => { e.stopPropagation(); onQuickAdd(d); }}
+              aria-label={`Add ${d.name} to order`}
+              title={`Add ${d.name} to order`}
+            >
+              <PlusIcon size={16} strokeWidth={2.5} />
+            </button>
+          )}
         </li>
       ))}
     </ul>

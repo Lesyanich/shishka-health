@@ -279,6 +279,27 @@
 .shk-fp__foot .shk-btn { flex: 1; }
 
 /* ---- DishCard — clean cutout tile (image + name + price, no box) ---- */
+/* Wrapper so the quick-add "+" can sit as a sibling overlay (the card itself
+   is a <button>, so the add control can't nest inside it). */
+.shk-card-wrap { position: relative; display: flex; width: 100%; }
+.shk-card-wrap > .shk-card { width: 100%; }
+
+/* Quick-add: small red circle echoing the bottom order button (var(--accent)).
+   Adds the item straight to the order without opening the dish. */
+.shk-quickadd {
+  position: absolute; top: 2px; right: 2px; z-index: 3;
+  width: 28px; height: 28px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; border-radius: var(--radius-circle, 999px);
+  background: var(--accent); color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
+}
+.shk-quickadd svg { width: 16px; height: 16px; display: block; }
+.shk-quickadd:hover { background: var(--accent-hover); transform: scale(1.12); }
+.shk-quickadd:active { transform: scale(0.88); }
+
 .shk-card {
   position: relative; display: flex; flex-direction: column; align-items: center;
   background: none; border: none; border-radius: 0; overflow: visible;
@@ -979,6 +1000,10 @@
 }
 .shk-row:hover { background: rgba(255, 255, 255, 0.06); }
 .shk-row.is-soon { opacity: 0.5; cursor: default; }
+/* Row + quick-add "+" sit side by side; the button is a static flex item. */
+.shk-row-wrap { display: flex; align-items: center; gap: 6px; }
+.shk-row-wrap > .shk-row { flex: 1 1 auto; min-width: 0; }
+.shk-quickadd--row { position: static; flex: 0 0 auto; width: 26px; height: 26px; }
 .shk-row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .shk-row__name { font-weight: var(--fw-semibold); font-size: var(--text-base); line-height: 1.25; }
 .shk-row__soon {

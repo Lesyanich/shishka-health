@@ -169,6 +169,18 @@ export default function App() {
     Math.max(byCat.length - 1, 0)
   );
 
+  // Quick-add straight to the order from the tile/row, without opening the
+  // dish. Items that REQUIRE a choice (a modifier group with minSelect > 0)
+  // open the builder instead, since there's no single price to add.
+  const quickAdd = (dish) => {
+    if (!dish || dish.comingSoon || dish.price == null) return;
+    if (dish.modifierGroups?.some((g) => (g.minSelect ?? 0) > 0)) {
+      setSelected(dish);
+    } else {
+      cart.addDish(dish);
+    }
+  };
+
   const renderDish = (dish, catName) => (
     <DishCard
       key={dish.id}
@@ -188,6 +200,7 @@ export default function App() {
       category={catName}
       comingSoon={dish.comingSoon ?? false}
       onClick={() => setSelected(dish)}
+      onQuickAdd={() => quickAdd(dish)}
     />
   );
 
@@ -297,7 +310,7 @@ export default function App() {
                             <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
                           </div>
                           {photoless(sub.items) ? (
-                            <DishRows items={sub.items} onSelect={setSelected} />
+                            <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} />
                           ) : (
                             <div className="shk-app__grid">
                               {sub.items.map((dish) => renderDish(dish, cat.name))}
@@ -306,7 +319,7 @@ export default function App() {
                         </div>
                       ))
                     ) : photoless(cat.items) ? (
-                      <DishRows items={cat.items} onSelect={setSelected} />
+                      <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} />
                     ) : (
                       <div className="shk-app__grid">
                         {cat.items.map((dish) => renderDish(dish, cat.name))}
