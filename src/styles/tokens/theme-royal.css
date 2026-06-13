@@ -8,8 +8,9 @@
    =========================================================================== */
 :root {
   /* ---- Surfaces: page deepest; cards/sheets step lighter (raised) -------- */
-  --bg-canvas:      #2C360F;
-  --bg-page:        #2C360F;
+  /* One continuous royal-green page (brand swatch #1E3903) — no section bands. */
+  --bg-canvas:      #1E3903;
+  --bg-page:        #1E3903;
   --bg-base:        #3C481A;
   --bg-surface:     #46521D;
   --bg-surface-alt: #3C481A;

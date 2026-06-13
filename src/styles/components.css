@@ -216,10 +216,7 @@
   display: flex; align-items: center; gap: var(--space-1);
   padding: var(--space-2) var(--page-pad-mobile);
   min-height: var(--sticky-tabs-h);
-  background: color-mix(in srgb, var(--surface-1) 86%, transparent);
-  backdrop-filter: var(--blur-bar);
-  -webkit-backdrop-filter: var(--blur-bar);
-  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-canvas);
   overflow-x: auto; scrollbar-width: none;
   scroll-snap-type: x proximity;
 }
@@ -429,7 +426,7 @@
 }
 .shk-app__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-cards); align-items: start; }
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
-.shk-foot { background: var(--green-950); color: var(--text-on-dark); }
+.shk-foot { background: transparent; color: var(--text-on-dark); }
 .shk-foot__inner {
   max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-10) var(--page-pad-mobile) var(--space-8);
@@ -477,7 +474,7 @@
 /* ---- App header ---- */
 .shk-header {
   position: relative; display: flex; align-items: center; justify-content: center;
-  gap: 16px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-page);
+  gap: 16px; background: var(--bg-page);
 }
 .shk-header--mobile { padding: 16px 16px 14px; }
 .shk-header--wide   { padding: 22px 32px; }
@@ -514,7 +511,7 @@
 /* ---- Hero (dark "life green" brand band) ---- */
 /* Royal-green hero: brand text on green, then a clean salad-bar band below
    (no text over the image). */
-.shk-hero { position: relative; overflow: hidden; background: var(--royal-green); color: var(--text-on-dark); border-bottom: 1px solid var(--border-on-dark); }
+.shk-hero { position: relative; overflow: hidden; background: var(--royal-green); color: var(--text-on-dark); }
 .shk-hero__inner {
   position: relative; z-index: 1; width: 100%; max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-10) var(--page-pad-mobile) var(--space-8); text-align: center;
@@ -581,7 +578,7 @@
 .shk-rule--wide .shk-rule__lead { font-size: var(--text-lg); }
 
 /* ---- Brand accent: visit & order CTA (deep-green band, end of menu) ---- */
-.shk-cta { background: var(--bg-dark-deep); color: var(--text-on-dark); }
+.shk-cta { background: transparent; color: var(--text-on-dark); }
 .shk-cta__inner {
   max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-12) var(--page-pad-mobile); text-align: center;
