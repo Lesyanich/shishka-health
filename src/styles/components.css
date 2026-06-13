@@ -875,9 +875,9 @@
    Outlined cards: big count + "from ฿X" + "manakish" + "set of N + M sauce
    free" + sauce cutout + discount %, over a grid of the included cutouts.
    =========================================================================== */
-/* Borderless cards that scroll sideways (swipe) — no thumbnails. */
+/* Outlined cards that scroll sideways (swipe) — no thumbnails. */
 .shk-sets {
-  display: flex; gap: clamp(18px, 5vw, 30px);
+  display: flex; gap: clamp(14px, 3vw, 22px);
   margin: clamp(24px, 4vh, 44px) 0 0;
   overflow-x: auto; scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch; padding-bottom: 14px;
@@ -892,16 +892,17 @@
 .shk-sets::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
 .shk-set {
   position: relative; flex: 0 0 auto;
-  width: clamp(168px, 58vw, 230px); scroll-snap-align: start;
+  width: clamp(190px, 62vw, 250px); scroll-snap-align: start;
   display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
-  background: none; border: none; border-radius: 0;
-  padding: clamp(10px, 1.6vw, 16px) clamp(14px, 2vw, 20px) clamp(10px, 1.6vw, 16px) 0;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1.5px solid var(--royal-green-line);
+  border-radius: clamp(16px, 2.4vw, 24px);
+  padding: clamp(16px, 2.4vw, 22px);
   text-align: left; cursor: pointer; color: inherit;
-  transition: transform 0.18s var(--ease-out);
+  transition: transform 0.18s var(--ease-out), border-color 0.18s var(--ease-out), background 0.18s var(--ease-out);
 }
-.shk-set:hover { transform: translateY(-4px); }
+.shk-set:hover { transform: translateY(-4px); border-color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.07); }
 .shk-set:active { transform: translateY(-1px); }
-.shk-set + .shk-set { border-left: 1px solid var(--border-subtle); padding-left: clamp(14px, 2vw, 20px); }
 
 .shk-set__num {
   font-family: var(--font-display); font-weight: var(--fw-display);
@@ -916,7 +917,7 @@
 .shk-set__sub { font-size: var(--text-sm); color: var(--text-body); font-weight: var(--fw-medium); margin-top: 5px; }
 .shk-set__from { font-size: var(--text-sm); color: var(--menu-price); font-family: var(--font-mono); margin-top: 7px; }
 .shk-set__pct {
-  position: absolute; top: clamp(10px, 1.6vw, 16px); right: 0;
+  position: absolute; top: clamp(16px, 2.4vw, 22px); right: clamp(16px, 2.4vw, 22px);
   display: flex; flex-direction: column; align-items: flex-end; line-height: 1;
   font-family: var(--font-display); font-weight: var(--fw-bold);
   font-size: clamp(1rem, 3.2vw, 1.5rem); color: var(--menu-price); font-feature-settings: var(--num-feature);
