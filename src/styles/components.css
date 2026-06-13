@@ -279,24 +279,19 @@
 .shk-fp__foot .shk-btn { flex: 1; }
 
 /* ---- DishCard — clean cutout tile (image + name + price, no box) ---- */
-/* Wrapper so the quick-add "+" can sit as a sibling overlay (the card itself
-   is a <button>, so the add control can't nest inside it). */
-.shk-card-wrap { position: relative; display: flex; width: 100%; }
-.shk-card-wrap > .shk-card { width: 100%; }
-
 /* Quick-add: small red circle echoing the bottom order button (var(--accent)).
-   Adds the item straight to the order without opening the dish. */
+   Sits inline right after the price; adds the item straight to the order. */
 .shk-quickadd {
-  position: absolute; top: 2px; right: 2px; z-index: 3;
-  width: 28px; height: 28px; padding: 0;
+  flex: 0 0 auto; padding: 0;
+  width: 22px; height: 22px;
   display: inline-flex; align-items: center; justify-content: center;
   border: none; border-radius: var(--radius-circle, 999px);
   background: var(--accent); color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
-.shk-quickadd svg { width: 16px; height: 16px; display: block; }
+.shk-quickadd svg { width: 14px; height: 14px; display: block; }
 .shk-quickadd:hover { background: var(--accent-hover); transform: scale(1.12); }
 .shk-quickadd:active { transform: scale(0.88); }
 
@@ -334,7 +329,7 @@
 
 .shk-card__body { padding: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .shk-card__topline { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.shk-card__priceblock { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.shk-card__priceblock { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
 .shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--white); }
 .shk-card__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
 .shk-card__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); color: var(--menu-muted, var(--menu-price)); opacity: 0.8; }
