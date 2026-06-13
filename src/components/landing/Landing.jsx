@@ -1,31 +1,32 @@
 import { useMenu } from "../../hooks/useMenu.js";
 
 /*
-  SHISHKA home / landing — a single full-bleed advertising poster: the salad-bar
-  photo fills the screen under a royal-green wash. The brand statement sits at
-  the bottom-left; the white logo + the one "Enter the site" button are anchored
-  together in the bottom-RIGHT corner, right-aligned. The wide-open top area is
-  reserved for promoting monthly offers later. (See main.jsx for the gate.)
+  SHISHKA home / landing — advertising splash for the new menu. A royal-green
+  canvas with a warm glow, the featured drink as a floating cutout, a
+  "New on the menu" eyebrow + the drink name. The white logo and the single
+  "Enter the site" button sit together in the bottom-right corner.
+  (See main.jsx for the gate.)
 */
+
+const DRINK_CUTOUT =
+  "https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/orange-coffee-cutout.webp?v=20260613";
 
 export function Landing({ onEnter }) {
   // Warm the menu data while the visitor is on the splash so the site is ready.
   useMenu();
 
   return (
-    <div className="shk-landing">
-      <div className="shk-landing__bg" aria-hidden="true">
-        <img
-          src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/main-salad-bar.webp?v=20260611"
-          alt=""
-        />
-      </div>
+    <div className="shk-landing shk-landing--promo">
+      <div className="shk-landing__glow" aria-hidden="true" />
+
       <div className="shk-landing__content">
-        <h1 className="shk-landing__tagline">
-          Seed oil &amp; gluten free
-          <br />
-          unprocessed real food, made daily.
-        </h1>
+        <div className="shk-landing__promo">
+          <p className="shk-landing__eyebrow">New on the menu</p>
+          <div className="shk-landing__product">
+            <img className="shk-landing__drink" src={DRINK_CUTOUT} alt="Orange Coffee" />
+          </div>
+          <h1 className="shk-landing__tagline">Orange Coffee</h1>
+        </div>
 
         <div className="shk-landing__brand">
           <img
@@ -33,11 +34,7 @@ export function Landing({ onEnter }) {
             src="/assets/logo-full-white.png"
             alt="SHISHKA — Healthy Kitchen"
           />
-          <button
-            type="button"
-            className="shk-landing__enter"
-            onClick={onEnter}
-          >
+          <button type="button" className="shk-landing__enter" onClick={onEnter}>
             Enter the site
             <span className="shk-landing__enter-arrow" aria-hidden="true">→</span>
           </button>
