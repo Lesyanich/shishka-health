@@ -4,8 +4,8 @@ import "./styles/index.css";
 import App from "./App.jsx";
 import { CartProvider } from "./state/cart.jsx";
 
-/* Splash gate removed (CEO call 2026-06-11): visitors land straight on the
-   menu — the hero carries the brand statement. Landing.jsx kept for reuse. */
+/* Splash gate removed: visitors land straight on the menu — the hero carries
+   the brand statement. (Landing splash component/styles deleted 2026-06-12.) */
 function Root() {
   return <App />;
 }
