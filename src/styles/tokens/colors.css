@@ -72,13 +72,13 @@
   --brand-purple: var(--purple-700);
   --brand-cream:  var(--cream-100);
 
-  /* --- ROYAL GREEN — SHISHKA (CMYK 73/49/97/56), screen-tuned to the
-     brand mockup. Base surface for the splash/landing and the upcoming
-     full-site royal-green theme. --------------------------------------- */
-  --royal-green-deeper: #232B0D;
-  --royal-green-deep:   #333D14;
-  --royal-green:        #46521D; /* ★ primary royal-green surface */
-  --royal-green-soft:   #586728;
+  /* --- ROYAL GREEN — SHISHKA brand swatch "Royal Green Shishka", exact
+     CMYK 73/49/97/56 → sRGB #1E3903. Base surface for the splash/landing
+     and the upcoming full-site royal-green theme. --------------------- */
+  --royal-green-deeper: #122701;
+  --royal-green-deep:   #173002;
+  --royal-green:        #1E3903; /* ★ primary royal-green surface (brand swatch) */
+  --royal-green-soft:   #2C4D0C;
   --royal-green-line:   rgba(255, 255, 255, 0.22);
 
   /* Surfaces */
