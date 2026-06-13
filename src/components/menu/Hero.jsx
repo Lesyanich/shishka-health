@@ -19,7 +19,21 @@ export function Hero({ wide = false, content }) {
         {c.sub && <p className="shk-hero__sub">{c.sub}</p>}
       </div>
       <div className="shk-hero__band" aria-hidden="true">
-        <img src="/assets/hero-saladbar.jpg" alt="" />
+        <picture>
+          {/* phones: portrait crop · tablets: square crop · desktop: landscape */}
+          <source
+            media="(max-width: 640px)"
+            srcSet="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/salad-bar-portrait.webp?v=20260612"
+          />
+          <source
+            media="(max-width: 1024px)"
+            srcSet="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/salad-bar-square.webp?v=20260612"
+          />
+          <img
+            src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/main-salad-bar.webp?v=20260612"
+            alt=""
+          />
+        </picture>
       </div>
     </section>
   );
