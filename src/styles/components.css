@@ -113,7 +113,7 @@
 .shk-donut { display: inline-grid; place-items: center; position: relative; }
 .shk-donut__svg { transform: rotate(-90deg); display: block; }
 .shk-donut__track { stroke: var(--surface-3); }
-.shk-donut__seg { transition: stroke-dashoffset var(--dur-slow) var(--ease-out); }
+.shk-donut__seg { transition: stroke-dasharray 0.7s var(--ease-out), stroke-dashoffset 0.7s var(--ease-out); }
 .shk-donut__center {
   position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
   gap: 1px;
@@ -216,10 +216,7 @@
   display: flex; align-items: center; gap: var(--space-1);
   padding: var(--space-2) var(--page-pad-mobile);
   min-height: var(--sticky-tabs-h);
-  background: color-mix(in srgb, var(--surface-1) 86%, transparent);
-  backdrop-filter: var(--blur-bar);
-  -webkit-backdrop-filter: var(--blur-bar);
-  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-canvas);
   overflow-x: auto; scrollbar-width: none;
   scroll-snap-type: x proximity;
 }
@@ -281,85 +278,90 @@
 }
 .shk-fp__foot .shk-btn { flex: 1; }
 
-/* ---- DishCard ---- */
-.shk-card {
-  position: relative; display: flex; flex-direction: column;
-  background: var(--surface-1);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  overflow: hidden; cursor: pointer; text-align: left;
-  box-shadow: none;
-  transition: transform var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out);
-  -webkit-tap-highlight-color: transparent; width: 100%; padding: 0;
-  font-family: var(--font-body); color: inherit;
+/* ---- DishCard — clean cutout tile (image + name + price, no box) ---- */
+/* Quick-add: small red circle echoing the bottom order button (var(--accent)).
+   Sits inline right after the price; adds the item straight to the order. */
+.shk-quickadd {
+  flex: 0 0 auto; padding: 0;
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; border-radius: var(--radius-circle, 999px);
+  background: var(--accent); color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
-.shk-card:hover { transform: translateY(-3px); border-color: var(--border-default); }
-.shk-card:active { transform: translateY(-1px) scale(0.995); }
+.shk-quickadd svg { width: 14px; height: 14px; display: block; }
+.shk-quickadd:hover { background: var(--accent-hover); transform: scale(1.12); }
+.shk-quickadd:active { transform: scale(0.88); }
 
-/* Coming soon / out of stock: visible but not orderable — greyed, no lift. */
-.shk-card--coming-soon { cursor: default; opacity: 0.62; filter: saturate(0.55); }
-.shk-card--coming-soon:hover { transform: none; border-color: var(--border-subtle); }
-.shk-card--coming-soon:hover .shk-card__img { transform: none; }
-.shk-card--coming-soon:active { transform: none; }
+.shk-card {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  background: none; border: none; border-radius: 0; overflow: visible;
+  cursor: pointer; text-align: center; box-shadow: none; padding: 0; width: 100%;
+  gap: 12px; color: inherit; font-family: var(--font-body);
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+.shk-card:hover { transform: scale(1.05); }
+.shk-card:active { transform: scale(0.97); }
 
-.shk-card__media { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--bg-surface); }
-.shk-card__img { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: multiply; transition: transform var(--dur-slow) var(--ease-out); }
-.shk-card:hover .shk-card__img { transform: scale(1.04); }
-.shk-card__media-scrim { position: absolute; inset: 0; background: none; pointer-events: none; }
+/* Coming soon / out of stock: visible but not orderable. */
+.shk-card--coming-soon { cursor: default; opacity: 0.55; }
+.shk-card--coming-soon:hover { transform: none; }
 
-.shk-card__flags { position: absolute; top: var(--space-3); left: var(--space-3); display: flex; gap: 6px; flex-wrap: wrap; }
+.shk-card__media {
+  position: relative; width: clamp(120px, 14vw, 184px); aspect-ratio: 4 / 5;
+  overflow: visible; background: none; display: grid; place-items: end center;
+}
+.shk-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; display: block; }
+.shk-card__media-scrim { display: none; }
+
+.shk-card__flags { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; }
 
 .shk-card__ph {
-  position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; justify-items: center;
-  background: var(--green-600);
+  position: absolute; inset: 0; display: grid; place-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03) 72%);
 }
-.shk-card__ph-logo { width: 64px; height: auto; position: relative; z-index: 1; opacity: 0.95; }
-.shk-card__ph-cat {
-  position: relative; z-index: 1; font-family: var(--font-display); font-style: italic;
-  font-size: var(--text-base); color: var(--cream-200); opacity: 0.85;
-}
+.shk-card__ph-logo { width: 38%; height: auto; opacity: 0.4; }
+.shk-card__ph-cat { display: none; }
 
-.shk-card__body { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
-.shk-card__topline { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
-.shk-card__priceblock { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none; }
-.shk-card__kcal-inline { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--menu-kcal); white-space: nowrap; font-feature-settings: var(--num-feature); }
-.shk-card__kcal-inline b { font-weight: var(--fw-semibold); }
-.shk-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-.shk-card__meta-item {
-  display: inline-flex; align-items: baseline; gap: 3px;
-  font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted);
-  white-space: nowrap; font-feature-settings: var(--num-feature);
-}
+.shk-card__body { padding: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.shk-card__topline { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.shk-card__priceblock { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
+.shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--white); }
+.shk-card__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
+.shk-card__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); color: var(--menu-muted, var(--menu-price)); opacity: 0.8; }
+
+/* Health-forward tile: keep the floating-cutout look but show the КБЖУ balance
+   + a short description under the name (owner wants them on the main page). All
+   centered to match the minimal tile. */
+.shk-card__meta { display: flex; justify-content: center; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); margin-top: 2px; }
+.shk-card__meta-item { display: inline-flex; align-items: baseline; gap: 3px; font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-muted); white-space: nowrap; font-feature-settings: var(--num-feature); }
 .shk-card__meta-item b { font-weight: var(--fw-semibold); color: var(--text-strong); }
-.shk-card__meta-item--kcal { color: var(--menu-kcal); }
-.shk-card__meta-item--kcal b { color: var(--menu-kcal); }
-.shk-card__meta-item + .shk-card__meta-item::before {
-  content: "·"; margin-right: var(--space-2); color: var(--text-faint); font-weight: 400;
-}
-.shk-card__name { font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--text-lg); line-height: var(--leading-snug); color: var(--text-strong); }
-.shk-card__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-md); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
-.shk-card__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); color: var(--menu-muted, var(--menu-price)); opacity: 0.75; }
-.shk-card__desc {
-  font-size: var(--text-sm); color: var(--text-muted); line-height: var(--leading-normal);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-wrap: pretty;
-}
-/* Macro balance on the card: a slim bar + tight P/C/F legend (no labels). */
-.shk-card__macro { gap: var(--space-2); }
+.shk-card__meta-item--kcal, .shk-card__meta-item--kcal b { color: var(--menu-kcal); }
+.shk-card__meta-item + .shk-card__meta-item::before { content: "·"; margin-right: var(--space-2); color: var(--text-faint); font-weight: 400; }
+.shk-card__macro { width: clamp(118px, 13vw, 176px); gap: 4px; margin-top: 4px; }
 .shk-card__macro .shk-macro__bar { height: 4px; }
 .shk-card__macro .shk-macro__label { display: none; }
-.shk-card__macro .shk-macro__legend { gap: var(--space-3); }
+.shk-card__macro .shk-macro__legend { justify-content: center; gap: var(--space-3); }
 .shk-card__macro .shk-macro__val { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-muted); font-feature-settings: var(--num-feature); }
 .shk-card__macro .shk-macro__val small { font-size: 0.7em; }
+.shk-card__desc {
+  max-width: 26ch; margin-top: 4px; text-align: center;
+  font-size: var(--text-xs); color: var(--text-muted); line-height: var(--leading-normal);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-wrap: pretty;
+}
 
-.shk-card__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-top: auto; padding-top: var(--space-1); }
-.shk-card__diets { display: flex; gap: 6px; flex-wrap: wrap; }
-.shk-card__rating { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: var(--text-xs); font-weight: var(--fw-semibold); color: var(--cream-100); font-feature-settings: var(--num-feature); white-space: nowrap; }
-.shk-card__rating svg { width: 14px; height: 14px; color: var(--gold-400); fill: var(--gold-400); }
+/* Diet icons / rating row stays in the dialog to keep the tile uncluttered. */
+.shk-card__foot, .shk-card__kcal-inline { display: none; }
 
-.shk-card--row { flex-direction: row; align-items: stretch; }
-.shk-card--row .shk-card__media { width: 116px; aspect-ratio: auto; flex: none; }
-.shk-card--row .shk-card__body { padding: var(--space-3) var(--space-4); }
+/* Compact row variant (used in dense lists): small inline cutout + text. */
+.shk-card--row { flex-direction: row; align-items: center; gap: 12px; text-align: left; }
+.shk-card--row .shk-card__media { width: 72px; }
+.shk-card--row .shk-card__body { align-items: flex-start; }
+.shk-card--row .shk-card__topline { flex-direction: row; gap: 8px; align-items: baseline; }
 .shk-card--row .shk-card__name { font-size: var(--text-md); }
 
 /* ---- DishDialog ---- */
@@ -382,7 +384,7 @@
   .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; }
 }
 .shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden; }
-.shk-dlg__img { width: 100%; height: 100%; object-fit: cover; display: block; mix-blend-mode: multiply; }
+.shk-dlg__img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .shk-dlg__media-scrim { position: absolute; inset: 0; background: none; }
 .shk-dlg__ph {
   position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; justify-items: center;
@@ -423,12 +425,18 @@
 .shk-app { height: 100%; overflow-y: auto; background: var(--bg-page); }
 .shk-app__main { padding-bottom: 12px; }
 .shk-app__section { padding: 22px 16px 2px; }
-.shk-app__sec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+.shk-app__section { padding: clamp(28px, 5vh, 64px) 16px 8px; }
+.shk-app__sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .shk-app__sec-title {
-  font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, sans-serif;
-  font-weight: 700; font-size: var(--text-2xl); color: var(--text-strong); letter-spacing: -0.02em;
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(2rem, 5.5vw, 3.4rem); color: var(--white); letter-spacing: var(--tracking-tight);
+  text-transform: lowercase; line-height: 1;
 }
-.shk-app__sec-count { font-size: var(--text-sm); color: var(--text-faint); }
+.shk-app__sec-count { display: none; }
+.shk-app__sec-intro {
+  margin: 0 0 24px; max-width: 52ch;
+  font-size: var(--text-md); line-height: 1.4; color: var(--text-muted);
+}
 .shk-app__tier { margin-bottom: 18px; }
 .shk-app__subhead {
   display: flex; align-items: baseline; gap: 8px; margin: 4px 0 12px;
@@ -440,9 +448,21 @@
   text-transform: uppercase; letter-spacing: var(--tracking-wide);
 }
 .shk-app__sub-price { margin-left: auto; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); font-feature-settings: var(--num-feature); }
+/* ---- Bundle promo block (after the Manakish dishes) ---- */
+.shk-app__bundles-block { margin-top: 28px; }
+.shk-app__bundles-badge {
+  margin-left: auto; padding: 2px 9px; border-radius: 999px;
+  background: var(--accent); color: var(--text-on-gold);
+  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em; white-space: nowrap; font-feature-settings: var(--num-feature);
+}
+.shk-app__bundles-sub {
+  margin: -4px 0 14px; max-width: 60ch;
+  font-size: var(--text-sm); line-height: 1.5; color: var(--text-muted);
+}
 .shk-app__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-cards); align-items: start; }
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
-.shk-foot { background: var(--green-950); color: var(--text-on-dark); }
+.shk-foot { background: transparent; color: var(--text-on-dark); }
 .shk-foot__inner {
   max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-10) var(--page-pad-mobile) var(--space-8);
@@ -483,14 +503,14 @@
 
 .shk-app--wide .shk-app__main { max-width: var(--content-max); margin: 0 auto; padding: 0 32px 40px; }
 .shk-app--wide .shk-app__section { padding: 30px 0 4px; }
-.shk-app--wide .shk-app__grid { grid-template-columns: repeat(4, 1fr); gap: var(--gap-cards-desktop); }
+.shk-app--wide .shk-app__grid { grid-template-columns: repeat(5, 1fr); gap: clamp(20px, 2vw, 40px); }
 .shk-app--wide .shk-tabs { padding-left: 32px; padding-right: 32px; }
-.shk-app--wide .shk-app__sec-title { font-size: var(--text-3xl); }
+.shk-app--wide .shk-app__sec-title { font-size: clamp(2.6rem, 4vw, 4rem); }
 
 /* ---- App header ---- */
 .shk-header {
   position: relative; display: flex; align-items: center; justify-content: center;
-  gap: 16px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-page);
+  gap: 16px; background: var(--bg-page);
 }
 .shk-header--mobile { padding: 16px 16px 14px; }
 .shk-header--wide   { padding: 22px 32px; }
@@ -525,16 +545,16 @@
 .shk-error h3 { font-family: var(--font-display); color: var(--text-strong); margin-bottom: 8px; }
 
 /* ---- Hero (dark "life green" brand band) ---- */
-.shk-hero { position: relative; overflow: hidden; background: var(--bg-dark); color: var(--text-on-dark); border-bottom: 1px solid var(--border-on-dark); }
-.shk-hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.42; }
-.shk-hero__overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(33, 44, 14, 0.62) 0%, rgba(22, 29, 10, 0.86) 100%);
-}
+/* Royal-green hero: brand text on green, then a clean salad-bar band below
+   (no text over the image). */
+.shk-hero { position: relative; overflow: hidden; background: var(--royal-green); color: var(--text-on-dark); }
 .shk-hero__inner {
-  position: relative; z-index: 1; max-width: var(--content-max); margin: 0 auto;
-  padding: var(--space-10) var(--page-pad-mobile) var(--space-12); text-align: center;
+  position: relative; z-index: 1; width: 100%; max-width: var(--content-max); margin: 0 auto;
+  padding: var(--space-10) var(--page-pad-mobile) var(--space-8); text-align: center;
 }
+.shk-hero__band { width: 100%; height: clamp(220px, 44vh, 480px); }
+.shk-hero__band picture { display: block; width: 100%; height: 100%; }
+.shk-hero__band img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
 .shk-hero__eyebrow {
   margin: 0 0 var(--space-3); font-family: var(--font-body);
   font-size: var(--text-2xs); font-weight: var(--fw-bold); letter-spacing: var(--tracking-wider);
@@ -548,15 +568,15 @@
 .shk-hero__title span { color: var(--honey-300); }
 .shk-hero__sub {
   margin: var(--space-4) auto 0; max-width: 42ch; font-size: var(--text-md);
-  line-height: var(--leading-snug); color: var(--text-on-dark-muted);
+  line-height: var(--leading-snug); color: var(--cream-100);
   letter-spacing: normal; word-spacing: normal;
 }
 .shk-hero--wide .shk-hero__inner { padding: var(--space-16) var(--space-8) var(--space-20); }
 .shk-hero--wide .shk-hero__title { font-size: var(--text-5xl); }
 .shk-hero--wide .shk-hero__sub { font-size: var(--text-lg); }
 
-/* ---- Brand accent: The Rule (red band between categories) ---- */
-.shk-rule { background: var(--bg-accent); color: var(--text-on-dark); }
+/* ---- Brand accent: The Rule (green, no panel/box between categories) ---- */
+.shk-rule { background: transparent; color: var(--text-on-dark); }
 .shk-rule__inner {
   max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-10) var(--page-pad-mobile) var(--space-12);
@@ -580,22 +600,33 @@
   display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3);
 }
 .shk-rule__pill {
-  display: flex; align-items: baseline; gap: 8px;
-  border: 1.5px solid var(--border-on-dark); border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-4);
+  display: flex; align-items: center; gap: 10px;
+  padding: var(--space-2) 0;
 }
-.shk-rule__no {
-  font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: var(--text-sm); color: var(--white); letter-spacing: 0.02em;
+.shk-rule__icon {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: var(--radius-full, 999px);
+  border: 1.5px solid var(--honey-300);
+  color: var(--honey-300);
+  background: rgba(255, 255, 255, 0.06);
 }
+.shk-rule__icon svg { width: 14px; height: 14px; display: block; }
 .shk-rule__what { font-size: var(--text-sm); color: var(--cream-200); text-transform: lowercase; }
+.shk-visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 .shk-rule--wide .shk-rule__inner { padding: var(--space-16) var(--space-8); }
+.shk-rule--wide .shk-rule__icon { width: 30px; height: 30px; }
+.shk-rule--wide .shk-rule__icon svg { width: 16px; height: 16px; }
 .shk-rule--wide .shk-rule__grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
 .shk-rule--wide .shk-rule__title { font-size: var(--text-5xl); }
 .shk-rule--wide .shk-rule__lead { font-size: var(--text-lg); }
 
 /* ---- Brand accent: visit & order CTA (deep-green band, end of menu) ---- */
-.shk-cta { background: var(--bg-dark-deep); color: var(--text-on-dark); }
+.shk-cta { background: transparent; color: var(--text-on-dark); }
 .shk-cta__inner {
   max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-12) var(--page-pad-mobile); text-align: center;
@@ -627,8 +658,8 @@
 }
 .shk-cta__btn--primary { background: var(--accent); color: var(--cream-50); }
 .shk-cta__btn--primary:hover { background: var(--accent-hover); }
-.shk-cta__btn--ghost { background: transparent; color: var(--text-on-dark); border: 1.5px solid var(--border-on-dark); }
-.shk-cta__btn--ghost:hover { border-color: var(--honey-300); color: var(--honey-300); }
+.shk-cta__btn--ghost { background: transparent; color: var(--text-on-dark); border: none; padding-inline: var(--space-2); }
+.shk-cta__btn--ghost:hover { color: var(--honey-300); text-decoration: underline; text-underline-offset: 4px; }
 /* High-contrast focus ring for controls on dark/red surfaces */
 .shk-cta__btn:focus-visible,
 .shk-foot__links a:focus-visible {
@@ -637,8 +668,7 @@
 }
 .shk-cta__hours {
   display: inline-flex; align-items: baseline; gap: var(--space-3);
-  border: 1.5px solid var(--border-on-dark); border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-2) 0;
 }
 .shk-cta__hours-label {
   font-size: var(--text-2xs); letter-spacing: var(--tracking-wider); text-transform: uppercase;
@@ -727,8 +757,8 @@
   border-radius: var(--radius-pill); padding: 0 var(--space-5);
   transition: background .15s ease;
 }
-.shk-dlg__add:hover, .shk-bundle__add:hover:not(:disabled) { background: var(--accent-hover); }
-.shk-bundle__add:disabled { opacity: .45; cursor: not-allowed; }
+.shk-dlg__add:hover:not(:disabled), .shk-bundle__add:hover:not(:disabled) { background: var(--accent-hover); }
+.shk-dlg__add:disabled, .shk-bundle__add:disabled { opacity: .45; cursor: not-allowed; }
 
 /* Bundle constructor dialog (reuses .shk-dlg__scrim / .shk-dlg shell) */
 .shk-bundle { display: flex; flex-direction: column; max-height: 88vh; }
@@ -757,17 +787,40 @@
 .shk-bundle__save { font-size: var(--text-sm); color: var(--brand-green); font-feature-settings: var(--num-feature); }
 
 /* Floating order bar */
-.shk-cartbar {
-  position: fixed; left: var(--space-4); right: var(--space-4); bottom: var(--space-4); z-index: 55;
-  display: flex; align-items: center; gap: var(--space-3); cursor: pointer;
+/* Always-visible floating Order button (food-app style). */
+.shk-orderfab {
+  position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 55;
+  display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;
   padding: var(--space-3) var(--space-5); border: none; border-radius: var(--radius-pill);
   background: var(--brand-green); color: var(--brand-cream); box-shadow: var(--shadow-lg);
-  font-family: var(--font-body); font-size: var(--text-base); max-width: 520px; margin: 0 auto;
+  font-family: var(--font-body); font-size: var(--text-base); font-weight: var(--fw-semibold);
+  transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
-@media (min-width: 960px) { .shk-cartbar { left: auto; right: var(--space-6); width: 360px; } }
-.shk-cartbar__count { background: var(--brand-cream); color: var(--brand-green); border-radius: var(--radius-circle); min-width: 24px; height: 24px; display: grid; place-items: center; font-weight: var(--fw-semibold); font-feature-settings: var(--num-feature); }
-.shk-cartbar__label { font-weight: var(--fw-medium); }
-.shk-cartbar__total { margin-left: auto; font-family: var(--font-mono); font-weight: var(--fw-semibold); font-feature-settings: var(--num-feature); }
+.shk-orderfab:hover { transform: translateY(-2px); }
+.shk-orderfab:active { transform: translateY(0); }
+.shk-orderfab__icon { display: grid; place-items: center; }
+.shk-orderfab__icon svg { width: 20px; height: 20px; }
+.shk-orderfab__count { background: var(--brand-cream); color: var(--brand-green); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
+.shk-orderfab__total { font-family: var(--font-mono); font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
+/* Empty state: friendly red CTA to start an order. */
+.shk-orderfab--empty { background: var(--accent); color: #fff; }
+.shk-orderfab--empty:hover { background: var(--accent-hover); }
+@media (min-width: 960px) { .shk-orderfab { right: var(--space-6); bottom: var(--space-6); } }
+
+/* Order drawer — empty state */
+.shk-cart__empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: var(--space-3); padding: var(--space-12) var(--space-6);
+}
+.shk-cart__empty-icon { color: var(--menu-price); }
+.shk-cart__empty-icon svg { width: 40px; height: 40px; }
+.shk-cart__empty-title { margin: 0; font-family: var(--font-display); font-size: var(--text-xl); color: var(--text-strong); }
+.shk-cart__empty-sub { margin: 0; max-width: 34ch; font-size: var(--text-sm); color: var(--text-muted); line-height: 1.5; }
+.shk-cart__empty-btn {
+  margin-top: var(--space-2); padding: var(--space-3) var(--space-5);
+  border: none; border-radius: var(--radius-pill); background: var(--accent); color: #fff;
+  font-family: var(--font-body); font-weight: var(--fw-bold); cursor: pointer;
+}
 
 /* Order drawer */
 .shk-cart__scrim { position: fixed; inset: 0; z-index: 70; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; }
@@ -790,3 +843,264 @@
 .shk-cart__total-row { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-size: var(--text-lg); color: var(--text-strong); font-feature-settings: var(--num-feature); }
 .shk-cart__note { font-size: var(--text-xs); color: var(--text-mute); }
 .shk-cart__clear { align-self: flex-start; background: none; border: none; cursor: pointer; color: var(--text-mute); font-size: var(--text-sm); padding: 0; text-decoration: underline; }
+
+/* ===========================================================================
+   MANAKEESH — poster layout (see components/menu/ManakishTiers.jsx)
+   Big "manakish" title + tagline, a lighter-green tier band, then 3 columns of
+   CLEAN cutout photos (no shadow/scrim) on green with the name beneath, and a
+   dietary footer with the logo. Matches the shop poster.
+   =========================================================================== */
+.shk-mana { color: var(--text-strong); }
+
+/* ---- Heading: big title + tagline to the right ------------------------ */
+.shk-mana__head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--space-4); padding: 0 0 var(--space-8);
+}
+.shk-mana__title {
+  margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(2.6rem, 8vw, 5rem); line-height: 0.9; color: var(--white);
+  letter-spacing: var(--tracking-tight); text-transform: lowercase;
+}
+.shk-mana__tag {
+  margin: 0; max-width: 26ch; text-align: right;
+  font-size: clamp(var(--text-md), 1.4vw, var(--text-xl));
+  font-weight: var(--fw-semibold); color: var(--white); line-height: 1.18;
+}
+
+/* ---- Three columns: one per tier -------------------------------------- */
+.shk-mana__cols {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2.4vw, 40px);
+}
+.shk-mana__col { display: flex; flex-direction: column; }
+
+/* Tier band header — the three sit side by side and read as one band */
+.shk-mana__colhead {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.shk-mana__price {
+  display: flex; flex-direction: column; line-height: 0.95; color: var(--white);
+  font-family: var(--font-mono); font-feature-settings: var(--num-feature);
+}
+.shk-mana__price b { font-size: clamp(1.6rem, 2.6vw, 2.4rem); font-weight: var(--fw-bold); }
+.shk-mana__price small { font-size: var(--text-xs); color: rgba(255, 255, 255, 0.75); font-weight: var(--fw-medium); }
+.shk-mana__tier-name {
+  font-family: var(--font-sans); font-weight: var(--fw-bold);
+  font-size: clamp(var(--text-md), 1.6vw, var(--text-xl)); color: var(--white);
+}
+
+/* ---- Items: clean cutouts, no card/shadow ----------------------------- */
+.shk-mana__list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(20px, 3vh, 40px);
+}
+.shk-mana__list > li { width: 100%; display: flex; justify-content: center; }
+.shk-mana__item {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  width: 100%; max-width: 180px;
+  background: none; border: none; padding: 0; cursor: pointer; color: inherit;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.shk-mana__item:hover { transform: scale(1.05); }
+.shk-mana__item:active { transform: scale(0.97); }
+.shk-mana__item.is-soon { opacity: 0.5; }
+
+.shk-mana__disc { position: relative; width: clamp(96px, 9vw, 150px); aspect-ratio: 1; display: grid; place-items: center; }
+.shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+.shk-mana__disc-ph {
+  width: 88%; height: 88%; border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03) 72%);
+}
+.shk-mana__item-name {
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-medium);
+  color: var(--white); text-align: center; line-height: 1.18;
+}
+
+/* ---- Dietary footer ---------------------------------------------------- */
+.shk-mana__foot {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: clamp(16px, 3vw, 48px); margin-top: clamp(32px, 5vh, 64px);
+  padding-top: var(--space-8); border-top: 1px solid var(--border-subtle);
+}
+.shk-mana__foot-logo { height: clamp(40px, 4vw, 56px); width: auto; }
+.shk-mana__claims {
+  display: flex; flex-wrap: wrap; gap: clamp(14px, 2.5vw, 40px);
+  list-style: none; margin: 0; padding: 0;
+}
+.shk-mana__claims li {
+  font-family: var(--font-sans); font-weight: var(--fw-bold);
+  font-size: var(--text-sm); letter-spacing: 0.04em; text-transform: lowercase;
+  color: var(--white);
+}
+
+@media (max-width: 760px) {
+  .shk-mana__head { flex-direction: column; }
+  .shk-mana__tag { text-align: left; }
+  .shk-mana__cols { grid-template-columns: 1fr; gap: var(--space-6); }
+  .shk-mana__list { gap: var(--space-5); }
+}
+
+/* ===========================================================================
+   MANAKISH SETS — poster image 2 (see components/menu/ManakishSets.jsx)
+   Outlined cards: big count + "from ฿X" + "manakish" + "set of N + M sauce
+   free" + sauce cutout + discount %, over a grid of the included cutouts.
+   =========================================================================== */
+/* Outlined cards that scroll sideways (swipe) — no thumbnails. */
+.shk-sets {
+  display: flex; gap: clamp(14px, 3vw, 22px);
+  margin: clamp(24px, 4vh, 44px) 0 0;
+  overflow-x: auto; scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch; padding-bottom: 14px;
+  scroll-padding-inline: 16px;
+}
+/* Full-bleed the swipe row to the screen edges on mobile (cards still align
+   to the 16px content edge via scroll padding). */
+@media (max-width: 760px) {
+  .shk-sets { margin-inline: -16px; padding-inline: 16px; }
+}
+.shk-sets::-webkit-scrollbar { height: 6px; }
+.shk-sets::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+.shk-set {
+  position: relative; flex: 0 0 auto;
+  width: clamp(190px, 62vw, 250px); scroll-snap-align: start;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1.5px solid var(--royal-green-line);
+  border-radius: clamp(16px, 2.4vw, 24px);
+  padding: clamp(16px, 2.4vw, 22px);
+  text-align: left; cursor: pointer; color: inherit;
+  transition: transform 0.18s var(--ease-out), border-color 0.18s var(--ease-out), background 0.18s var(--ease-out);
+}
+.shk-set:hover { transform: translateY(-4px); border-color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.07); }
+.shk-set:active { transform: translateY(-1px); }
+
+.shk-set__num {
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(3.4rem, 13vw, 5.25rem); line-height: 0.82; color: var(--white);
+  font-feature-settings: var(--num-feature);
+}
+.shk-set__title {
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(1.35rem, 4.4vw, 2rem); color: var(--white); text-transform: lowercase;
+  letter-spacing: var(--tracking-tight); line-height: 1; margin-top: 4px;
+}
+.shk-set__sub { font-size: var(--text-sm); color: var(--text-body); font-weight: var(--fw-medium); margin-top: 5px; }
+.shk-set__from { font-size: var(--text-sm); color: var(--menu-price); font-family: var(--font-mono); margin-top: 7px; }
+.shk-set__pct {
+  position: absolute; top: clamp(16px, 2.4vw, 22px); right: clamp(16px, 2.4vw, 22px);
+  display: flex; flex-direction: column; align-items: flex-end; line-height: 1;
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: clamp(1rem, 3.2vw, 1.5rem); color: var(--menu-price); font-feature-settings: var(--num-feature);
+}
+
+/* ===========================================================================
+   DishRows — classic menu rows for photoless subsections (name … price).
+   Used while photo coverage catches up; see DishRows.jsx.
+   =========================================================================== */
+.shk-rows {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: 1fr; row-gap: 2px;
+}
+@media (min-width: 960px) {
+  .shk-rows { grid-template-columns: 1fr 1fr; column-gap: clamp(40px, 6vw, 96px); }
+}
+.shk-row {
+  display: flex; align-items: baseline; gap: 10px; width: 100%;
+  background: none; border: none; padding: 10px 6px; cursor: pointer;
+  color: var(--white); font-family: var(--font-sans); text-align: left;
+  border-radius: var(--radius-sm, 8px);
+  transition: background var(--dur-base) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.shk-row:hover { background: rgba(255, 255, 255, 0.06); }
+.shk-row.is-soon { opacity: 0.5; cursor: default; }
+/* Row + quick-add "+" sit side by side; the button is a static flex item. */
+.shk-row-wrap { display: flex; align-items: center; gap: 6px; }
+.shk-row-wrap > .shk-row { flex: 1 1 auto; min-width: 0; }
+.shk-quickadd--row { position: static; flex: 0 0 auto; width: 26px; height: 26px; }
+.shk-row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.shk-row__name { font-weight: var(--fw-semibold); font-size: var(--text-base); line-height: 1.25; }
+.shk-row__soon {
+  margin-left: 8px; font-size: var(--text-2xs); font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--menu-price);
+}
+.shk-row__meta { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--menu-muted); font-feature-settings: var(--num-feature); }
+/* Photoless rows still carry the health story: a short description + the КБЖУ
+   balance bar under the name (owner wants them on the main page). */
+.shk-row__desc {
+  font-size: var(--text-xs); color: var(--text-muted); line-height: var(--leading-normal);
+  max-width: 42ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; text-wrap: pretty;
+}
+.shk-row__macro { width: min(220px, 70%); gap: 4px; margin-top: 2px; }
+.shk-row__macro .shk-macro__bar { height: 4px; }
+.shk-row__macro .shk-macro__label { display: none; }
+.shk-row__macro .shk-macro__legend { gap: var(--space-3); }
+.shk-row__macro .shk-macro__val { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-muted); font-feature-settings: var(--num-feature); }
+.shk-row__macro .shk-macro__val small { font-size: 0.7em; }
+.shk-row__dots { flex: 1; min-width: 16px; border-bottom: 1px dotted var(--border-strong); transform: translateY(-4px); }
+.shk-row__price {
+  font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-base);
+  color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature);
+}
+.shk-row__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); opacity: 0.8; }
+
+/* Manakish cutout: price shown only when it differs from the tier base price */
+.shk-mana__item-price {
+  font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-xs);
+  color: var(--menu-price); font-feature-settings: var(--num-feature);
+}
+
+/* ---- Set card: "save N%" badge label + explicit CTA affordance --------- */
+.shk-set__pct small {
+  font-family: var(--font-sans); font-size: var(--text-2xs); font-weight: var(--fw-semibold);
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--menu-price);
+}
+.shk-set__cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: clamp(14px, 2vw, 20px);
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  color: var(--menu-price);
+}
+.shk-set:hover .shk-set__cta { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- Manakish poster on mobile: 2-up grid instead of one-per-screen ---- */
+@media (max-width: 760px) {
+  .shk-mana__list {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5) var(--space-3);
+  }
+  .shk-mana__list > li { width: auto; }
+}
+
+/* ===========================================================================
+   MOTION POLISH — scroll-reveal stagger, dialog entrance, spring press.
+   All animation collapses under prefers-reduced-motion (base.css kill-switch).
+   =========================================================================== */
+
+/* Scroll-reveal: items rise in with a per-group stagger (useReveal.js).
+   One-shot animation; classes are removed on animationend so hover/press
+   transforms are never fought by animation fill. */
+.shk-reveal { opacity: 0; }
+.shk-reveal.is-in {
+  animation: shk-rise var(--dur-slow) var(--ease-out) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+@keyframes shk-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Dish/bundle dialog entrance: scrim fades, sheet rises from its trigger.
+   Exit stays instant (React unmounts on close). */
+.shk-dlg__scrim { animation: shk-fade var(--dur-base) var(--ease-out); }
+.shk-dlg { animation: shk-dlg-in 0.22s var(--ease-out); }
+@keyframes shk-fade { from { opacity: 0; } }
+@keyframes shk-dlg-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+}

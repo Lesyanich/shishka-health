@@ -1,16 +1,19 @@
 import { useState, useRef, useEffect, useMemo, Fragment } from "react";
 import { useMenu } from "./hooks/useMenu.js";
+import { useReveal } from "./hooks/useReveal.js";
 import { MenuHeader } from "./components/menu/MenuHeader.jsx";
 import { CategoryTabs } from "./components/filters/CategoryTabs.jsx";
 import { DishCard } from "./components/menu/DishCard.jsx";
+import { DishRows } from "./components/menu/DishRows.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
+import { ManakishTiers } from "./components/menu/ManakishTiers.jsx";
+import { ManakishSets } from "./components/menu/ManakishSets.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
 import { SiteFooter } from "./components/menu/SiteFooter.jsx";
 import { DEFAULT_CONTENT } from "./lib/content.js";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
-import { BundleCard } from "./components/menu/BundleCard.jsx";
 import { BundleDialog } from "./components/menu/BundleDialog.jsx";
 import { Cart } from "./components/cart/Cart.jsx";
 import { useCart } from "./state/cart.jsx";
@@ -72,6 +75,9 @@ function priceHint(items) {
   const min = Math.min(...prices), max = Math.max(...prices);
   return min === max ? `฿${min}` : `฿${min}–${max}`;
 }
+// A subsection with zero photography renders as classic menu rows instead of
+// a grid of placeholder discs (photo coverage is still catching up).
+const photoless = (items) => items.every((d) => !d.image_url);
 
 function LoadingSkeleton() {
   return (
@@ -163,6 +169,18 @@ export default function App() {
     Math.max(byCat.length - 1, 0)
   );
 
+  // Quick-add straight to the order from the tile/row, without opening the
+  // dish. Items that REQUIRE a choice (a modifier group with minSelect > 0)
+  // open the builder instead, since there's no single price to add.
+  const quickAdd = (dish) => {
+    if (!dish || dish.comingSoon || dish.price == null) return;
+    if (dish.modifierGroups?.some((g) => (g.minSelect ?? 0) > 0)) {
+      setSelected(dish);
+    } else {
+      cart.addDish(dish);
+    }
+  };
+
   const renderDish = (dish, catName) => (
     <DishCard
       key={dish.id}
@@ -182,12 +200,17 @@ export default function App() {
       category={catName}
       comingSoon={dish.comingSoon ?? false}
       onClick={() => setSelected(dish)}
+      onQuickAdd={() => quickAdd(dish)}
     />
   );
 
   useEffect(() => {
     if (!active && byCat.length > 0) setActive(byCat[0].id);
   }, [byCat.length]);
+
+  // Stagger-reveal menu items as they scroll into view (re-arms when the
+  // rendered set changes — data load, filters).
+  useReveal([loading, byCat.map((c) => `${c.id}:${c.items.length}`).join()]);
 
   const toggle = (arr, set, id) =>
     set(arr.includes(id) ? arr.filter((x) => x !== id) : [...arr, id]);
@@ -262,47 +285,58 @@ export default function App() {
               ref={(el) => (sectionRefs.current[cat.id] = el)}
               className="shk-app__section"
             >
-              <div className="shk-app__sec-head">
-                <h2 className="shk-app__sec-title">{cat.name}</h2>
-                <span className="shk-app__sec-count num">{cat.items.length}</span>
-              </div>
+              {cat.name === "Manakish" ? (
+                <ManakishTiers section={cat} onSelect={setSelected} />
+              ) : (
+                <>
+                  <div className="shk-app__sec-head">
+                    <h2 className="shk-app__sec-title">{cat.name}</h2>
+                    <span className="shk-app__sec-count num">{cat.items.length}</span>
+                  </div>
 
-              {cat.name === "Manakish" && bundleCards.length > 0 && (
-                <div className="shk-app__bundles">
-                  {bundleCards.map((b) => (
-                    <BundleCard
-                      key={b.tierCode}
-                      label={b.label}
-                      manakishCount={b.manakishCount}
-                      sauceCount={b.sauceCount}
-                      discountPct={b.discountPct}
-                      from={b.from}
-                      onClick={() => setActiveBundle(b)}
-                    />
-                  ))}
-                </div>
+                  {content.sectionIntros?.[cat.name] && (
+                    <p className="shk-app__sec-intro">
+                      {content.sectionIntros[cat.name]}
+                    </p>
+                  )}
+
+                  {(() => {
+                    const subs = subcategoriesOf(cat.items, cat.id);
+                    return hasSubcategories(subs, cat.id) ? (
+                      subs.map((sub) => (
+                        <div key={sub.id} className="shk-app__tier">
+                          <div className="shk-app__subhead">
+                            <h3 className="shk-app__sub-title">{sub.name}</h3>
+                            <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
+                          </div>
+                          {photoless(sub.items) ? (
+                            <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} />
+                          ) : (
+                            <div className="shk-app__grid">
+                              {sub.items.map((dish) => renderDish(dish, cat.name))}
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    ) : photoless(cat.items) ? (
+                      <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} />
+                    ) : (
+                      <div className="shk-app__grid">
+                        {cat.items.map((dish) => renderDish(dish, cat.name))}
+                      </div>
+                    );
+                  })()}
+                </>
               )}
 
-              {(() => {
-                const subs = subcategoriesOf(cat.items, cat.id);
-                return hasSubcategories(subs, cat.id) ? (
-                  subs.map((sub) => (
-                    <div key={sub.id} className="shk-app__tier">
-                      <div className="shk-app__subhead">
-                        <h3 className="shk-app__sub-title">{sub.name}</h3>
-                        <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
-                      </div>
-                      <div className="shk-app__grid">
-                        {sub.items.map((dish) => renderDish(dish, cat.name))}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="shk-app__grid">
-                    {cat.items.map((dish) => renderDish(dish, cat.name))}
-                  </div>
-                );
-              })()}
+              {cat.name === "Manakish" && bundleCards.length > 0 && (
+                <ManakishSets
+                  bundles={bundleCards}
+                  pool={manaPool}
+                  sauces={saucePoolList}
+                  onSelect={setActiveBundle}
+                />
+              )}
             </section>
 
             {/* Brand accent block after the configured category */}
@@ -336,7 +370,14 @@ export default function App() {
         onShare={selected ? () => handleShare(selected) : undefined}
         onAdd={
           selected && !selected.comingSoon && selected.price != null
-            ? () => { cart.addDish(selected); setSelected(null); }
+            ? (build) => {
+                if (selected.modifierGroups?.length && build) {
+                  cart.addConfiguredDish(selected, build);
+                } else {
+                  cart.addDish(selected);
+                }
+                setSelected(null);
+              }
             : undefined
         }
       />

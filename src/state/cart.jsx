@@ -2,8 +2,11 @@ import { createContext, useContext, useMemo, useState } from "react";
 
 /*
   Lightweight order builder for the showcase site. No payment — guests assemble
-  an order and see the running total, then pay at the counter. Lines are either
-  a plain dish or a configured manakish bundle (its chosen items + computed price).
+  an order and see the running total, then pay at the counter. Lines are one of:
+    - plain dish        (stacks by id)
+    - configured dish   (build-your-own: chosen options + computed unit price)
+    - manakish bundle   (its chosen items + computed price)
+  Configured dishes and bundles never stack — each build is its own line.
 */
 
 const CartContext = createContext(null);
@@ -17,15 +20,31 @@ export function CartProvider({ children }) {
   const [lines, setLines] = useState([]);
 
   const api = useMemo(() => {
-    // Plain dishes stack by id; bundles never stack (each build is its own line).
+    // Plain dishes stack by id (but never merge into a configured line).
     const addDish = (dish) =>
       setLines((prev) => {
-        const existing = prev.find((l) => l.kind === "dish" && l.dish.id === dish.id);
+        const existing = prev.find((l) => l.kind === "dish" && !l.config && l.dish.id === dish.id);
         if (existing) {
           return prev.map((l) => (l.id === existing.id ? { ...l, qty: l.qty + 1 } : l));
         }
         return [...prev, { kind: "dish", id: newId(), dish, qty: 1 }];
       });
+
+    // A build-your-own dish: carries its chosen options + the configured unit
+    // price so the line bills the real total, not the bare base. Never stacks.
+    // build = { options: [{group, name, priceDelta}], total }
+    const addConfiguredDish = (dish, build) =>
+      setLines((prev) => [
+        ...prev,
+        {
+          kind: "dish",
+          id: newId(),
+          dish,
+          qty: 1,
+          config: { options: build?.options ?? [] },
+          price: build?.total ?? (Number(dish.price) || 0),
+        },
+      ]);
 
     // children: [{ dish, qty, role: 'manakish' | 'sauce' }]
     const addBundle = (label, children, price) =>
@@ -37,11 +56,13 @@ export function CartProvider({ children }) {
     const remove = (id) => setLines((prev) => prev.filter((l) => l.id !== id));
     const clear = () => setLines([]);
 
-    const lineTotal = (l) => (l.kind === "bundle" ? l.price : Number(l.dish.price) || 0) * l.qty;
+    // Bundles + configured dishes carry an explicit unit price; plain dishes use
+    // the dish's base price.
+    const lineTotal = (l) => (l.price != null ? l.price : Number(l.dish?.price) || 0) * l.qty;
     const count = lines.reduce((n, l) => n + l.qty, 0);
     const total = lines.reduce((s, l) => s + lineTotal(l), 0);
 
-    return { lines, count, total, lineTotal, addDish, addBundle, setQty, remove, clear };
+    return { lines, count, total, lineTotal, addDish, addConfiguredDish, addBundle, setQty, remove, clear };
   }, [lines]);
 
   return <CartContext.Provider value={api}>{children}</CartContext.Provider>;

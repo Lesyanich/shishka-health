@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CalorieDonut } from "../nutrition/CalorieDonut.jsx";
 import { MacroBar } from "../nutrition/MacroBar.jsx";
 import { DietTag } from "../filters/DietTag.jsx";
@@ -8,20 +8,46 @@ import { ModifierBuilder } from "./ModifierBuilder.jsx";
 import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
 
 export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
+  const dialogRef = useRef(null);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
+    const prevFocus = document.activeElement;
+    document.body.style.overflow = "hidden";
+    const node = dialogRef.current;
+    node?.focus();
+    const onKey = (e) => {
+      if (e.key === "Escape") return onClose?.();
+      if (e.key !== "Tab" || !node) return;
+      const f = node.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!f.length) return;
+      const first = f[0];
+      const last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+      prevFocus?.focus?.();
+    };
   }, [open, onClose]);
 
   const [imgOk, setImgOk] = useState(true);
   useEffect(() => setImgOk(true), [dish?.image_url]);
 
-  // Nutrition of the currently selected add-ons (reported by the builder), added
-  // onto the base dish for a live KBJU counter. Reset when the dish changes.
-  const [addedNutri, setAddedNutri] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
-  useEffect(() => setAddedNutri({ calories: 0, protein: 0, carbs: 0, fat: 0 }), [dish?.id]);
+  // Current build reported by the ModifierBuilder: selected options, configured
+  // total, requiredMet flag, and the add-ons' nutrition (for the live counter).
+  // Reset when the dish changes.
+  const [build, setBuild] = useState(null);
+  useEffect(() => setBuild(null), [dish?.id]);
 
   if (!open || !dish) return null;
   const {
@@ -35,21 +61,28 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   // Build-your-own dishes (a required modifier group) price "from ฿X": the base
   // plus the cheapest mandatory add-ons. The flat base alone isn't orderable.
   const buildYourOwn = priceFrom != null;
+  const configurable = modifierGroups.length > 0;
+  // A build-your-own dish can only be ordered once its required minimums are met.
+  const canAdd = !buildYourOwn || (build?.requiredMet ?? false);
   // Headline price: a dish with a default-configured add-on (e.g. a dip served
-  // with a bun) shows that default total (฿149); the guest changes it below.
-  const headlinePrice = priceDefault ?? price;
+  // with a bun) opens at that default total (฿149). Once the guest changes the
+  // build, follow the live configured total so the header/CTA stay honest.
+  const headlinePrice = build?.total ?? priceDefault ?? price;
 
   // Base dish nutrition + selected add-ons → live values for the donut/macros.
+  const added = build?.nutrition ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
   const round1 = (n) => Math.round(n * 10) / 10;
-  const liveCalories = calories != null ? calories + addedNutri.calories : (addedNutri.calories || null);
-  const liveProtein = round1((protein || 0) + addedNutri.protein);
-  const liveCarbs = round1((carbs || 0) + addedNutri.carbs);
-  const liveFat = round1((fat || 0) + addedNutri.fat);
+  const liveCalories = calories != null ? calories + added.calories : (added.calories || null);
+  const liveProtein = round1((protein || 0) + added.protein);
+  const liveCarbs = round1((carbs || 0) + added.carbs);
+  const liveFat = round1((fat || 0) + added.fat);
 
   return (
     <div className="shk-dlg__scrim" onClick={onClose}>
       <div
         className="shk-dlg"
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={name}
@@ -120,13 +153,22 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
               basePrice={price ?? 0}
               currency={currency}
               groups={modifierGroups}
-              onNutritionChange={setAddedNutri}
+              onChange={setBuild}
             />
           )}
 
           {onAdd && (
-            <button type="button" className="shk-dlg__add" onClick={onAdd}>
-              Add to order{buildYourOwn ? ` · from ${currency}${priceFrom}` : headlinePrice != null ? ` · ${currency}${headlinePrice}` : ""}
+            <button
+              type="button"
+              className="shk-dlg__add"
+              onClick={() => onAdd(build)}
+              disabled={!canAdd}
+            >
+              {configurable
+                ? canAdd
+                  ? `Add to order · ${currency}${build?.total ?? priceDefault ?? priceFrom ?? price}`
+                  : "Pick the required options"
+                : `Add to order${price != null ? ` · ${currency}${price}` : ""}`}
             </button>
           )}
 

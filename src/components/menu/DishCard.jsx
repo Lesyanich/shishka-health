@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
-import { StarIcon } from "../Icons.jsx";
+import { StarIcon, PlusIcon } from "../Icons.jsx";
 import { MacroBar } from "../nutrition/MacroBar.jsx";
 
 function Placeholder({ category }) {
@@ -33,6 +33,7 @@ export function DishCard({
   layout = "tile",
   comingSoon = false,
   onClick,
+  onQuickAdd,
   className = "",
   ...rest
 }) {
@@ -49,10 +50,21 @@ export function DishCard({
     .join(" ");
 
   return (
-    <button
-      type="button"
+    <div
       className={cls}
+      role="button"
+      tabIndex={comingSoon ? -1 : 0}
       onClick={comingSoon ? undefined : onClick}
+      onKeyDown={
+        comingSoon
+          ? undefined
+          : (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick?.();
+              }
+            }
+      }
       aria-disabled={comingSoon || undefined}
       {...rest}
     >
@@ -98,6 +110,17 @@ export function DishCard({
                 </span>
               )
             )}
+            {!comingSoon && onQuickAdd && price != null && (
+              <button
+                type="button"
+                className="shk-quickadd"
+                onClick={(e) => { e.stopPropagation(); onQuickAdd(); }}
+                aria-label={`Add ${name} to order`}
+                title={`Add ${name} to order`}
+              >
+                <PlusIcon size={14} strokeWidth={2.5} />
+              </button>
+            )}
           </span>
         </div>
 
@@ -139,6 +162,6 @@ export function DishCard({
           )}
         </div>
       </div>
-    </button>
+    </div>
   );
 }

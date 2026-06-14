@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { requiredAddOnFloor, selectedNutrition } from "../../lib/modifiers.js";
+import { requiredAddOnFloor, selectedNutrition, selectedOptionsList } from "../../lib/modifiers.js";
 
 // Interactive "build your own" panel. Toggle options, see a live total.
 // A group can be REQUIRED (minSelect > 0) and/or CAPPED (maxSelect): e.g.
@@ -8,7 +8,7 @@ import { requiredAddOnFloor, selectedNutrition } from "../../lib/modifiers.js";
 // shows the "from ฿X" floor (base + cheapest mandatory add-ons), matching the
 // card; once met, it shows the live total. At a group's cap, its unpicked
 // options are disabled.
-export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], onNutritionChange }) {
+export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], onChange }) {
   const initial = useMemo(() => {
     const s = new Set();
     groups.forEach((g, gi) =>
@@ -95,11 +95,17 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
   const floor = (basePrice || 0) + requiredAddOnFloor(groups);
   const displayTotal = requiredMet ? total : floor;
 
-  // Report the selected add-ons' nutrition up so the dialog's donut/macros can
-  // add it onto the base dish live.
+  // Report the full build up so the dialog can drive the live donut/macros AND
+  // pass the configured options + price into the cart on "Add to order".
   useEffect(() => {
-    onNutritionChange?.(selectedNutrition(groups, selected));
-  }, [selected, groups, onNutritionChange]);
+    onChange?.({
+      options: selectedOptionsList(groups, selected),
+      extraPrice: extra,
+      total,
+      requiredMet,
+      nutrition: selectedNutrition(groups, selected),
+    });
+  }, [selected, groups, extra, total, requiredMet, onChange]);
 
   return (
     <div className="shk-build">

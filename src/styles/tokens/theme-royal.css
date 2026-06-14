@@ -1,0 +1,43 @@
+/* ===========================================================================
+   SHISHKA — ROYAL GREEN THEME  (reverse / dark)
+   ---------------------------------------------------------------------------
+   The site, inside and out, is royal green with reversed-out white text.
+   This file overrides the light-theme semantic tokens that the components read
+   (via colors.css + compat.css). Imported LAST so it wins. Raw color scales are
+   left intact — only the semantic surface/text/border aliases flip here.
+   =========================================================================== */
+:root {
+  /* ---- Surfaces: page deepest; cards/sheets step lighter (raised) -------- */
+  /* One continuous royal-green page (brand swatch #1E3903) — no section bands. */
+  --bg-canvas:      #1E3903;
+  --bg-page:        #1E3903;
+  --bg-base:        #3C481A;
+  --bg-surface:     #46521D;
+  --bg-surface-alt: #3C481A;
+  --surface-1:      #46521D;
+  --surface-2:      #3C481A;
+  --surface-3:      #56641F;
+  --surface-inset:  rgba(255, 255, 255, 0.06);
+
+  /* ---- Text: reversed out (warm white) ---------------------------------- */
+  --text-strong: #FBF8F0;
+  --text-body:   rgba(251, 248, 240, 0.86);
+  --text-muted:  rgba(251, 248, 240, 0.62);
+  --text-mute:   rgba(251, 248, 240, 0.62);
+  --text-faint:  rgba(251, 248, 240, 0.45);
+
+  /* ---- Menu data ink ----------------------------------------------------- */
+  --menu-price:  var(--honey-300);   /* warm gold price on green */
+  --menu-muted:  rgba(251, 248, 240, 0.70);
+  --menu-kcal:   var(--green-200);
+
+  /* ---- Borders / hairlines reversed ------------------------------------- */
+  --border:         rgba(255, 255, 255, 0.14);
+  --border-strong:  rgba(255, 255, 255, 0.26);
+  --border-subtle:  rgba(255, 255, 255, 0.12);
+  --border-default: rgba(255, 255, 255, 0.16);
+
+  /* ---- Links / selection on dark ---------------------------------------- */
+  --text-accent: var(--honey-300);
+  --selection:   rgba(240, 206, 131, 0.25);
+}

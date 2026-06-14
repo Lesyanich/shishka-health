@@ -13,7 +13,12 @@ export function BrandRule({ wide = false, content }) {
         <ul className="shk-rule__grid">
           {items.map((r) => (
             <li key={r} className="shk-rule__pill">
-              <span className="shk-rule__no">NO</span>
+              <span className="shk-rule__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 7l10 10M17 7L7 17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+              </span>
+              <span className="shk-visually-hidden">No </span>
               <span className="shk-rule__what">{r}</span>
             </li>
           ))}
