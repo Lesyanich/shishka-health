@@ -3,7 +3,7 @@ import { supabase, hasSupabase } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
 import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
 import { deepStripEmoji } from "../lib/text.js";
-import { dishFloor } from "../lib/modifiers.js";
+import { dishFloor, dishDefaultPrice } from "../lib/modifiers.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -151,6 +151,10 @@ async function fetchFromSupabase() {
 
     const modifierGroups = modifiersFor(d.id);
     const price = d.price != null ? Number(d.price) : null;
+    // A dish with a DEFAULT-selected add-on (e.g. a dip served with a bun by
+    // default) opens "as configured": its headline price is base + default
+    // add-ons (฿111 + ฿38 = ฿149), shown as a flat price the guest can change.
+    const priceDefault = dishDefaultPrice(price, modifierGroups);
     return {
       id: d.id,
       name: d.customer_short_name || d.name,
@@ -158,9 +162,11 @@ async function fetchFromSupabase() {
       ingredients: d.customer_ingredients ?? null,
       modifierGroups,
       price,
-      // "From ฿X" floor for build-your-own dishes (a required modifier group):
-      // base + cheapest mandatory add-ons. null for ordinary fixed-price dishes.
-      priceFrom: dishFloor(price, modifierGroups),
+      priceDefault,
+      // "From ฿X" floor for build-your-own dishes with a required group but no
+      // default pick (smoothies). A dish with a default uses priceDefault, not
+      // a "from" floor, so suppress it there.
+      priceFrom: priceDefault != null ? null : dishFloor(price, modifierGroups),
       image_url: d.customer_photo_url ?? d.image_url ?? null,
       is_featured: d.is_featured,
       stockState,

@@ -6,6 +6,7 @@
 */
 
 import { PlusIcon } from "../Icons.jsx";
+import { MacroBar } from "../nutrition/MacroBar.jsx";
 
 export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
   return (
@@ -29,6 +30,16 @@ export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
                   {d.calories != null && d.portion_size != null && " · "}
                   {d.portion_size != null && `${d.portion_size}${d.portion_unit ?? ""}`}
                 </span>
+              )}
+              {d.description && <span className="shk-row__desc">{d.description}</span>}
+              {(d.protein > 0 || d.carbs > 0 || d.fat > 0) && (
+                <MacroBar
+                  protein={d.protein}
+                  carbs={d.carbs}
+                  fat={d.fat}
+                  compact
+                  className="shk-row__macro"
+                />
               )}
             </span>
             <span className="shk-row__dots" aria-hidden="true" />

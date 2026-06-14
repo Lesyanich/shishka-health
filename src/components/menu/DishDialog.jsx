@@ -51,7 +51,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
   if (!open || !dish) return null;
   const {
-    name, description, price, priceFrom = null, currency = "฿", image, image_url,
+    name, description, price, priceDefault = null, priceFrom = null, currency = "฿", image, image_url,
     calories, protein = 0, carbs = 0, fat = 0,
     diets = [], allergens = [], tags = [], badges = [],
     category, portion_size, portion_unit, ingredients,
@@ -64,6 +64,10 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const configurable = modifierGroups.length > 0;
   // A build-your-own dish can only be ordered once its required minimums are met.
   const canAdd = !buildYourOwn || (build?.requiredMet ?? false);
+  // Headline price: a dish with a default-configured add-on (e.g. a dip served
+  // with a bun) opens at that default total (฿149). Once the guest changes the
+  // build, follow the live configured total so the header/CTA stay honest.
+  const headlinePrice = build?.total ?? priceDefault ?? price;
 
   // Base dish nutrition + selected add-ons → live values for the donut/macros.
   const added = build?.nutrition ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
@@ -128,8 +132,8 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
                 <span className="shk-dlg__from">from </span>{currency}{priceFrom}
               </span>
             ) : (
-              price != null && (
-                <span className="shk-dlg__price">{currency}{price}</span>
+              headlinePrice != null && (
+                <span className="shk-dlg__price">{currency}{headlinePrice}</span>
               )
             )}
           </div>
@@ -162,7 +166,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
             >
               {configurable
                 ? canAdd
-                  ? `Add to order · ${currency}${build?.total ?? priceFrom ?? price}`
+                  ? `Add to order · ${currency}${build?.total ?? priceDefault ?? priceFrom ?? price}`
                   : "Pick the required options"
                 : `Add to order${price != null ? ` · ${currency}${price}` : ""}`}
             </button>
