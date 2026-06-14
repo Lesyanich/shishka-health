@@ -46,6 +46,32 @@ export function dishFloor(basePrice, groups = []) {
   return Number(basePrice) + requiredAddOnFloor(groups);
 }
 
+/** True when any option is pre-selected by default (e.g. a dip's default bun). */
+export function hasDefaultSelection(groups = []) {
+  return groups.some((g) => g.options.some((o) => o.isDefault));
+}
+
+/** Sum of the default-selected options' price deltas. */
+export function defaultExtra(groups = []) {
+  let extra = 0;
+  for (const g of groups) {
+    for (const o of g.options) {
+      if (o.isDefault) extra += Number(o.priceDelta) || 0;
+    }
+  }
+  return extra;
+}
+
+/**
+ * The price a dish shows when it opens "as configured by default" — base plus
+ * its default-selected add-ons (e.g. dip = base + bun = ฿149). Returns null when
+ * nothing is selected by default, so callers fall back to plain/from pricing.
+ */
+export function dishDefaultPrice(basePrice, groups = []) {
+  if (basePrice == null || !hasDefaultSelection(groups)) return null;
+  return Number(basePrice) + defaultExtra(groups);
+}
+
 /**
  * Sum the per-portion nutrition of the currently selected options. `selected` is
  * the Set of "${groupIndex}:${optionIndex}" keys used by the ModifierBuilder.

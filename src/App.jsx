@@ -168,7 +168,7 @@ export default function App() {
       key={dish.id}
       name={dish.name}
       description={dish.description}
-      price={dish.price}
+      price={dish.priceDefault ?? dish.price}
       priceFrom={dish.priceFrom}
       image={dish.image_url}
       kcal={dish.calories}

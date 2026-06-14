@@ -25,7 +25,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
   if (!open || !dish) return null;
   const {
-    name, description, price, priceFrom = null, currency = "฿", image, image_url,
+    name, description, price, priceDefault = null, priceFrom = null, currency = "฿", image, image_url,
     calories, protein = 0, carbs = 0, fat = 0,
     diets = [], allergens = [], tags = [], badges = [],
     category, portion_size, portion_unit, ingredients,
@@ -35,6 +35,9 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   // Build-your-own dishes (a required modifier group) price "from ฿X": the base
   // plus the cheapest mandatory add-ons. The flat base alone isn't orderable.
   const buildYourOwn = priceFrom != null;
+  // Headline price: a dish with a default-configured add-on (e.g. a dip served
+  // with a bun) shows that default total (฿149); the guest changes it below.
+  const headlinePrice = priceDefault ?? price;
 
   // Base dish nutrition + selected add-ons → live values for the donut/macros.
   const round1 = (n) => Math.round(n * 10) / 10;
@@ -96,8 +99,8 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
                 <span className="shk-dlg__from">from </span>{currency}{priceFrom}
               </span>
             ) : (
-              price != null && (
-                <span className="shk-dlg__price">{currency}{price}</span>
+              headlinePrice != null && (
+                <span className="shk-dlg__price">{currency}{headlinePrice}</span>
               )
             )}
           </div>
@@ -123,7 +126,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
           {onAdd && (
             <button type="button" className="shk-dlg__add" onClick={onAdd}>
-              Add to order{buildYourOwn ? ` · from ${currency}${priceFrom}` : price != null ? ` · ${currency}${price}` : ""}
+              Add to order{buildYourOwn ? ` · from ${currency}${priceFrom}` : headlinePrice != null ? ` · ${currency}${headlinePrice}` : ""}
             </button>
           )}
 
