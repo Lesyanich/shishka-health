@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
 import { StarIcon, PlusIcon } from "../Icons.jsx";
-import { MacroBar } from "../nutrition/MacroBar.jsx";
 
 function Placeholder({ category }) {
   return (
@@ -137,16 +136,6 @@ export function DishCard({
               </span>
             )}
           </div>
-        )}
-
-        {(protein > 0 || carbs > 0 || fat > 0) && (
-          <MacroBar
-            protein={protein}
-            carbs={carbs}
-            fat={fat}
-            compact
-            className="shk-card__macro"
-          />
         )}
 
         {description && <p className="shk-card__desc">{description}</p>}
