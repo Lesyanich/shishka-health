@@ -1,10 +1,13 @@
 /*
-  Manakeesh section — built to match the shop poster: a big "manakish" title +
-  tagline, a lighter-green tier band (Classic 59 / Specialty 69 / Premium 79),
-  then THREE COLUMNS (one per tier) of clean cutout photos floating on green
-  with the name beneath. No shadows or scrims — the PNGs are clean cutouts.
-  Clicking a manakeesh opens the dish detail window (DishDialog) via onSelect.
+  Manakeesh section — a big "manakish" title + tagline, then the tiers
+  (Classic → Specialty → Premium) laid out as a HORIZONTAL, snap-scrolling
+  carousel so the section stays compact instead of running the full page.
+  A bottom-right "next" control advances to the following tier (and loops).
+  The set/bundle cards render under this (see App.jsx). Clicking a manakeesh
+  opens the dish detail window (DishDialog) via onSelect.
 */
+import { useRef } from "react";
+import { ChevronRightIcon } from "../Icons.jsx";
 
 const TAGLINE = "our signature gluten-free crust crafted from potato & rice";
 
@@ -36,6 +39,17 @@ function tiersOf(items) {
 
 export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
   const tiers = tiersOf(section.items);
+  const scrollerRef = useRef(null);
+
+  // Advance one tier-panel to the right; loop back to the start at the end.
+  const scrollNext = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const panel = el.querySelector(".shk-mana__col");
+    const step = panel ? panel.getBoundingClientRect().width + 24 : el.clientWidth * 0.85;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+    el.scrollTo({ left: atEnd ? 0 : el.scrollLeft + step, behavior: "smooth" });
+  };
 
   return (
     <div className="shk-mana">
@@ -44,7 +58,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
         <p className="shk-mana__tag">{tagline}</p>
       </header>
 
-      <div className="shk-mana__cols">
+      <div className="shk-mana__cols" ref={scrollerRef}>
         {tiers.map((t) => (
           <div className="shk-mana__col" key={t.id}>
             <div className="shk-mana__colhead">
@@ -84,6 +98,15 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
           </div>
         ))}
       </div>
+
+      {tiers.length > 1 && (
+        <div className="shk-mana__nav">
+          <button type="button" className="shk-mana__next" onClick={scrollNext}>
+            <span>next</span>
+            <ChevronRightIcon size={18} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
