@@ -330,10 +330,15 @@
 .shk-card__body { padding: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .shk-card__topline { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .shk-card__priceblock { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
-/* Price (+ quick-add) pinned to the top-right corner of the tile. */
+/* Price (+ quick-add) boxed in the top-right corner of the tile. */
 .shk-card__corner {
-  position: absolute; top: 0; right: 0; z-index: 3;
+  position: absolute; top: 6px; right: 6px; z-index: 3;
   display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 5px 4px 9px;
+  background: rgba(0, 0, 0, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 11px;
+  backdrop-filter: blur(2px);
 }
 .shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--white); }
 .shk-card__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
@@ -424,11 +429,6 @@
 /* Divider line between top-level sections */
 .shk-app__section { border-top: 1px solid rgba(255, 255, 255, 0.10); }
 .shk-app__section:first-of-type { border-top: none; }
-/* Alternating sections get a subtle tint band (zebra) to separate them */
-.shk-app__section--tint {
-  background: rgba(0, 0, 0, 0.16);
-  border-radius: var(--radius-xl);
-}
 .shk-app__sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .shk-app__sec-title {
   font-family: var(--font-display); font-weight: var(--fw-display);

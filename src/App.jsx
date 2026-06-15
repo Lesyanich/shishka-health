@@ -283,7 +283,7 @@ export default function App() {
           <Fragment key={cat.id}>
             <section
               ref={(el) => (sectionRefs.current[cat.id] = el)}
-              className={`shk-app__section${i % 2 === 1 ? " shk-app__section--tint" : ""}`}
+              className="shk-app__section"
             >
               {cat.name === "Manakish" ? (
                 <ManakishTiers section={cat} onSelect={setSelected} />
