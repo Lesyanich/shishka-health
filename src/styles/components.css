@@ -424,8 +424,8 @@
 /* Divider line between top-level sections */
 .shk-app__section { border-top: 1px solid rgba(255, 255, 255, 0.10); }
 .shk-app__section:first-of-type { border-top: none; }
-/* Drinks section: subtle tint band to set the drinks apart */
-.shk-app__section--drinks {
+/* Alternating sections get a subtle tint band (zebra) to separate them */
+.shk-app__section--tint {
   background: rgba(0, 0, 0, 0.16);
   border-radius: var(--radius-xl);
 }
