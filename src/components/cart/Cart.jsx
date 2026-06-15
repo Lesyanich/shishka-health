@@ -11,6 +11,7 @@ import { XIcon, BagIcon } from "../Icons.jsx";
 export function Cart({ currency = "฿" }) {
   const cart = useCart();
   const [open, setOpen] = useState(false);
+  const [note, setNote] = useState("");
   const empty = cart.count === 0;
 
   return (
@@ -110,11 +111,22 @@ export function Cart({ currency = "฿" }) {
             </ul>
 
             <footer className="shk-cart__foot">
+              <div className="shk-cart__comment">
+                <label htmlFor="shk-order-note">Add a note for your order</label>
+                <textarea
+                  id="shk-order-note"
+                  className="shk-cart__comment-input"
+                  rows={2}
+                  placeholder="Allergies, preferences, anything for our team…"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </div>
               <div className="shk-cart__total-row">
                 <span>Total</span>
                 <span className="num">{currency}{cart.total}</span>
               </div>
-              <p className="shk-cart__note">Pay at the counter — no online payment. Show this total to our team.</p>
+              <p className="shk-cart__note">Pay at the counter — no online payment. Show this total{note.trim() ? " and note" : ""} to our team.</p>
               <button type="button" className="shk-cart__clear" onClick={cart.clear}>Clear order</button>
             </footer>
             </>)}

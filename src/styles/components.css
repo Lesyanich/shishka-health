@@ -330,6 +330,11 @@
 .shk-card__body { padding: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .shk-card__topline { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .shk-card__priceblock { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
+/* Price (+ quick-add) pinned to the top-right corner of the tile. */
+.shk-card__corner {
+  position: absolute; top: 0; right: 0; z-index: 3;
+  display: inline-flex; align-items: center; gap: 6px;
+}
 .shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--white); }
 .shk-card__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
 .shk-card__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); color: var(--menu-muted, var(--menu-price)); opacity: 0.8; }
@@ -782,15 +787,16 @@
   position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 55;
   display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;
   padding: var(--space-3) var(--space-5); border: none; border-radius: var(--radius-pill);
-  background: var(--brand-green); color: var(--brand-cream); box-shadow: var(--shadow-lg);
+  background: #7c3aed; color: #fff; box-shadow: var(--shadow-lg);
   font-family: var(--font-body); font-size: var(--text-base); font-weight: var(--fw-semibold);
   transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
+.shk-orderfab:not(.shk-orderfab--empty):hover { background: #6d28d9; }
 .shk-orderfab:hover { transform: translateY(-2px); }
 .shk-orderfab:active { transform: translateY(0); }
 .shk-orderfab__icon { display: grid; place-items: center; }
 .shk-orderfab__icon svg { width: 20px; height: 20px; }
-.shk-orderfab__count { background: var(--brand-cream); color: var(--brand-green); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
+.shk-orderfab__count { background: #fff; color: #7c3aed; border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 .shk-orderfab__total { font-family: var(--font-mono); font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 /* Empty state: friendly red CTA to start an order. */
 .shk-orderfab--empty { background: var(--accent); color: #fff; }
@@ -815,7 +821,7 @@
 /* Order drawer */
 .shk-cart__scrim { position: fixed; inset: 0; z-index: 70; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; }
 @media (min-width: 960px) { .shk-cart__scrim { align-items: center; } }
-.shk-cart { width: 100%; max-width: 520px; max-height: 88vh; display: flex; flex-direction: column; background: var(--bg-base); border-radius: var(--radius-xl) var(--radius-xl) 0 0; overflow: hidden; }
+.shk-cart { width: 100%; max-width: 520px; max-height: 88vh; display: flex; flex-direction: column; background: #fff; color: var(--text-strong); border-radius: var(--radius-xl) var(--radius-xl) 0 0; overflow: hidden; }
 @media (min-width: 960px) { .shk-cart { border-radius: var(--radius-xl); } }
 .shk-cart__head { display: flex; align-items: center; justify-content: space-between; padding: var(--space-5); }
 .shk-cart__title { font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--text-xl); color: var(--text-strong); }
@@ -833,6 +839,17 @@
 .shk-cart__total-row { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-size: var(--text-lg); color: var(--text-strong); font-feature-settings: var(--num-feature); }
 .shk-cart__note { font-size: var(--text-xs); color: var(--text-mute); }
 .shk-cart__clear { align-self: flex-start; background: none; border: none; cursor: pointer; color: var(--text-mute); font-size: var(--text-sm); padding: 0; text-decoration: underline; }
+/* Order note / comments field (before paying) */
+.shk-cart__comment { display: flex; flex-direction: column; gap: 6px; }
+.shk-cart__comment label { font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--text-strong); }
+.shk-cart__comment-input {
+  width: 100%; resize: vertical; min-height: 46px;
+  padding: 10px 12px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong); background: #fff; color: var(--text-strong);
+  font-family: var(--font-sans); font-size: var(--text-sm); line-height: 1.4;
+}
+.shk-cart__comment-input::placeholder { color: var(--text-mute); }
+.shk-cart__comment-input:focus { outline: none; border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15); }
 
 /* ===========================================================================
    MANAKEESH — poster layout (see components/menu/ManakishTiers.jsx)
@@ -858,10 +875,10 @@
   font-weight: var(--fw-semibold); color: var(--white); line-height: 1.18;
 }
 
-/* ---- Three columns: one per tier -------------------------------------- */
+/* ---- Tiers stacked; each tier is a tight grid of big cutouts ----------- */
 .shk-mana__cols {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: clamp(16px, 2.4vw, 40px);
+  display: flex; flex-direction: column;
+  gap: clamp(28px, 4vw, 56px);
 }
 .shk-mana__col { display: flex; flex-direction: column; }
 
@@ -883,16 +900,17 @@
   font-size: clamp(var(--text-md), 1.6vw, var(--text-xl)); color: var(--white);
 }
 
-/* ---- Items: clean cutouts, no card/shadow ----------------------------- */
+/* ---- Items: big clean cutouts packed in a tight grid ------------------ */
 .shk-mana__list {
   list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; align-items: center;
-  gap: clamp(20px, 3vh, 40px);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: clamp(10px, 1.4vw, 18px) clamp(6px, 0.8vw, 12px);
+  align-items: start; justify-items: center;
 }
 .shk-mana__list > li { width: 100%; display: flex; justify-content: center; }
 .shk-mana__item {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  width: 100%; max-width: 180px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  width: 100%; max-width: 240px;
   background: none; border: none; padding: 0; cursor: pointer; color: inherit;
   transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -900,7 +918,7 @@
 .shk-mana__item:active { transform: scale(0.97); }
 .shk-mana__item.is-soon { opacity: 0.5; }
 
-.shk-mana__disc { position: relative; width: clamp(96px, 9vw, 150px); aspect-ratio: 1; display: grid; place-items: center; }
+.shk-mana__disc { position: relative; width: 100%; max-width: 210px; aspect-ratio: 1; display: grid; place-items: center; }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
 .shk-mana__disc-ph {
   width: 88%; height: 88%; border-radius: 50%;
@@ -931,8 +949,6 @@
 @media (max-width: 760px) {
   .shk-mana__head { flex-direction: column; }
   .shk-mana__tag { text-align: left; }
-  .shk-mana__cols { grid-template-columns: 1fr; gap: var(--space-6); }
-  .shk-mana__list { gap: var(--space-5); }
 }
 
 /* ===========================================================================
@@ -1052,15 +1068,6 @@
   color: var(--menu-price);
 }
 .shk-set:hover .shk-set__cta { text-decoration: underline; text-underline-offset: 3px; }
-
-/* ---- Manakish poster on mobile: 2-up grid instead of one-per-screen ---- */
-@media (max-width: 760px) {
-  .shk-mana__list {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-5) var(--space-3);
-  }
-  .shk-mana__list > li { width: auto; }
-}
 
 /* ===========================================================================
    MOTION POLISH — scroll-reveal stagger, dialog entrance, spring press.

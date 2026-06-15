@@ -7,7 +7,7 @@ export function MenuHeader({ filterCount = 0, onOpenFilters, wide = false }) {
       <img
         src="/assets/logo-full-white.png"
         alt="Shishka Healthy Kitchen"
-        style={{ height: wide ? 80 : 66, width: "auto", display: "block" }}
+        style={{ height: wide ? 96 : 80, width: "auto", display: "block", marginTop: wide ? 10 : 12 }}
       />
       <div className="shk-header__filter">
         <div className="shk-header__filter-wrap">

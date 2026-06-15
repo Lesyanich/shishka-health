@@ -94,33 +94,32 @@ export function DishCard({
         )}
       </div>
 
+      {(priceFrom != null || price != null) && (
+        <div className="shk-card__corner">
+          {priceFrom != null ? (
+            <span className="shk-card__price">
+              <span className="shk-card__from">from </span>{currency}{priceFrom}
+            </span>
+          ) : (
+            <span className="shk-card__price">{currency}{price}</span>
+          )}
+          {!comingSoon && onQuickAdd && price != null && (
+            <button
+              type="button"
+              className="shk-quickadd"
+              onClick={(e) => { e.stopPropagation(); onQuickAdd(); }}
+              aria-label={`Add ${name} to order`}
+              title={`Add ${name} to order`}
+            >
+              <PlusIcon size={14} strokeWidth={2.5} />
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="shk-card__body">
         <div className="shk-card__topline">
           <span className="shk-card__name">{name}</span>
-          <span className="shk-card__priceblock">
-            {priceFrom != null ? (
-              <span className="shk-card__price">
-                <span className="shk-card__from">from </span>{currency}{priceFrom}
-              </span>
-            ) : (
-              price != null && (
-                <span className="shk-card__price">
-                  {currency}{price}
-                </span>
-              )
-            )}
-            {!comingSoon && onQuickAdd && price != null && (
-              <button
-                type="button"
-                className="shk-quickadd"
-                onClick={(e) => { e.stopPropagation(); onQuickAdd(); }}
-                aria-label={`Add ${name} to order`}
-                title={`Add ${name} to order`}
-              >
-                <PlusIcon size={14} strokeWidth={2.5} />
-              </button>
-            )}
-          </span>
         </div>
 
         {(kcal != null || weight != null) && (
