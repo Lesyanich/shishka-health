@@ -18,7 +18,7 @@ export function BrandRule({ wide = false, content }) {
                   <path d="M7 7l10 10M17 7L7 17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
               </span>
-              <span className="shk-visually-hidden">No </span>
+              <span className="shk-rule__no">NO</span>
               <span className="shk-rule__what">{r}</span>
             </li>
           ))}
