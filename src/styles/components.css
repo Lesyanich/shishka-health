@@ -421,6 +421,14 @@
 .shk-app__main { padding-bottom: 12px; }
 .shk-app__section { padding: 22px 16px 2px; }
 .shk-app__section { padding: clamp(28px, 5vh, 64px) 16px 8px; }
+/* Divider line between top-level sections */
+.shk-app__section { border-top: 1px solid rgba(255, 255, 255, 0.10); }
+.shk-app__section:first-of-type { border-top: none; }
+/* Drinks section: subtle tint band to set the drinks apart */
+.shk-app__section--drinks {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: var(--radius-xl);
+}
 .shk-app__sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .shk-app__sec-title {
   font-family: var(--font-display); font-weight: var(--fw-display);
@@ -888,24 +896,26 @@
 .shk-mana__cols::-webkit-scrollbar-track { background: transparent; }
 .shk-mana__cols::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 999px; }
 .shk-mana__col {
-  flex: 0 0 86%; max-width: 560px;
+  flex: 0 0 100%; max-width: 100%;
   display: flex; flex-direction: column;
   scroll-snap-align: start;
 }
 
-/* Bottom-right "next tier" control */
-.shk-mana__nav { display: flex; justify-content: flex-end; margin-top: clamp(12px, 2vw, 20px); }
+/* Bottom-right "next tier" control — big, high-contrast honey pill */
+.shk-mana__nav { display: flex; justify-content: flex-end; margin-top: clamp(14px, 2vw, 22px); }
 .shk-mana__next {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px; border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.12); color: var(--white);
-  border: 1px solid rgba(255, 255, 255, 0.28); cursor: pointer;
-  font-family: var(--font-sans); font-weight: var(--fw-semibold);
-  font-size: var(--text-sm); text-transform: lowercase;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 26px; border-radius: var(--radius-pill);
+  background: var(--honey-300); color: var(--royal-green);
+  border: none; cursor: pointer;
+  font-family: var(--font-sans); font-weight: var(--fw-bold);
+  font-size: var(--text-lg); text-transform: lowercase; letter-spacing: 0.01em;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   transition: background 0.16s var(--ease-out), transform 0.16s var(--ease-out);
 }
-.shk-mana__next:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(2px); }
-.shk-mana__next svg { width: 18px; height: 18px; }
+.shk-mana__next:hover { background: #f0d597; transform: translateX(3px); }
+.shk-mana__next:active { transform: translateX(0) scale(0.97); }
+.shk-mana__next svg { width: 22px; height: 22px; }
 
 /* Tier band header — the three sit side by side and read as one band */
 .shk-mana__colhead {
