@@ -7,6 +7,8 @@
   (DishDialog) via onSelect.
 */
 
+import { PriceSeal } from "./PriceSeal.jsx";
+
 const TAGLINE = "our signature gluten-free crust crafted from potato & rice";
 
 // Poster tier wording (DB calls the middle tier "Signature").
@@ -51,12 +53,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
           return (
           <div className={`shk-mana__col ${isPremium ? "is-premium" : ""}`} key={t.id}>
             <div className="shk-mana__colhead">
-              {t.minPrice != null && (
-                <span className="shk-mana__price">
-                  <b>฿{t.minPrice}</b>
-                  {t.maxPrice !== t.minPrice && <small>and up</small>}
-                </span>
-              )}
+              {t.minPrice != null && <PriceSeal price={t.minPrice} size={78} />}
               <span className="shk-mana__tier-name">{tierLabel(t.name)}</span>
               {isPremium && <span className="shk-mana__tier-badge">premium</span>}
             </div>
