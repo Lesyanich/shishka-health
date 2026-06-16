@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
-import { StarIcon, PlusIcon } from "../Icons.jsx";
+import { StarIcon } from "../Icons.jsx";
+import { AddMedallion } from "./AddMedallion.jsx";
 
 function Placeholder({ category }) {
   return (
@@ -104,15 +105,11 @@ export function DishCard({
             <span className="shk-card__price">{currency}{price}</span>
           )}
           {!comingSoon && onQuickAdd && price != null && (
-            <button
-              type="button"
-              className="shk-quickadd"
+            <AddMedallion
+              size={26}
               onClick={(e) => { e.stopPropagation(); onQuickAdd(); }}
-              aria-label={`Add ${name} to order`}
-              title={`Add ${name} to order`}
-            >
-              <PlusIcon size={14} strokeWidth={2.5} />
-            </button>
+              label={`Add ${name} to order`}
+            />
           )}
         </div>
       )}

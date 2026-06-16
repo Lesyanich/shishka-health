@@ -281,19 +281,22 @@
 /* ---- DishCard — clean cutout tile (image + name + price, no box) ---- */
 /* Quick-add: small red circle echoing the bottom order button (var(--accent)).
    Sits inline right after the price; adds the item straight to the order. */
-.shk-quickadd {
-  flex: 0 0 auto; padding: 0;
-  width: 22px; height: 22px;
+/* Quick-add as a honey "sunburst" medallion echoing the brand mandala —
+   one SVG (see AddMedallion.jsx), colours from these rules. */
+.shk-add {
+  flex: 0 0 auto; padding: 0; border: none; background: none;
   display: inline-flex; align-items: center; justify-content: center;
-  border: none; border-radius: var(--radius-circle, 999px);
-  background: var(--accent); color: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
-  transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.32));
+  transition: transform 0.18s var(--ease-out);
 }
-.shk-quickadd svg { width: 14px; height: 14px; display: block; }
-.shk-quickadd:hover { background: var(--accent-hover); transform: scale(1.12); }
-.shk-quickadd:active { transform: scale(0.88); }
+.shk-add__svg { display: block; width: 100%; height: 100%; transition: transform 0.45s var(--ease-out); }
+.shk-add__ray, .shk-add__core { fill: var(--honey-300); }
+.shk-add__plus { stroke: var(--royal-green); stroke-width: 8.5; stroke-linecap: round; }
+.shk-add:hover { transform: scale(1.1); }
+.shk-add:hover .shk-add__svg { transform: rotate(40deg); }
+.shk-add:active { transform: scale(0.9); }
+@media (prefers-reduced-motion: reduce) { .shk-add:hover .shk-add__svg { transform: none; } }
 
 .shk-card {
   position: relative; display: flex; flex-direction: column; align-items: center;
@@ -330,18 +333,14 @@
 .shk-card__body { padding: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .shk-card__topline { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .shk-card__priceblock { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
-/* Price (+ quick-add) boxed in the top-right corner of the tile. */
+/* Price + quick-add float in the top-right corner of the tile — no box;
+   the price sits bare and the medallion anchors the corner. */
 .shk-card__corner {
   position: absolute; top: 6px; right: 6px; z-index: 3;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 5px 4px 9px;
-  background: rgba(0, 0, 0, 0.34);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 11px;
-  backdrop-filter: blur(2px);
+  display: inline-flex; align-items: center; gap: 7px;
 }
 .shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--white); }
-.shk-card__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-sm); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
+.shk-card__price { font-family: var(--font-sans); font-weight: var(--fw-display); font-size: var(--text-base); color: var(--menu-price); white-space: nowrap; letter-spacing: -0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
 .shk-card__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); color: var(--menu-muted, var(--menu-price)); opacity: 0.8; }
 
 /* Tile shows a short description under the name; nutrition (КБЖУ) lives in the
@@ -1067,7 +1066,6 @@
 /* Row + quick-add "+" sit side by side; the button is a static flex item. */
 .shk-row-wrap { display: flex; align-items: center; gap: 6px; }
 .shk-row-wrap > .shk-row { flex: 1 1 auto; min-width: 0; }
-.shk-quickadd--row { position: static; flex: 0 0 auto; width: 26px; height: 26px; }
 .shk-row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .shk-row__name { font-weight: var(--fw-semibold); font-size: var(--text-base); line-height: 1.25; }
 .shk-row__soon {
@@ -1084,8 +1082,8 @@
 }
 .shk-row__dots { flex: 1; min-width: 16px; border-bottom: 1px dotted var(--border-strong); transform: translateY(-4px); }
 .shk-row__price {
-  font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-base);
-  color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature);
+  font-family: var(--font-sans); font-weight: var(--fw-display); font-size: var(--text-base);
+  color: var(--menu-price); white-space: nowrap; letter-spacing: -0.01em;
 }
 .shk-row__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-xs); opacity: 0.8; }
 

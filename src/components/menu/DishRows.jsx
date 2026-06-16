@@ -5,7 +5,7 @@
   of placeholder discs while photography catches up.
 */
 
-import { PlusIcon } from "../Icons.jsx";
+import { AddMedallion } from "./AddMedallion.jsx";
 
 export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
   return (
@@ -50,15 +50,12 @@ export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
           </button>
 
           {!d.comingSoon && onQuickAdd && d.price != null && (
-            <button
-              type="button"
-              className="shk-quickadd shk-quickadd--row"
+            <AddMedallion
+              size={30}
+              className="shk-add--row"
               onClick={(e) => { e.stopPropagation(); onQuickAdd(d); }}
-              aria-label={`Add ${d.name} to order`}
-              title={`Add ${d.name} to order`}
-            >
-              <PlusIcon size={16} strokeWidth={2.5} />
-            </button>
+              label={`Add ${d.name} to order`}
+            />
           )}
         </li>
       ))}
