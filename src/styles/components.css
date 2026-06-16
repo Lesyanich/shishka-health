@@ -893,11 +893,36 @@
 /* ---- Tiers stacked vertically — the whole range is visible at once ----- */
 .shk-mana__cols {
   display: flex; flex-direction: column;
-  gap: clamp(32px, 5vh, 64px);
+  gap: clamp(22px, 3.5vh, 40px);
 }
 .shk-mana__col {
   max-width: 100%;
   display: flex; flex-direction: column;
+}
+/* Soft hairline between consecutive tier bands (fades out at the edges) */
+.shk-mana__col + .shk-mana__col {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16) 18%, rgba(255, 255, 255, 0.16) 82%, transparent) 1;
+  padding-top: clamp(22px, 3.5vh, 40px);
+}
+
+/* ---- Premium tier — honey accent so the top line reads as special ----- */
+.shk-mana__col.is-premium {
+  border: 1px solid rgba(240, 206, 131, 0.38);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.04);
+  padding: clamp(20px, 3vh, 30px) clamp(16px, 2vw, 24px);
+}
+.shk-mana__col.is-premium .shk-mana__tier-name { color: var(--honey-300); }
+.shk-mana__col.is-premium .shk-mana__disc {
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--honey-300), 0 0 0 7px rgba(240, 206, 131, 0.14);
+}
+.shk-mana__tier-badge {
+  font-size: var(--text-xs); font-weight: var(--fw-bold);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--royal-green); background: var(--honey-300);
+  padding: 3px 9px; border-radius: var(--radius-pill);
 }
 
 /* Tier band header — price + tier name, with a hairline under each band */

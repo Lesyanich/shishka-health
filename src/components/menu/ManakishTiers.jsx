@@ -46,8 +46,10 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
       </header>
 
       <div className="shk-mana__cols">
-        {tiers.map((t) => (
-          <div className="shk-mana__col" key={t.id}>
+        {tiers.map((t) => {
+          const isPremium = (t.name || "").toLowerCase() === "premium";
+          return (
+          <div className={`shk-mana__col ${isPremium ? "is-premium" : ""}`} key={t.id}>
             <div className="shk-mana__colhead">
               {t.minPrice != null && (
                 <span className="shk-mana__price">
@@ -56,6 +58,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
                 </span>
               )}
               <span className="shk-mana__tier-name">{tierLabel(t.name)}</span>
+              {isPremium && <span className="shk-mana__tier-badge">premium</span>}
             </div>
 
             <ul className="shk-mana__list">
@@ -83,7 +86,8 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
               ))}
             </ul>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
