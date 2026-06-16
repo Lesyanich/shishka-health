@@ -1137,3 +1137,27 @@
 @keyframes shk-dlg-in {
   from { opacity: 0; transform: translateY(16px) scale(0.97); }
 }
+
+/* ===========================================================================
+   Display tuning (requested): price tags +5%, dish photos −5%.
+   Centralized overrides so the base rules above stay untouched and this
+   tweak is trivial to find or revert.
+   =========================================================================== */
+.shk-card__price       { font-size: calc(var(--text-sm) * 1.05); }
+.shk-card__from        { font-size: calc(var(--text-xs) * 1.05); }
+.shk-dlg__price        { font-size: calc(var(--text-xl) * 1.05); }
+.shk-dlg__from         { font-size: calc(var(--text-sm) * 1.05); }
+.shk-app__sub-price    { font-size: calc(var(--text-sm) * 1.05); }
+.shk-bcard__price      { font-size: calc(var(--text-sm) * 1.05); }
+.shk-bundle__row-price { font-size: calc(var(--text-xs) * 1.05); }
+.shk-bundle__total     { font-size: calc(var(--text-xl) * 1.05); }
+.shk-cart__line-unit   { font-size: calc(var(--text-xs) * 1.05); }
+.shk-cart__line-price  { font-size: calc(var(--text-sm) * 1.05); }
+.shk-row__price        { font-size: calc(var(--text-base) * 1.05); }
+.shk-mana__item-price  { font-size: calc(var(--text-xs) * 1.05); }
+.shk-mana__price b     { font-size: calc(clamp(1.6rem, 2.6vw, 2.4rem) * 1.05); }
+.shk-mana__price small { font-size: calc(var(--text-xs) * 1.05); }
+.shk-set__from         { font-size: calc(var(--text-sm) * 1.05); }
+
+.shk-card__img { transform: scale(0.95); transform-origin: center bottom; }
+.shk-dlg__img  { transform: scale(0.95); transform-origin: center center; }
