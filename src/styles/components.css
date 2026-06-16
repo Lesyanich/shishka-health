@@ -1143,7 +1143,7 @@
    Centralized overrides so the base rules above stay untouched and this
    tweak is trivial to find or revert.
    =========================================================================== */
-.shk-card__price       { font-size: calc(var(--text-sm) * 1.05); }
+.shk-card__price       { font-size: var(--text-md); }
 .shk-card__from        { font-size: calc(var(--text-xs) * 1.05); }
 .shk-dlg__price        { font-size: calc(var(--text-xl) * 1.05); }
 .shk-dlg__from         { font-size: calc(var(--text-sm) * 1.05); }
