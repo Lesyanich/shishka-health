@@ -1,13 +1,11 @@
 /*
-  Manakeesh section — a big "manakish" title + tagline, then the tiers
-  (Classic → Specialty → Premium) laid out as a HORIZONTAL, snap-scrolling
-  carousel so the section stays compact instead of running the full page.
-  A bottom-right "next" control advances to the following tier (and loops).
-  The set/bundle cards render under this (see App.jsx). Clicking a manakeesh
-  opens the dish detail window (DishDialog) via onSelect.
+  Manakeesh section — a big "manakish" title + tagline, then ALL tiers
+  (Classic → Specialty → Premium) stacked vertically so the whole range is
+  visible at once. Each tier is a band: a price/name header over a responsive
+  grid of clean cutout photos floating on green. The set/bundle cards render
+  under this (see App.jsx). Clicking a manakeesh opens the dish detail window
+  (DishDialog) via onSelect.
 */
-import { useRef, useState } from "react";
-import { ChevronRightIcon } from "../Icons.jsx";
 
 const TAGLINE = "our signature gluten-free crust crafted from potato & rice";
 
@@ -39,34 +37,6 @@ function tiersOf(items) {
 
 export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
   const tiers = tiersOf(section.items);
-  const scrollerRef = useRef(null);
-  const [active, setActive] = useState(0);
-
-  // Distance between consecutive tier panels (panel width + gap).
-  const stepWidth = () => {
-    const el = scrollerRef.current;
-    if (!el || el.children.length === 0) return 0;
-    if (el.children.length > 1) return el.children[1].offsetLeft - el.children[0].offsetLeft;
-    return el.children[0].getBoundingClientRect().width;
-  };
-
-  const onScroll = () => {
-    const el = scrollerRef.current;
-    const step = stepWidth();
-    if (!el || !step) return;
-    setActive(Math.round(el.scrollLeft / step));
-  };
-
-  // Advance to the next tier; loop back to the first at the end.
-  const scrollNext = () => {
-    const el = scrollerRef.current;
-    const step = stepWidth();
-    if (!el || !step) return;
-    const next = (active + 1) % el.children.length;
-    el.scrollTo({ left: next * step, behavior: "smooth" });
-  };
-
-  const nextLabel = tiers.length ? tierLabel(tiers[(active + 1) % tiers.length].name) : "";
 
   return (
     <div className="shk-mana">
@@ -75,9 +45,11 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
         <p className="shk-mana__tag">{tagline}</p>
       </header>
 
-      <div className="shk-mana__cols" ref={scrollerRef} onScroll={onScroll}>
-        {tiers.map((t) => (
-          <div className="shk-mana__col" key={t.id}>
+      <div className="shk-mana__cols">
+        {tiers.map((t) => {
+          const isPremium = (t.name || "").toLowerCase() === "premium";
+          return (
+          <div className={`shk-mana__col ${isPremium ? "is-premium" : ""}`} key={t.id}>
             <div className="shk-mana__colhead">
               {t.minPrice != null && (
                 <span className="shk-mana__price">
@@ -86,6 +58,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
                 </span>
               )}
               <span className="shk-mana__tier-name">{tierLabel(t.name)}</span>
+              {isPremium && <span className="shk-mana__tier-badge">premium</span>}
             </div>
 
             <ul className="shk-mana__list">
@@ -113,22 +86,9 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
               ))}
             </ul>
           </div>
-        ))}
+          );
+        })}
       </div>
-
-      {tiers.length > 1 && (
-        <div className="shk-mana__nav">
-          <button
-            type="button"
-            className="shk-mana__next"
-            onClick={scrollNext}
-            aria-label={`Next tier: ${nextLabel}`}
-          >
-            <span className="shk-mana__next-label">next: <b>{nextLabel}</b></span>
-            <ChevronRightIcon size={22} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }

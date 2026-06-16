@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
-import { StarIcon, PlusIcon } from "../Icons.jsx";
+import { StarIcon } from "../Icons.jsx";
+import { PriceSeal } from "./PriceSeal.jsx";
 
 function Placeholder({ category }) {
   return (
@@ -94,28 +95,20 @@ export function DishCard({
         )}
       </div>
 
-      {(priceFrom != null || price != null) && (
+      {price != null ? (
         <div className="shk-card__corner">
-          {priceFrom != null ? (
-            <span className="shk-card__price">
-              <span className="shk-card__from">from </span>{currency}{priceFrom}
-            </span>
-          ) : (
-            <span className="shk-card__price">{currency}{price}</span>
-          )}
-          {!comingSoon && onQuickAdd && price != null && (
-            <button
-              type="button"
-              className="shk-quickadd"
-              onClick={(e) => { e.stopPropagation(); onQuickAdd(); }}
-              aria-label={`Add ${name} to order`}
-              title={`Add ${name} to order`}
-            >
-              <PlusIcon size={14} strokeWidth={2.5} />
-            </button>
-          )}
+          <PriceSeal
+            price={price}
+            size={68}
+            onClick={!comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(); } : undefined}
+            label={!comingSoon && onQuickAdd ? `Add ${name} to order` : `${name} ${price} thb`}
+          />
         </div>
-      )}
+      ) : priceFrom != null ? (
+        <div className="shk-card__corner">
+          <span className="shk-card__pricefrom">from {currency}{priceFrom}</span>
+        </div>
+      ) : null}
 
       <div className="shk-card__body">
         <div className="shk-card__topline">
