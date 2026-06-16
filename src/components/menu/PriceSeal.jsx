@@ -7,9 +7,9 @@
 
 const N = 28;             // sawtooth teeth
 const C = 50;             // viewBox centre (100×100)
-const R_TIP = 49.5;       // tooth tip radius
-const R_VALLEY = 42;      // tooth base radius
-const R_INNER = 38.5;     // inner edge of the ring (hole)
+const R_TIP = 49;         // tooth tip radius
+const R_VALLEY = 43.5;    // tooth base radius (thin band → finer "sunburst")
+const R_INNER = 41;       // inner edge of the ring (hole) — roomy interior
 const STEP = (2 * Math.PI) / N;
 const pt = (r, a) => `${(C + r * Math.cos(a)).toFixed(2)} ${(C + r * Math.sin(a)).toFixed(2)}`;
 
@@ -33,7 +33,7 @@ export function PriceSeal({ price, currency = "thb", size = 58, onClick, label }
     <Tag
       type={interactive ? "button" : undefined}
       className="shk-seal"
-      style={{ width: size, height: size, fontSize: `${(size * 0.3).toFixed(1)}px` }}
+      style={{ width: size, height: size, fontSize: `${(size * 0.25).toFixed(1)}px` }}
       onClick={onClick}
       aria-label={label}
       title={label}
