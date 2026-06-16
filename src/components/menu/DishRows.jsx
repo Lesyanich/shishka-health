@@ -5,7 +5,7 @@
   of placeholder discs while photography catches up.
 */
 
-import { AddMedallion } from "./AddMedallion.jsx";
+import { PriceSeal } from "./PriceSeal.jsx";
 
 export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
   return (
@@ -33,30 +33,18 @@ export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
               {d.description && <span className="shk-row__desc">{d.description}</span>}
             </span>
             <span className="shk-row__dots" aria-hidden="true" />
-            <span className="shk-row__price num">
-              {d.priceFrom != null ? (
-                <>
-                  <span className="shk-row__from">from </span>
-                  {currency}
-                  {d.priceFrom}
-                </>
-              ) : d.price != null ? (
-                <>
-                  {currency}
-                  {d.price}
-                </>
-              ) : null}
-            </span>
           </button>
 
-          {!d.comingSoon && onQuickAdd && d.price != null && (
-            <AddMedallion
-              size={30}
-              className="shk-add--row"
-              onClick={(e) => { e.stopPropagation(); onQuickAdd(d); }}
-              label={`Add ${d.name} to order`}
+          {d.price != null ? (
+            <PriceSeal
+              price={d.price}
+              size={58}
+              onClick={!d.comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(d); } : undefined}
+              label={!d.comingSoon && onQuickAdd ? `Add ${d.name} to order` : `${d.name} ${d.price} thb`}
             />
-          )}
+          ) : d.priceFrom != null ? (
+            <span className="shk-row__pricefrom">from {currency}{d.priceFrom}</span>
+          ) : null}
         </li>
       ))}
     </ul>
