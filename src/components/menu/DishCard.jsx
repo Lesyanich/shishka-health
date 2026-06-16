@@ -99,7 +99,7 @@ export function DishCard({
         <div className="shk-card__corner">
           <PriceSeal
             price={price}
-            size={74}
+            size={54}
             onClick={!comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(); } : undefined}
             label={!comingSoon && onQuickAdd ? `Add ${name} to order` : `${name} ${price} thb`}
           />

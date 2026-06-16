@@ -38,7 +38,7 @@ export function DishRows({ items, currency = "฿", onSelect, onQuickAdd }) {
           {d.price != null ? (
             <PriceSeal
               price={d.price}
-              size={64}
+              size={46}
               onClick={!d.comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(d); } : undefined}
               label={!d.comingSoon && onQuickAdd ? `Add ${d.name} to order` : `${d.name} ${d.price} thb`}
             />

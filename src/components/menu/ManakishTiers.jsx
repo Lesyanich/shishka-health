@@ -53,7 +53,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
           return (
           <div className={`shk-mana__col ${isPremium ? "is-premium" : ""}`} key={t.id}>
             <div className="shk-mana__colhead">
-              {t.minPrice != null && <PriceSeal price={t.minPrice} size={78} />}
+              {t.minPrice != null && <PriceSeal price={t.minPrice} size={60} />}
               <span className="shk-mana__tier-name">{tierLabel(t.name)}</span>
               {isPremium && <span className="shk-mana__tier-badge">premium</span>}
             </div>
