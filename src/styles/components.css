@@ -914,10 +914,6 @@
   padding: clamp(20px, 3vh, 30px) clamp(16px, 2vw, 24px);
 }
 .shk-mana__col.is-premium .shk-mana__tier-name { color: var(--honey-300); }
-.shk-mana__col.is-premium .shk-mana__disc {
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--honey-300), 0 0 0 7px rgba(240, 206, 131, 0.14);
-}
 .shk-mana__tier-badge {
   font-size: var(--text-xs); font-weight: var(--fw-bold);
   letter-spacing: 0.08em; text-transform: uppercase;
