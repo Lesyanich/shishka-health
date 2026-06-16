@@ -890,41 +890,17 @@
   font-weight: var(--fw-semibold); color: var(--white); line-height: 1.18;
 }
 
-/* ---- Tiers as a compact horizontal snap-carousel ---------------------- */
+/* ---- Tiers stacked vertically — the whole range is visible at once ----- */
 .shk-mana__cols {
-  display: flex; flex-direction: row;
-  gap: clamp(16px, 3vw, 40px);
-  overflow-x: auto; overflow-y: hidden;
-  scroll-snap-type: x mandatory; scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 8px;
-}
-.shk-mana__cols::-webkit-scrollbar { height: 6px; }
-.shk-mana__cols::-webkit-scrollbar-track { background: transparent; }
-.shk-mana__cols::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 999px; }
-.shk-mana__col {
-  flex: 0 0 100%; max-width: 100%;
   display: flex; flex-direction: column;
-  scroll-snap-align: start;
+  gap: clamp(32px, 5vh, 64px);
+}
+.shk-mana__col {
+  max-width: 100%;
+  display: flex; flex-direction: column;
 }
 
-/* Bottom-right "next tier" control — big, high-contrast honey pill */
-.shk-mana__nav { display: flex; justify-content: flex-end; margin-top: clamp(14px, 2vw, 22px); }
-.shk-mana__next {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 13px 26px; border-radius: var(--radius-pill);
-  background: var(--honey-300); color: var(--royal-green);
-  border: none; cursor: pointer;
-  font-family: var(--font-sans); font-weight: var(--fw-bold);
-  font-size: var(--text-lg); text-transform: lowercase; letter-spacing: 0.01em;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-  transition: background 0.16s var(--ease-out), transform 0.16s var(--ease-out);
-}
-.shk-mana__next:hover { background: #f0d597; transform: translateX(3px); }
-.shk-mana__next:active { transform: translateX(0) scale(0.97); }
-.shk-mana__next svg { width: 22px; height: 22px; }
-
-/* Tier band header — the three sit side by side and read as one band */
+/* Tier band header — price + tier name, with a hairline under each band */
 .shk-mana__colhead {
   display: flex; align-items: center; gap: 10px;
   padding: 0 0 12px;
