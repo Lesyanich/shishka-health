@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase, hasSupabase } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
 import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
-import { deepStripEmoji } from "../lib/text.js";
+import { deepStripEmoji, titleCaseMenu } from "../lib/text.js";
 import { dishFloor, dishDefaultPrice } from "../lib/modifiers.js";
 
 /*
@@ -225,10 +225,11 @@ export function useMenu() {
       const result = hasSupabase
         ? await fetchFromSupabase()
         : { ...MOCK_DATA, content: DEFAULT_CONTENT };
-      setData(result);
+      // Single chokepoint: render all display copy in Title Case (hero kept as-is).
+      setData(titleCaseMenu(result));
     } catch (err) {
       console.error("Menu fetch failed, using mock data:", err);
-      setData({ ...MOCK_DATA, content: DEFAULT_CONTENT });
+      setData(titleCaseMenu({ ...MOCK_DATA, content: DEFAULT_CONTENT }));
       setError(err);
     } finally {
       setLoading(false);
