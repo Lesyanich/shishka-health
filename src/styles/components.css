@@ -438,7 +438,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-app__sec-title {
   font-family: var(--font-display); font-weight: var(--fw-display);
   font-size: clamp(2rem, 5.5vw, 3.4rem); color: var(--white); letter-spacing: var(--tracking-tight);
-  text-transform: lowercase; line-height: 1;
+  text-transform: none; line-height: 1;
 }
 .shk-app__sec-count { display: none; }
 .shk-app__sec-intro {
@@ -894,7 +894,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__title {
   margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
   font-size: clamp(2.6rem, 8vw, 5rem); line-height: 0.9; color: var(--white);
-  letter-spacing: var(--tracking-tight); text-transform: lowercase;
+  letter-spacing: var(--tracking-tight); text-transform: none;
 }
 .shk-mana__tag {
   margin: 0; max-width: 26ch; text-align: right;

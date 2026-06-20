@@ -57,12 +57,17 @@ const MINOR_WORDS = new Set([
   "up", "via", "vs", "with", "yet",
 ]);
 
+// Acronyms kept uppercase. Everything else that is ALL-CAPS (e.g. a section
+// name stored as "DRINKS" / "APPETIZERS & DIPS") is title-cased normally.
+const KEEP_ACRONYMS = new Set(["DNA"]);
+
 // Capitalise one whitespace-free token, preserving acronyms / stylised caps.
 function capWord(word, force) {
   const letters = word.replace(/[^A-Za-z]/g, "");
   if (!letters) return word;                                   // pure symbol/number
-  if (letters.length >= 2 && letters === letters.toUpperCase()) return word; // ACRONYM
-  if (/[A-Z]/.test(word.slice(1))) return word;                // stylised (SHiSHKA, McX)
+  const allCaps = letters === letters.toUpperCase();
+  if (allCaps && KEEP_ACRONYMS.has(letters.toUpperCase())) return word; // known acronym
+  if (/[A-Z]/.test(word.slice(1)) && !allCaps) return word;    // stylised (SHiSHKA, McX, iPhone)
   const lower = word.toLowerCase();
   const bare = lower.replace(/[^a-z]/g, "");
   if (!force && MINOR_WORDS.has(bare)) return lower;            // minor word stays lower
