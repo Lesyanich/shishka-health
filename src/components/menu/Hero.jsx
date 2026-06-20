@@ -14,6 +14,7 @@ export function Hero({ wide = false, content }) {
   return (
     <section className={`shk-hero ${wide ? "shk-hero--wide" : ""}`} aria-label="Shishka Healthy Kitchen">
       <div className="shk-hero__inner">
+        {c.banner && <p className="shk-hero__banner">{c.banner}</p>}
         <h1 className="shk-hero__title">{renderTitle(c.title)}</h1>
         {c.sub && <p className="shk-hero__sub">{c.sub}</p>}
       </div>

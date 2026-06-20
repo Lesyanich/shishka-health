@@ -393,7 +393,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-dlg__media-scrim { position: absolute; inset: 0; background: none; }
 .shk-dlg__ph {
   position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; justify-items: center;
-  background: var(--green-600);
+  background: var(--royal-green);
 }
 .shk-dlg__ph-logo { width: 84px; height: auto; position: relative; z-index: 1; opacity: 0.95; }
 .shk-dlg__ph-word { position: relative; z-index: 1; font-size: var(--text-2xs); font-weight: var(--fw-semibold);
@@ -568,6 +568,12 @@ button.shk-seal:active { transform: scale(0.93); }
   font-size: var(--text-2xs); font-weight: var(--fw-bold); letter-spacing: var(--tracking-wider);
   text-transform: uppercase; color: var(--text-on-dark-muted);
 }
+.shk-hero__banner {
+  margin: 0 0 var(--space-3); font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(2.75rem, 13vw, var(--text-5xl)); line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight); text-transform: uppercase;
+  color: var(--honey-300); text-wrap: balance;
+}
 .shk-hero__title {
   margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
   font-size: clamp(2.25rem, 9vw, var(--text-4xl)); line-height: var(--leading-none);
@@ -580,6 +586,7 @@ button.shk-seal:active { transform: scale(0.93); }
   letter-spacing: normal; word-spacing: normal;
 }
 .shk-hero--wide .shk-hero__inner { padding: var(--space-16) var(--space-8) var(--space-20); }
+.shk-hero--wide .shk-hero__banner { font-size: clamp(var(--text-5xl), 9vw, 7rem); }
 .shk-hero--wide .shk-hero__title { font-size: var(--text-5xl); }
 .shk-hero--wide .shk-hero__sub { font-size: var(--text-lg); }
 

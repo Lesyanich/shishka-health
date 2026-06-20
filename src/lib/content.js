@@ -12,6 +12,8 @@
 export const DEFAULT_CONTENT = {
   hero: {
     eyebrow: "SHiSHKA · Healthy Kitchen",
+    // Big claim shown above the headline. Kept verbatim (not title-cased).
+    banner: "NO SEED OIL",
     // ALL-CAPS words in the title are auto-accented in honey.
     title: "from the SOIL to the SOUL.",
     sub: "fresh, unprocessed, scientifically balanced — real food, made daily.",
