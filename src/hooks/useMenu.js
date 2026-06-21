@@ -156,6 +156,19 @@ async function fetchFromSupabase() {
     // default) opens "as configured": its headline price is base + default
     // add-ons (฿111 + ฿38 = ฿149), shown as a flat price the guest can change.
     const priceDefault = dishDefaultPrice(price, modifierGroups);
+
+    // Split the Coffee category into Hot / Cold leaves (hot first) so the menu
+    // shows them as two labelled groups. Cold = iced / cold brew / tonic.
+    let subId = d.category_id ?? sectionId;
+    let subName = d.category_name ?? sectionName;
+    let subSort = d.category_sort_order ?? 0;
+    if (/coffee/i.test(d.category_name || "")) {
+      const cold = /🧊|\biced\b|\bcold\b|tonic/i.test(d.name || "");
+      subId = `${d.category_id}:${cold ? "cold" : "hot"}`;
+      subName = cold ? "🧊 Cold Coffee" : "☕ Hot Coffee";
+      subSort = (d.category_sort_order ?? 0) + (cold ? 0.5 : 0);
+    }
+
     return {
       id: d.id,
       name: d.customer_short_name || d.name,
@@ -196,9 +209,9 @@ async function fetchFromSupabase() {
       // Section (umbrella) the dish groups under + its subcategory (leaf).
       section_id: sectionId,
       section_name: sectionName,
-      subcategory_id: d.category_id ?? sectionId,
-      subcategory_name: d.category_name ?? sectionName,
-      subcategory_sort: d.category_sort_order ?? 0,
+      subcategory_id: subId,
+      subcategory_name: subName,
+      subcategory_sort: subSort,
       diets,
       allergens,
       tags: allTags,
