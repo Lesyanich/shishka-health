@@ -916,10 +916,10 @@ button.shk-seal:active { transform: scale(0.93); }
    =========================================================================== */
 .shk-mana { color: var(--text-strong); }
 
-/* ---- Heading: big title + tagline to the right ------------------------ */
+/* ---- Heading: big title with the tagline directly beneath it ---------- */
 .shk-mana__head {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  flex-wrap: wrap; gap: var(--space-4); padding: 0 0 var(--space-8);
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: var(--space-2); padding: 0 0 var(--space-8);
 }
 .shk-mana__title {
   margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
@@ -927,7 +927,7 @@ button.shk-seal:active { transform: scale(0.93); }
   letter-spacing: var(--tracking-tight); text-transform: none;
 }
 .shk-mana__tag {
-  margin: 0; max-width: 26ch; text-align: right;
+  margin: 0; max-width: 48ch; text-align: left;
   font-size: clamp(var(--text-md), 1.4vw, var(--text-xl));
   font-weight: var(--fw-semibold); color: var(--white); line-height: 1.18;
 }
@@ -1000,6 +1000,10 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__item.is-soon { opacity: 0.5; }
 
 .shk-mana__disc { position: relative; width: 100%; max-width: 210px; aspect-ratio: 1; display: grid; place-items: center; }
+/* Leading price token: the seal fills the disc so it matches the food images. */
+.shk-mana__priceitem { cursor: default; }
+.shk-mana__priceitem:hover { transform: none; }
+.shk-mana__priceitem .shk-seal { width: 82%; height: 82%; font-size: clamp(26px, 3.6vw, 46px); }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
 .shk-mana__disc-ph {
   width: 88%; height: 88%; border-radius: 50%;

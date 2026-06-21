@@ -53,12 +53,21 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
           return (
           <div className={`shk-mana__col ${isPremium ? "is-premium" : ""}`} key={t.id}>
             <div className="shk-mana__colhead">
-              {t.minPrice != null && <PriceSeal price={t.minPrice} size={60} />}
               <span className="shk-mana__tier-name">{tierLabel(t.name)}</span>
               {isPremium && <span className="shk-mana__tier-badge">premium</span>}
             </div>
 
             <ul className="shk-mana__list">
+              {t.minPrice != null && (
+                <li>
+                  <div className="shk-mana__item shk-mana__priceitem">
+                    <span className="shk-mana__disc">
+                      <PriceSeal price={t.minPrice} fill />
+                    </span>
+                    <span className="shk-mana__item-name">from</span>
+                  </div>
+                </li>
+              )}
               {t.items.map((d) => (
                 <li key={d.id}>
                   <button
