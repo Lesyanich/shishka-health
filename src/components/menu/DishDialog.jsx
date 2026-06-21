@@ -101,7 +101,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
         aria-label={name}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="shk-dlg__media">
+        <div className={`shk-dlg__media${/spring roll/i.test(name || "") ? " shk-dlg__media--tall" : ""}`}>
           {photo && imgOk ? (
             <>
               <img

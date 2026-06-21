@@ -389,6 +389,9 @@ button.shk-seal:active { transform: scale(0.93); }
   .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; }
 }
 .shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden; }
+/* Portrait dishes (e.g. spring rolls) get a taller, vertical media frame so the
+   upright photo fills the space instead of being letterboxed in a landscape box. */
+.shk-dlg__media--tall { aspect-ratio: 4 / 5; }
 .shk-dlg__img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .shk-dlg__media-scrim { position: absolute; inset: 0; background: none; }
 .shk-dlg__ph {
