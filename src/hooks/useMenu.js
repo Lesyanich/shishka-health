@@ -123,10 +123,18 @@ async function fetchFromSupabase() {
   // exposes both via the is_menu_section rollup (see shishka-os mig 257/258).
   // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
+  // Chocolate ships from the POS as its own trailing section; on the site we tuck
+  // it into Drinks right after Coffee (before Smoothies), which also leaves Soft
+  // Drinks as the last group on the menu. Presentation-only — POS is untouched.
+  const DRINKS_SECTION = { id: "affe39cf-60bc-46da-86fc-04987f0cc8aa", name: "🧋 Drinks", sort: 5 };
+  const CHOCOLATE_ID = "3cd6c1cf-89d4-45c7-a4c0-92cf47676f2f";
   const dishes = (dishResult.data ?? []).map((d) => {
-    const sectionId = d.section_id ?? d.category_id;
-    let sectionName = d.section_name ?? d.category_name;
-    const sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
+    const isChocolate = d.section_id === CHOCOLATE_ID || d.category_id === CHOCOLATE_ID;
+    const sectionId = isChocolate ? DRINKS_SECTION.id : (d.section_id ?? d.category_id);
+    let sectionName = isChocolate ? DRINKS_SECTION.name : (d.section_name ?? d.category_name);
+    const sectionSort = isChocolate
+      ? DRINKS_SECTION.sort
+      : (d.section_sort_order ?? d.category_sort_order ?? 0);
     // The Appetizers section now also carries the Sides.
     if (sectionName === "🥟 Appetizers & Dips") sectionName = "🥟 Appetizers, Dips & Sides";
     if (sectionId && !catMap.has(sectionId)) {
@@ -164,7 +172,10 @@ async function fetchFromSupabase() {
     let subId = d.category_id ?? sectionId;
     let subName = d.category_name ?? sectionName;
     let subSort = d.category_sort_order ?? 0;
-    if (d.product_code?.startsWith("SALE-SUMMER_ROLLS")) {
+    if (isChocolate) {
+      // Chocolate sits between Coffee (sort 1/1.5) and Smoothies (sort 2).
+      subId = CHOCOLATE_ID; subName = "🍫 Chocolate"; subSort = 1.8;
+    } else if (d.product_code?.startsWith("SALE-SUMMER_ROLLS")) {
       // Spring rolls lead under their own subgroup.
       subId = "grp-spring-rolls"; subName = "🌯 Fresh Spring Roll"; subSort = -1;
     } else if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
