@@ -1009,7 +1009,7 @@ button.shk-seal:active { transform: scale(0.93); }
 /* ---- Items: big clean cutouts packed in a tight grid ------------------ */
 /* Each tier scrolls horizontally on one line — images only, swipe / arrow for more. */
 .shk-mana__scroll { position: relative; }
-.shk-mana__arrow {
+.shk-mana__arrow, .shk-rail__arrow {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
   width: 40px; height: 40px; border-radius: var(--radius-pill);
   display: grid; place-items: center; padding: 0 0 4px;
@@ -1018,11 +1018,26 @@ button.shk-seal:active { transform: scale(0.93); }
   border: 1.5px solid var(--green-300); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   transition: transform 0.12s ease, background 0.12s ease;
 }
-.shk-mana__arrow:hover { background: var(--green-100); }
-.shk-mana__arrow:active { transform: translateY(-50%) scale(0.92); }
-.shk-mana__arrow[hidden] { display: none; }
-.shk-mana__arrow--prev { left: 4px; }
-.shk-mana__arrow--next { right: 4px; }
+.shk-mana__arrow:hover, .shk-rail__arrow:hover { background: var(--green-100); }
+.shk-mana__arrow:active, .shk-rail__arrow:active { transform: translateY(-50%) scale(0.92); }
+.shk-mana__arrow[hidden], .shk-rail__arrow[hidden] { display: none; }
+.shk-mana__arrow--prev, .shk-rail__arrow--prev { left: 4px; }
+.shk-mana__arrow--next, .shk-rail__arrow--next { right: 4px; }
+
+/* Coffee/Drinks horizontal rail — arrows above, cards in a swipeable row. */
+.shk-rail { position: relative; }
+.shk-rail__track {
+  display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--gap-cards);
+  overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; padding-bottom: var(--space-2);
+}
+.shk-rail__track::-webkit-scrollbar { display: none; }
+.shk-rail__track > * {
+  flex: 0 0 auto; width: clamp(150px, 44vw, 196px); scroll-snap-align: start;
+}
+.shk-app--wide .shk-rail__track > * { width: clamp(170px, 17vw, 210px); }
+.shk-rail__arrow--next { top: 38%; }
+.shk-rail__arrow--prev { top: 38%; }
 .shk-mana__list {
   list-style: none; margin: 0; padding: 0 0 var(--space-2);
   display: flex; flex-wrap: nowrap; gap: clamp(12px, 1.6vw, 22px);
@@ -1052,6 +1067,8 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-mana__col.is-premium .shk-mana__price-label { color: var(--honey-300); }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+/* Quick-add price seal on each manakish, matching the other dish cards. */
+.shk-mana__seal { position: absolute; top: 0; right: 4px; z-index: 3; }
 .shk-mana__disc-ph {
   width: 88%; height: 88%; border-radius: 50%;
   background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03) 72%);

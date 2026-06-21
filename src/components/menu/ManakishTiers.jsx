@@ -92,7 +92,7 @@ function TierScroll({ children }) {
   );
 }
 
-export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
+export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd, addedIds }) {
   const tiers = tiersOf(section.items);
 
   return (
@@ -121,10 +121,17 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
                 )}
                 {t.items.map((d) => (
                   <li key={d.id}>
-                    <button
-                      type="button"
+                    <div
                       className={`shk-mana__item ${d.comingSoon ? "is-soon" : ""}`}
-                      onClick={() => onSelect?.(d)}
+                      role="button"
+                      tabIndex={d.comingSoon ? -1 : 0}
+                      onClick={() => !d.comingSoon && onSelect?.(d)}
+                      onKeyDown={(e) => {
+                        if (!d.comingSoon && (e.key === "Enter" || e.key === " ")) {
+                          e.preventDefault();
+                          onSelect?.(d);
+                        }
+                      }}
                       aria-label={d.name}
                     >
                       <span className="shk-mana__disc">
@@ -133,12 +140,20 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
                         ) : (
                           <span className="shk-mana__disc-ph" aria-hidden="true" />
                         )}
+                        {d.price != null && !d.comingSoon && (
+                          <span className="shk-mana__seal">
+                            <PriceSeal
+                              price={d.price}
+                              size={46}
+                              active={addedIds?.has(d.id)}
+                              onClick={(e) => { e.stopPropagation(); onQuickAdd?.(d); }}
+                              label={`Add ${d.name} to order`}
+                            />
+                          </span>
+                        )}
                       </span>
                       <span className="shk-mana__item-name">{d.name}</span>
-                      {d.price != null && d.price !== t.minPrice && (
-                        <span className="shk-mana__item-price num">฿{d.price}</span>
-                      )}
-                    </button>
+                    </div>
                   </li>
                 ))}
             </TierScroll>

@@ -7,6 +7,7 @@ import { DishCard } from "./components/menu/DishCard.jsx";
 import { DishRows } from "./components/menu/DishRows.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
 import { ManakishTiers } from "./components/menu/ManakishTiers.jsx";
+import { CardRail } from "./components/menu/CardRail.jsx";
 import { ManakishSets } from "./components/menu/ManakishSets.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
@@ -288,7 +289,7 @@ export default function App() {
               className="shk-app__section"
             >
               {cat.name === "Manakish" ? (
-                <ManakishTiers section={cat} onSelect={setSelected} />
+                <ManakishTiers section={cat} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
               ) : (
                 <>
                   <div className="shk-app__sec-head">
@@ -304,6 +305,17 @@ export default function App() {
 
                   {(() => {
                     const subs = subcategoriesOf(cat.items, cat.id);
+                    // Drinks scroll sideways with arrows (like Manakish); the
+                    // rest keep the wrapping grid.
+                    const rail = cat.name === "Drinks";
+                    const cards = (items) =>
+                      rail ? (
+                        <CardRail>{items.map((dish) => renderDish(dish, cat.name))}</CardRail>
+                      ) : (
+                        <div className="shk-app__grid">
+                          {items.map((dish) => renderDish(dish, cat.name))}
+                        </div>
+                      );
                     return hasSubcategories(subs, cat.id) ? (
                       subs.map((sub) => (
                         <div key={sub.id} className="shk-app__tier">
@@ -314,18 +326,14 @@ export default function App() {
                           {photoless(sub.items) ? (
                             <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
                           ) : (
-                            <div className="shk-app__grid">
-                              {sub.items.map((dish) => renderDish(dish, cat.name))}
-                            </div>
+                            cards(sub.items)
                           )}
                         </div>
                       ))
                     ) : photoless(cat.items) ? (
                       <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
                     ) : (
-                      <div className="shk-app__grid">
-                        {cat.items.map((dish) => renderDish(dish, cat.name))}
-                      </div>
+                      cards(cat.items)
                     );
                   })()}
                 </>
