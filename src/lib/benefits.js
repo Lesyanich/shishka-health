@@ -104,13 +104,22 @@ function proteinBenefit(protein) {
   if (protein == null) return null;
   const g = Math.round(protein);
   if (protein >= 20)
-    return { slug: "protein", label: `High Protein · ${g}g`, icon: "droplet",
-      note: `${g}g of protein to rebuild and recover.` };
+    return { slug: "protein", label: "High Protein", icon: "droplet",
+      tone: "red", value: `${g} g`, note: `${g}g of protein to rebuild and recover.` };
   if (protein >= 10)
-    return { slug: "protein", label: `Protein · ${g}g`, icon: "droplet",
-      note: `${g}g of quality protein per serving.` };
+    return { slug: "protein", label: "Protein", icon: "droplet",
+      tone: "red", value: `${g} g`, note: `${g}g of quality protein per serving.` };
   return null;
 }
+
+// Design-system colour tone per nutrient (NUTRITION BOOSTS kit): green / red /
+// purple / honey. Drives the pill border + icon-badge colour in the dialog.
+const BENEFIT_TONE = {
+  protein: "red", omega3: "green", bvitamins: "honey", iron: "red",
+  magnesium: "purple", vitaminc: "honey", vitamina: "honey", fiber: "green",
+  calcium: "purple", healthyfats: "green", antioxidants: "purple",
+  potassium: "green", antiinflam: "red", caffeine: "honey",
+};
 
 // Cap the number of chips so the section stays scannable.
 const MAX_BENEFITS = 4;
@@ -126,7 +135,8 @@ export function benefitsForDish({ text, protein } = {}) {
     for (const b of BENEFITS) {
       if (out.length >= MAX_BENEFITS) break;
       if (b.keywords.some((k) => matches(haystack, k))) {
-        out.push({ slug: b.slug, label: b.label, icon: b.icon, note: b.note });
+        out.push({ slug: b.slug, label: b.label, icon: b.icon,
+          tone: BENEFIT_TONE[b.slug] || "green", note: b.note });
       }
     }
   }

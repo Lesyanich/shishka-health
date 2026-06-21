@@ -199,9 +199,10 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
                 {benefits.map((b) => {
                   const Icon = BENEFIT_ICONS[b.icon] || BENEFIT_ICONS[b.slug] || LeafIcon;
                   return (
-                    <li key={b.slug} className="shk-benefit">
-                      <Icon />
-                      {b.label}
+                    <li key={b.slug} className={`shk-boost shk-boost--${b.tone || "green"}`}>
+                      <span className="shk-boost__icon"><Icon /></span>
+                      <span className="shk-boost__label">{b.label}</span>
+                      {b.value && <span className="shk-boost__val">{b.value}</span>}
                     </li>
                   );
                 })}
