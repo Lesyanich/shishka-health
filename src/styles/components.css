@@ -432,16 +432,14 @@ button.shk-seal:active { transform: scale(0.93); }
    value. Colour tone (green/red/purple/honey) comes from the nutrient. */
 .shk-benefits { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
 .shk-boost {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 7px 15px 7px 7px; border-radius: var(--radius-lg);
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 5px 15px 5px 5px; border-radius: var(--radius-pill);
   background: var(--white); border: 1.5px solid var(--_bd, var(--green-300));
   font-family: var(--font-body); font-weight: var(--fw-semibold);
-  font-size: var(--text-sm); color: var(--_fg, var(--green-700)); max-width: 330px;
+  font-size: var(--text-sm); color: var(--_fg, var(--green-700));
 }
-.shk-boost__text { display: inline-flex; flex-direction: column; gap: 2px; min-width: 0; }
-.shk-boost__note { font-weight: var(--fw-medium); font-size: var(--text-2xs); color: var(--text-faint); line-height: 1.25; }
 .shk-boost__icon {
-  flex: none; width: 30px; height: 30px; border-radius: var(--radius-pill);
+  flex: none; width: 27px; height: 27px; border-radius: var(--radius-pill);
   display: grid; place-items: center;
   background: var(--_soft, var(--green-100)); color: var(--_fg, var(--green-700));
 }

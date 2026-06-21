@@ -22,12 +22,8 @@ export function BenefitPills({ benefits = [] }) {
         return (
           <li key={b.slug} className={`shk-boost shk-boost--${b.tone || "green"}`}>
             <span className="shk-boost__icon"><Icon /></span>
-            <span className="shk-boost__text">
-              <span className="shk-boost__label">
-                {b.label}{b.value ? ` · ${b.value}` : ""}
-              </span>
-              {b.note && <span className="shk-boost__note">{b.note}</span>}
-            </span>
+            <span className="shk-boost__label">{b.label}</span>
+            {b.value && <span className="shk-boost__val">{b.value}</span>}
           </li>
         );
       })}
