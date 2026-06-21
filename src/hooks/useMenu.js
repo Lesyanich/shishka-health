@@ -124,9 +124,23 @@ async function fetchFromSupabase() {
   // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    const sectionId = d.section_id ?? d.category_id;
-    const sectionName = d.section_name ?? d.category_name;
-    const sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
+    let sectionId = d.section_id ?? d.category_id;
+    let sectionName = d.section_name ?? d.category_name;
+    let sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
+    // Curated split-out of "Appetizers & Dips": the spring-roll wraps lead as
+    // their own group, the grilled potato becomes "Sides"; the dips stay behind.
+    let moved = false;
+    if (d.product_code?.startsWith("SALE-SUMMER_ROLLS")) {
+      sectionId = "grp-spring-roll-wraps";
+      sectionName = "🌯 Fresh Spring Roll Wraps";
+      sectionSort = (d.section_sort_order ?? 1) - 0.1;
+      moved = true;
+    } else if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
+      sectionId = "grp-sides";
+      sectionName = "🥔 Sides";
+      sectionSort = (d.section_sort_order ?? 1) + 0.1;
+      moved = true;
+    }
     if (sectionId && !catMap.has(sectionId)) {
       catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }
@@ -162,7 +176,12 @@ async function fetchFromSupabase() {
     let subId = d.category_id ?? sectionId;
     let subName = d.category_name ?? sectionName;
     let subSort = d.category_sort_order ?? 0;
-    if (/coffee/i.test(d.category_name || "")) {
+    if (moved) {
+      // The split-out groups render flat (subcategory === section).
+      subId = sectionId;
+      subName = sectionName;
+      subSort = 0;
+    } else if (/coffee/i.test(d.category_name || "")) {
       const cold = /🧊|\biced\b|\bcold\b|tonic/i.test(d.name || "")
         || d.product_code === "SALE-COFFEE_ORANGE"
         || d.product_code === "SALE-COFFEE_PASSION_FRUIT";
