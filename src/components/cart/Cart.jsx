@@ -140,8 +140,9 @@ export function Cart({ currency = "฿" }) {
                               <ul className="shk-cart__sub">
                                 {l.config.options.map((o, i) => (
                                   <li key={`${o.name}-${i}`}>
-                                    + {o.name}
-                                    {o.priceDelta > 0 ? ` (${currency}${o.priceDelta})` : ""}
+                                    {o.priceDelta > 0
+                                      ? `+ ${o.name} (${currency}${o.priceDelta})`
+                                      : o.name}
                                   </li>
                                 ))}
                               </ul>

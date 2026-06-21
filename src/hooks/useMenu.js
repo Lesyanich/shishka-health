@@ -30,6 +30,46 @@ import { benefitsForDish } from "../lib/benefits.js";
        (menu_public is security_invoker, so the nomenclature row RLS still applies.)
 */
 
+// Fresh Spring Roll customisation. The modifier system (menu_modifiers) is a
+// Loyverse-backed view, so these add/remove options are defined website-side and
+// injected as a modifier group — the cart carries the build to the counter.
+// "Remove" chips are free (price 0); "Add extras" carry a price + rough per-
+// portion nutrition for the live counter. Per-roll protein extra is matched to
+// the roll (none for Veggie). Removing a chip doesn't recompute base macros.
+function springRollModifiers(productCode) {
+  const code = productCode || "";
+  const remove = [
+    "Mango", "Carrot", "Cucumber", "Lettuce", "Mint", "Coriander", "Peanut-Lime Sauce",
+  ];
+  if (code.includes("TUNA")) remove.splice(1, 0, "Sweet Corn"); // tuna roll has corn
+  const removeOpts = remove.map((name, i) => ({
+    name: `No ${name}`, emoji: null, priceDelta: 0, isDefault: false, sort: i,
+    calories: 0, protein: 0, carbs: 0, fat: 0,
+  }));
+
+  const proteinExtra = code.includes("CHICKEN")
+    ? { name: "Extra Chicken", priceDelta: 50, calories: 100, protein: 18, carbs: 0, fat: 2 }
+    : code.includes("SHRIMP")
+    ? { name: "Extra Shrimp", priceDelta: 50, calories: 55, protein: 12, carbs: 1, fat: 0.5 }
+    : code.includes("TUNA")
+    ? { name: "Extra Tuna & Corn", priceDelta: 50, calories: 100, protein: 14, carbs: 8, fat: 1 }
+    : null; // Veggie roll: no protein extra
+
+  const addRaw = [
+    { name: "Avocado", priceDelta: 30, calories: 120, protein: 1.5, carbs: 6, fat: 11 },
+    ...(proteinExtra ? [proteinExtra] : []),
+    { name: "Extra Peanut-Lime Sauce", priceDelta: 15, calories: 60, protein: 2, carbs: 4, fat: 4 },
+    { name: "Crushed Peanuts", priceDelta: 20, calories: 90, protein: 4, carbs: 3, fat: 7 },
+    { name: "Extra Mango", priceDelta: 20, calories: 50, protein: 0.5, carbs: 13, fat: 0 },
+  ];
+  const addOpts = addRaw.map((o, i) => ({ emoji: null, isDefault: false, sort: i, ...o }));
+
+  return [
+    { name: "Remove", sort: 1, minSelect: 0, maxSelect: null, options: removeOpts },
+    { name: "Add Extras", sort: 2, minSelect: 0, maxSelect: null, options: addOpts },
+  ];
+}
+
 async function fetchFromSupabase() {
   const [dishResult, tagResult, contentResult, modResult, tierResult] = await Promise.all([
     supabase
@@ -154,7 +194,9 @@ async function fetchFromSupabase() {
         ? [{ label: "Featured", tone: "gold" }]
         : [];
 
-    const modifierGroups = modifiersFor(d.id);
+    const modifierGroups = isSpringRoll
+      ? springRollModifiers(d.product_code)
+      : modifiersFor(d.id);
     const price = d.price != null ? Number(d.price) : null;
     // A dish with a DEFAULT-selected add-on (e.g. a dip served with a bun by
     // default) opens "as configured": its headline price is base + default
