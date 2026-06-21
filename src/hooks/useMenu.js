@@ -166,7 +166,7 @@ async function fetchFromSupabase() {
     let subSort = d.category_sort_order ?? 0;
     if (d.product_code?.startsWith("SALE-SUMMER_ROLLS")) {
       // Spring rolls lead under their own subgroup.
-      subId = "grp-spring-rolls"; subName = "🌯 Fresh Spring Rolls"; subSort = -1;
+      subId = "grp-spring-rolls"; subName = "🌯 Fresh Spring Roll"; subSort = -1;
     } else if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
       // The grilled potato becomes the Sides subgroup (more to come).
       subId = "grp-sides"; subName = "🥔 Sides"; subSort = 99;
