@@ -835,16 +835,16 @@ button.shk-seal:active { transform: scale(0.93); }
   position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 55;
   display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;
   padding: var(--space-3) var(--space-5); border: none; border-radius: var(--radius-pill);
-  background: var(--royal-green); color: var(--cream-50); box-shadow: var(--shadow-lg);
+  background: var(--brand-purple); color: var(--cream-50); box-shadow: var(--shadow-lg);
   font-family: var(--font-body); font-size: var(--text-base); font-weight: var(--fw-semibold);
   transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
-.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--royal-green-soft); }
+.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--purple-600); }
 .shk-orderfab:hover { transform: translateY(-2px); }
 .shk-orderfab:active { transform: translateY(0); }
 .shk-orderfab__icon { display: grid; place-items: center; }
 .shk-orderfab__icon svg { width: 20px; height: 20px; }
-.shk-orderfab__count { background: #fff; color: var(--royal-green); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
+.shk-orderfab__count { background: #fff; color: var(--purple-700); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 .shk-orderfab__total { font-family: var(--font-mono); font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 /* Empty state: friendly red CTA to start an order. */
 .shk-orderfab--empty { background: var(--royal-green); color: var(--cream-50); }
@@ -873,8 +873,19 @@ button.shk-seal:active { transform: scale(0.93); }
 @media (min-width: 960px) { .shk-cart { border-radius: var(--radius-xl); } }
 .shk-cart__head { display: flex; align-items: center; justify-content: space-between; padding: var(--space-5); }
 .shk-cart__title { font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--text-xl); color: var(--text-strong); }
-.shk-cart__lines { overflow-y: auto; padding: 0 var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+.shk-cart__scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: var(--space-5); padding: 0 var(--space-5) var(--space-4); }
+.shk-cart__lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
 .shk-cart__line-main { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); padding: var(--space-3); border-radius: var(--radius-md); background: var(--bg-surface); }
+.shk-cart__line-lead { display: flex; align-items: flex-start; gap: var(--space-3); min-width: 0; }
+.shk-cart__thumb { flex: none; width: 54px; height: 54px; border-radius: var(--radius-md); overflow: hidden; background: var(--cream-200); display: grid; place-items: center; }
+.shk-cart__thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.shk-cart__thumb-ph { width: 58%; height: 58%; border-radius: 50%; background: rgba(30, 57, 3, 0.10); }
+/* Order roll-up: nutrition donut + macros + combined benefit pills. */
+.shk-cart__nutri-wrap { display: flex; flex-direction: column; gap: var(--space-3); }
+.shk-cart__nutri { display: flex; align-items: center; gap: var(--space-5); padding: var(--space-4); background: var(--surface-inset); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
+.shk-cart__nutri .shk-donut { flex: none; }
+.shk-cart__nutri-bars { flex: 1; min-width: 0; }
+.shk-cart__total-num { font-family: var(--font-display); font-weight: var(--fw-display); font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1; color: var(--royal-green); }
 .shk-cart__line-info { display: flex; flex-direction: column; min-width: 0; }
 .shk-cart__line-name { font-size: var(--text-base); color: var(--text-strong); }
 .shk-cart__line-unit { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--menu-price); font-feature-settings: var(--num-feature); }

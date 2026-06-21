@@ -5,20 +5,8 @@ import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
 import { IconButton } from "../primitives/IconButton.jsx";
 import { ModifierBuilder } from "./ModifierBuilder.jsx";
-import {
-  XIcon, ShareIcon, ClockIcon,
-  BoltIcon, ShieldIcon, SparkleIcon, WavesIcon, BoneIcon,
-  DropletIcon, LeafIcon, SproutIcon, WheatIcon, NutIcon, BeefIcon,
-  HeartIcon, FlameIcon, CoffeeIcon,
-} from "../Icons.jsx";
-
-// Benefit-slug → icon, resolving the string icon set in lib/benefits.js.
-const BENEFIT_ICONS = {
-  protein: DropletIcon, bvitamins: BoltIcon, omega3: WavesIcon, iron: BeefIcon,
-  magnesium: LeafIcon, vitaminc: ShieldIcon, vitamina: SproutIcon, fiber: WheatIcon,
-  calcium: BoneIcon, healthyfats: NutIcon, antioxidants: SparkleIcon,
-  potassium: HeartIcon, antiinflam: FlameIcon, caffeine: CoffeeIcon,
-};
+import { BenefitPills } from "./BenefitPills.jsx";
+import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
 
 export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const dialogRef = useRef(null);
@@ -195,18 +183,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
           {benefits.length > 0 && (
             <div>
               <div className="shk-dlg__section-label">Benefits</div>
-              <ul className="shk-benefits">
-                {benefits.map((b) => {
-                  const Icon = BENEFIT_ICONS[b.icon] || BENEFIT_ICONS[b.slug] || LeafIcon;
-                  return (
-                    <li key={b.slug} className={`shk-boost shk-boost--${b.tone || "green"}`}>
-                      <span className="shk-boost__icon"><Icon /></span>
-                      <span className="shk-boost__label">{b.label}</span>
-                      {b.value && <span className="shk-boost__val">{b.value}</span>}
-                    </li>
-                  );
-                })}
-              </ul>
+              <BenefitPills benefits={benefits} />
             </div>
           )}
 
