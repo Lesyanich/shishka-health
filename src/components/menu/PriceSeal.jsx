@@ -26,15 +26,16 @@ function buildRing() {
 }
 const RING = buildRing();
 
-export function PriceSeal({ price, currency = "thb", size = 58, fill = false, onClick, label }) {
+export function PriceSeal({ price, currency = "thb", size = 58, fill = false, active = false, onClick, label }) {
   const interactive = typeof onClick === "function";
   const Tag = interactive ? "button" : "div";
   // `fill` lets a parent (e.g. the manakish disc) size the seal via CSS so it
   // matches the food images; otherwise it's a fixed `size` px stamp.
+  // `active` = the dish is in the order → the stamp goes purple.
   return (
     <Tag
       type={interactive ? "button" : undefined}
-      className="shk-seal"
+      className={`shk-seal${active ? " shk-seal--active" : ""}`}
       style={fill ? undefined : { width: size, height: size, fontSize: `${(size * 0.25).toFixed(1)}px` }}
       onClick={onClick}
       aria-label={label}

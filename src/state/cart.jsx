@@ -62,7 +62,14 @@ export function CartProvider({ children }) {
     const count = lines.reduce((n, l) => n + l.qty, 0);
     const total = lines.reduce((s, l) => s + lineTotal(l), 0);
 
-    return { lines, count, total, lineTotal, addDish, addConfiguredDish, addBundle, setQty, remove, clear };
+    // Dish ids currently in the order — lets the menu mark added items.
+    const addedIds = new Set();
+    for (const l of lines) {
+      if (l.kind === "bundle") (l.children || []).forEach((c) => c.dish && addedIds.add(c.dish.id));
+      else if (l.dish) addedIds.add(l.dish.id);
+    }
+
+    return { lines, count, total, addedIds, lineTotal, addDish, addConfiguredDish, addBundle, setQty, remove, clear };
   }, [lines]);
 
   return <CartContext.Provider value={api}>{children}</CartContext.Provider>;

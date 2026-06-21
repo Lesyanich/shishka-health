@@ -199,6 +199,7 @@ export default function App() {
       badges={dish.badges ?? []}
       category={catName}
       comingSoon={dish.comingSoon ?? false}
+      added={cart.addedIds.has(dish.id)}
       onClick={() => setSelected(dish)}
       onQuickAdd={() => quickAdd(dish)}
     />
@@ -310,7 +311,7 @@ export default function App() {
                             <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
                           </div>
                           {photoless(sub.items) ? (
-                            <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} />
+                            <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
                           ) : (
                             <div className="shk-app__grid">
                               {sub.items.map((dish) => renderDish(dish, cat.name))}
@@ -319,7 +320,7 @@ export default function App() {
                         </div>
                       ))
                     ) : photoless(cat.items) ? (
-                      <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} />
+                      <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
                     ) : (
                       <div className="shk-app__grid">
                         {cat.items.map((dish) => renderDish(dish, cat.name))}

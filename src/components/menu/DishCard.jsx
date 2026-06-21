@@ -32,6 +32,7 @@ export function DishCard({
   category,
   layout = "tile",
   comingSoon = false,
+  added = false,
   onClick,
   onQuickAdd,
   className = "",
@@ -100,6 +101,7 @@ export function DishCard({
           <PriceSeal
             price={price}
             size={59}
+            active={added}
             onClick={!comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(); } : undefined}
             label={!comingSoon && onQuickAdd ? `Add ${name} to order` : `${name} ${price} thb`}
           />
