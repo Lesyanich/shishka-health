@@ -5,7 +5,20 @@ import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
 import { IconButton } from "../primitives/IconButton.jsx";
 import { ModifierBuilder } from "./ModifierBuilder.jsx";
-import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
+import {
+  XIcon, ShareIcon, ClockIcon,
+  BoltIcon, ShieldIcon, SparkleIcon, WavesIcon, BoneIcon,
+  DropletIcon, LeafIcon, SproutIcon, WheatIcon, NutIcon, BeefIcon,
+  HeartIcon, FlameIcon, CoffeeIcon,
+} from "../Icons.jsx";
+
+// Benefit-slug → icon, resolving the string icon set in lib/benefits.js.
+const BENEFIT_ICONS = {
+  protein: DropletIcon, bvitamins: BoltIcon, omega3: WavesIcon, iron: BeefIcon,
+  magnesium: LeafIcon, vitaminc: ShieldIcon, vitamina: SproutIcon, fiber: WheatIcon,
+  calcium: BoneIcon, healthyfats: NutIcon, antioxidants: SparkleIcon,
+  potassium: HeartIcon, antiinflam: FlameIcon, caffeine: CoffeeIcon,
+};
 
 export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const dialogRef = useRef(null);
@@ -53,7 +66,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const {
     name, description, price, priceDefault = null, priceFrom = null, currency = "฿", image, image_url,
     calories, protein = 0, carbs = 0, fat = 0,
-    diets = [], allergens = [], tags = [], badges = [],
+    diets = [], allergens = [], tags = [], badges = [], benefits = [],
     category, portion_size, portion_unit, ingredients,
     modifierGroups = [],
   } = dish;
@@ -178,6 +191,26 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
               <MacroBar protein={liveProtein} carbs={liveCarbs} fat={liveFat} />
             </div>
           </div>
+
+          {benefits.length > 0 && (
+            <div>
+              <div className="shk-dlg__section-label">Real-Food Benefits</div>
+              <ul className="shk-benefits">
+                {benefits.map((b) => {
+                  const Icon = BENEFIT_ICONS[b.icon] || BENEFIT_ICONS[b.slug] || LeafIcon;
+                  return (
+                    <li key={b.slug} className="shk-benefit">
+                      <span className="shk-benefit__icon"><Icon /></span>
+                      <span className="shk-benefit__text">
+                        <span className="shk-benefit__label">{b.label}</span>
+                        <span className="shk-benefit__note">{b.note}</span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
 
           {diets.length > 0 && (
             <div>

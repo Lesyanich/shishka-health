@@ -4,6 +4,7 @@ import { MOCK_DATA } from "../lib/mockData.js";
 import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
 import { deepStripEmoji, titleCaseMenu } from "../lib/text.js";
 import { dishFloor, dishDefaultPrice } from "../lib/modifiers.js";
+import { benefitsForDish } from "../lib/benefits.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -160,6 +161,14 @@ async function fetchFromSupabase() {
       name: d.customer_short_name || d.name,
       description: d.customer_description ?? null,
       ingredients: d.customer_ingredients ?? null,
+      // "Real food, real supplement" — nourishment tags derived from the
+      // dish's own ingredients (+ protein), shown in the dialog. See benefits.js.
+      benefits: benefitsForDish({
+        text: [d.customer_ingredients || d.customer_description, d.customer_short_name || d.name]
+          .filter(Boolean)
+          .join(" "),
+        protein: d.protein != null ? Number(d.protein) : null,
+      }),
       modifierGroups,
       price,
       priceDefault,
