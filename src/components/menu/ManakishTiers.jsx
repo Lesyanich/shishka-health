@@ -13,12 +13,9 @@ import { DietTag } from "../filters/DietTag.jsx";
 
 const TAGLINE = "our signature gluten-free crust crafted from potato & rice";
 
-// Poster tier wording (DB calls the middle tier "Signature").
-const TIER_LABEL = { signature: "specialty" };
-const tierLabel = (name) => {
-  const n = (name || "").toLowerCase();
-  return TIER_LABEL[n] ?? n;
-};
+// Poster tier wording (DB calls the middle tier "Signature"). Title Case.
+const TIER_LABEL = { signature: "Specialty" };
+const tierLabel = (name) => TIER_LABEL[(name || "").toLowerCase()] ?? (name || "");
 
 // Group a section's dishes into tiers (subcategories), ordered by their sort.
 function tiersOf(items) {

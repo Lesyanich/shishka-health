@@ -23,7 +23,7 @@ export function ManakishSets({ bundles, onSelect, currency = "฿" }) {
           </span>
 
           <span className="shk-set__num">{b.manakishCount}</span>
-          <span className="shk-set__title">manakish</span>
+          <span className="shk-set__title">Manakish</span>
           <span className="shk-set__sub">
             set of {b.manakishCount} + {b.sauceCount} sauce free
           </span>

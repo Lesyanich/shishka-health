@@ -1058,7 +1058,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__priceitem .shk-seal { width: 64%; height: 64%; font-size: clamp(19px, 2.8vw, 33px); }
 .shk-mana__price-label {
   font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--text-sm);
-  color: var(--white); text-transform: lowercase; letter-spacing: 0.02em; text-align: center;
+  color: var(--white); letter-spacing: 0.02em; text-align: center;
 }
 .shk-mana__col.is-premium .shk-mana__price-label { color: var(--honey-300); }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -1134,7 +1134,7 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-set__title {
   font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(1.35rem, 4.4vw, 2rem); color: var(--white); text-transform: lowercase;
+  font-size: clamp(1.35rem, 4.4vw, 2rem); color: var(--white);
   letter-spacing: var(--tracking-tight); line-height: 1; margin-top: 4px;
 }
 .shk-set__sub { font-size: var(--text-sm); color: var(--text-body); font-weight: var(--fw-medium); margin-top: 5px; }

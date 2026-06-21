@@ -124,11 +124,13 @@ async function fetchFromSupabase() {
   // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    const sectionId = d.section_id ?? d.category_id;
-    let sectionName = d.section_name ?? d.category_name;
-    const sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
-    // The Appetizers section now also carries the Sides.
-    if (sectionName === "🥟 Appetizers & Dips") sectionName = "🥟 Appetizers, Dips & Sides";
+    // Spring rolls lead the menu as their own section; the original Appetizers
+    // section keeps the dips + sides under a renamed header.
+    const isSpringRoll = d.product_code?.startsWith("SALE-SUMMER_ROLLS");
+    const sectionId = isSpringRoll ? "sec-spring-rolls" : (d.section_id ?? d.category_id);
+    let sectionName = isSpringRoll ? "Fresh Spring Roll" : (d.section_name ?? d.category_name);
+    const sectionSort = isSpringRoll ? 0 : (d.section_sort_order ?? d.category_sort_order ?? 0);
+    if (sectionName === "🥟 Appetizers & Dips") sectionName = "Dips & Sides Appetizers";
     if (sectionId && !catMap.has(sectionId)) {
       catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }
@@ -164,9 +166,9 @@ async function fetchFromSupabase() {
     let subId = d.category_id ?? sectionId;
     let subName = d.category_name ?? sectionName;
     let subSort = d.category_sort_order ?? 0;
-    if (d.product_code?.startsWith("SALE-SUMMER_ROLLS")) {
-      // Spring rolls lead under their own subgroup.
-      subId = "grp-spring-rolls"; subName = "🌯 Fresh Spring Roll"; subSort = -1;
+    if (isSpringRoll) {
+      // Own flat section — no subheader.
+      subId = "sec-spring-rolls"; subName = "Fresh Spring Roll"; subSort = 0;
     } else if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
       // The grilled potato becomes the Sides subgroup (more to come).
       subId = "grp-sides"; subName = "🥔 Sides"; subSort = 99;
