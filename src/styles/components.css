@@ -430,21 +430,15 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-dlg__disclaimer { font-size: var(--text-2xs); color: var(--text-faint); line-height: var(--leading-normal); }
 
 /* ---- Real-food benefits ("real supplement, real food") ---- */
-.shk-benefits { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+/* Compact, scannable nutrient pills — one short line that wraps to two. */
+.shk-benefits { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .shk-benefit {
-  display: flex; align-items: flex-start; gap: var(--space-3);
-  padding: var(--space-3); border-radius: var(--radius-md);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: var(--radius-pill);
   border: 1px solid rgba(126, 156, 92, 0.30); background: rgba(91, 122, 61, 0.12);
+  font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--green-200);
 }
-.shk-benefit__icon {
-  flex: none; display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border-radius: var(--radius-pill);
-  background: rgba(91, 122, 61, 0.18); color: var(--green-300);
-}
-.shk-benefit__icon svg { width: 17px; height: 17px; }
-.shk-benefit__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.shk-benefit__label { font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--green-200); }
-.shk-benefit__note { font-size: var(--text-xs); color: var(--text-muted); line-height: var(--leading-normal); text-wrap: pretty; }
+.shk-benefit svg { flex: none; width: 15px; height: 15px; color: var(--green-300); }
 
 /* ---- App layout ---- */
 .shk-app { height: 100%; overflow-y: auto; background: var(--bg-page); }

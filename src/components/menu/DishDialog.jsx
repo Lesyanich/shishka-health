@@ -194,17 +194,14 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
           {benefits.length > 0 && (
             <div>
-              <div className="shk-dlg__section-label">Real-Food Benefits</div>
+              <div className="shk-dlg__section-label">Benefits</div>
               <ul className="shk-benefits">
                 {benefits.map((b) => {
                   const Icon = BENEFIT_ICONS[b.icon] || BENEFIT_ICONS[b.slug] || LeafIcon;
                   return (
                     <li key={b.slug} className="shk-benefit">
-                      <span className="shk-benefit__icon"><Icon /></span>
-                      <span className="shk-benefit__text">
-                        <span className="shk-benefit__label">{b.label}</span>
-                        <span className="shk-benefit__note">{b.note}</span>
-                      </span>
+                      <Icon />
+                      {b.label}
                     </li>
                   );
                 })}

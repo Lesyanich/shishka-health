@@ -20,46 +20,46 @@
 // the top few per dish.
 const BENEFITS = [
   {
-    slug: "omega3", label: "Omega-3 Boost", icon: "waves",
+    slug: "omega3", label: "Omega-3", icon: "waves",
     note: "Omega-3 fatty acids that support heart and brain health.",
     keywords: ["tuna", "salmon", "sardine", "mackerel", "walnut", "chia"],
   },
   {
-    slug: "bvitamins", label: "B-Vitamin Support", icon: "bolt",
+    slug: "bvitamins", label: "Vitamin B12", icon: "bolt",
     note: "B12 from real animal protein for steady energy and healthy nerves.",
     keywords: ["shrimp", "tuna", "chicken", "beef", "lamb", "sujuk", "egg"],
   },
   {
-    slug: "iron", label: "Iron Support", icon: "beef",
+    slug: "iron", label: "Iron", icon: "beef",
     note: "Dietary iron that helps carry oxygen and fight fatigue.",
     keywords: ["beef", "lamb", "sujuk", "spinach"],
   },
   {
-    slug: "magnesium", label: "Magnesium Boost", icon: "leaf",
+    slug: "magnesium", label: "Magnesium", icon: "leaf",
     note: "Magnesium for muscle recovery, calm and better sleep.",
     keywords: ["tahini", "sesame", "chia", "spinach", "cacao", "cocoa",
       "dark chocolate", "almond", "cashew", "pumpkin seed", "sunflower seed"],
   },
   {
-    slug: "vitaminc", label: "Vitamin C & Immunity", icon: "shield",
+    slug: "vitaminc", label: "Vitamin C", icon: "shield",
     note: "Vitamin C and antioxidants to support your immune system.",
     keywords: ["mango", "orange", "guava", "lemon", "lime", "kiwi",
       "strawberry", "passion fruit", "pepper", "pineapple", "blueberry"],
   },
   {
-    slug: "vitamina", label: "Vitamin A Support", icon: "sprout",
+    slug: "vitamina", label: "Vitamin A", icon: "sprout",
     note: "Beta-carotene (vitamin A) for healthy eyes and skin.",
     keywords: ["carrot", "pumpkin", "mango", "apricot", "spinach"],
   },
   {
-    slug: "fiber", label: "Fibre & Gut Support", icon: "wheat",
+    slug: "fiber", label: "Fibre", icon: "wheat",
     note: "Plant fibre that feeds your gut and keeps you full.",
     keywords: ["chickpea", "hummus", "beetroot", "whole wheat", "oat",
       "banana", "lettuce", "cucumber", "carrot", "eggplant", "corn",
       "apple", "kiwi", "date", "seed"],
   },
   {
-    slug: "calcium", label: "Calcium Support", icon: "bone",
+    slug: "calcium", label: "Calcium", icon: "bone",
     note: "Calcium for strong bones and teeth.",
     keywords: ["cheese", "milk", "yogurt", "tahini", "sesame", "almond"],
   },
@@ -70,7 +70,7 @@ const BENEFITS = [
       "peanut", "tahini", "sesame", "coconut milk", "seed"],
   },
   {
-    slug: "antioxidants", label: "Antioxidant Rich", icon: "sparkle",
+    slug: "antioxidants", label: "Antioxidants", icon: "sparkle",
     note: "Polyphenols and antioxidants that help fight everyday stress.",
     keywords: ["matcha", "cacao", "cocoa", "dark chocolate", "turmeric",
       "berry", "blueberry", "strawberry", "pomegranate", "espresso",
@@ -104,10 +104,10 @@ function proteinBenefit(protein) {
   if (protein == null) return null;
   const g = Math.round(protein);
   if (protein >= 20)
-    return { slug: "protein", label: "Amino-Acid Refill", icon: "droplet",
+    return { slug: "protein", label: `High Protein · ${g}g`, icon: "droplet",
       note: `${g}g of protein to rebuild and recover.` };
   if (protein >= 10)
-    return { slug: "protein", label: "Protein Support", icon: "droplet",
+    return { slug: "protein", label: `Protein · ${g}g`, icon: "droplet",
       note: `${g}g of quality protein per serving.` };
   return null;
 }
