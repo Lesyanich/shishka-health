@@ -140,16 +140,14 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
                         ) : (
                           <span className="shk-mana__disc-ph" aria-hidden="true" />
                         )}
-                        {d.price != null && !d.comingSoon && (
-                          <span className="shk-mana__seal">
-                            <PriceSeal
-                              price={d.price}
-                              size={46}
-                              active={addedIds?.has(d.id)}
-                              onClick={(e) => { e.stopPropagation(); onQuickAdd?.(d); }}
-                              label={`Add ${d.name} to order`}
-                            />
-                          </span>
+                        {!d.comingSoon && (
+                          <button
+                            type="button"
+                            className={`shk-mana__dot ${addedIds?.has(d.id) ? "is-on" : ""}`}
+                            onClick={(e) => { e.stopPropagation(); onQuickAdd?.(d); }}
+                            aria-pressed={addedIds?.has(d.id) || false}
+                            aria-label={`Add ${d.name} to order`}
+                          />
                         )}
                       </span>
                       <span className="shk-mana__item-name">{d.name}</span>
