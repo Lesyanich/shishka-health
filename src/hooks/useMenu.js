@@ -163,7 +163,9 @@ async function fetchFromSupabase() {
     let subName = d.category_name ?? sectionName;
     let subSort = d.category_sort_order ?? 0;
     if (/coffee/i.test(d.category_name || "")) {
-      const cold = /🧊|\biced\b|\bcold\b|tonic/i.test(d.name || "");
+      const cold = /🧊|\biced\b|\bcold\b|tonic/i.test(d.name || "")
+        || d.product_code === "SALE-COFFEE_ORANGE"
+        || d.product_code === "SALE-COFFEE_PASSION_FRUIT";
       subId = `${d.category_id}:${cold ? "cold" : "hot"}`;
       subName = cold ? "🧊 Cold Coffee" : "☕ Hot Coffee";
       subSort = (d.category_sort_order ?? 0) + (cold ? 0.5 : 0);

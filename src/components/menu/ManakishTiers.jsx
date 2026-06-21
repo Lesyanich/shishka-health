@@ -59,39 +59,37 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
               {isPremium && <span className="shk-mana__tier-badge">premium</span>}
             </div>
 
-            <ul className="shk-mana__list">
-              {t.minPrice != null && (
-                <li>
-                  <div className="shk-mana__item shk-mana__priceitem">
-                    <span className="shk-mana__disc">
-                      <PriceSeal price={t.minPrice} fill />
-                    </span>
-                  </div>
-                </li>
-              )}
-              {t.items.map((d) => (
-                <li key={d.id}>
-                  <button
-                    type="button"
-                    className={`shk-mana__item ${d.comingSoon ? "is-soon" : ""}`}
-                    onClick={() => onSelect?.(d)}
-                    aria-label={d.name}
-                  >
-                    <span className="shk-mana__disc">
-                      {d.image_url ? (
-                        <img src={d.image_url} alt="" loading="lazy" />
-                      ) : (
-                        <span className="shk-mana__disc-ph" aria-hidden="true" />
-                      )}
-                    </span>
-                    <span className="shk-mana__item-name">{d.name}</span>
-                    {d.price != null && d.price !== t.minPrice && (
-                      <span className="shk-mana__item-price num">฿{d.price}</span>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <div className="shk-mana__scroll">
+              <ul className="shk-mana__list">
+                {t.minPrice != null && (
+                  <li>
+                    <div className="shk-mana__item shk-mana__priceitem">
+                      <span className="shk-mana__disc">
+                        <PriceSeal price={t.minPrice} fill />
+                      </span>
+                    </div>
+                  </li>
+                )}
+                {t.items.map((d) => (
+                  <li key={d.id}>
+                    <button
+                      type="button"
+                      className={`shk-mana__item ${d.comingSoon ? "is-soon" : ""}`}
+                      onClick={() => onSelect?.(d)}
+                      aria-label={d.name}
+                    >
+                      <span className="shk-mana__disc">
+                        {d.image_url ? (
+                          <img src={d.image_url} alt="" loading="lazy" />
+                        ) : (
+                          <span className="shk-mana__disc-ph" aria-hidden="true" />
+                        )}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
           );
         })}

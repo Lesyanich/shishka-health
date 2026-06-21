@@ -1017,13 +1017,23 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 
 /* ---- Items: big clean cutouts packed in a tight grid ------------------ */
-.shk-mana__list {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: clamp(10px, 1.4vw, 18px) clamp(6px, 0.8vw, 12px);
-  align-items: start; justify-items: center;
+/* Each tier scrolls horizontally on one line — images only, swipe / arrow for more. */
+.shk-mana__scroll { position: relative; }
+.shk-mana__scroll::after {
+  content: "›"; position: absolute; top: 50%; right: 0; transform: translateY(-50%);
+  padding: 0 6px 6px 30px; font-size: 30px; font-weight: 700; line-height: 1;
+  color: var(--white); pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--royal-green) 72%);
 }
-.shk-mana__list > li { width: 100%; display: flex; justify-content: center; }
+.shk-mana__col.is-premium .shk-mana__scroll::after { background: linear-gradient(90deg, transparent, rgba(40, 64, 12, 1) 72%); }
+.shk-mana__list {
+  list-style: none; margin: 0; padding: 0 0 var(--space-2);
+  display: flex; flex-wrap: nowrap; gap: clamp(12px, 1.6vw, 22px);
+  overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.shk-mana__list::-webkit-scrollbar { display: none; }
+.shk-mana__list > li { flex: 0 0 clamp(150px, 20vw, 200px); display: flex; justify-content: center; scroll-snap-align: start; }
 .shk-mana__item {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   width: 100%; max-width: 240px;
