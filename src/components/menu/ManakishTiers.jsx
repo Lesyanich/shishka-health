@@ -81,6 +81,10 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
                           <span className="shk-mana__disc-ph" aria-hidden="true" />
                         )}
                       </span>
+                      <span className="shk-mana__item-name">{d.name}</span>
+                      {d.price != null && d.price !== t.minPrice && (
+                        <span className="shk-mana__item-price num">฿{d.price}</span>
+                      )}
                     </button>
                   </li>
                 ))}
