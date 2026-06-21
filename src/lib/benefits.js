@@ -122,7 +122,7 @@ const BENEFIT_TONE = {
 };
 
 // Cap the number of chips so the section stays scannable.
-const MAX_BENEFITS = 4;
+const MAX_BENEFITS = 5;
 
 export function benefitsForDish({ text, protein } = {}) {
   const haystack = (text || "").toLowerCase();
