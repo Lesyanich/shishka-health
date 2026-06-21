@@ -774,12 +774,12 @@ button.shk-seal:active { transform: scale(0.93); }
 /* "Add to order" button inside the dish dialog */
 .shk-dlg__add, .shk-bundle__add {
   width: 100%; min-height: var(--hit-min); border: none; cursor: pointer;
-  background: var(--accent); color: var(--text-on-gold);
+  background: var(--royal-green); color: var(--cream-50);
   font-family: var(--font-body); font-weight: var(--fw-semibold); font-size: var(--text-base);
   border-radius: var(--radius-pill); padding: 0 var(--space-5);
   transition: background .15s ease;
 }
-.shk-dlg__add:hover:not(:disabled), .shk-bundle__add:hover:not(:disabled) { background: var(--accent-hover); }
+.shk-dlg__add:hover:not(:disabled), .shk-bundle__add:hover:not(:disabled) { background: var(--royal-green-soft); }
 .shk-dlg__add:disabled, .shk-bundle__add:disabled { opacity: .45; cursor: not-allowed; }
 
 /* Bundle constructor dialog (reuses .shk-dlg__scrim / .shk-dlg shell) */
@@ -814,20 +814,20 @@ button.shk-seal:active { transform: scale(0.93); }
   position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 55;
   display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;
   padding: var(--space-3) var(--space-5); border: none; border-radius: var(--radius-pill);
-  background: #7c3aed; color: #fff; box-shadow: var(--shadow-lg);
+  background: var(--royal-green); color: var(--cream-50); box-shadow: var(--shadow-lg);
   font-family: var(--font-body); font-size: var(--text-base); font-weight: var(--fw-semibold);
   transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
-.shk-orderfab:not(.shk-orderfab--empty):hover { background: #6d28d9; }
+.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--royal-green-soft); }
 .shk-orderfab:hover { transform: translateY(-2px); }
 .shk-orderfab:active { transform: translateY(0); }
 .shk-orderfab__icon { display: grid; place-items: center; }
 .shk-orderfab__icon svg { width: 20px; height: 20px; }
-.shk-orderfab__count { background: #fff; color: #7c3aed; border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
+.shk-orderfab__count { background: #fff; color: var(--royal-green); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 .shk-orderfab__total { font-family: var(--font-mono); font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 /* Empty state: friendly red CTA to start an order. */
-.shk-orderfab--empty { background: var(--accent); color: #fff; }
-.shk-orderfab--empty:hover { background: var(--accent-hover); }
+.shk-orderfab--empty { background: var(--royal-green); color: var(--cream-50); }
+.shk-orderfab--empty:hover { background: var(--royal-green-soft); }
 @media (min-width: 960px) { .shk-orderfab { right: var(--space-6); bottom: var(--space-6); } }
 
 /* Order drawer — empty state */
@@ -841,7 +841,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-cart__empty-sub { margin: 0; max-width: 34ch; font-size: var(--text-sm); color: var(--text-muted); line-height: 1.5; }
 .shk-cart__empty-btn {
   margin-top: var(--space-2); padding: var(--space-3) var(--space-5);
-  border: none; border-radius: var(--radius-pill); background: var(--accent); color: #fff;
+  border: none; border-radius: var(--radius-pill); background: var(--royal-green); color: var(--cream-50);
   font-family: var(--font-body); font-weight: var(--fw-bold); cursor: pointer;
 }
 
@@ -861,7 +861,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-cart__sub li { font-size: var(--text-xs); color: var(--text-mute); }
 .shk-cart__line-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .shk-cart__line-price { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); font-feature-settings: var(--num-feature); }
-.shk-cart__rm { background: none; border: none; cursor: pointer; color: var(--brand-red); font-size: var(--text-xs); padding: 0; }
+.shk-cart__rm { background: none; border: none; cursor: pointer; color: var(--royal-green-soft); font-size: var(--text-xs); padding: 0; text-decoration: underline; }
 .shk-cart__foot { padding: var(--space-5); border-top: var(--border-width) solid var(--border-subtle); display: flex; flex-direction: column; gap: var(--space-3); }
 .shk-cart__total-row { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-size: var(--text-lg); color: var(--text-strong); font-feature-settings: var(--num-feature); }
 .shk-cart__note { font-size: var(--text-xs); color: var(--text-mute); }
@@ -876,7 +876,23 @@ button.shk-seal:active { transform: scale(0.93); }
   font-family: var(--font-sans); font-size: var(--text-sm); line-height: 1.4;
 }
 .shk-cart__comment-input::placeholder { color: var(--text-mute); }
-.shk-cart__comment-input:focus { outline: none; border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15); }
+.shk-cart__comment-input:focus { outline: none; border-color: var(--royal-green); box-shadow: 0 0 0 3px rgba(30, 57, 3, 0.15); }
+
+/* ---- White + green theme: item window (.shk-dlg) + order basket (.shk-cart) ----
+   Cream/white surface with everything in the brand green. Done by redefining the
+   text tokens on the containers so all descendant copy turns green automatically;
+   buttons/accents are set to royal-green above. */
+.shk-dlg, .shk-cart {
+  background: var(--cream-50);
+  color: var(--royal-green);
+  --text-strong: var(--royal-green);
+  --text-body: var(--royal-green);
+  --text-muted: rgba(30, 57, 3, 0.72);
+  --text-mute: rgba(30, 57, 3, 0.72);
+  --text-faint: rgba(30, 57, 3, 0.5);
+  --menu-price: var(--royal-green);
+  --menu-muted: rgba(30, 57, 3, 0.6);
+}
 
 /* ===========================================================================
    MANAKEESH — poster layout (see components/menu/ManakishTiers.jsx)
