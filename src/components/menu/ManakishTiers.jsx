@@ -8,6 +8,7 @@
 */
 
 import { PriceSeal } from "./PriceSeal.jsx";
+import { DietTag } from "../filters/DietTag.jsx";
 
 const TAGLINE = "our signature gluten-free crust crafted from potato & rice";
 
@@ -45,6 +46,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
       <header className="shk-mana__head">
         <h2 className="shk-mana__title">Manakish</h2>
         <p className="shk-mana__tag">{tagline}</p>
+        <DietTag type="gluten-free" />
       </header>
 
       <div className="shk-mana__cols">
