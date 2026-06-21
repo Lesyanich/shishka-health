@@ -20,6 +20,12 @@
 // the top few per dish.
 const BENEFITS = [
   {
+    // Caffeine is the headline benefit of coffee/matcha, so it leads.
+    slug: "caffeine", label: "Energy & Focus", icon: "coffee",
+    note: "A clean caffeine lift for natural energy, focus and alertness.",
+    keywords: ["espresso", "coffee", "matcha"],
+  },
+  {
     slug: "omega3", label: "Omega-3", icon: "waves",
     note: "Omega-3 fatty acids that support heart and brain health.",
     keywords: ["tuna", "salmon", "sardine", "mackerel", "walnut", "chia"],
@@ -44,7 +50,8 @@ const BENEFITS = [
     slug: "vitaminc", label: "Vitamin C", icon: "shield",
     note: "Vitamin C and antioxidants to support your immune system.",
     keywords: ["mango", "orange", "guava", "lemon", "lime", "kiwi",
-      "strawberry", "passion fruit", "pepper", "pineapple", "blueberry"],
+      "strawberry", "passion fruit", "red pepper", "bell pepper",
+      "pineapple", "blueberry"],
   },
   {
     slug: "vitamina", label: "Vitamin A", icon: "sprout",
@@ -85,11 +92,6 @@ const BENEFITS = [
     slug: "antiinflam", label: "Anti-Inflammatory", icon: "flame",
     note: "Ginger and turmeric with natural anti-inflammatory compounds.",
     keywords: ["ginger", "turmeric"],
-  },
-  {
-    slug: "caffeine", label: "Natural Energy", icon: "coffee",
-    note: "A clean caffeine lift from real coffee and matcha.",
-    keywords: ["espresso", "coffee", "matcha"],
   },
 ];
 
