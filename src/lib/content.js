@@ -29,7 +29,7 @@ export const DEFAULT_CONTENT = {
     eyebrow: "visit us in phuket",
     title: "come hungry.",
     sub: "Real food, made fresh every day — drop by our Phuket kitchen.",
-    instagramUrl: "https://www.instagram.com/shishka_phuket",
+    instagramUrl: "https://www.instagram.com/shishka_healthy_kitchen",
     whatsappUrl: "", // button hidden while empty
     hoursLabel: "open daily",
     hoursTime: "9:00 – 18:00",
