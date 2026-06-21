@@ -913,6 +913,20 @@ button.shk-seal:active { transform: scale(0.93); }
   --text-faint: rgba(30, 57, 3, 0.5);
   --menu-price: var(--royal-green);
   --menu-muted: rgba(30, 57, 3, 0.6);
+  /* The page theme is dark royal-green, but these are cream surfaces — remap the
+     surface/border tokens to light so filled pills (modifier options, cart
+     lines) and icon buttons stay readable instead of dark-green-on-dark-green. */
+  --bg-surface:     var(--cream-100);
+  --bg-surface-alt: var(--cream-200);
+  --bg-base:        var(--cream-100);
+  --surface-1:      var(--cream-100);
+  --surface-2:      var(--cream-200);
+  --surface-3:      var(--cream-300);
+  --surface-inset:  rgba(30, 57, 3, 0.05);
+  --border:         rgba(30, 57, 3, 0.14);
+  --border-default: rgba(30, 57, 3, 0.16);
+  --border-subtle:  rgba(30, 57, 3, 0.12);
+  --border-strong:  rgba(30, 57, 3, 0.22);
 }
 
 /* ===========================================================================
