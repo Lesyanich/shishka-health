@@ -1003,7 +1003,7 @@ button.shk-seal:active { transform: scale(0.93); }
 /* Leading price token: the seal fills the disc so it matches the food images. */
 .shk-mana__priceitem { cursor: default; }
 .shk-mana__priceitem:hover { transform: none; }
-.shk-mana__priceitem .shk-seal { width: 82%; height: 82%; font-size: clamp(26px, 3.6vw, 46px); }
+.shk-mana__priceitem .shk-seal { width: 100%; height: 100%; font-size: clamp(34px, 5vw, 64px); }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
 .shk-mana__disc-ph {
   width: 88%; height: 88%; border-radius: 50%;
