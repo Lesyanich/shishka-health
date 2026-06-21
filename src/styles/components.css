@@ -1019,13 +1019,20 @@ button.shk-seal:active { transform: scale(0.93); }
 /* ---- Items: big clean cutouts packed in a tight grid ------------------ */
 /* Each tier scrolls horizontally on one line — images only, swipe / arrow for more. */
 .shk-mana__scroll { position: relative; }
-.shk-mana__scroll::after {
-  content: "›"; position: absolute; top: 50%; right: 0; transform: translateY(-50%);
-  padding: 0 6px 6px 30px; font-size: 30px; font-weight: 700; line-height: 1;
-  color: var(--white); pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--royal-green) 72%);
+.shk-mana__arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 40px; height: 40px; border-radius: var(--radius-pill);
+  display: grid; place-items: center; padding: 0 0 4px;
+  font-size: 28px; font-weight: 700; line-height: 1; cursor: pointer;
+  background: var(--white); color: var(--royal-green);
+  border: 1.5px solid var(--green-300); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: transform 0.12s ease, background 0.12s ease;
 }
-.shk-mana__col.is-premium .shk-mana__scroll::after { background: linear-gradient(90deg, transparent, rgba(40, 64, 12, 1) 72%); }
+.shk-mana__arrow:hover { background: var(--green-100); }
+.shk-mana__arrow:active { transform: translateY(-50%) scale(0.92); }
+.shk-mana__arrow[hidden] { display: none; }
+.shk-mana__arrow--prev { left: 4px; }
+.shk-mana__arrow--next { right: 4px; }
 .shk-mana__list {
   list-style: none; margin: 0; padding: 0 0 var(--space-2);
   display: flex; flex-wrap: nowrap; gap: clamp(12px, 1.6vw, 22px);
