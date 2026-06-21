@@ -32,7 +32,7 @@ export const DEFAULT_CONTENT = {
     instagramUrl: "https://www.instagram.com/shishka_healthy_kitchen",
     whatsappUrl: "", // button hidden while empty
     hoursLabel: "open daily",
-    hoursTime: "9:00 – 18:00",
+    hoursTime: "9:30 – 18:30",
   },
   // Short intro paragraph rendered under a section title. Keyed by section
   // (umbrella) name as it appears in the menu. Omit a key → no intro.
