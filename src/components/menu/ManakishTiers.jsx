@@ -64,7 +64,6 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect }) {
                     <span className="shk-mana__disc">
                       <PriceSeal price={t.minPrice} fill />
                     </span>
-                    <span className="shk-mana__item-name">from</span>
                   </div>
                 </li>
               )}
