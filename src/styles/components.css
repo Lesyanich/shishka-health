@@ -120,7 +120,7 @@
 }
 .shk-donut__kcal {
   font-family: var(--font-mono); font-weight: var(--fw-bold);
-  color: var(--menu-kcal); line-height: 1; font-feature-settings: var(--num-feature);
+  color: var(--macro-kcal); line-height: 1; font-feature-settings: var(--num-feature);
 }
 .shk-donut__unit {
   font-family: var(--font-body); font-size: var(--text-2xs); font-weight: var(--fw-semibold);

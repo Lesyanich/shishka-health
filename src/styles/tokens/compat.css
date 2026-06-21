@@ -113,9 +113,10 @@
   --warning:  var(--warn);
   --danger:   var(--error);
 
-  /* ---- Macro / nutrition data colors (used by MacroBar / CalorieDonut) -- */
-  --macro-protein: var(--red-500);
-  --macro-carbs:   var(--honey-500);
-  --macro-fat:     var(--green-500);
-  --macro-kcal:    var(--purple-600);
+  /* ---- Macro / nutrition data colors (used by MacroBar / CalorieDonut) --
+     Clear, colourful scheme: protein red · carbs orange · fat yellow · kcal green. */
+  --macro-protein: #E23B2E;
+  --macro-carbs:   #F08A24;
+  --macro-fat:     #F5C211;
+  --macro-kcal:    #3F9142;
 }
