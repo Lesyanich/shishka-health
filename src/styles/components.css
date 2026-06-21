@@ -1003,7 +1003,7 @@ button.shk-seal:active { transform: scale(0.93); }
 /* ---- Items: big clean cutouts packed in a tight grid ------------------ */
 .shk-mana__list {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: clamp(10px, 1.4vw, 18px) clamp(6px, 0.8vw, 12px);
   align-items: start; justify-items: center;
 }

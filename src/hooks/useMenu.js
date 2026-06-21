@@ -176,7 +176,11 @@ async function fetchFromSupabase() {
       // default pick (smoothies). A dish with a default uses priceDefault, not
       // a "from" floor, so suppress it there.
       priceFrom: priceDefault != null ? null : dishFloor(price, modifierGroups),
-      image_url: d.customer_photo_url ?? d.image_url ?? null,
+      // Card (main page) prefers the customer override photo; the dialog keeps
+      // the base image_url. They differ only where a dish has a dedicated
+      // main-page shot (e.g. spring rolls); elsewhere both resolve to the same.
+      cardImage: d.customer_photo_url ?? d.image_url ?? null,
+      image_url: d.image_url ?? d.customer_photo_url ?? null,
       is_featured: d.is_featured,
       stockState,
       comingSoon,

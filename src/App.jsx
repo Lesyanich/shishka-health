@@ -188,7 +188,7 @@ export default function App() {
       description={dish.description}
       price={dish.priceDefault ?? dish.price}
       priceFrom={dish.priceFrom}
-      image={dish.image_url}
+      image={dish.cardImage}
       kcal={dish.calories}
       protein={dish.protein}
       carbs={dish.carbs}
