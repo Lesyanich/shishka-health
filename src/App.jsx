@@ -184,6 +184,7 @@ export default function App() {
   const renderDish = (dish, catName) => (
     <DishCard
       key={dish.id}
+      data-code={dish.product_code}
       name={dish.name}
       description={dish.description}
       price={dish.priceDefault ?? dish.price}

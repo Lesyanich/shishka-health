@@ -225,6 +225,7 @@ async function fetchFromSupabase() {
 
     return {
       id: d.id,
+      product_code: d.product_code,
       name: d.customer_short_name || d.name,
       description: d.customer_description ?? null,
       ingredients: d.customer_ingredients ?? null,

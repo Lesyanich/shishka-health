@@ -326,6 +326,11 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; display: block; }
 .shk-card__media-scrim { display: none; }
+/* The Iced Cappuccino cutout is framed tighter (cup fills its canvas) than the
+   other drink photos, so "contain" renders it larger. Scale just that one down
+   to sit at the same size until the source image is re-exported with matching
+   padding. */
+.shk-card[data-code="SALE-COFFEE_ICED_CAPPUCCINO"] .shk-card__img { transform: scale(0.82); transform-origin: center bottom; }
 
 .shk-card__flags { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; }
 
@@ -500,33 +505,20 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-foot { background: transparent; color: var(--text-on-dark); }
 .shk-foot__inner {
   max-width: var(--content-max); margin: 0 auto;
-  padding: var(--space-10) var(--page-pad-mobile) var(--space-8);
+  padding: var(--space-8) var(--page-pad-mobile) var(--space-8);
   display: flex; flex-direction: column; align-items: center; text-align: center;
 }
-.shk-foot__mark { width: 48px; height: 48px; opacity: 0.95; }
-.shk-foot__name {
-  margin: var(--space-3) 0 0; font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: var(--text-lg); color: var(--cream-50); letter-spacing: var(--tracking-tight);
+.shk-foot__logo {
+  width: clamp(200px, 42vw, 300px); height: auto; opacity: 0.97; margin-bottom: var(--space-2);
 }
-.shk-foot__tagline {
-  margin: var(--space-1) 0 0; font-size: var(--text-sm); color: var(--text-on-dark-muted);
-}
-.shk-foot__links {
-  margin-top: var(--space-4); display: flex; gap: var(--space-5);
-  font-size: var(--text-sm); font-weight: var(--fw-bold);
-}
-.shk-foot__links a {
-  color: var(--text-on-dark); text-decoration: none;
-  transition: color var(--dur-fast) var(--ease-out);
-}
-.shk-foot__links a:hover { color: var(--honey-300); }
 .shk-foot__rule {
   width: 100%; max-width: 320px; height: 1px; margin: var(--space-6) 0 var(--space-5);
   background: var(--border-on-dark);
 }
 .shk-foot__fine { margin: 0; font-size: var(--text-xs); line-height: 1.6; color: var(--text-on-dark-muted); }
 .shk-foot__copy { margin-top: var(--space-1); }
-.shk-foot--wide .shk-foot__inner { padding: var(--space-12) var(--space-8) var(--space-10); }
+.shk-foot--wide .shk-foot__inner { padding: var(--space-10) var(--space-8) var(--space-10); }
+.shk-foot--wide .shk-foot__logo { width: clamp(260px, 26vw, 360px); }
 
 .shk-app__foot { text-align: center; padding: 30px 24px 24px; color: var(--text-faint); font-size: var(--text-xs); line-height: 1.6; }
 .shk-app__empty { text-align: center; padding: 60px 24px; color: var(--text-muted); }
