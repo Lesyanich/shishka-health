@@ -378,7 +378,11 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 @keyframes shk-dlg-fade { from { opacity: 0; } to { opacity: 1; } }
 .shk-dlg {
-  width: 100%; max-width: 560px; max-height: 94vh; overflow: hidden;
+  /* dvh tracks the *visible* viewport on iOS Safari (toolbars shown/hidden).
+     Plain vh = large viewport, so with toolbars up the sheet would grow taller
+     than the screen and — pinned to the bottom — its top (photo + close button)
+     would spill off-screen with no way to scroll back to it. vh is the fallback. */
+  width: 100%; max-width: 560px; max-height: 94vh; max-height: 94dvh; overflow: hidden;
   background: var(--surface-2); border: 1px solid var(--border-default);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-lg);
   display: flex; flex-direction: column; animation: shk-dlg-up var(--dur-slow) var(--ease-out);
@@ -386,7 +390,7 @@ button.shk-seal:active { transform: scale(0.93); }
 @keyframes shk-dlg-up { from { transform: translateY(28px); opacity: .5; } to { transform: none; opacity: 1; } }
 @media (min-width: 720px) {
   .shk-dlg__scrim { align-items: center; }
-  .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; }
+  .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; max-height: 88dvh; }
 }
 .shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden; }
 .shk-dlg__img { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -403,7 +407,10 @@ button.shk-seal:active { transform: scale(0.93); }
   display: flex; align-items: center; justify-content: space-between; z-index: 2; }
 .shk-dlg__flags { display: flex; gap: 6px; }
 
-.shk-dlg__body { overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+.shk-dlg__body { flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  padding: var(--space-5); padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: var(--space-4); }
 .shk-dlg__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
 .shk-dlg__title { font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--text-2xl); line-height: var(--leading-tight); color: var(--text-strong); }
 .shk-dlg__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-xl); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
