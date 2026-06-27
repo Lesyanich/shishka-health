@@ -15,7 +15,11 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
     const prevFocus = document.activeElement;
     document.body.style.overflow = "hidden";
     const node = dialogRef.current;
-    node?.focus();
+    // preventScroll: focusing the (tall) sheet must not scroll the scrim and bury
+    // the photo. Also reset the scrim to the top so every open starts at the photo.
+    node?.focus({ preventScroll: true });
+    const scroller = node?.parentElement; // .shk-dlg__scrim (the scroll container)
+    if (scroller) scroller.scrollTop = 0;
     const onKey = (e) => {
       if (e.key === "Escape") return onClose?.();
       if (e.key !== "Tab" || !node) return;
@@ -89,6 +93,25 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
         aria-label={name}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Sticky bar: first child so position:sticky pins the Close button to the
+            top of the screen through any amount of scroll — the guest can always exit. */}
+        <div className="shk-dlg__topbtns">
+          <div className="shk-dlg__flags">
+            {badges.map((b, i) => (
+              <Badge key={i} tone={b.tone || "solid-gold"} icon={b.icon}>{b.label}</Badge>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {onShare && (
+              <IconButton label="Share dish" variant="solid" onClick={onShare}>
+                <ShareIcon />
+              </IconButton>
+            )}
+            <IconButton label="Close" variant="solid" onClick={onClose}>
+              <XIcon />
+            </IconButton>
+          </div>
+        </div>
         <div className="shk-dlg__media">
           {photo && imgOk ? (
             <>
@@ -106,23 +129,6 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
               {category && <div className="shk-dlg__ph-word">{category}</div>}
             </div>
           )}
-          <div className="shk-dlg__topbtns">
-            <div className="shk-dlg__flags">
-              {badges.map((b, i) => (
-                <Badge key={i} tone={b.tone || "solid-gold"} icon={b.icon}>{b.label}</Badge>
-              ))}
-            </div>
-            <div style={{ display: "flex", gap: "8px" }}>
-              {onShare && (
-                <IconButton label="Share dish" variant="solid" onClick={onShare}>
-                  <ShareIcon />
-                </IconButton>
-              )}
-              <IconButton label="Close" variant="solid" onClick={onClose}>
-                <XIcon />
-              </IconButton>
-            </div>
-          </div>
         </div>
 
         <div className="shk-dlg__body">
