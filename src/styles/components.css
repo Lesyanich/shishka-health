@@ -378,26 +378,32 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-dlg__scrim {
   position: fixed; inset: 0; z-index: 70; background: var(--scrim);
   backdrop-filter: var(--blur-scrim); -webkit-backdrop-filter: var(--blur-scrim);
-  display: flex; align-items: flex-end; justify-content: center;
+  /* The scrim itself is the scroll container. The sheet is positioned with auto
+     margins (not flex align), so when it's taller than the screen the margins
+     collapse and the WHOLE sheet scrolls — the photo top and the sticky close bar
+     stay reachable. This does NOT depend on vh/dvh resolving correctly, which is
+     why it survives the iOS Safari toolbar (the previous fix did not). */
+  display: flex; flex-direction: column;
+  overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
   animation: shk-dlg-fade var(--dur-base) var(--ease-out);
 }
 @keyframes shk-dlg-fade { from { opacity: 0; } to { opacity: 1; } }
 .shk-dlg {
-  /* dvh tracks the *visible* viewport on iOS Safari (toolbars shown/hidden).
-     Plain vh = large viewport, so with toolbars up the sheet would grow taller
-     than the screen and — pinned to the bottom — its top (photo + close button)
-     would spill off-screen with no way to scroll back to it. vh is the fallback. */
-  width: 100%; max-width: 560px; max-height: 94vh; max-height: 94dvh; overflow: hidden;
+  /* margin-top:auto pins the sheet to the bottom when there's room and collapses
+     to 0 when content overflows, so the top is always scroll-reachable inside the
+     scrim. No max-height / no overflow:hidden here — the scrim does the scrolling,
+     and overflow:hidden would break the sticky close bar. */
+  width: 100%; max-width: 560px; margin: auto auto 0;
   background: var(--surface-2); border: 1px solid var(--border-default);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-lg);
   display: flex; flex-direction: column; animation: shk-dlg-up var(--dur-slow) var(--ease-out);
 }
 @keyframes shk-dlg-up { from { transform: translateY(28px); opacity: .5; } to { transform: none; opacity: 1; } }
 @media (min-width: 720px) {
-  .shk-dlg__scrim { align-items: center; }
-  .shk-dlg { border-radius: var(--radius-xl); max-height: 88vh; max-height: 88dvh; }
+  .shk-dlg { margin: auto; border-radius: var(--radius-xl); }
 }
-.shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden; }
+.shk-dlg__media { position: relative; width: 100%; aspect-ratio: 16 / 10; flex: none; background: var(--bg-surface); overflow: hidden;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
 .shk-dlg__img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .shk-dlg__media-scrim { position: absolute; inset: 0; background: none; }
 .shk-dlg__ph {
@@ -408,12 +414,17 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-dlg__ph-word { position: relative; z-index: 1; font-size: var(--text-2xs); font-weight: var(--fw-semibold);
   letter-spacing: var(--tracking-overline); color: var(--cream-300); }
 
-.shk-dlg__topbtns { position: absolute; top: var(--space-3); right: var(--space-3); left: var(--space-3);
-  display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+/* Sticky overlay bar: first child of the sheet, height:0 so it sits ON TOP of the
+   photo instead of pushing it down. position:sticky keeps the Close button pinned
+   to the top of the screen no matter how far the sheet is scrolled — the guest can
+   ALWAYS exit. pointer-events pass through the empty bar; only the buttons catch. */
+.shk-dlg__topbtns { position: sticky; top: 0; z-index: 6; height: 0; box-sizing: content-box;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+  padding: var(--space-3); padding-bottom: 0; overflow: visible; pointer-events: none; }
+.shk-dlg__topbtns > * { pointer-events: auto; }
 .shk-dlg__flags { display: flex; gap: 6px; }
 
-.shk-dlg__body { flex: 1 1 auto; min-height: 0; overflow-y: auto;
-  -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+.shk-dlg__body { position: relative; z-index: 1;
   padding: var(--space-5); padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
   display: flex; flex-direction: column; gap: var(--space-4); }
 .shk-dlg__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
