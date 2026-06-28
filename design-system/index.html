@@ -98,8 +98,8 @@
       <a href="#color">Color</a><a href="#type">Type</a><a href="#buttons">Buttons</a>
       <a href="#badges">Badges</a><a href="#icons">Icon btns</a><a href="#chips">Chips</a><a href="#tabs">Tabs</a>
       <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
-      <a href="#rail">Rail</a><a href="#sets">Sets</a><a href="#builder">Builder</a>
-      <a href="#hero">Hero</a><a href="#rule">The Rule</a><a href="#header">Header</a><a href="#footer">Footer</a>
+      <a href="#rail">Rail</a><a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
+      <a href="#hero">Hero</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
       <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#manakish">Manakish</a><a href="#states">States</a>
       <a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
     </nav>
@@ -437,6 +437,60 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
       <div class="ds-recipe">shk-set: __pct(save%) · __num · __title · __sub · __from · __cta</div>
     </section>
 
+    <!-- ═══════════ BUNDLE DIALOG ═══════════ -->
+    <section class="ds-section" id="bundle">
+      <div class="ds-h">Bundle Dialog (Build-your-own set)</div>
+      <p class="ds-lead">Opens from a <a href="#sets">Bundle Set</a> tile: grouped pickers with steppers and live counters, a running total at the tier discount, and an "Add to order" that stays disabled until the counts match. Counter turns green (<code>.is-full</code>) when a group is complete.</p>
+      <div class="ds-pad" style="max-width:440px;padding:0;overflow:hidden">
+        <div class="shk-dlg shk-bundle" role="dialog" aria-modal="true" aria-label="Manakish · set of 3" style="position:static;max-width:none;max-height:none">
+          <div class="shk-bundle__head">
+            <div>
+              <h2 class="shk-dlg__title">Manakish · set of 3</h2>
+              <p class="shk-bundle__sub">Pick 3 manakish + 2 sauces · save 22%</p>
+            </div>
+            <button class="shk-iconbtn shk-iconbtn--solid" aria-label="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+          </div>
+          <div class="shk-bundle__body">
+            <section class="shk-bundle__group">
+              <div class="shk-bundle__group-head"><h3 class="shk-bundle__group-title">Manakish</h3><span class="shk-bundle__counter num">2 / 3</span></div>
+              <ul class="shk-bundle__list">
+                <li class="shk-bundle__row">
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Za'atar</span><span class="shk-bundle__row-price num">฿77</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one">+</button></div>
+                </li>
+                <li class="shk-bundle__row">
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Cheese</span><span class="shk-bundle__row-price num">฿108</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one">+</button></div>
+                </li>
+                <li class="shk-bundle__row">
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Sujuk</span><span class="shk-bundle__row-price num">฿132</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one" disabled>–</button><span class="num">0</span><button type="button" aria-label="Add one">+</button></div>
+                </li>
+              </ul>
+            </section>
+            <section class="shk-bundle__group">
+              <div class="shk-bundle__group-head"><h3 class="shk-bundle__group-title">Sauce · free</h3><span class="shk-bundle__counter num is-full">2 / 2</span></div>
+              <ul class="shk-bundle__list">
+                <li class="shk-bundle__row">
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Garlic Toum</span><span class="shk-bundle__row-price num">free</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one" disabled>+</button></div>
+                </li>
+                <li class="shk-bundle__row">
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Chili Zhoug</span><span class="shk-bundle__row-price num">free</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one" disabled>+</button></div>
+                </li>
+              </ul>
+            </section>
+          </div>
+          <div class="shk-bundle__foot">
+            <div class="shk-bundle__totals"><span class="shk-bundle__total num">฿185</span><span class="shk-bundle__save num">save ฿52</span></div>
+            <button type="button" class="shk-bundle__add" disabled>Pick 1 more manakish</button>
+          </div>
+        </div>
+      </div>
+      <div class="ds-recipe">shk-bundle (in shk-dlg) &gt; __head(__title + __sub + close) + __body(__group &gt; __group-head(__group-title + __counter.is-full) + __list(__row(__row-info(__row-name + __row-price) + __stepper))) + __foot(__totals(__total + __save) + __add[disabled])</div>
+    </section>
+
     <!-- ═══════════ BUILDER ═══════════ -->
     <section class="ds-section" id="builder">
       <div class="ds-h">Builder — Build Your Own</div>
@@ -520,6 +574,28 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
         </div>
       </section>
       <div class="ds-recipe">shk-rule--wide &gt; __inner ( __eyebrow · __title · __lead · __grid &gt; __item ( __icon + __label ) )</div>
+    </section>
+
+    <!-- ═══════════ VISIT & ORDER CTA ═══════════ -->
+    <section class="ds-section" id="cta">
+      <div class="ds-h">Visit &amp; Order CTA</div>
+      <p class="ds-lead">Deep-green closing band at the end of the menu: gold eyebrow, cream display title, then primary (WhatsApp, energy-red) + ghost (Instagram) actions and opening hours. <code>--wide</code> bumps the type scale for full-bleed use.</p>
+      <section class="shk-cta" aria-label="Visit &amp; order" style="background:var(--royal-green);border-radius:var(--radius-lg);overflow:hidden">
+        <div class="shk-cta__inner">
+          <p class="shk-cta__eyebrow">Come hungry</p>
+          <h2 class="shk-cta__title">Order or visit us.</h2>
+          <p class="shk-cta__sub">Fresh, made daily in Phuket. Message us to order ahead, or drop by the salad bar.</p>
+          <div class="shk-cta__actions">
+            <a class="shk-cta__btn shk-cta__btn--primary" href="#">order on WhatsApp <span aria-hidden="true">→</span></a>
+            <a class="shk-cta__btn shk-cta__btn--ghost" href="#">Instagram <span aria-hidden="true">→</span></a>
+          </div>
+          <div class="shk-cta__hours">
+            <span class="shk-cta__hours-label">Open daily</span>
+            <span class="shk-cta__hours-time num">10:00 – 21:00</span>
+          </div>
+        </div>
+      </section>
+      <div class="ds-recipe">shk-cta[--wide] &gt; __inner ( __eyebrow gold · __title cream · __sub · __actions(__btn--primary + __btn--ghost) · __hours(__hours-label + __hours-time) )</div>
     </section>
 
     <!-- ═══════════ HEADER ═══════════ -->
