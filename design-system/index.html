@@ -101,7 +101,7 @@
       <a href="#rail">Rail</a><a href="#sets">Sets</a><a href="#builder">Builder</a>
       <a href="#hero">Hero</a><a href="#rule">The Rule</a><a href="#header">Header</a><a href="#footer">Footer</a>
       <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#manakish">Manakish</a><a href="#states">States</a>
-      <a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#anti">Anti-patterns</a>
+      <a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
     </nav>
 
     <!-- ═══════════ COLOR ═══════════ -->
@@ -149,6 +149,12 @@
         <div style="background:#C8901F">honey-600</div><div style="background:#E0A93B;color:#000">honey-500</div><div style="background:#F0CE83;color:#000">honey-300</div>
         <div style="background:#FBF8F0;color:#000">cream-50</div><div style="background:#F5EEDF;color:#000">cream-100</div><div style="background:#ECE3CD;color:#000">cream-200</div>
       </div>
+      <div class="ds-sub">Ink — warm neutrals (light-base / borders)</div>
+      <div class="ds-ramp">
+        <div style="background:#14160D">950</div><div style="background:#1B1E14">900</div><div style="background:#3B3F31">700</div>
+        <div style="background:#6B6E5F">500</div><div style="background:#8A8C7D;color:#000">400</div><div style="background:#A9AB9D;color:#000">300</div>
+        <div style="background:#D3D4C9;color:#000">200</div><div style="background:#E8E8E0;color:#000">100</div>
+      </div>
       <div class="ds-sub">Macro / nutrition data</div>
       <div class="ds-row">
         <span class="shk-badge" style="background:rgba(226,59,46,.18);color:#E23B2E">protein #E23B2E</span>
@@ -189,6 +195,10 @@ Source: src/styles/tokens/colors.css  ·  dark surfaces flipped in tokens/theme-
         <div>
           <span class="shk-data" style="font-size:var(--text-xl);color:var(--menu-price)">฿111–199 · 412 kcal</span>
           <div class="ds-src">.shk-data — SF Mono, tabular-nums (all prices & macros)</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-arabic);font-size:var(--text-2xl);color:var(--text-strong);direction:rtl">شيشكا · مطبخ صحي</div>
+          <div class="ds-src">var(--font-arabic) — Noto Kufi Arabic (brand seal / Arabic copy)</div>
         </div>
       </div>
     </section>
@@ -652,6 +662,42 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
       <div class="ds-src" style="margin-top:var(--sp-4)">Also in the system (documented, app-shell): <code>shk-app</code> (page wrapper) · <code>shk-bcard</code> (compact bundle card) · <code>shk-visually</code> (sr-only a11y helper).</div>
     </section>
 
+    <!-- ═══════════ SPACING ═══════════ -->
+    <section class="ds-section" id="spacing">
+      <div class="ds-h">Spacing</div>
+      <p class="ds-lead">4/8px rhythm. Canonical numeric scale <code>--sp-0 … --sp-32</code> (<code>tokens/spacing.css</code>) — all gutters, gaps, and padding reference it.</p>
+      <div class="ds-stack" style="gap:var(--sp-2);align-items:flex-start">
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-1);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-1 · 4</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-2);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-2 · 8</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-3);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-3 · 12</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-4);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-4 · 16</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-6);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-6 · 24 (gutter)</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-8);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-8 · 32</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-12);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-12 · 48</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-16);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-16 · 64</span></div>
+      </div>
+      <div class="ds-recipe">--sp-0..32 = 0·4·8·12·16·20·24·32·40·48·64·80·96·128 px
+containers --container-sm/md/lg/xl = 640/920/1200/1400 · --content-max = lg · --hit-min 44</div>
+    </section>
+
+    <!-- ═══════════ THEME ═══════════ -->
+    <section class="ds-section" id="theme">
+      <div class="ds-h">Theme — light base, royal override</div>
+      <p class="ds-lead">The system ships a <strong>light</strong> base (cream page, white cards, ink text). <code>tokens/theme-royal.css</code> is imported <em>last</em> and flips the semantic surface/text aliases to the <strong>royal-green dark</strong> theme — which is what the whole site renders. Author against semantic tokens (<code>--bg-canvas</code>, <code>--text-body</code>) and royal comes for free.</p>
+      <div class="ds-row" style="gap:var(--sp-5)">
+        <div class="ds-stack" style="align-items:flex-start;gap:6px">
+          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)"><div style="background:#FBF8F0;color:#3B3F31;padding:14px;font-weight:600">Light base — ink on cream</div></div>
+          <span class="ds-src">colors.css base · NOT what renders</span>
+        </div>
+        <div class="ds-stack" style="align-items:flex-start;gap:6px">
+          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)"><div style="background:#1E3903;color:#FBF8F0;padding:14px;font-weight:600">Royal — cream on green ✓ live</div></div>
+          <span class="ds-src">theme-royal.css · wins (active)</span>
+        </div>
+      </div>
+      <div class="ds-recipe">index.css import order: fonts → colors → typography → spacing → base → compat → components → theme-royal.css (LAST, wins)
+royal overrides: --bg-canvas/page · --surface-1/2/3 · --text-strong/body/muted/faint · --menu-price/kcal · --border* · --selection</div>
+    </section>
+
     <!-- ═══════════ RADIUS ═══════════ -->
     <section class="ds-section" id="radius">
       <div class="ds-h">Radius</div>
@@ -682,10 +728,35 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
           <tr><td><code>--dur-fast</code></td><td>120ms</td><td>hover, press, tab switch</td></tr>
           <tr><td><code>--dur-base</code></td><td>220ms</td><td>modal fade</td></tr>
           <tr><td><code>--dur-slow</code></td><td>400ms</td><td>dialog slide-up</td></tr>
-          <tr><td><code>--ease-out</code></td><td>cubic-bezier(.16,1,.3,1)</td><td>primary easing</td></tr>
+          <tr><td><code>--ease-out</code></td><td>cubic-bezier(.16,1,.3,1)</td><td>primary easing (most common)</td></tr>
+          <tr><td><code>--ease-standard</code></td><td>cubic-bezier(.22,.61,.36,1)</td><td>standard UI motion</td></tr>
+          <tr><td><code>--ease-in-out</code></td><td>cubic-bezier(.65,0,.35,1)</td><td>full arc (loops)</td></tr>
           <tr><td><code>--shadow-focus</code></td><td>0 0 0 3px focus-ring</td><td>global :focus-visible (keep it)</td></tr>
+          <tr><td><code>--z-sticky / -overlay / -modal / -toast</code></td><td>100 / 1000 / 1100 / 1200</td><td>stacking order</td></tr>
         </tbody>
       </table>
+      <p class="ds-src" style="margin-top:var(--sp-3)">⚠️ <code>prefers-reduced-motion: reduce</code> is honoured globally (base.css) — animations collapse to ~0.01ms. Keep transforms-only hovers (150–300ms); never instant 0ms state changes (MASTER anti-pattern).</p>
+    </section>
+
+    <!-- ═══════════ TOKEN ALIASES ═══════════ -->
+    <section class="ds-section" id="aliases">
+      <div class="ds-h">Token Aliases (deprecated)</div>
+      <p class="ds-lead"><code>compat.css</code> bridges legacy token names to canonical ones so older components adopt the brand automatically. <strong>Author with the canonical token</strong>; migrate legacy usages opportunistically, then drop the alias.</p>
+      <table class="ds-table">
+        <thead><tr><th>Deprecated alias</th><th>Canonical token</th></tr></thead>
+        <tbody>
+          <tr><td><code>--space-0..20</code></td><td><code>--sp-0..20</code> (numeric 4px grid)</td></tr>
+          <tr><td><code>--space-xs..3xl</code> (older MASTER copy)</td><td><code>--sp-*</code> numeric</td></tr>
+          <tr><td><code>--fw-regular/medium/semibold/bold/display</code></td><td><code>--weight-regular/medium/semibold/bold/black</code></td></tr>
+          <tr><td><code>--gold-300/400/500/600</code></td><td><code>--honey-300/500/500/600</code></td></tr>
+          <tr><td><code>--spice</code> / <code>--spice-hover</code></td><td><code>--accent</code> (red-600) / <code>--red-500</code></td></tr>
+          <tr><td><code>--brand</code></td><td><code>--brand-green</code></td></tr>
+          <tr><td><code>--font-body</code></td><td><code>--font-sans</code></td></tr>
+          <tr><td><code>--tracking-overline</code></td><td><code>--tracking-widest</code></td></tr>
+          <tr><td><code>--shadow-card-hover</code> · <code>--ease-spring</code></td><td><code>--shadow-lg</code> · <code>--ease-out</code></td></tr>
+        </tbody>
+      </table>
+      <div class="ds-src" style="margin-top:var(--sp-3)">Keep (no canonical equivalent): <code>--hit-min</code> 44 · <code>--header-h</code> 60 · <code>--sticky-tabs-h</code> 52 · <code>--content-max</code> · <code>--page-pad-*</code> · <code>--gap-cards*</code> · scrims/blurs. — This guide is hand-maintained: add a class to <code>components.css</code> → add its demo here (RULE-DESIGN-SYSTEM).</div>
     </section>
 
     <!-- ═══════════ ANTI-PATTERNS ═══════════ -->
