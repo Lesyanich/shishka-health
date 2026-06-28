@@ -1,0 +1,23 @@
+name: Design-system guide coverage
+
+# Guarantees the living guide (design-system/index.html) never silently falls
+# behind the component CSS. Fails the PR when a new .shk-* family in
+# src/styles/components.css has no demo/reference in the guide. See
+# design-system/check-coverage.mjs and RULE-DESIGN-SYSTEM.
+on:
+  pull_request:
+    paths:
+      - "src/styles/**"
+      - "design-system/**"
+      - ".github/workflows/ds-coverage.yml"
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check design-system guide coverage
+        run: node design-system/check-coverage.mjs
