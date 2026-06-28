@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shishka — Living Design System</title>
+
+  <!-- ZERO DRIFT: this guide links the SAME production CSS the live site ships.
+       Tokens, fonts, and every .shk-* component render exactly as on shishka.health.
+       Source of truth = src/styles/. Edit there → this guide updates for free. -->
+  <link rel="stylesheet" href="../src/styles/index.css" />
+
+  <style>
+    /* Style-guide chrome ONLY — built from the real tokens so it stays on-brand.
+       No product styling lives here; product styling lives in src/styles/. */
+    .ds-wrap { max-width: var(--container-lg); margin: 0 auto; padding: var(--sp-8) var(--sp-6) var(--sp-32); }
+    .ds-top { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap;
+      padding-bottom: var(--sp-6); border-bottom: 1px solid var(--border); margin-bottom: var(--sp-8); }
+    .ds-top img { width: clamp(160px, 30vw, 220px); height: auto; }
+    .ds-section { padding: var(--sp-12) 0; border-top: 1px solid var(--border); }
+    .ds-section:first-of-type { border-top: none; }
+    .ds-h { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--weight-black);
+      letter-spacing: var(--tracking-tight); margin-bottom: var(--sp-2); }
+    .ds-lead { color: var(--text-muted); font-size: var(--text-sm); max-width: 60ch; margin-bottom: var(--sp-6); }
+    .ds-sub { font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase;
+      letter-spacing: var(--tracking-wider); color: var(--text-faint); margin: var(--sp-6) 0 var(--sp-3); }
+    .ds-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+    .ds-stack { display: flex; flex-direction: column; gap: var(--sp-3); align-items: flex-start; }
+    .ds-recipe { font-family: var(--font-mono); font-size: var(--text-2xs); line-height: 1.6; color: var(--menu-muted);
+      background: var(--surface-inset); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+      padding: var(--sp-3) var(--sp-4); margin-top: var(--sp-3); white-space: pre-wrap; word-break: break-word; }
+    .ds-src { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-faint); margin-top: var(--sp-2); }
+    /* swatches */
+    .ds-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-3); }
+    .ds-swatch { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
+    .ds-swatch__chip { height: 64px; }
+    .ds-swatch__meta { padding: var(--sp-2) var(--sp-3); background: var(--surface-2); }
+    .ds-swatch__name { font-size: var(--text-xs); color: var(--text-strong); }
+    .ds-swatch__hex { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--text-faint); }
+    /* scale ramp */
+    .ds-ramp { display: flex; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-subtle); }
+    .ds-ramp > div { flex: 1; height: 52px; display: flex; align-items: flex-end; justify-content: center;
+      font-family: var(--font-mono); font-size: 9px; padding-bottom: 3px; color: rgba(255,255,255,.6); }
+    /* token table */
+    .ds-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+    .ds-table th { text-align: left; font-family: var(--font-sans); font-size: var(--text-2xs); text-transform: uppercase;
+      letter-spacing: var(--tracking-wider); color: var(--text-faint); padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border); }
+    .ds-table td { padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
+    .ds-table code { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--menu-price); }
+    .ds-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-5); justify-items: center; }
+    .ds-pad { background: var(--surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: var(--sp-6); }
+    .ds-nav { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-bottom: var(--sp-8); }
+    .ds-nav a { font-size: var(--text-xs); color: var(--text-muted); background: var(--surface-2);
+      padding: 6px 12px; border-radius: var(--radius-pill); text-decoration: none; }
+    .ds-nav a:hover { color: var(--text-strong); background: var(--surface-3); }
+    .ds-contract { border: 1px solid var(--border-gold); background: rgba(240,206,131,.08);
+      border-radius: var(--radius-lg); padding: var(--sp-5) var(--sp-6); }
+    .ds-contract li { margin: var(--sp-1) 0; color: var(--text-body); }
+    .ds-contract strong { color: var(--text-strong); }
+    .ds-box-demo { position: relative; height: 160px; border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); overflow: hidden; }
+    ul { padding-left: 1.1rem; }
+  </style>
+</head>
+
+<body>
+  <!-- Seal edge sprite — the real 60-point brand "stamp" path, defined once, reused via <use>. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="shk-seal-edge" viewBox="0 0 100 100">
+      <path class="shk-seal__edge" fill-rule="evenodd" d="M 50.00 1.00 L 54.87 6.77 L 60.90 2.23 L 64.37 8.94 L 71.26 5.85 L 73.14 13.17 L 80.55 11.69 L 80.76 19.24 L 88.31 19.45 L 86.83 26.86 L 94.15 28.74 L 91.06 35.63 L 97.77 39.10 L 93.23 45.13 L 99.00 50.00 L 93.23 54.87 L 97.77 60.90 L 91.06 64.37 L 94.15 71.26 L 86.83 73.14 L 88.31 80.55 L 80.76 80.76 L 80.55 88.31 L 73.14 86.83 L 71.26 94.15 L 64.37 91.06 L 60.90 97.77 L 54.87 93.23 L 50.00 99.00 L 45.13 93.23 L 39.10 97.77 L 35.63 91.06 L 28.74 94.15 L 26.86 86.83 L 19.45 88.31 L 19.24 80.76 L 11.69 80.55 L 13.17 73.14 L 5.85 71.26 L 8.94 64.37 L 2.23 60.90 L 6.77 54.87 L 1.00 50.00 L 6.77 45.13 L 2.23 39.10 L 8.94 35.63 L 5.85 28.74 L 13.17 26.86 L 11.69 19.45 L 19.24 19.24 L 19.45 11.69 L 26.86 13.17 L 28.74 5.85 L 35.63 8.94 L 39.10 2.23 L 45.13 6.77 L 50.00 1.00 Z M 91 50 A 41 41 0 1 1 9 50 A 41 41 0 1 1 91 50 Z" />
+    </symbol>
+  </svg>
+
+  <div class="ds-wrap">
+
+    <!-- ═══════════ HEADER ═══════════ -->
+    <div class="ds-top">
+      <img src="https://shishka.health/assets/logo-full-white.png" alt="Shishka Healthy Kitchen" />
+      <div style="text-align:right">
+        <div class="ds-h" style="margin:0">Living Design System</div>
+        <div class="ds-src" style="margin:0">from the SOIL to the SOUL · zero-drift, linked to src/styles/</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ CONTRACT ═══════════ -->
+    <div class="ds-contract">
+      <div class="ds-sub" style="margin-top:0;color:var(--honey-300)">The Contract</div>
+      <ul style="list-style:none;padding:0;margin:0">
+        <li>1. <strong>Check this guide before any front-end work.</strong> Reuse a <code>.shk-*</code> primitive; don't reinvent one.</li>
+        <li>2. <strong>Every PR that touches UI updates this guide + <code>design-system/MASTER.md</code></strong> in the same commit.</li>
+        <li>3. <strong>Reference semantic tokens, never raw hex.</strong> Tokens live in <code>src/styles/tokens/</code>; this page links them live.</li>
+        <li>4. <strong>Git-versioned, zero subscription.</strong> The factory-floor blueprint every worker reads from the same wall.</li>
+      </ul>
+    </div>
+
+    <!-- ═══════════ NAV ═══════════ -->
+    <nav class="ds-nav" style="margin-top:var(--sp-8)">
+      <a href="#color">Color</a><a href="#type">Type</a><a href="#buttons">Buttons</a>
+      <a href="#badges">Badges</a><a href="#icons">Icon btns</a><a href="#chips">Chips</a><a href="#tabs">Tabs</a>
+      <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
+      <a href="#rail">Rail</a><a href="#sets">Sets</a><a href="#builder">Builder</a>
+      <a href="#hero">Hero</a><a href="#rule">The Rule</a><a href="#header">Header</a><a href="#footer">Footer</a>
+      <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#manakish">Manakish</a><a href="#states">States</a>
+      <a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
+    </nav>
+
+    <!-- ═══════════ COLOR ═══════════ -->
+    <section class="ds-section" id="color">
+      <div class="ds-h">Color</div>
+      <p class="ds-lead">Green = life · Red = energy · Purple = antioxidants · Cream = warmth. The site is one continuous
+        royal-green canvas with reversed-out cream text. Always reference the <em>semantic</em> token in UI.</p>
+
+      <div class="ds-sub">Brand · semantic</div>
+      <div class="ds-swatches">
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--royal-green)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--royal-green · page</div><div class="ds-swatch__hex">#1E3903</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--brand-green)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--brand-green</div><div class="ds-swatch__hex">#3A4A1C</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--accent)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--accent · spice/CTA</div><div class="ds-swatch__hex">#B62A23</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--brand-purple)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--brand-purple · order</div><div class="ds-swatch__hex">#511A52</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--honey-300)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--honey-300 · price</div><div class="ds-swatch__hex">#F0CE83</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--cream-50)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--cream-50 · text</div><div class="ds-swatch__hex">#FBF8F0</div></div></div>
+      </div>
+
+      <div class="ds-sub">Surfaces (royal theme — stepped greens for elevation)</div>
+      <div class="ds-swatches">
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-1)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-1</div><div class="ds-swatch__hex">#46521D</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-2)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-2</div><div class="ds-swatch__hex">#3C481A</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-3)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-3</div><div class="ds-swatch__hex">#56641F</div></div></div>
+      </div>
+
+      <div class="ds-sub">Green scale</div>
+      <div class="ds-ramp">
+        <div style="background:#161D0A">950</div><div style="background:#212C0E">900</div><div style="background:#2C3913">800</div>
+        <div style="background:#3A4A1C">700</div><div style="background:#47591F">600</div><div style="background:#5C7129">500</div>
+        <div style="background:#7E944A">400</div><div style="background:#A9BD7F;color:#000">300</div><div style="background:#CCDAAE;color:#000">200</div><div style="background:#E7EFD6;color:#000">100</div>
+      </div>
+      <div class="ds-sub">Red scale (energy)</div>
+      <div class="ds-ramp">
+        <div style="background:#66130F">900</div><div style="background:#851A16">800</div><div style="background:#9E211D">700</div>
+        <div style="background:#B62A23">600</div><div style="background:#CB3A30">500</div><div style="background:#DD6155">400</div>
+        <div style="background:#EC9389;color:#000">300</div><div style="background:#F8DAD5;color:#000">100</div>
+      </div>
+      <div class="ds-sub">Purple scale (antioxidant)</div>
+      <div class="ds-ramp">
+        <div style="background:#2E0E30">900</div><div style="background:#3E1340">800</div><div style="background:#511A52">700</div>
+        <div style="background:#6A2168">600</div><div style="background:#9A4F95">400</div><div style="background:#D2A7CE;color:#000">200</div>
+      </div>
+      <div class="ds-sub">Honey / cream</div>
+      <div class="ds-ramp">
+        <div style="background:#C8901F">honey-600</div><div style="background:#E0A93B;color:#000">honey-500</div><div style="background:#F0CE83;color:#000">honey-300</div>
+        <div style="background:#FBF8F0;color:#000">cream-50</div><div style="background:#F5EEDF;color:#000">cream-100</div><div style="background:#ECE3CD;color:#000">cream-200</div>
+      </div>
+      <div class="ds-sub">Ink — warm neutrals (light-base / borders)</div>
+      <div class="ds-ramp">
+        <div style="background:#14160D">950</div><div style="background:#1B1E14">900</div><div style="background:#3B3F31">700</div>
+        <div style="background:#6B6E5F">500</div><div style="background:#8A8C7D;color:#000">400</div><div style="background:#A9AB9D;color:#000">300</div>
+        <div style="background:#D3D4C9;color:#000">200</div><div style="background:#E8E8E0;color:#000">100</div>
+      </div>
+      <div class="ds-sub">Macro / nutrition data</div>
+      <div class="ds-row">
+        <span class="shk-badge" style="background:rgba(226,59,46,.18);color:#E23B2E">protein #E23B2E</span>
+        <span class="shk-badge" style="background:rgba(240,138,36,.18);color:#F08A24">carbs #F08A24</span>
+        <span class="shk-badge" style="background:rgba(245,194,17,.18);color:#F5C211">fat #F5C211</span>
+        <span class="shk-badge" style="background:rgba(63,145,66,.2);color:#7E944A">kcal #3F9142</span>
+      </div>
+      <div class="ds-recipe">In UI use semantic tokens: var(--accent) var(--royal-green) var(--menu-price) var(--text-strong) — NOT raw hex.
+Source: src/styles/tokens/colors.css  ·  dark surfaces flipped in tokens/theme-royal.css</div>
+    </section>
+
+    <!-- ═══════════ TYPOGRAPHY ═══════════ -->
+    <section class="ds-section" id="type">
+      <div class="ds-h">Typography</div>
+      <p class="ds-lead">Display = SF Pro Display / Albert Sans, tight & often UPPERCASE (the "stamp" voice). Body = SF Pro Text /
+        Albert Sans, calm & lowercase. Numerics = SF Mono, tabular. Helper classes live in <code>tokens/typography.css</code>.</p>
+      <div class="ds-stack" style="gap:var(--sp-5)">
+        <div>
+          <div class="shk-hero" style="background:none">FROM THE SOIL</div>
+          <div class="ds-src">.shk-hero — 88px / weight 700 / tracking -.03em</div>
+        </div>
+        <div>
+          <div class="shk-display">No seed oil, ever.</div>
+          <div class="ds-src">.shk-display — 64px display</div>
+        </div>
+        <div>
+          <div class="shk-title">Fresh Spring Rolls</div>
+          <div class="ds-src">.shk-title — 36px section / card title</div>
+        </div>
+        <div>
+          <div class="shk-eyebrow">Our signature</div>
+          <div class="ds-src">.shk-eyebrow — 12px uppercase, tracking .12em</div>
+        </div>
+        <div>
+          <p class="shk-body" style="max-width:52ch">Rice-paper rolls packed with sous-vide chicken, rice noodles, fresh herbs, mango & crunchy veg — served with a peanut-lime dip.</p>
+          <div class="ds-src">.shk-body — 16px / line-height 1.65</div>
+        </div>
+        <div>
+          <span class="shk-data" style="font-size:var(--text-xl);color:var(--menu-price)">฿111–199 · 412 kcal</span>
+          <div class="ds-src">.shk-data — SF Mono, tabular-nums (all prices & macros)</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-arabic);font-size:var(--text-2xl);color:var(--text-strong);direction:rtl">شيشكا · مطبخ صحي</div>
+          <div class="ds-src">var(--font-arabic) — Noto Kufi Arabic (brand seal / Arabic copy)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ BUTTONS ═══════════ -->
+    <section class="ds-section" id="buttons">
+      <div class="ds-h">Buttons</div>
+      <p class="ds-lead">Pill-shaped, semibold, 120ms ease-out, <code>:active</code> scales to 0.97. Variants carry meaning:
+        spice/primary = order action, secondary = neutral, ghost = tertiary.</p>
+      <div class="ds-sub">Variants</div>
+      <div class="ds-row">
+        <button class="shk-btn shk-btn--primary shk-btn--md">Add to order</button>
+        <button class="shk-btn shk-btn--spice shk-btn--md">Order on WhatsApp</button>
+        <button class="shk-btn shk-btn--secondary shk-btn--md">Secondary</button>
+        <button class="shk-btn shk-btn--ghost shk-btn--md">Ghost</button>
+      </div>
+      <div class="ds-sub">Sizes</div>
+      <div class="ds-row">
+        <button class="shk-btn shk-btn--primary shk-btn--sm">Small · 36px</button>
+        <button class="shk-btn shk-btn--primary shk-btn--md">Medium · 44px</button>
+        <button class="shk-btn shk-btn--primary shk-btn--lg">Large · 52px</button>
+      </div>
+      <div class="ds-recipe">&lt;button class="shk-btn shk-btn--primary shk-btn--md"&gt;…&lt;/button&gt;
+primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hover) · src/styles/components.css</div>
+    </section>
+
+    <!-- ═══════════ BADGES ═══════════ -->
+    <section class="ds-section" id="badges">
+      <div class="ds-h">Badges & Pills</div>
+      <p class="ds-lead">Uppercase, 11px, bold, hairline border. Tone encodes meaning (gold = price/feature, spice = heat, green = diet).</p>
+      <div class="ds-row">
+        <span class="shk-badge shk-badge--neutral">Neutral</span>
+        <span class="shk-badge shk-badge--gold">Gluten-free</span>
+        <span class="shk-badge shk-badge--green">Vegan</span>
+        <span class="shk-badge shk-badge--spice">Spicy</span>
+        <span class="shk-badge shk-badge--solid-gold">Featured</span>
+        <span class="shk-badge shk-badge--solid-spice">New</span>
+      </div>
+      <div class="ds-recipe">&lt;span class="shk-badge shk-badge--gold"&gt;…&lt;/span&gt;  ·  tones: neutral / gold / green / spice / solid-gold / solid-spice</div>
+    </section>
+
+    <!-- ═══════════ TABS ═══════════ -->
+    <section class="ds-section" id="tabs">
+      <div class="ds-h">Category Tabs</div>
+      <p class="ds-lead">Sticky, horizontally scrollable pill tabs. Selected fills <code>--highlight</code> green; idle is muted cream.</p>
+      <div class="ds-pad" style="padding:0">
+        <div class="shk-tabs" style="position:static">
+          <button class="shk-tab" aria-selected="true">Fresh Spring Rolls</button>
+          <button class="shk-tab">Dips & Sides</button>
+          <button class="shk-tab">Bread & Crackers</button>
+          <button class="shk-tab">Manakish</button>
+          <button class="shk-tab">Sauces & Dressings</button>
+          <button class="shk-tab">Drinks</button>
+        </div>
+      </div>
+      <div class="ds-recipe">&lt;div class="shk-tabs"&gt;&lt;button class="shk-tab" aria-selected="true"&gt;…&lt;/button&gt;…&lt;/div&gt;  ·  arrow-key nav required (see MASTER.md)</div>
+    </section>
+
+    <!-- ═══════════ CARDS ═══════════ -->
+    <section class="ds-section" id="cards">
+      <div class="ds-h">Dish Cards</div>
+      <p class="ds-lead">Floating photographic cutouts — no box, no shadow; the food sits on the green canvas. Springy hover lift
+        (scale 1.05, <code>cubic-bezier(.34,1.56,.64,1)</code>). Real button, keyboard-accessible.</p>
+      <div class="ds-cards">
+        <div class="shk-card" role="button" tabindex="0">
+          <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Chicken Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3f4dc520-a1ba-46dc-91a7-e55ba976c646/menu-1lr0MV9Lz4_sBEXnJJQ6jjzRLsgG_g0ez.webp?v=1782014582495" /><span class="shk-card__media-scrim"></span></div>
+          <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button></div>
+          <div class="shk-card__body">
+            <div class="shk-card__topline"><span class="shk-card__name">Chicken Fresh Spring Rolls</span></div>
+            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>394</b> kcal</span></div>
+            <p class="shk-card__desc">Sous-vide chicken, rice noodles, fresh herbs, mango &amp; crunchy veg — peanut-lime dip.</p>
+          </div>
+        </div>
+        <div class="shk-card" role="button" tabindex="0">
+          <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Shrimp Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/1573295f-c5a4-44fb-b9fd-d2659f99a104/menu-1iPht1o9g9YhKTKL1BPmIVLtVmEgyWjV0.webp?v=1782014581759" /><span class="shk-card__media-scrim"></span></div>
+          <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">159</span><span class="shk-seal__cur">thb</span></span></button></div>
+          <div class="shk-card__body">
+            <div class="shk-card__topline"><span class="shk-card__name">Shrimp Fresh Spring Rolls</span></div>
+            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>360</b> kcal</span></div>
+            <p class="shk-card__desc">Poached shrimp, rice noodles, fresh herbs, mango &amp; crunchy veg.</p>
+          </div>
+        </div>
+        <div class="shk-card" role="button" tabindex="0">
+          <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Veggie Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/d691b4fb-c0d4-4bea-8a86-5363f32dd5a4/menu-1hukAmkAdLUyFLAa3B2hN9B_Luk_O3ZA7.webp?v=1782014581744" /><span class="shk-card__media-scrim"></span></div>
+          <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">139</span><span class="shk-seal__cur">thb</span></span></button></div>
+          <div class="shk-card__body">
+            <div class="shk-card__topline"><span class="shk-card__name">Veggie Fresh Spring Rolls</span></div>
+            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>320</b> kcal</span></div>
+            <p class="shk-card__desc">Fresh vegetables, mango, rice noodles &amp; herbs with peanut-lime dip.</p>
+          </div>
+        </div>
+        <div class="shk-card" role="button" tabindex="0">
+          <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Tuna & Corn Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3dc7416d-6a99-451e-aa78-2738b1cb7ee2/menu-1UwCUxSbS0jAf00vTo5mgetKAz6r0qhCV.webp?v=1782014581638" /><span class="shk-card__media-scrim"></span></div>
+          <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">179</span><span class="shk-seal__cur">thb</span></span></button></div>
+          <div class="shk-card__body">
+            <div class="shk-card__topline"><span class="shk-card__name">Tuna &amp; Corn Fresh Spring Rolls</span></div>
+            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>410</b> kcal</span></div>
+            <p class="shk-card__desc">Flaked tuna, sweet corn, rice noodles, fresh herbs &amp; mango.</p>
+          </div>
+        </div>
+      </div>
+      <div class="ds-recipe">&lt;div class="shk-card" role="button" tabindex="0"&gt;
+  &lt;div class="shk-card__media"&gt;&lt;img class="shk-card__img"&gt;&lt;span class="shk-card__media-scrim"&gt;&lt;/div&gt;
+  &lt;div class="shk-card__corner"&gt;&lt;button class="shk-seal"&gt;…price stamp…&lt;/button&gt;&lt;/div&gt;
+  &lt;div class="shk-card__body"&gt;&lt;div class="shk-card__topline"&gt;&lt;span class="shk-card__name"&gt; · __meta--kcal · __desc&lt;/div&gt;
+The price lives in the corner SEAL (next section), not a text label. · src/styles/components.css</div>
+    </section>
+
+    <!-- ═══════════ PRICE SEAL ═══════════ -->
+    <section class="ds-section" id="seal">
+      <div class="ds-h">Price Seal <span style="font-size:var(--text-sm);color:var(--honey-300)">★ signature</span></div>
+      <p class="ds-lead">The brand's price treatment: every price lives inside a 60-point "stamp" echoing the mandala in the logo. It's a real add-to-order button on each card corner. Adding to order fills it <strong style="color:var(--purple-400)">purple</strong>.</p>
+      <div class="ds-row" style="gap:var(--sp-6);align-items:center">
+        <button type="button" class="shk-seal" style="width:88px;height:88px;font-size:22px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
+        <button type="button" class="shk-seal shk-seal--active" style="width:88px;height:88px;font-size:22px;background:var(--brand-purple)" aria-label="In order — tap to remove" title="In order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
+        <button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">89</span><span class="shk-seal__cur">thb</span></span></button>
+      </div>
+      <div class="ds-recipe">&lt;button class="shk-seal"&gt;&lt;svg class="shk-seal__ring"&gt;&lt;path class="shk-seal__edge"/&gt;&lt;/svg&gt;
+  &lt;span class="shk-seal__stack"&gt;&lt;span class="shk-seal__plus"&gt;+&lt;span class="shk-seal__num"&gt;199&lt;span class="shk-seal__cur"&gt;thb&lt;/button&gt;
+size scales via inline width/height/font-size · added state → shk-seal--active fills var(--brand-purple) · components.css:283</div>
+    </section>
+
+    <!-- ═══════════ NUTRITION ═══════════ -->
+    <section class="ds-section" id="nutrition">
+      <div class="ds-h">Nutrition</div>
+      <p class="ds-lead">"Scientifically balanced" made visible — calorie donut (macro segments), macro bar + legend, benefit pills. All figures mono + tabular. Colors: protein red · carbs orange · fat yellow.</p>
+      <div class="ds-row" style="gap:var(--sp-8);align-items:flex-start">
+        <div class="ds-stack" style="align-items:center">
+          <div class="shk-donut" role="img" aria-label="394 kcal. Protein 27.9g, carbs 47.4g, fat 11.5g." style="width:104px;height:104px">
+            <svg class="shk-donut__svg" width="104" height="104">
+              <circle class="shk-donut__track" cx="52" cy="52" r="46.5" fill="none" stroke-width="11"></circle>
+              <circle class="shk-donut__seg" cx="52" cy="52" r="46.5" fill="none" stroke="var(--macro-protein)" stroke-width="11" stroke-linecap="round" stroke-dasharray="77.06 215.11" stroke-dashoffset="0"></circle>
+              <circle class="shk-donut__seg" cx="52" cy="52" r="46.5" fill="none" stroke="var(--macro-carbs)" stroke-width="11" stroke-linecap="round" stroke-dasharray="133.37 158.79" stroke-dashoffset="-80.57"></circle>
+              <circle class="shk-donut__seg" cx="52" cy="52" r="46.5" fill="none" stroke="var(--macro-fat)" stroke-width="11" stroke-linecap="round" stroke-dasharray="71.21 220.95" stroke-dashoffset="-217.45"></circle>
+            </svg>
+            <div class="shk-donut__center"><span class="shk-donut__kcal" style="font-size:28px">394</span><span class="shk-donut__unit">kcal</span></div>
+          </div>
+          <span class="ds-src">shk-donut</span>
+        </div>
+        <div style="flex:1;min-width:240px">
+          <div class="shk-macro">
+            <div class="shk-macro__bar"><span class="shk-macro__fill" style="width:27.6%;background:var(--macro-protein)"></span><span class="shk-macro__fill" style="width:46.8%;background:var(--macro-carbs)"></span><span class="shk-macro__fill" style="width:25.6%;background:var(--macro-fat)"></span></div>
+            <div class="shk-macro__legend">
+              <div class="shk-macro__item"><div class="shk-macro__top"><span class="shk-macro__dot" style="background:var(--macro-protein)"></span><span class="shk-macro__label">Protein</span></div><span class="shk-macro__val">27.9<small>g</small></span></div>
+              <div class="shk-macro__item"><div class="shk-macro__top"><span class="shk-macro__dot" style="background:var(--macro-carbs)"></span><span class="shk-macro__label">Carbs</span></div><span class="shk-macro__val">47.4<small>g</small></span></div>
+              <div class="shk-macro__item"><div class="shk-macro__top"><span class="shk-macro__dot" style="background:var(--macro-fat)"></span><span class="shk-macro__label">Fat</span></div><span class="shk-macro__val">11.5<small>g</small></span></div>
+            </div>
+          </div>
+          <span class="ds-src">shk-macro</span>
+        </div>
+      </div>
+      <div class="ds-sub">Benefit pills — shk-boost tones</div>
+      <ul class="shk-benefits">
+        <li class="shk-boost shk-boost--red"><span class="shk-boost__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"></path></svg></span><span class="shk-boost__label">High Protein</span><span class="shk-boost__val">28 g</span></li>
+        <li class="shk-boost shk-boost--green"><span class="shk-boost__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg></span><span class="shk-boost__label">High Fibre</span><span class="shk-boost__val">9 g</span></li>
+        <li class="shk-boost shk-boost--purple"><span class="shk-boost__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7c1.5 0 1.5 1.5 3 1.5S8.5 7 10 7s1.5 1.5 3 1.5S16.5 7 18 7s1.5 1.5 3 1.5"></path><path d="M2 12c1.5 0 1.5 1.5 3 1.5S8.5 12 10 12s1.5 1.5 3 1.5 1.5-1.5 3-1.5 1.5 1.5 3 1.5"></path></svg></span><span class="shk-boost__label">Omega-3</span></li>
+        <li class="shk-boost shk-boost--honey"><span class="shk-boost__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4.5 13.5a.7.7 0 0 0 .56 1.12H11l-1 7.38 8.5-11.5a.7.7 0 0 0-.56-1.12H12Z"></path></svg></span><span class="shk-boost__label">Vitamin B12</span></li>
+      </ul>
+      <div class="ds-recipe">shk-donut (role=img, SVG segs stroke=--macro-protein/carbs/fat) · shk-macro (__bar &gt; __fill + __legend) · shk-boost--{green,red,purple,honey}</div>
+    </section>
+
+    <!-- ═══════════ DIET MARKERS ═══════════ -->
+    <section class="ds-section" id="diet">
+      <div class="ds-h">Diet &amp; Allergen Markers</div>
+      <p class="ds-lead">Icon + label, never color-only (a11y). Tones: diet (green), allergen (honey), spice (red). Icon-only and bare variants exist.</p>
+      <div class="ds-row">
+        <span class="shk-diet shk-diet--diet"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg><span>Vegetarian</span></span>
+        <span class="shk-diet shk-diet--allergen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22 16 8"></path><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path></svg><span>Gluten</span></span>
+        <span class="shk-diet shk-diet--spice"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg><span>Spicy</span></span>
+        <span class="shk-diet shk-diet--diet shk-diet--icon" title="Vegan"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg></span>
+      </div>
+      <div class="ds-recipe">shk-diet--{diet,allergen,spice} (+ --icon icon-only, --bare no-bg) · always icon + text</div>
+    </section>
+
+    <!-- ═══════════ CHIPS ═══════════ -->
+    <section class="ds-section" id="chips">
+      <div class="ds-h">Filter Chips</div>
+      <p class="ds-lead">Selectable filter chips (<code>aria-pressed</code>). Include = green when active; allergen exclude = spice.</p>
+      <div class="ds-row">
+        <button type="button" class="shk-chip" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegan</span></button>
+        <button type="button" class="shk-chip" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegetarian</span></button>
+        <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22 16 8"></path><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path></svg><span>Gluten</span></button>
+      </div>
+      <div class="ds-recipe">shk-chip[aria-pressed=true|false] · shk-chip--exclude for allergen filters</div>
+    </section>
+
+    <!-- ═══════════ ICON BUTTONS ═══════════ -->
+    <section class="ds-section" id="icons">
+      <div class="ds-h">Icon Buttons</div>
+      <p class="ds-lead">Compact circular buttons, 44px hit area. Variants: plain · solid · gold · sm.</p>
+      <div class="ds-row">
+        <button class="shk-iconbtn" aria-label="Filter menu" title="Filter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg></button>
+        <button class="shk-iconbtn shk-iconbtn--solid" aria-label="Close" title="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+        <button class="shk-iconbtn shk-iconbtn--gold" aria-label="Favourite" title="Favourite"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg></button>
+        <button class="shk-iconbtn shk-iconbtn--sm" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+      </div>
+      <div class="ds-recipe">shk-iconbtn (+ --solid, --gold, --sm) · 22px lucide stroke icon</div>
+    </section>
+
+    <!-- ═══════════ RAIL ═══════════ -->
+    <section class="ds-section" id="rail">
+      <div class="ds-h">Scroll Rail</div>
+      <p class="ds-lead">Horizontally swipeable row (drinks / smoothies) with prev-next arrows. Holds the same shk-card.</p>
+      <div class="shk-rail">
+        <button type="button" class="shk-rail__arrow shk-rail__arrow--prev" aria-label="Previous" hidden>‹</button>
+        <div class="shk-rail__track">
+          <div class="shk-card" role="button" tabindex="0">
+            <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Choco Avocado Smoothie" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/891738bc-c91a-4bae-8389-ed34c1a62ca1/menu-1nA_DCuxheF3jeD1zj9iMnNr1G1-lox6z.webp?v=1781142593732" /><span class="shk-card__media-scrim"></span></div>
+            <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">139</span><span class="shk-seal__cur">thb</span></span></button></div>
+            <div class="shk-card__body"><div class="shk-card__topline"><span class="shk-card__name">Choco Avocado</span></div></div>
+          </div>
+          <div class="shk-card" role="button" tabindex="0">
+            <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Veggie Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/d691b4fb-c0d4-4bea-8a86-5363f32dd5a4/menu-1hukAmkAdLUyFLAa3B2hN9B_Luk_O3ZA7.webp?v=1782014581744" /><span class="shk-card__media-scrim"></span></div>
+            <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">120</span><span class="shk-seal__cur">thb</span></span></button></div>
+            <div class="shk-card__body"><div class="shk-card__topline"><span class="shk-card__name">Green Detox</span></div></div>
+          </div>
+          <div class="shk-card" role="button" tabindex="0">
+            <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Shrimp Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/1573295f-c5a4-44fb-b9fd-d2659f99a104/menu-1iPht1o9g9YhKTKL1BPmIVLtVmEgyWjV0.webp?v=1782014581759" /><span class="shk-card__media-scrim"></span></div>
+            <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">110</span><span class="shk-seal__cur">thb</span></span></button></div>
+            <div class="shk-card__body"><div class="shk-card__topline"><span class="shk-card__name">Berry Boost</span></div></div>
+          </div>
+        </div>
+        <button type="button" class="shk-rail__arrow shk-rail__arrow--next" aria-label="More">›</button>
+      </div>
+      <div class="ds-recipe">shk-rail &gt; __arrow--prev/--next + __track (flex, scroll-snap) · children are shk-card</div>
+    </section>
+
+    <!-- ═══════════ SETS ═══════════ -->
+    <section class="ds-section" id="sets">
+      <div class="ds-h">Bundle Sets</div>
+      <p class="ds-lead">"Build your set" tiles (Manakish) — savings %, count, from-price, CTA.</p>
+      <div class="shk-sets" role="list">
+        <button type="button" class="shk-set" role="listitem"><span class="shk-set__pct"><small>save</small>22%</span><span class="shk-set__num">3</span><span class="shk-set__title">Manakish</span><span class="shk-set__sub">set of 3 + 2 sauce free</span><span class="shk-set__from">from ฿569</span><span class="shk-set__cta">build your set <span aria-hidden="true">→</span></span></button>
+        <button type="button" class="shk-set" role="listitem"><span class="shk-set__pct"><small>save</small>10%</span><span class="shk-set__num">4</span><span class="shk-set__title">Manakish</span><span class="shk-set__sub">set of 4 + 1 sauce free</span><span class="shk-set__from">from ฿212</span><span class="shk-set__cta">build your set <span aria-hidden="true">→</span></span></button>
+      </div>
+      <div class="ds-recipe">shk-set: __pct(save%) · __num · __title · __sub · __from · __cta</div>
+    </section>
+
+    <!-- ═══════════ BUILDER ═══════════ -->
+    <section class="ds-section" id="builder">
+      <div class="ds-h">Builder — Build Your Own</div>
+      <p class="ds-lead">In-dialog modifier groups (Remove / Add Extras) with live price deltas. Selected option = <code>is-on</code>.</p>
+      <div class="ds-pad" style="max-width:440px">
+        <div class="shk-build">
+          <div class="shk-build__head"><span class="shk-build__title">Build your own</span><button type="button" class="shk-build__reset">Reset</button></div>
+          <div class="shk-build__group">
+            <div class="shk-build__group-name">Remove</div>
+            <div class="shk-build__opts">
+              <button type="button" class="shk-build__opt is-on" aria-pressed="true"><span class="shk-build__opt-name">No Mango</span></button>
+              <button type="button" class="shk-build__opt" aria-pressed="false"><span class="shk-build__opt-name">No Carrot</span></button>
+              <button type="button" class="shk-build__opt" aria-pressed="false"><span class="shk-build__opt-name">No Coriander</span></button>
+            </div>
+          </div>
+          <div class="shk-build__group">
+            <div class="shk-build__group-name">Add Extras</div>
+            <div class="shk-build__opts">
+              <button type="button" class="shk-build__opt" aria-pressed="false"><span class="shk-build__opt-name">Avocado</span><span class="shk-build__opt-delta num">+฿30</span></button>
+              <button type="button" class="shk-build__opt is-on" aria-pressed="true"><span class="shk-build__opt-name">Extra Chicken</span><span class="shk-build__opt-delta num">+฿50</span></button>
+            </div>
+          </div>
+          <div class="shk-build__total"><span class="shk-build__total-label">Total · 1 add-on</span><span class="shk-build__total-val num">฿249</span></div>
+        </div>
+      </div>
+      <div class="ds-recipe">shk-build &gt; __head + __group(__group-name + __opts(__opt[aria-pressed].is-on + __opt-delta)) + __total</div>
+    </section>
+
+    <!-- ═══════════ HERO ═══════════ -->
+    <section class="ds-section" id="hero">
+      <div class="ds-h">Hero</div>
+      <p class="ds-lead">Royal-green band: gold banner over cream title over muted sub, then a full-bleed photographic band.</p>
+      <div class="shk-hero" style="border-radius:var(--radius-lg);overflow:hidden">
+        <div class="shk-hero__inner">
+          <div class="shk-hero__banner">No Seed Oil</div>
+          <h1 class="shk-hero__title">from the SOIL to the SOUL.</h1>
+          <p class="shk-hero__sub">fresh, unprocessed, scientifically balanced — real food, made daily.</p>
+        </div>
+        <div class="shk-hero__band"><img loading="lazy" alt="Salad bar" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/main-salad-bar.webp?v=20260612" /></div>
+      </div>
+      <div class="ds-recipe">.shk-hero &gt; .shk-hero__inner ( __banner gold · __title cream · __sub ) + .shk-hero__band &gt; img</div>
+    </section>
+
+    <!-- ═══════════ ORDER FAB ═══════════ -->
+    <section class="ds-section" id="order">
+      <div class="ds-h">Order FAB</div>
+      <p class="ds-lead">Floating purple action button (bottom-right in production). Empty state is dark green; filled shows count + total.</p>
+      <div class="ds-row">
+        <button class="shk-orderfab" style="position:static">View order <span class="shk-orderfab__count">3</span> · ฿417</button>
+        <button class="shk-orderfab shk-orderfab--empty" style="position:static">Browse menu</button>
+      </div>
+      <div class="ds-recipe">&lt;button class="shk-orderfab"&gt;…&lt;span class="shk-orderfab__count"&gt;3&lt;/span&gt;&lt;/button&gt;  ·  --brand-purple #511A52</div>
+    </section>
+
+    <!-- ═══════════ DISH DETAIL ═══════════ -->
+    <section class="ds-section" id="detail">
+      <div class="ds-h">Dish Detail (dialog tokens)</div>
+      <p class="ds-lead">The full modal (<code>.shk-dlg</code>) is a bottom sheet on mobile / centered on desktop. Its key type & action tokens:</p>
+      <div class="ds-pad ds-stack">
+        <div class="shk-dlg__title">Chicken Fresh Spring Rolls</div>
+        <div class="shk-dlg__price">฿129</div>
+        <button class="shk-dlg__add">Add to order · ฿129</button>
+      </div>
+      <div class="ds-recipe">.shk-dlg__scrim (blur 3px) &gt; .shk-dlg (radius-xl top, slide-up 400ms) — focus-trap + body-lock required (MASTER.md)</div>
+    </section>
+
+    <!-- ═══════════ THE RULE ═══════════ -->
+    <section class="ds-section" id="rule">
+      <div class="ds-h">The Rule (brand band)</div>
+      <p class="ds-lead">Full-bleed manifesto band — the "no compromises" promise with prohibition icons.</p>
+      <section class="shk-rule shk-rule--wide" aria-label="The Rule" style="border-radius:var(--radius-lg);overflow:hidden">
+        <div class="shk-rule__inner">
+          <p class="shk-rule__eyebrow">The Rule</p>
+          <h2 class="shk-rule__title">No Compromises.</h2>
+          <p class="shk-rule__lead">We eliminate the noise that harms the human machine, and replace it with powerful nutrition that resonates with your DNA.</p>
+          <ul class="shk-rule__grid">
+            <li class="shk-rule__item"><span class="shk-rule__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="22"></circle><path d="M24 14c4.5 6 7 9.5 7 13.5a7 7 0 0 1-14 0c0-4 2.5-7.5 7-13.5z"></path><path d="M16 16 32 32"></path></svg></span><span class="shk-rule__label">No seed oils</span></li>
+            <li class="shk-rule__item"><span class="shk-rule__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="22"></circle><path d="M24 34V17M24 21l-4-3M24 21l4-3M24 26l-4-3M24 26l4-3"></path><path d="M16 16 32 32"></path></svg></span><span class="shk-rule__label">No industrial gluten</span></li>
+            <li class="shk-rule__item"><span class="shk-rule__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="22"></circle><path d="M15 15 33 33M33 15 15 33"></path></svg></span><span class="shk-rule__label">No preservatives</span></li>
+          </ul>
+        </div>
+      </section>
+      <div class="ds-recipe">shk-rule--wide &gt; __inner ( __eyebrow · __title · __lead · __grid &gt; __item ( __icon + __label ) )</div>
+    </section>
+
+    <!-- ═══════════ HEADER ═══════════ -->
+    <section class="ds-section" id="header">
+      <div class="ds-h">Header</div>
+      <p class="ds-lead">Logo-centred bar. Filter icon-button top-right with an active-count badge (energy red).</p>
+      <header class="shk-header shk-header--wide" style="border-radius:var(--radius-lg)">
+        <img src="https://shishka.health/assets/logo-full-white.png" alt="Shishka Healthy Kitchen" style="height:64px;width:auto;display:block;margin-top:6px" />
+        <div class="shk-header__filter"><div class="shk-header__filter-wrap">
+          <button class="shk-iconbtn" aria-label="Filter menu" title="Filter menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg></button>
+          <span class="shk-header__badge">2</span>
+        </div></div>
+      </header>
+      <div class="ds-recipe">shk-header--wide &gt; img(logo) + __filter &gt; __filter-wrap ( shk-iconbtn + __badge ) · badge bg = --accent</div>
+    </section>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <section class="ds-section" id="footer">
+      <div class="ds-h">Footer</div>
+      <footer class="shk-foot shk-foot--wide">
+        <div class="shk-foot__inner">
+          <img class="shk-foot__logo" src="https://shishka.health/assets/logo-full-white.png" alt="Shishka Healthy Kitchen" />
+          <div class="shk-foot__rule" aria-hidden="true"></div>
+          <p class="shk-foot__fine">Nutrition &amp; prices update live</p>
+          <p class="shk-foot__fine shk-foot__copy">© 2026 Shishka Healthy Kitchen · Phuket</p>
+        </div>
+      </footer>
+      <div class="ds-recipe">shk-foot--wide &gt; __inner ( __logo + __rule + __fine + __copy )</div>
+    </section>
+
+    <!-- ═══════════ STATES ═══════════ -->
+    <section class="ds-section" id="states">
+      <div class="ds-h">States — Loading · Error · Reveal</div>
+      <p class="ds-lead">Skeleton shimmer while loading, a friendly error panel, and on-scroll staggered reveal for lists.</p>
+      <div class="ds-sub">Skeleton</div>
+      <div class="ds-row" style="align-items:flex-start">
+        <div class="shk-skeleton" style="width:140px;height:175px;border-radius:var(--radius-md)"></div>
+        <div style="flex:1;max-width:300px">
+          <div class="shk-skeleton" style="height:14px;margin-bottom:8px"></div>
+          <div class="shk-skeleton" style="height:14px;width:80%;margin-bottom:8px"></div>
+          <div class="shk-skeleton" style="height:44px;border-radius:var(--radius-pill);margin-top:12px"></div>
+        </div>
+      </div>
+      <div class="ds-sub">Error</div>
+      <div class="shk-error"><h3>Something went wrong</h3><p>We couldn't load the menu. Please refresh and try again.</p></div>
+      <div class="ds-recipe">shk-skeleton (shimmer 1.4s) · shk-error (h3 + p) · shk-reveal + .is-in → staggered fade-up via style="--reveal-delay:Nms"</div>
+    </section>
+
+    <!-- ═══════════ FILTER PANEL ═══════════ -->
+    <section class="ds-section" id="filter">
+      <div class="ds-h">Filter Panel</div>
+      <p class="ds-lead">Bottom-sheet modal: grab handle, chip sections (suitable-for / exclude-allergens), sticky Clear + Show-N footer.</p>
+      <div class="ds-pad" style="max-width:460px;padding:0;overflow:hidden">
+        <div class="shk-fp" role="dialog" aria-modal="true" aria-label="Filter the menu" style="position:static;max-width:none">
+          <div class="shk-fp__grab"></div>
+          <div class="shk-fp__head"><span class="shk-fp__title">Filters</span><button class="shk-iconbtn" aria-label="Close filters"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div>
+          <div class="shk-fp__body">
+            <div class="shk-fp__section"><div class="shk-fp__legend">Suitable for</div><div class="shk-fp__chips">
+              <button type="button" class="shk-chip" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegan</span></button>
+              <button type="button" class="shk-chip" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegetarian</span></button>
+              <button type="button" class="shk-chip" aria-pressed="false"><span>Dairy-free</span></button>
+            </div></div>
+            <div class="shk-fp__section"><div class="shk-fp__legend">Exclude allergens</div><div class="shk-fp__chips">
+              <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22 16 8"></path><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path></svg><span>Gluten</span></button>
+              <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><span>Dairy</span></button>
+              <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><span>Nuts</span></button>
+            </div></div>
+          </div>
+          <div class="shk-fp__foot"><button class="shk-btn shk-btn--secondary shk-btn--md">Clear</button><button class="shk-btn shk-btn--primary shk-btn--md"><span class="shk-btn__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>Show 78</button></div>
+        </div>
+      </div>
+      <div class="ds-recipe">shk-fp[role=dialog] &gt; __grab + __head + __body(__section &gt; __legend + __chips) + __foot(Clear + Show N) · normally a fixed bottom-sheet</div>
+    </section>
+
+    <!-- ═══════════ CART ═══════════ -->
+    <section class="ds-section" id="cart">
+      <div class="ds-h">Order Drawer (Cart)</div>
+      <p class="ds-lead">Side drawer: line items (photo thumb + stepper), a live nutrition rollup of the whole order, total + WhatsApp checkout.</p>
+      <div class="ds-pad" style="max-width:440px;padding:0;overflow:hidden">
+        <aside class="shk-cart" role="dialog" aria-label="Your order" style="position:static;max-width:none;height:auto">
+          <header class="shk-cart__head"><h2 class="shk-cart__title">Your order</h2><button class="shk-iconbtn shk-iconbtn--solid" aria-label="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></header>
+          <div class="shk-cart__scroll">
+            <ul class="shk-cart__lines"><li class="shk-cart__line"><div class="shk-cart__line-main"><div class="shk-cart__line-lead"><span class="shk-cart__thumb"><img loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3f4dc520-a1ba-46dc-91a7-e55ba976c646/menu-1lr0MV9Lz4_sBEXnJJQ6jjzRLsgG_g0ez.webp?v=1782014582495" /></span><div class="shk-cart__line-info"><span class="shk-cart__line-name">Chicken Fresh Spring Rolls</span><span class="shk-cart__line-unit num">฿199</span></div></div><div class="shk-cart__stepper"><button type="button" aria-label="decrease">–</button><span class="num">1</span><button type="button" aria-label="increase">+</button></div></div></li></ul>
+            <div class="shk-cart__nutri-wrap"><div class="shk-dlg__section-label">What you'll get</div><div class="shk-cart__nutri">
+              <div class="shk-donut" role="img" aria-label="394 kcal" style="width:104px;height:104px">
+                <svg class="shk-donut__svg" width="104" height="104">
+                  <circle class="shk-donut__track" cx="52" cy="52" r="46.5" fill="none" stroke-width="11"></circle>
+                  <circle class="shk-donut__seg" cx="52" cy="52" r="46.5" fill="none" stroke="var(--macro-protein)" stroke-width="11" stroke-linecap="round" stroke-dasharray="77.06 215.11" stroke-dashoffset="0"></circle>
+                  <circle class="shk-donut__seg" cx="52" cy="52" r="46.5" fill="none" stroke="var(--macro-carbs)" stroke-width="11" stroke-linecap="round" stroke-dasharray="133.37 158.79" stroke-dashoffset="-80.57"></circle>
+                  <circle class="shk-donut__seg" cx="52" cy="52" r="46.5" fill="none" stroke="var(--macro-fat)" stroke-width="11" stroke-linecap="round" stroke-dasharray="71.21 220.95" stroke-dashoffset="-217.45"></circle>
+                </svg>
+                <div class="shk-donut__center"><span class="shk-donut__kcal" style="font-size:28px">394</span><span class="shk-donut__unit">kcal</span></div>
+              </div>
+              <div class="shk-cart__nutri-bars"><div class="shk-macro"><div class="shk-macro__bar"><span class="shk-macro__fill" style="width:27.6%;background:var(--macro-protein)"></span><span class="shk-macro__fill" style="width:46.8%;background:var(--macro-carbs)"></span><span class="shk-macro__fill" style="width:25.6%;background:var(--macro-fat)"></span></div><div class="shk-macro__legend"><div class="shk-macro__item"><div class="shk-macro__top"><span class="shk-macro__dot" style="background:var(--macro-protein)"></span><span class="shk-macro__label">Protein</span></div><span class="shk-macro__val">27.9<small>g</small></span></div><div class="shk-macro__item"><div class="shk-macro__top"><span class="shk-macro__dot" style="background:var(--macro-carbs)"></span><span class="shk-macro__label">Carbs</span></div><span class="shk-macro__val">47.4<small>g</small></span></div><div class="shk-macro__item"><div class="shk-macro__top"><span class="shk-macro__dot" style="background:var(--macro-fat)"></span><span class="shk-macro__label">Fat</span></div><span class="shk-macro__val">11.5<small>g</small></span></div></div></div></div>
+            </div></div>
+          </div>
+          <div class="shk-cart__foot" style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);padding:var(--sp-4) var(--sp-5);border-top:1px solid var(--border)">
+            <span style="font-family:var(--font-mono)">Total <strong style="color:var(--menu-price)">฿199</strong></span>
+            <button class="shk-btn shk-btn--spice shk-btn--md">Order on WhatsApp</button>
+          </div>
+        </aside>
+      </div>
+      <div class="ds-recipe">shk-cart[role=dialog] &gt; __head + __scroll(__lines &gt; __line(__line-lead(__thumb+__line-info)+__stepper) + __nutri-wrap(donut+macro)) + __foot</div>
+    </section>
+
+    <!-- ═══════════ MENU ROWS ═══════════ -->
+    <section class="ds-section" id="rows">
+      <div class="ds-h">Menu Rows</div>
+      <p class="ds-lead">Photoless items (drinks, sauces): name + meta on the left, dotted leader, price seal on the right.</p>
+      <ul class="shk-rows">
+        <li class="shk-row-wrap">
+          <button type="button" class="shk-row"><span class="shk-row__main"><span class="shk-row__name">Iced Americano</span><span class="shk-row__meta num">12 kcal · 350ml</span></span><span class="shk-row__dots" aria-hidden="true"></span></button>
+          <button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">80</span><span class="shk-seal__cur">thb</span></span></button>
+        </li>
+        <li class="shk-row-wrap">
+          <button type="button" class="shk-row"><span class="shk-row__main"><span class="shk-row__name">Matcha Latte</span><span class="shk-row__meta num">180 kcal · 350ml</span></span><span class="shk-row__dots" aria-hidden="true"></span></button>
+          <button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">120</span><span class="shk-seal__cur">thb</span></span></button>
+        </li>
+      </ul>
+      <div class="ds-recipe">shk-rows &gt; shk-row-wrap ( shk-row(__main(__name+__meta) + __dots) + shk-seal )</div>
+    </section>
+
+    <!-- ═══════════ MANAKISH ═══════════ -->
+    <section class="ds-section" id="manakish">
+      <div class="ds-h">Manakish</div>
+      <p class="ds-lead">Signature category block: gluten-free crust header + per-size price seals. Free-sauce bundles use <a href="#sets">Bundle Sets</a>.</p>
+      <div class="shk-mana" style="background:var(--surface-2);border-radius:var(--radius-lg);padding:var(--sp-5);overflow:hidden">
+        <header class="shk-mana__head">
+          <h2 class="shk-mana__title">Manakish</h2>
+          <p class="shk-mana__tag">our signature gluten-free crust crafted from potato &amp; rice</p>
+          <span class="shk-diet shk-diet--diet"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22 16 8"></path><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path></svg><span>Gluten-free</span></span>
+        </header>
+        <div class="ds-row" style="gap:var(--sp-6);margin-top:var(--sp-4)">
+          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Za'atar"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">99</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Za'atar</span></div>
+          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Cheese"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">139</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Cheese</span></div>
+          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Sujuk"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">169</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Sujuk</span></div>
+        </div>
+      </div>
+      <div class="ds-recipe">shk-mana &gt; __head(__title + __tag + diet) · price tiers render as shk-seal · bundles via shk-set</div>
+      <div class="ds-src" style="margin-top:var(--sp-4)">Also in the system (documented, app-shell): <code>shk-app</code> (page wrapper) · <code>shk-bcard</code> (compact bundle card) · <code>shk-visually</code> (sr-only a11y helper).</div>
+    </section>
+
+    <!-- ═══════════ SPACING ═══════════ -->
+    <section class="ds-section" id="spacing">
+      <div class="ds-h">Spacing</div>
+      <p class="ds-lead">4/8px rhythm. Canonical numeric scale <code>--sp-0 … --sp-32</code> (<code>tokens/spacing.css</code>) — all gutters, gaps, and padding reference it.</p>
+      <div class="ds-stack" style="gap:var(--sp-2);align-items:flex-start">
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-1);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-1 · 4</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-2);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-2 · 8</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-3);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-3 · 12</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-4);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-4 · 16</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-6);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-6 · 24 (gutter)</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-8);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-8 · 32</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-12);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-12 · 48</span></div>
+        <div class="ds-row" style="gap:var(--sp-3)"><div style="width:var(--sp-16);height:18px;background:var(--honey-300)"></div><span class="ds-src">--sp-16 · 64</span></div>
+      </div>
+      <div class="ds-recipe">--sp-0..32 = 0·4·8·12·16·20·24·32·40·48·64·80·96·128 px
+containers --container-sm/md/lg/xl = 640/920/1200/1400 · --content-max = lg · --hit-min 44</div>
+    </section>
+
+    <!-- ═══════════ THEME ═══════════ -->
+    <section class="ds-section" id="theme">
+      <div class="ds-h">Theme — light base, royal override</div>
+      <p class="ds-lead">The system ships a <strong>light</strong> base (cream page, white cards, ink text). <code>tokens/theme-royal.css</code> is imported <em>last</em> and flips the semantic surface/text aliases to the <strong>royal-green dark</strong> theme — which is what the whole site renders. Author against semantic tokens (<code>--bg-canvas</code>, <code>--text-body</code>) and royal comes for free.</p>
+      <div class="ds-row" style="gap:var(--sp-5)">
+        <div class="ds-stack" style="align-items:flex-start;gap:6px">
+          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)"><div style="background:#FBF8F0;color:#3B3F31;padding:14px;font-weight:600">Light base — ink on cream</div></div>
+          <span class="ds-src">colors.css base · NOT what renders</span>
+        </div>
+        <div class="ds-stack" style="align-items:flex-start;gap:6px">
+          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)"><div style="background:#1E3903;color:#FBF8F0;padding:14px;font-weight:600">Royal — cream on green ✓ live</div></div>
+          <span class="ds-src">theme-royal.css · wins (active)</span>
+        </div>
+      </div>
+      <div class="ds-recipe">index.css import order: fonts → colors → typography → spacing → base → compat → components → theme-royal.css (LAST, wins)
+royal overrides: --bg-canvas/page · --surface-1/2/3 · --text-strong/body/muted/faint · --menu-price/kcal · --border* · --selection</div>
+    </section>
+
+    <!-- ═══════════ RADIUS ═══════════ -->
+    <section class="ds-section" id="radius">
+      <div class="ds-h">Radius</div>
+      <div class="ds-row" style="align-items:flex-end">
+        <div class="ds-stack" style="align-items:center"><div style="width:72px;height:48px;background:var(--surface-3);border-radius:var(--radius-xs)"></div><span class="ds-src">xs · 6</span></div>
+        <div class="ds-stack" style="align-items:center"><div style="width:72px;height:48px;background:var(--surface-3);border-radius:var(--radius-sm)"></div><span class="ds-src">sm · 10</span></div>
+        <div class="ds-stack" style="align-items:center"><div style="width:72px;height:48px;background:var(--surface-3);border-radius:var(--radius-md)"></div><span class="ds-src">md · 16</span></div>
+        <div class="ds-stack" style="align-items:center"><div style="width:72px;height:48px;background:var(--surface-3);border-radius:var(--radius-lg)"></div><span class="ds-src">lg · 24 (cards)</span></div>
+        <div class="ds-stack" style="align-items:center"><div style="width:72px;height:48px;background:var(--surface-3);border-radius:var(--radius-xl)"></div><span class="ds-src">xl · 32 (dialogs)</span></div>
+        <div class="ds-stack" style="align-items:center"><div style="width:72px;height:48px;background:var(--surface-3);border-radius:var(--radius-pill)"></div><span class="ds-src">pill · 999 (buttons)</span></div>
+      </div>
+    </section>
+
+    <!-- ═══════════ SHADOW & MOTION ═══════════ -->
+    <section class="ds-section" id="shadow">
+      <div class="ds-h">Shadow & Motion</div>
+      <p class="ds-lead">Shadows use warm ink <code>rgba(20,22,13,…)</code>, never pure black. Motion is fast & springy.</p>
+      <div class="ds-sub">Elevation (shown on a cream tile for visibility)</div>
+      <div class="ds-row">
+        <div style="width:120px;height:72px;background:var(--cream-100);border-radius:var(--radius-md);box-shadow:var(--shadow-sm)"></div>
+        <div style="width:120px;height:72px;background:var(--cream-100);border-radius:var(--radius-md);box-shadow:var(--shadow-md)"></div>
+        <div style="width:120px;height:72px;background:var(--cream-100);border-radius:var(--radius-md);box-shadow:var(--shadow-lg)"></div>
+        <div style="width:120px;height:72px;background:var(--cream-100);border-radius:var(--radius-md);box-shadow:var(--shadow-xl)"></div>
+      </div>
+      <table class="ds-table" style="margin-top:var(--sp-6)">
+        <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>--dur-fast</code></td><td>120ms</td><td>hover, press, tab switch</td></tr>
+          <tr><td><code>--dur-base</code></td><td>220ms</td><td>modal fade</td></tr>
+          <tr><td><code>--dur-slow</code></td><td>400ms</td><td>dialog slide-up</td></tr>
+          <tr><td><code>--ease-out</code></td><td>cubic-bezier(.16,1,.3,1)</td><td>primary easing (most common)</td></tr>
+          <tr><td><code>--ease-standard</code></td><td>cubic-bezier(.22,.61,.36,1)</td><td>standard UI motion</td></tr>
+          <tr><td><code>--ease-in-out</code></td><td>cubic-bezier(.65,0,.35,1)</td><td>full arc (loops)</td></tr>
+          <tr><td><code>--shadow-focus</code></td><td>0 0 0 3px focus-ring</td><td>global :focus-visible (keep it)</td></tr>
+          <tr><td><code>--z-sticky / -overlay / -modal / -toast</code></td><td>100 / 1000 / 1100 / 1200</td><td>stacking order</td></tr>
+        </tbody>
+      </table>
+      <p class="ds-src" style="margin-top:var(--sp-3)">⚠️ <code>prefers-reduced-motion: reduce</code> is honoured globally (base.css) — animations collapse to ~0.01ms. Keep transforms-only hovers (150–300ms); never instant 0ms state changes (MASTER anti-pattern).</p>
+    </section>
+
+    <!-- ═══════════ TOKEN ALIASES ═══════════ -->
+    <section class="ds-section" id="aliases">
+      <div class="ds-h">Token Aliases (deprecated)</div>
+      <p class="ds-lead"><code>compat.css</code> bridges legacy token names to canonical ones so older components adopt the brand automatically. <strong>Author with the canonical token</strong>; migrate legacy usages opportunistically, then drop the alias.</p>
+      <table class="ds-table">
+        <thead><tr><th>Deprecated alias</th><th>Canonical token</th></tr></thead>
+        <tbody>
+          <tr><td><code>--space-0..20</code></td><td><code>--sp-0..20</code> (numeric 4px grid)</td></tr>
+          <tr><td><code>--space-xs..3xl</code> (older MASTER copy)</td><td><code>--sp-*</code> numeric</td></tr>
+          <tr><td><code>--fw-regular/medium/semibold/bold/display</code></td><td><code>--weight-regular/medium/semibold/bold/black</code></td></tr>
+          <tr><td><code>--gold-300/400/500/600</code></td><td><code>--honey-300/500/500/600</code></td></tr>
+          <tr><td><code>--spice</code> / <code>--spice-hover</code></td><td><code>--accent</code> (red-600) / <code>--red-500</code></td></tr>
+          <tr><td><code>--brand</code></td><td><code>--brand-green</code></td></tr>
+          <tr><td><code>--font-body</code></td><td><code>--font-sans</code></td></tr>
+          <tr><td><code>--tracking-overline</code></td><td><code>--tracking-widest</code></td></tr>
+          <tr><td><code>--shadow-card-hover</code> · <code>--ease-spring</code></td><td><code>--shadow-lg</code> · <code>--ease-out</code></td></tr>
+        </tbody>
+      </table>
+      <div class="ds-src" style="margin-top:var(--sp-3)">Keep (no canonical equivalent): <code>--hit-min</code> 44 · <code>--header-h</code> 60 · <code>--sticky-tabs-h</code> 52 · <code>--content-max</code> · <code>--page-pad-*</code> · <code>--gap-cards*</code> · scrims/blurs. — This guide is hand-maintained: add a class to <code>components.css</code> → add its demo here (RULE-DESIGN-SYSTEM).</div>
+    </section>
+
+    <!-- ═══════════ ANTI-PATTERNS ═══════════ -->
+    <section class="ds-section" id="anti">
+      <div class="ds-h">Anti-patterns</div>
+      <p class="ds-lead">Hard "no" list — enforced on every PR (full checklist in <code>design-system/MASTER.md</code>).</p>
+      <ul style="color:var(--text-body)">
+        <li>❌ Emojis as icons → use the SVG set in <code>components/Icons.jsx</code></li>
+        <li>❌ <code>outline:none</code> without the global focus shadow</li>
+        <li>❌ Color-only meaning (always pair an icon/text — diets, allergens, macros)</li>
+        <li>❌ Off-brand fonts (Playfair/Karla) or raw hex in components — use tokens</li>
+        <li>❌ Layout-shifting hovers; instant (0ms) state changes</li>
+        <li>❌ <code>--text-on-dark-faint</code> on small text (fails AA below 24px)</li>
+      </ul>
+    </section>
+
+    <footer style="border-top:1px solid var(--border);padding-top:var(--sp-6);color:var(--text-faint);font-size:var(--text-xs)">
+      Rules & accessibility contract → <code>design-system/MASTER.md</code> ·
+      Tokens → <code>src/styles/tokens/</code> · Components → <code>src/styles/components.css</code>.
+      Touch UI in a PR → update this guide in the same commit.
+    </footer>
+
+  </div>
+</body>
+</html>
