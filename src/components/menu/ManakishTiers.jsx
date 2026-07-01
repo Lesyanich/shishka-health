@@ -7,7 +7,6 @@
   (DishDialog) via onSelect.
 */
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import { PriceSeal } from "./PriceSeal.jsx";
 import { DietTag } from "../filters/DietTag.jsx";
 
@@ -36,62 +35,6 @@ function tiersOf(items) {
   return tiers;
 }
 
-// Horizontal scroller for one tier: the list scrolls sideways, and the prev/next
-// arrows move the row by ~one viewport so guests can reach every manakish.
-function TierScroll({ children }) {
-  const ref = useRef(null);
-  const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(false);
-
-  const update = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
-    setAtStart(el.scrollLeft <= 1);
-    setAtEnd(el.scrollLeft >= max - 1);
-  }, []);
-
-  useEffect(() => {
-    update();
-    const el = ref.current;
-    if (!el) return;
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [update]);
-
-  const scrollBy = (dir) => {
-    const el = ref.current;
-    if (!el) return;
-    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
-  };
-
-  return (
-    <div className="shk-mana__scroll">
-      <button
-        type="button"
-        className="shk-mana__arrow shk-mana__arrow--prev"
-        aria-label="Show previous"
-        hidden={atStart}
-        onClick={() => scrollBy(-1)}
-      >
-        ‹
-      </button>
-      <ul className="shk-mana__list" ref={ref} onScroll={update}>
-        {children}
-      </ul>
-      <button
-        type="button"
-        className="shk-mana__arrow shk-mana__arrow--next"
-        aria-label="Show more"
-        hidden={atEnd}
-        onClick={() => scrollBy(1)}
-      >
-        ›
-      </button>
-    </div>
-  );
-}
-
 export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd, addedIds }) {
   const tiers = tiersOf(section.items);
 
@@ -108,7 +51,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
           const isPremium = (t.name || "").toLowerCase() === "premium";
           return (
           <div className={`shk-mana__col ${isPremium ? "is-premium" : ""}`} key={t.id}>
-            <TierScroll>
+            <ul className="shk-mana__list">
                 {t.minPrice != null && (
                   <li>
                     <div className="shk-mana__item shk-mana__priceitem">
@@ -154,7 +97,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
                     </div>
                   </li>
                 ))}
-            </TierScroll>
+            </ul>
           </div>
           );
         })}

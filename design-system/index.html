@@ -98,7 +98,7 @@
       <a href="#color">Color</a><a href="#type">Type</a><a href="#buttons">Buttons</a>
       <a href="#badges">Badges</a><a href="#icons">Icon btns</a><a href="#chips">Chips</a><a href="#tabs">Tabs</a>
       <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
-      <a href="#rail">Rail</a><a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
+      <a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
       <a href="#hero">Hero</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
       <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#manakish">Manakish</a><a href="#states">States</a>
       <a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
@@ -396,34 +396,6 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
         <button class="shk-iconbtn shk-iconbtn--sm" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
       </div>
       <div class="ds-recipe">shk-iconbtn (+ --solid, --gold, --sm) · 22px lucide stroke icon</div>
-    </section>
-
-    <!-- ═══════════ RAIL ═══════════ -->
-    <section class="ds-section" id="rail">
-      <div class="ds-h">Scroll Rail</div>
-      <p class="ds-lead">Horizontally swipeable row (drinks / smoothies) with prev-next arrows. Holds the same shk-card.</p>
-      <div class="shk-rail">
-        <button type="button" class="shk-rail__arrow shk-rail__arrow--prev" aria-label="Previous" hidden>‹</button>
-        <div class="shk-rail__track">
-          <div class="shk-card" role="button" tabindex="0">
-            <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Choco Avocado Smoothie" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/891738bc-c91a-4bae-8389-ed34c1a62ca1/menu-1nA_DCuxheF3jeD1zj9iMnNr1G1-lox6z.webp?v=1781142593732" /><span class="shk-card__media-scrim"></span></div>
-            <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">139</span><span class="shk-seal__cur">thb</span></span></button></div>
-            <div class="shk-card__body"><div class="shk-card__topline"><span class="shk-card__name">Choco Avocado</span></div></div>
-          </div>
-          <div class="shk-card" role="button" tabindex="0">
-            <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Veggie Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/d691b4fb-c0d4-4bea-8a86-5363f32dd5a4/menu-1hukAmkAdLUyFLAa3B2hN9B_Luk_O3ZA7.webp?v=1782014581744" /><span class="shk-card__media-scrim"></span></div>
-            <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">120</span><span class="shk-seal__cur">thb</span></span></button></div>
-            <div class="shk-card__body"><div class="shk-card__topline"><span class="shk-card__name">Green Detox</span></div></div>
-          </div>
-          <div class="shk-card" role="button" tabindex="0">
-            <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Shrimp Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/1573295f-c5a4-44fb-b9fd-d2659f99a104/menu-1iPht1o9g9YhKTKL1BPmIVLtVmEgyWjV0.webp?v=1782014581759" /><span class="shk-card__media-scrim"></span></div>
-            <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">110</span><span class="shk-seal__cur">thb</span></span></button></div>
-            <div class="shk-card__body"><div class="shk-card__topline"><span class="shk-card__name">Berry Boost</span></div></div>
-          </div>
-        </div>
-        <button type="button" class="shk-rail__arrow shk-rail__arrow--next" aria-label="More">›</button>
-      </div>
-      <div class="ds-recipe">shk-rail &gt; __arrow--prev/--next + __track (flex, scroll-snap) · children are shk-card</div>
     </section>
 
     <!-- ═══════════ SETS ═══════════ -->
