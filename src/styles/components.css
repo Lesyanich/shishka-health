@@ -1024,46 +1024,16 @@ button.shk-seal:active { transform: scale(0.93); }
   font-size: clamp(var(--text-md), 1.6vw, var(--text-xl)); color: var(--white);
 }
 
-/* ---- Items: big clean cutouts packed in a tight grid ------------------ */
-/* Each tier scrolls horizontally on one line — images only, swipe / arrow for more. */
-.shk-mana__scroll { position: relative; }
-.shk-mana__arrow, .shk-rail__arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
-  width: 40px; height: 40px; border-radius: var(--radius-pill);
-  display: grid; place-items: center; padding: 0 0 4px;
-  font-size: 28px; font-weight: 700; line-height: 1; cursor: pointer;
-  background: var(--white); color: var(--royal-green);
-  border: 1.5px solid var(--green-300); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-  transition: transform 0.12s ease, background 0.12s ease;
-}
-.shk-mana__arrow:hover, .shk-rail__arrow:hover { background: var(--green-100); }
-.shk-mana__arrow:active, .shk-rail__arrow:active { transform: translateY(-50%) scale(0.92); }
-.shk-mana__arrow[hidden], .shk-rail__arrow[hidden] { display: none; }
-.shk-mana__arrow--prev, .shk-rail__arrow--prev { left: 4px; }
-.shk-mana__arrow--next, .shk-rail__arrow--next { right: 4px; }
-
-/* Coffee/Drinks horizontal rail — arrows above, cards in a swipeable row. */
-.shk-rail { position: relative; }
-.shk-rail__track {
-  display: flex; flex-wrap: nowrap; align-items: flex-start; gap: var(--gap-cards);
-  overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; padding-bottom: var(--space-2);
-}
-.shk-rail__track::-webkit-scrollbar { display: none; }
-.shk-rail__track > * {
-  flex: 0 0 auto; width: clamp(150px, 44vw, 196px); scroll-snap-align: start;
-}
-.shk-app--wide .shk-rail__track > * { width: clamp(170px, 17vw, 210px); }
-.shk-rail__arrow--next { top: 38%; }
-.shk-rail__arrow--prev { top: 38%; }
+/* ---- Items: big clean cutouts packed in a dense, flush-left wrapping grid.
+   auto-fill keeps the column count continuous across any viewport width —
+   no fixed breakpoints, so there's no awkward mid-width state where columns
+   look sparse or a short row centers instead of hugging the left edge. ---- */
 .shk-mana__list {
   list-style: none; margin: 0; padding: 0 0 var(--space-2);
-  display: flex; flex-wrap: nowrap; gap: clamp(12px, 1.6vw, 22px);
-  overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  justify-content: start; gap: clamp(20px, 3vh, 32px) clamp(12px, 1.6vw, 22px);
 }
-.shk-mana__list::-webkit-scrollbar { display: none; }
-.shk-mana__list > li { flex: 0 0 clamp(150px, 20vw, 200px); display: flex; justify-content: center; scroll-snap-align: start; }
+.shk-mana__list > li { display: flex; justify-content: center; }
 .shk-mana__item {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   width: 100%; max-width: 240px;

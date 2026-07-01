@@ -7,7 +7,6 @@ import { DishCard } from "./components/menu/DishCard.jsx";
 import { DishRows } from "./components/menu/DishRows.jsx";
 import { Hero } from "./components/menu/Hero.jsx";
 import { ManakishTiers } from "./components/menu/ManakishTiers.jsx";
-import { CardRail } from "./components/menu/CardRail.jsx";
 import { ManakishSets } from "./components/menu/ManakishSets.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
@@ -305,17 +304,11 @@ export default function App() {
 
                   {(() => {
                     const subs = subcategoriesOf(cat.items, cat.id);
-                    // Drinks scroll sideways with arrows (like Manakish); the
-                    // rest keep the wrapping grid.
-                    const rail = cat.name === "Drinks";
-                    const cards = (items) =>
-                      rail ? (
-                        <CardRail>{items.map((dish) => renderDish(dish, cat.name))}</CardRail>
-                      ) : (
-                        <div className="shk-app__grid">
-                          {items.map((dish) => renderDish(dish, cat.name))}
-                        </div>
-                      );
+                    const cards = (items) => (
+                      <div className="shk-app__grid">
+                        {items.map((dish) => renderDish(dish, cat.name))}
+                      </div>
+                    );
                     return hasSubcategories(subs, cat.id) ? (
                       subs.map((sub) => (
                         <div key={sub.id} className="shk-app__tier">
