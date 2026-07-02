@@ -3,6 +3,7 @@ import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
 import { StarIcon } from "../Icons.jsx";
 import { PriceSeal } from "./PriceSeal.jsx";
+import { optimizedSrc } from "../../lib/img.js";
 
 function Placeholder({ category }) {
   return (
@@ -74,7 +75,7 @@ export function DishCard({
           <>
             <img
               className="shk-card__img"
-              src={image}
+              src={optimizedSrc(image, 640)}
               alt={name}
               loading="lazy"
               onError={() => setImgOk(false)}

@@ -5,6 +5,7 @@ import { XIcon, BagIcon } from "../Icons.jsx";
 import { CalorieDonut } from "../nutrition/CalorieDonut.jsx";
 import { MacroBar } from "../nutrition/MacroBar.jsx";
 import { BenefitPills } from "../menu/BenefitPills.jsx";
+import { optimizedSrc } from "../../lib/img.js";
 
 /*
   Order builder UI. An always-visible floating "Order" button (food-app style):
@@ -47,7 +48,7 @@ function orderInfo(lines) {
 function Thumb({ src }) {
   return (
     <span className="shk-cart__thumb">
-      {src ? <img src={src} alt="" loading="lazy" /> : <span className="shk-cart__thumb-ph" aria-hidden="true" />}
+      {src ? <img src={optimizedSrc(src, 128)} alt="" loading="lazy" /> : <span className="shk-cart__thumb-ph" aria-hidden="true" />}
     </span>
   );
 }

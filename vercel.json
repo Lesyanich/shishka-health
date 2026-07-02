@@ -3,5 +3,14 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
+  "images": {
+    "sizes": [96, 128, 256, 384, 640, 828, 1080, 1200, 1920],
+    "formats": ["image/webp"],
+    "minimumCacheTTL": 604800,
+    "remotePatterns": [
+      { "protocol": "https", "hostname": "qcqgtcsjoacuktcewpvo.supabase.co" },
+      { "protocol": "https", "hostname": "d8j0ntlcm91z4.cloudfront.net" }
+    ]
+  },
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
