@@ -12,5 +12,11 @@
       { "protocol": "https", "hostname": "d8j0ntlcm91z4.cloudfront.net" }
     ]
   },
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/sb/:path*",
+      "destination": "https://qcqgtcsjoacuktcewpvo.supabase.co/:path*"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
