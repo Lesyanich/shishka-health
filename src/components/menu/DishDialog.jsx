@@ -7,6 +7,7 @@ import { IconButton } from "../primitives/IconButton.jsx";
 import { ModifierBuilder } from "./ModifierBuilder.jsx";
 import { BenefitPills } from "./BenefitPills.jsx";
 import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
+import { optimizedSrc } from "../../lib/img.js";
 
 export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const dialogRef = useRef(null);
@@ -117,7 +118,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
             <>
               <img
                 className="shk-dlg__img"
-                src={photo}
+                src={optimizedSrc(photo, 960)}
                 alt={name}
                 onError={() => setImgOk(false)}
               />

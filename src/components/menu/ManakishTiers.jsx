@@ -8,6 +8,7 @@
 */
 
 import { PriceSeal } from "./PriceSeal.jsx";
+import { optimizedSrc } from "../../lib/img.js";
 import { DietTag } from "../filters/DietTag.jsx";
 
 const TAGLINE = "our signature gluten-free crust crafted from potato & rice";
@@ -79,7 +80,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
                     >
                       <span className="shk-mana__disc">
                         {d.image_url ? (
-                          <img src={d.image_url} alt="" loading="lazy" />
+                          <img src={optimizedSrc(d.image_url, 384)} alt="" loading="lazy" />
                         ) : (
                           <span className="shk-mana__disc-ph" aria-hidden="true" />
                         )}

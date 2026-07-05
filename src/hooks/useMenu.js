@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase, hasSupabase } from "../lib/supabase.js";
+import { supabase, hasSupabase, canRealtime } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
 import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
 import { deepStripEmoji, titleCaseMenu } from "../lib/text.js";
@@ -320,7 +320,7 @@ export function useMenu() {
   useEffect(() => {
     load();
 
-    if (!hasSupabase) return;
+    if (!canRealtime) return;
 
     const channel = supabase
       .channel("menu-live")

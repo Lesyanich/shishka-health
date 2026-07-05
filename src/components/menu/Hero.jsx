@@ -1,4 +1,10 @@
 import { DEFAULT_CONTENT } from "../../lib/content.js";
+import { optimizedSrc } from "../../lib/img.js";
+
+const HERO_BASE = "https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing";
+const HERO_PORTRAIT = `${HERO_BASE}/salad-bar-portrait.webp?v=20260612`;
+const HERO_SQUARE = `${HERO_BASE}/salad-bar-square.webp?v=20260612`;
+const HERO_LANDSCAPE = `${HERO_BASE}/main-salad-bar.webp?v=20260612`;
 
 // Wrap ALL-CAPS words (e.g. SOIL, SOUL) in an accent span; leave the rest as-is.
 function renderTitle(title) {
@@ -21,18 +27,9 @@ export function Hero({ wide = false, content }) {
       <div className="shk-hero__band" aria-hidden="true">
         <picture>
           {/* phones: portrait crop · tablets: square crop · desktop: landscape */}
-          <source
-            media="(max-width: 640px)"
-            srcSet="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/salad-bar-portrait.webp?v=20260612"
-          />
-          <source
-            media="(max-width: 1024px)"
-            srcSet="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/salad-bar-square.webp?v=20260612"
-          />
-          <img
-            src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing/main-salad-bar.webp?v=20260612"
-            alt=""
-          />
+          <source media="(max-width: 640px)" srcSet={optimizedSrc(HERO_PORTRAIT, 640)} />
+          <source media="(max-width: 1024px)" srcSet={optimizedSrc(HERO_SQUARE, 1080)} />
+          <img src={optimizedSrc(HERO_LANDSCAPE, 1920)} alt="" />
         </picture>
       </div>
     </section>
