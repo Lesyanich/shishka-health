@@ -5,7 +5,7 @@
 */
 export const MOCK_DATA = {
   categories: [
-    { id: "cat-manakish", code: "MANAKISH", name: "Manakish",    sort_order: 1 },
+    { id: "cat-manakish", code: "MANAKISH", name: "Potato Tacos", sort_order: 1 },
     { id: "cat-salads",   code: "SALADS",   name: "Salads",      sort_order: 2 },
     { id: "cat-mezze",    code: "MEZZE",    name: "Mezze",       sort_order: 3 },
     { id: "cat-smoothies",code: "SMOOTHIE", name: "Smoothies",   sort_order: 4 },
@@ -22,7 +22,7 @@ export const MOCK_DATA = {
       ["m-classic-4", "Cheese & Mushroom", "Cheese with sautéed mushrooms", null],
       ["m-classic-5", "Pumpkin & Cheese", "Roasted pumpkin & cheese mix", null],
     ].map(([id, name, description, image_url], i) => ({
-      id, category_id: "cat-manakish", category_name: "Manakish", category_code: "KP-FIN-MAN",
+      id, category_id: "cat-manakish", category_name: "Potato Tacos", category_code: "KP-FIN-MAN",
       subcategory_id: "tier-classic", subcategory_name: "Classic", subcategory_sort: 1,
       name, description, price: 59, calories: 360, protein: 11, carbs: 44, fat: 14,
       portion_size: 220, portion_unit: "g", image_url, is_featured: i === 0,
@@ -35,7 +35,7 @@ export const MOCK_DATA = {
       ["m-spec-4", "Cheese & Za'atar", "Za'atar with melted cheese", null],
       ["m-spec-5", "Cheese & Red Peper", "Cheese with roasted red pepper", null],
     ].map(([id, name, description, image_url]) => ({
-      id, category_id: "cat-manakish", category_name: "Manakish", category_code: "KP-FIN-MAN",
+      id, category_id: "cat-manakish", category_name: "Potato Tacos", category_code: "KP-FIN-MAN",
       subcategory_id: "tier-signature", subcategory_name: "Signature", subcategory_sort: 2,
       name, description, price: 69, calories: 480, protein: 22, carbs: 42, fat: 24,
       portion_size: 250, portion_unit: "g", image_url, is_featured: false,
@@ -47,7 +47,7 @@ export const MOCK_DATA = {
       ["m-prem-3", "Pumpkin & Goat Cheese", "Roasted pumpkin & goat cheese", null],
       ["m-prem-4", "Salami Pizza", "Coming soon", null],
     ].map(([id, name, description, image_url], i) => ({
-      id, category_id: "cat-manakish", category_name: "Manakish", category_code: "KP-FIN-MAN",
+      id, category_id: "cat-manakish", category_name: "Potato Tacos", category_code: "KP-FIN-MAN",
       subcategory_id: "tier-premium", subcategory_name: "Premium", subcategory_sort: 3,
       name, description, price: 79, calories: 560, protein: 26, carbs: 40, fat: 30,
       portion_size: 270, portion_unit: "g", image_url, is_featured: false,
@@ -255,8 +255,8 @@ export const MOCK_DATA = {
     },
   ],
   bundles: [
-    { tierCode: "SET-4",  label: "Manakish set of 4",  manakishCount: 4,  sauceCount: 1, discountPct: 10 },
-    { tierCode: "SET-8",  label: "Manakish set of 8",  manakishCount: 8,  sauceCount: 2, discountPct: 15 },
-    { tierCode: "SET-12", label: "Manakish set of 12", manakishCount: 12, sauceCount: 3, discountPct: 20 },
+    { tierCode: "SET-4",  label: "Potato Tacos set of 4",  manakishCount: 4,  sauceCount: 1, discountPct: 10 },
+    { tierCode: "SET-8",  label: "Potato Tacos set of 8",  manakishCount: 8,  sauceCount: 2, discountPct: 15 },
+    { tierCode: "SET-12", label: "Potato Tacos set of 12", manakishCount: 12, sauceCount: 3, discountPct: 20 },
   ],
 };

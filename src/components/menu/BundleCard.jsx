@@ -8,7 +8,7 @@ export function BundleCard({ label, manakishCount, sauceCount, discountPct, from
       <div className="shk-bcard__badge num">−{discountPct}%</div>
       <div className="shk-bcard__name">{label}</div>
       <div className="shk-bcard__meta">
-        Build your own · {manakishCount} manakish + {sauceCount} free sauce{sauceCount > 1 ? "s" : ""}
+        Build your own · {manakishCount} potato tacos + {sauceCount} free sauce{sauceCount > 1 ? "s" : ""}
       </div>
       {from != null && (
         <div className="shk-bcard__price num">

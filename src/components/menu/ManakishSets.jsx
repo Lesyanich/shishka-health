@@ -9,7 +9,7 @@ export function ManakishSets({ bundles, onSelect, currency = "฿" }) {
   if (!bundles || bundles.length === 0) return null;
 
   return (
-    <div className="shk-sets" role="list" aria-label="Manakish sets">
+    <div className="shk-sets" role="list" aria-label="Potato Tacos sets">
       {bundles.map((b) => (
         <button
           type="button"
@@ -23,7 +23,7 @@ export function ManakishSets({ bundles, onSelect, currency = "฿" }) {
           </span>
 
           <span className="shk-set__num">{b.manakishCount}</span>
-          <span className="shk-set__title">Manakish</span>
+          <span className="shk-set__title">Potato Tacos</span>
           <span className="shk-set__sub">
             set of {b.manakishCount} + {b.sauceCount} sauce free
           </span>
