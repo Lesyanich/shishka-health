@@ -42,7 +42,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
   return (
     <div className="shk-mana">
       <header className="shk-mana__head">
-        <h2 className="shk-mana__title">Manakish</h2>
+        <h2 className="shk-mana__title">Potato Tacos</h2>
         <p className="shk-mana__tag">{tagline}</p>
         <DietTag type="gluten-free" />
       </header>

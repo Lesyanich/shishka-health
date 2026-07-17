@@ -287,7 +287,7 @@ export default function App() {
               ref={(el) => (sectionRefs.current[cat.id] = el)}
               className="shk-app__section"
             >
-              {cat.name === "Manakish" ? (
+              {cat.name === "Potato Tacos" ? (
                 <ManakishTiers section={cat} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
               ) : (
                 <>
@@ -332,7 +332,7 @@ export default function App() {
                 </>
               )}
 
-              {cat.name === "Manakish" && bundleCards.length > 0 && (
+              {cat.name === "Potato Tacos" && bundleCards.length > 0 && (
                 <ManakishSets
                   bundles={bundleCards}
                   pool={manaPool}

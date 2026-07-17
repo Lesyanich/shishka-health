@@ -84,7 +84,7 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
           <div>
             <h2 className="shk-dlg__title">{bundle.label}</h2>
             <p className="shk-bundle__sub">
-              Pick {bundle.manakishCount} manakish + {bundle.sauceCount} sauce
+              Pick {bundle.manakishCount} potato tacos + {bundle.sauceCount} sauce
               {bundle.sauceCount > 1 ? "s" : ""} · save {bundle.discountPct}%
             </p>
           </div>
@@ -96,7 +96,7 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
         <div className="shk-bundle__body">
           <section className="shk-bundle__group">
             <div className="shk-bundle__group-head">
-              <h3 className="shk-bundle__group-title">Manakish</h3>
+              <h3 className="shk-bundle__group-title">Potato Tacos</h3>
               <span className={`shk-bundle__counter num ${complete || !manaFull ? "" : "is-full"}`}>
                 {manaChosen} / {bundle.manakishCount}
               </span>
@@ -147,7 +147,7 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
           <button type="button" className="shk-bundle__add" onClick={confirm} disabled={!complete}>
             {complete
               ? `Add to order · ${currency}${total}`
-              : `Pick ${bundle.manakishCount - manaChosen} more manakish${
+              : `Pick ${bundle.manakishCount - manaChosen} more potato tacos${
                   sauceChosen < bundle.sauceCount ? ` + ${bundle.sauceCount - sauceChosen} sauce` : ""
                 }`}
           </button>
