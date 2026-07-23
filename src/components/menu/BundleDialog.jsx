@@ -84,8 +84,8 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
           <div>
             <h2 className="shk-dlg__title">{bundle.label}</h2>
             <p className="shk-bundle__sub">
-              Pick {bundle.manakishCount} potato tacos + {bundle.sauceCount} sauce
-              {bundle.sauceCount > 1 ? "s" : ""} · save {bundle.discountPct}%
+              Pick {bundle.manakishCount} potato tacos + {bundle.sauceCount} free sauce
+              {bundle.sauceCount > 1 ? "s" : ""} · save up to {bundle.discountPct}%
             </p>
           </div>
           <IconButton label="Close" variant="solid" onClick={onClose}>
@@ -107,7 +107,7 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
                   key={d.id}
                   dish={d}
                   qty={mana[d.id] ?? 0}
-                  price={tierPrice(d.price, bundle.discountPct)}
+                  price={tierPrice(d.price, bundle.discountPct, d.bundle_min_price)}
                   canAdd={!manaFull}
                   onInc={() => bump(setMana, d.id, +1)}
                   onDec={() => bump(setMana, d.id, -1)}

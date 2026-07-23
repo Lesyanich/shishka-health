@@ -332,7 +332,8 @@ export default function App() {
                 </>
               )}
 
-              {cat.name === "Potato Tacos" && bundleCards.length > 0 && (
+              {cat.items.some((d) => (d.category_code || "").startsWith("KP-FIN-MAN")) &&
+                bundleCards.length > 0 && (
                 <ManakishSets
                   bundles={bundleCards}
                   pool={manaPool}
