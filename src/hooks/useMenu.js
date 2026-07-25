@@ -83,7 +83,8 @@ async function fetchFromSupabase() {
         portion_size, portion_unit,
         category_id, display_order,
         category_code, category_name, category_sort_order,
-        section_id, section_name, section_sort_order
+        section_id, section_name, section_sort_order,
+        bundle_min_price
       `)
       .order("display_order", { ascending: true, nullsFirst: false }),
 
@@ -260,6 +261,8 @@ async function fetchFromSupabase() {
       portion_unit: d.portion_unit ?? null,
       category_id: d.category_id ?? null,
       category_code: d.category_code ?? null,
+      // 60%-margin floor for the bundle constructor (NULL when it never binds).
+      bundle_min_price: d.bundle_min_price != null ? Number(d.bundle_min_price) : null,
       category_name: d.category_name ?? null,
       // Section (umbrella) the dish groups under + its subcategory (leaf).
       section_id: sectionId,

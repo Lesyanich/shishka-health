@@ -19,7 +19,7 @@ export function ManakishSets({ bundles, onSelect, currency = "฿" }) {
           onClick={() => onSelect?.(b)}
         >
           <span className="shk-set__pct">
-            <small>save</small>{b.discountPct}%
+            <small>save up to</small>{b.discountPct}%
           </span>
 
           <span className="shk-set__num">{b.manakishCount}</span>
