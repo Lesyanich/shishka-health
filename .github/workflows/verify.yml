@@ -22,6 +22,19 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  # The repo rule — "whoever writes to the database is shishka-os" — as an
+  # invariant rather than a convention. menu-photo-sync used to be the one
+  # exception; it now lives in shishka-os and must not come back.
+  boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Assert this repo stays read-only
+        run: node scripts/no-writes.mjs
+
   contract:
     runs-on: ubuntu-latest
     steps:
