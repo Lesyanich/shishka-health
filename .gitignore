@@ -4,3 +4,10 @@ dist
 .env.local
 .DS_Store
 *.local
+
+# Claude Code worktrees live under .claude/ — committing them would nest the
+# whole repo inside itself. The launch config next to them is meant to be shared.
+.claude/worktrees/
+.claude/.session-id
+# Supabase CLI scratch state (project link, temp build dirs)
+supabase/.temp/

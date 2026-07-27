@@ -12,8 +12,10 @@ import encodeWebp from "https://esm.sh/@jsquash/webp@1.4.0/encode";
 // (jobs: [singleJob]) and fan out across many concurrent invocations — batching
 // several large images into one invocation eventually trips WORKER_RESOURCE_LIMIT.
 //
-// Auth: shared secret in the request body.
-const SECRET = "ef554f1cf100e766db8653f19179446778264147c1753d15";
+// Auth: shared secret in the request body, supplied by the MENU_PHOTO_SYNC_SECRET
+// function secret. Never inline the value here — this repo is public.
+//   supabase secrets set MENU_PHOTO_SYNC_SECRET=<value>
+const SECRET = Deno.env.get("MENU_PHOTO_SYNC_SECRET");
 const BUCKET = "nomenclature-photos";
 const MAX_DIM = 1080;        // longest edge after resize
 const WEBP_QUALITY = 80;
@@ -41,7 +43,12 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("method not allowed", { status: 405 });
   let body: any;
   try { body = await req.json(); } catch { return new Response("bad json", { status: 400 }); }
-  if (body?.secret !== SECRET) return new Response("unauthorized", { status: 401 });
+  // Fail closed: without the secret configured, an absent body.secret would
+  // otherwise compare undefined === undefined and let every caller through.
+  if (!SECRET) return new Response("MENU_PHOTO_SYNC_SECRET not configured", { status: 500 });
+  if (typeof body?.secret !== "string" || body.secret !== SECRET) {
+    return new Response("unauthorized", { status: 401 });
+  }
 
   const jobs = Array.isArray(body.jobs) ? body.jobs : [];
   const supa = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);

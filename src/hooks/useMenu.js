@@ -297,6 +297,24 @@ async function fetchFromSupabase() {
   return deepStripEmoji({ dishes, categories, content, bundles });
 }
 
+// A hung request is the failure mode this site is most exposed to: Russian ISPs
+// throttle the CDN in front of Supabase, and a throttled socket does not reject,
+// it just never answers. Without a deadline the guest sits on the loading
+// skeleton forever, which is the same lie as stale prices in a slower costume.
+// 8s × 3 attempts + backoff ≈ 25s worst case before the guest is told the truth.
+// A healthy load is under 2s, so this only bites when something is genuinely wrong.
+const FETCH_TIMEOUT_MS = 8000;
+
+function withTimeout(promise, ms) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`menu fetch timed out after ${ms}ms`)), ms);
+    }),
+  ]).finally(() => clearTimeout(timer));
+}
+
 export function useMenu() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -305,19 +323,41 @@ export function useMenu() {
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    try {
-      const result = hasSupabase
-        ? await fetchFromSupabase()
-        : { ...MOCK_DATA, content: DEFAULT_CONTENT };
+
+    // No credentials configured — the documented offline development path.
+    // This is the ONLY branch allowed to render MOCK_DATA: in production those
+    // are hardcoded prices, and a guest shown ฿59 for a ฿79 dish is an argument
+    // at the counter plus the margin lost on every order in between.
+    if (!hasSupabase) {
+      if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "mock";
       // Single chokepoint: render all display copy in Title Case (hero kept as-is).
-      setData(titleCaseMenu(result));
-    } catch (err) {
-      console.error("Menu fetch failed, using mock data:", err);
       setData(titleCaseMenu({ ...MOCK_DATA, content: DEFAULT_CONTENT }));
-      setError(err);
-    } finally {
       setLoading(false);
+      return;
     }
+
+    // Russian ISPs throttle the CDN in front of Supabase, so one failed fetch is
+    // expected noise rather than a broken contract. Retry before giving up —
+    // but never substitute invented prices for real ones.
+    let lastErr;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const result = await withTimeout(fetchFromSupabase(), FETCH_TIMEOUT_MS);
+        if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "live";
+        setData(titleCaseMenu(result));
+        setLoading(false);
+        return;
+      } catch (err) {
+        lastErr = err;
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 600 * attempt));
+      }
+    }
+
+    console.error("Menu fetch failed after 3 attempts:", lastErr);
+    if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "error";
+    setData(null);
+    setError(lastErr);
+    setLoading(false);
   }, []);
 
   useEffect(() => {

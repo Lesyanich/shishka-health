@@ -13,6 +13,17 @@ the menu item's `image_url` at the result.
 
 Typical reduction: 3–11 MB source PNG → ~30–150 KB WebP.
 
+## Auth secret
+The shared secret is read from the `MENU_PHOTO_SYNC_SECRET` function secret and
+must **never** be inlined in source — this repository is public.
+
+```bash
+supabase secrets set MENU_PHOTO_SYNC_SECRET=<value> --project-ref <project>
+```
+
+If the secret is unset the function returns `500` and rejects every request, so
+a missing secret fails closed rather than authorizing anonymous callers.
+
 ## Invoking (from SQL via pg_net)
 ```sql
 select net.http_post(
