@@ -115,7 +115,19 @@ async function checkBase(contract, base, key) {
   return results;
 }
 
-const contract = await loadContract();
+let contract;
+try {
+  contract = await loadContract();
+} catch (err) {
+  console.error(`Could not load the menu contract: ${err.message}`);
+  console.error(
+    "It is canonical in the shishka-health repo at contracts/menu-contract.json and is read " +
+      "from main over raw.githubusercontent.com. A 404 usually means the branch that adds it " +
+      "has not been merged yet — merge shishka-health first, then this repo.",
+  );
+  process.exit(1);
+}
+
 const key = process.env.SUPABASE_ANON_KEY || contract.anonKey;
 if (!key) {
   console.error("No anon key: set SUPABASE_ANON_KEY or add anonKey to the contract.");
