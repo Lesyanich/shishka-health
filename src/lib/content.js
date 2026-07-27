@@ -42,10 +42,13 @@ export const DEFAULT_CONTENT = {
   },
   // Promo header for the build-your-own bundle cards (rendered after the
   // Potato Tacos dishes). `badge` is optional; omit to hide it.
+  // Single tier since 2026-07-27 (CEO): sets of 4 only. Keep these in step with
+  // the live `bundles` row in site_content — if the fetch fails we fall back to
+  // this, and a stale discount here would re-advertise an offer we don't have.
   bundles: {
-    title: "Buy more, save more",
-    badge: "up to −20%",
-    sub: "Build your own set — bigger sets, bigger savings, with free sauces on us.",
+    title: "Build your own set",
+    badge: "up to −10%",
+    sub: "Pick any 4 potato tacos — cheaper than à la carte, with a free sauce on us.",
   },
 };
 
