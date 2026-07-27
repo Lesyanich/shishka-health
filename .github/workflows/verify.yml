@@ -1,0 +1,34 @@
+name: Verify
+
+# Two things nothing was checking before:
+#   1. that the site still builds — a syntax error could reach main unchallenged;
+#   2. that the database still answers the queries useMenu.js makes. The site
+#      degrades to hardcoded MOCK_DATA when that breaks, so a broken contract
+#      looks like a working menu with stale prices. It has to be tested, not seen.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Reads production with the public anon key — no secret required.
+      - name: Check the menu contract
+        run: node scripts/contract-check.mjs
