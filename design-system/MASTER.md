@@ -1,11 +1,19 @@
 # Design System Master File — Shishka Web (showcase)
 
-> **LOGIC:** When building a page, first check `design-system/pages/[page-name].md`.
-> If it exists, its rules **override** this Master. Otherwise follow the rules below.
+> **LOGIC:** This Master is the brand source of truth — for both repos. It was seeded by
+> ui-ux-pro-max, then overwritten with Shishka's real design tokens. Do NOT replace brand
+> values with the skill's generic defaults — the skill is used here for *rules + audit*,
+> not palette.
 >
-> This Master is the brand source of truth. It was seeded by ui-ux-pro-max, then
-> overwritten with Shishka's real design tokens. Do NOT replace brand values with
-> the skill's generic defaults — the skill is used here for *rules + audit*, not palette.
+> **Brand constants.** These are the identity, and changing one changes the brand — change
+> it here first, then let the admin panel follow:
+> royal-green `#1E3903` canvas · cream `#FBF8F0` text · spice-red `#B62A23` CTA ·
+> gold `#F0CE83` prices · brand-purple `#511A52` · SF Pro / Albert Sans ·
+> "from the SOIL to the SOUL".
+>
+> The admin panel's dark working surfaces, borders and motion are a *separate* set
+> (`shishka-os/agents/designer/admin-ui-tokens.md`) — application tokens, not brand.
+> They derive these hues but are not required to match surface for surface.
 
 **Project:** Shishka Web · **Category:** Restaurant / Healthy Food · **Theme:** **royal-green dark** — one continuous `#1E3903` canvas with cream reversed-out text. `tokens/theme-royal.css` is imported **last** and overrides the light base everywhere; the light tokens still exist but are not what renders. Verify all contrast against `#1E3903`, never against cream.
 **Brand line:** "from the SOIL to the SOUL"
