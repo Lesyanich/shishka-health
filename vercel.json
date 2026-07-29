@@ -18,7 +18,6 @@
       "destination": "https://qcqgtcsjoacuktcewpvo.supabase.co/:path*"
     },
     {
-      "//": "AEO pages (scripts/aeo-prerender.mjs). Vercel resolves dir/index.html from the filesystem before rewrites, but the catch-all below is the exact rule that would swallow these if it did not — and the failure mode is silent: a crawler gets HTTP 200 with the empty SPA shell instead of the page. Pinning them costs one line and removes the question. The prerender script asserts this list matches its own slugs and fails the build on drift.",
       "source": "/:slug(menu|gluten-free-restaurant-phuket|no-seed-oil-restaurant-phuket|healthy-food-rawai|clean-eating-phuket)",
       "destination": "/:slug/index.html"
     },

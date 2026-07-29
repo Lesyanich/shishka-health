@@ -34,7 +34,6 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createClient } from "@supabase/supabase-js";
 import { deepStripEmoji, titleCase } from "../src/lib/text.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -107,19 +106,31 @@ async function fetchMenu() {
     process.env.VITE_SUPABASE_ANON_KEY ||
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjcWd0Y3Nqb2FjdWt0Y2V3cHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MTYwMjUsImV4cCI6MjA4ODE5MjAyNX0.XI08SHEUG6_DQHyrZIUOtgCtEPW8E7tRTtH2Sc0dqzA";
 
-  const supabase = createClient(url, key);
-  const { data, error } = await supabase
-    .from("menu_public")
-    .select(
-      "id, name, customer_short_name, customer_description, price, stock_state, " +
-        "calories, protein, carbs, fat, portion_size, portion_unit, " +
-        "image_url, customer_photo_url, " +
-        "section_name, section_sort_order, category_name, display_order"
-    )
-    .order("section_sort_order", { ascending: true, nullsFirst: false })
-    .order("display_order", { ascending: true, nullsFirst: false });
+  /*
+    Plain PostgREST over fetch, deliberately NOT @supabase/supabase-js. Creating
+    a supabase client also constructs a RealtimeClient, which throws on Node < 22
+    for want of a native WebSocket — so the library builds fine on a Node 22 dev
+    machine and dies in CI on Node 20. A build script needs one authenticated GET
+    and no realtime, so the dependency buys nothing and costs a Node-version
+    coupling. The SPA keeps using the client; it runs in a browser.
+  */
+  const select = [
+    "name", "customer_short_name", "customer_description", "price", "stock_state",
+    "calories", "protein", "image_url", "customer_photo_url",
+    "section_name", "section_sort_order", "category_name", "display_order",
+  ].join(",");
 
-  if (error) throw new Error(`menu_public fetch failed: ${error.message}`);
+  const endpoint =
+    `${url}/rest/v1/menu_public?select=${select}` +
+    "&order=section_sort_order.asc.nullslast,display_order.asc.nullslast";
+
+  const res = await fetch(endpoint, {
+    headers: { apikey: key, Authorization: `Bearer ${key}` },
+  });
+  if (!res.ok) {
+    throw new Error(`menu_public fetch failed: HTTP ${res.status} ${await res.text()}`);
+  }
+  const data = await res.json();
 
   // Publish only what a guest can actually order today (CEO decision D1).
   const sellable = (data ?? []).filter((d) => (d.stock_state ?? "in_stock") === "in_stock");
