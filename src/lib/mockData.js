@@ -1,7 +1,18 @@
 /*
   Mock data mirroring the real nomenclature schema.
-  Used when VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are not set.
   Field names match the transformed shape returned by useMenu (post-mapping).
+
+  DEVELOPMENT ONLY — these prices are invented and must never reach a guest.
+
+  The single reader is the `!hasSupabase` branch of useMenu.js. That branch cannot
+  fire in a deployed build: src/lib/supabase.js falls back to the public project
+  URL and anon key when the env vars are missing, so `hasSupabase` is always true
+  in production. If you ever remove those fallbacks, this file becomes reachable
+  by guests — add a build-time guard before you do.
+
+  It used to be the catch-all for a failed fetch, which meant a broken database
+  contract rendered as a working menu with last month's prices. Now a failure
+  surfaces as an honest error state instead. Do not re-add it to the catch path.
 */
 export const MOCK_DATA = {
   categories: [

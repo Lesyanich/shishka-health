@@ -1,0 +1,103 @@
+{
+  "$comment": [
+    "The database contract the public menu site depends on. Canonical copy lives in the",
+    "shishka-health repo because the consumer defines the contract; shishka-os fetches it",
+    "over raw.githubusercontent.com in CI (both repos are public, so no auth is needed).",
+    "",
+    "Every column listed here is actually consumed by src/hooks/useMenu.js. Requesting them",
+    "explicitly (never select=*) is what makes the check precise: PostgREST answers a dropped",
+    "or renamed column with HTTP 400 naming it, and broken RLS with 401 or an empty result.",
+    "",
+    "Changing this file is the signal that the contract moved. scripts/migration-canary.sh in",
+    "shishka-os blocks any migration touching these objects unless this file changed too."
+  ],
+  "projectRef": "qcqgtcsjoacuktcewpvo",
+  "consumer": "shishka-health/src/hooks/useMenu.js",
+  "baseUrls": [
+    "https://qcqgtcsjoacuktcewpvo.supabase.co",
+    "https://shishka.health/sb"
+  ],
+  "anonKeyComment": "Public browser-facing key, already shipped in src/lib/supabase.js. Restricted by RLS to reads on the menu tables. Override with SUPABASE_ANON_KEY if it is ever rotated.",
+  "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjcWd0Y3Nqb2FjdWt0Y2V3cHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MTYwMjUsImV4cCI6MjA4ODE5MjAyNX0.XI08SHEUG6_DQHyrZIUOtgCtEPW8E7tRTtH2Sc0dqzA",
+  "resources": [
+    {
+      "name": "menu_public",
+      "kind": "view",
+      "select": "id,name,product_code,customer_short_name,customer_photo_url,image_url,customer_description,customer_ingredients,price,is_available,is_featured,pos_status,stock_state,calories,protein,carbs,fat,portion_size,portion_unit,category_id,display_order,category_code,category_name,category_sort_order,section_id,section_name,section_sort_order,bundle_min_price",
+      "minRows": 1,
+      "note": "Row filter is baked into the view: product_code LIKE 'SALE-%' AND pos_status='synced' AND is_available=true."
+    },
+    {
+      "name": "nomenclature_tags",
+      "kind": "table",
+      "select": "nomenclature_id,tags(slug,name,tag_group,color)",
+      "minRows": 1,
+      "note": "The embedded tags(...) also proves the foreign key to tags still resolves."
+    },
+    {
+      "name": "site_content",
+      "kind": "table",
+      "select": "key,data",
+      "minRows": 1,
+      "note": "Missing rows are survivable (lib/content.js falls back to DEFAULT_CONTENT), a missing table is not."
+    },
+    {
+      "name": "menu_modifiers",
+      "kind": "view",
+      "select": "dish_id,group_name,group_sort,group_min_select,group_max_select,option_name,option_emoji,price_delta,is_default,sort_order,calories,protein,carbs,fat",
+      "minRows": 1
+    },
+    {
+      "name": "price_tiers",
+      "kind": "table",
+      "select": "tier_code,label,discount_pct,bundle_manakish_count,bundle_sauce_count,sort_order",
+      "query": "bundle_dish_code=not.is.null&is_active=eq.true",
+      "minRows": 1,
+      "note": "bundle_dish_code is filtered on but never selected — it must keep existing."
+    }
+  ],
+  "assertions": [
+    {
+      "id": "dishes-present",
+      "resource": "menu_public",
+      "query": "",
+      "min": 1,
+      "why": "An empty menu renders an empty site. Nothing else in this file matters if this fails."
+    },
+    {
+      "id": "no-null-price",
+      "resource": "menu_public",
+      "query": "price=is.null",
+      "max": 0,
+      "why": "The view is supposed to expose only sellable dishes; a NULL price reaches the guest as a blank."
+    },
+    {
+      "id": "spring-rolls-section",
+      "resource": "menu_public",
+      "query": "product_code=like.SALE-SUMMER_ROLLS*",
+      "min": 1,
+      "why": "useMenu.js promotes these into their own section by product_code prefix. Renaming the prefix silently empties the section."
+    },
+    {
+      "id": "taco-bundle-pool",
+      "resource": "menu_public",
+      "query": "category_code=like.KP-FIN-MAN*",
+      "min": 1,
+      "why": "lib/bundles.js builds the taco bundle from this category_code prefix. No matches = the bundle constructor goes blank."
+    },
+    {
+      "id": "free-sauce-pool",
+      "resource": "menu_public",
+      "query": "category_code=like.KP-FIN-SDR*&price=lte.50",
+      "min": 1,
+      "why": "The free-sauce slots in a bundle come from this prefix plus a price ceiling."
+    },
+    {
+      "id": "coffee-split",
+      "resource": "menu_public",
+      "query": "category_name=ilike.*coffee*",
+      "min": 1,
+      "why": "The hot/cold coffee split keys off a case-insensitive match on category_name."
+    }
+  ]
+}

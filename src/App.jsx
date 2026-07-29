@@ -131,7 +131,7 @@ function LoadingSkeleton() {
 }
 
 export default function App() {
-  const { data, loading } = useMenu();
+  const { data, loading, error } = useMenu();
   const cart = useCart();
   const [activeBundle, setActiveBundle] = useState(null);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -313,7 +313,27 @@ export default function App() {
         <main className="shk-app__main">
           {loading && <LoadingSkeleton />}
 
-          {!loading && byCat.length === 0 && (
+          {/* The menu could not be loaded. Say so plainly rather than falling back
+              to hardcoded prices — a wrong price is worse than a missing menu. */}
+          {!loading && error && (
+            <div className="shk-app__empty">
+              <p>The menu is temporarily unavailable.</p>
+              <button className="shk-app__clear" onClick={() => window.location.reload()}>
+                Reload
+              </button>
+              {content.cta?.instagramUrl && (
+                <p>
+                  Today&rsquo;s menu is always on{" "}
+                  <a href={content.cta.instagramUrl} target="_blank" rel="noreferrer">
+                    Instagram
+                  </a>
+                  .
+                </p>
+              )}
+            </div>
+          )}
+
+          {!loading && !error && byCat.length === 0 && (
             <div className="shk-app__empty">
               <p>No dishes match these filters.</p>
               <button
@@ -383,14 +403,15 @@ export default function App() {
                   </>
                 )}
 
-                {cat.name === "Potato Tacos" && bundleCards.length > 0 && (
-                  <ManakishSets
-                    bundles={bundleCards}
-                    pool={manaPool}
-                    sauces={saucePoolList}
-                    onSelect={setActiveBundle}
-                  />
-                )}
+                {cat.items.some((d) => (d.category_code || "").startsWith("KP-FIN-MAN")) &&
+                  bundleCards.length > 0 && (
+                    <ManakishSets
+                      bundles={bundleCards}
+                      pool={manaPool}
+                      sauces={saucePoolList}
+                      onSelect={setActiveBundle}
+                    />
+                  )}
               </section>
 
               {/* Brand accent block after the configured category */}
