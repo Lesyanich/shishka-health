@@ -320,8 +320,13 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-card--coming-soon { cursor: default; opacity: 0.55; }
 .shk-card--coming-soon:hover { transform: none; }
 
+/* The photo is sized by --card-media, NOT by the grid column. The cut-outs are
+   transparent with no tile chrome, so a card that stretched to fill its column
+   would just add empty space around the food — the dish would not get bigger.
+   That is why enlarging a section takes TWO changes (fewer columns AND a bigger
+   --card-media); see .shk-app__section--showcase. */
 .shk-card__media {
-  position: relative; width: clamp(120px, 14vw, 184px); aspect-ratio: 4 / 5;
+  position: relative; width: var(--card-media, clamp(120px, 14vw, 184px)); aspect-ratio: 4 / 5;
   overflow: visible; background: none; display: grid; place-items: end center;
 }
 /* No cast shadow. The photos are transparent cut-outs and sat on a periwinkle
@@ -592,9 +597,17 @@ button.shk-seal:active { transform: scale(0.93); }
   }
   /* Anchored from the section's centre line, which is the viewport centre for
      both a contained section and a full-bleed tinted one — so one rule serves
-     both. The -20px lets it just kiss the content edge. */
-  .shk-sec-art--right { left: calc(50% + var(--content-max) / 2 - 20px); }
-  .shk-sec-art--left { right: calc(50% + var(--content-max) / 2 - 20px); }
+     both.
+
+     --art-inset is how far the art is allowed to reach back INSIDE the content
+     column, and it defaults to 20px: just kissing the edge. Only raise it for a
+     section that has real dead space on that side (the Potato Tacos tiers stop
+     ~190px short of the right edge, so the taco can move in and sit beside the
+     small ones). Never raise it for a section whose grid is full — the cards are
+     transparent cut-outs, so the art would show through the gaps between them
+     instead of behind a tile. Set per section in App.jsx (SECTION_ART.inset). */
+  .shk-sec-art--right { left: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
+  .shk-sec-art--left { right: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
 }
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
 .shk-foot { background: transparent; color: var(--text-on-dark); }
@@ -635,7 +648,29 @@ button.shk-seal:active { transform: scale(0.93); }
   margin-inline: calc(50% - 50vw);
   padding-inline: calc(50vw - 50%);
 }
-.shk-app--wide .shk-app__grid { grid-template-columns: repeat(5, 1fr); gap: clamp(20px, 2vw, 40px); }
+.shk-app--wide .shk-app__grid { grid-template-columns: repeat(var(--cols-wide, 5), 1fr); gap: clamp(20px, 2vw, 40px); }
+
+/* ---- Showcase section (fewer, much larger dishes) --------------------------
+   Five-across is the menu's default density: it fits the whole range on one
+   screen and reads as a list. A showcase section trades that reach for
+   appetite — three across, with the photo scaled up to match, so the food is
+   the thing you see rather than the name under it.
+   Both variables are needed: dropping to 3 columns alone only widens the empty
+   column, because --card-media is what actually sizes the food (see
+   .shk-card__media). Use it on sections whose photography can carry the size —
+   at 320px a soft or badly-lit shot has nowhere to hide. */
+.shk-app--wide .shk-app__section--showcase {
+  --cols-wide: 3;
+  --card-media: clamp(200px, 24vw, 320px);
+}
+/* A card with no photograph has nothing to enlarge. At showcase size its empty
+   placeholder becomes the biggest shape in the section and the two real dishes
+   read as the exception. Hold the photoless ones at roughly the old size so the
+   section still leads with food. Rows stay tidy because the grid is
+   align-items:start. Delete this once every dish in a showcase section is shot. */
+.shk-app--wide .shk-app__section--showcase .shk-card--coming-soon {
+  --card-media: clamp(140px, 15vw, 190px);
+}
 .shk-app--wide .shk-tabs { padding-left: 32px; padding-right: 32px; }
 .shk-app--wide .shk-app__sec-title { font-size: clamp(2.6rem, 4vw, 4rem); }
 

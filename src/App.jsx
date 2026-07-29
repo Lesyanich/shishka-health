@@ -72,8 +72,20 @@ const SECTION_TINT = {
 */
 const SECTION_ART = {
   Salads: { src: "/assets/section/salads-fattoush.webp", side: "left" },
-  "Potato Tacos": { src: "/assets/section/tacos-lamb.webp", side: "right" },
+  // inset: how far the art may reach back inside the content column. The tiers
+  // layout stops ~190px short of the right edge, so the big taco can move into
+  // that dead space and sit beside the small ones — showing ~70% of itself
+  // instead of half. Safe only because nothing is rendered there; see the
+  // --art-inset note in components.css before copying this to another section.
+  "Potato Tacos": { src: "/assets/section/tacos-lamb.webp", side: "right", inset: 200 },
 };
+
+/*
+  Sections that trade density for size: three dishes per row instead of five,
+  with the photo scaled up to match (.shk-app__section--showcase). Reserved for
+  sections where the photography is strong enough to be seen big.
+*/
+const SECTION_SHOWCASE = new Set(["Salads"]);
 
 function dishPasses(dish, diets, excl) {
   const d = dish.diets || [];
@@ -349,12 +361,19 @@ export default function App() {
             <Fragment key={cat.id}>
               <section
                 ref={(el) => (sectionRefs.current[cat.id] = el)}
-                className={`shk-app__section ${SECTION_TINT[cat.name] ?? ""}`}
+                className={`shk-app__section ${SECTION_TINT[cat.name] ?? ""} ${
+                  SECTION_SHOWCASE.has(cat.name) ? "shk-app__section--showcase" : ""
+                }`}
               >
                 {SECTION_ART[cat.name] && (
                   <div
                     className={`shk-sec-art shk-sec-art--${SECTION_ART[cat.name].side}`}
-                    style={{ "--art": `url(${SECTION_ART[cat.name].src})` }}
+                    style={{
+                      "--art": `url(${SECTION_ART[cat.name].src})`,
+                      ...(SECTION_ART[cat.name].inset && {
+                        "--art-inset": `${SECTION_ART[cat.name].inset}px`,
+                      }),
+                    }}
                     aria-hidden="true"
                   />
                 )}

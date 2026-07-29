@@ -351,6 +351,15 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
   &lt;div class="shk-card__corner"&gt;&lt;button class="shk-seal"&gt;…price stamp…&lt;/button&gt;&lt;/div&gt;
   &lt;div class="shk-card__body"&gt;&lt;div class="shk-card__topline"&gt;&lt;span class="shk-card__name"&gt; · __meta--kcal · __desc&lt;/div&gt;
 The price lives in the corner SEAL (next section), not a text label. · src/styles/components.css</div>
+      <div class="ds-recipe">GRID DENSITY — the photo is sized by --card-media, NOT by the grid column. A cut-out is transparent with no tile
+chrome, so a card that stretched to fill its column would only add empty space around the food; the dish would not get
+bigger. Enlarging a section therefore takes TWO changes, which is what .shk-app__section--showcase does:
+  --cols-wide: 3            (default 5 — set on .shk-app--wide .shk-app__grid)
+  --card-media: clamp(200px, 24vw, 320px)   (default clamp(120px, 14vw, 184px))
+Opt a section in via SECTION_SHOWCASE in App.jsx. Mobile is untouched — the rule is scoped to .shk-app--wide, so phones
+keep 2-up at 120px. Use it only where the photography can carry the size: at 320px a soft or badly-lit shot has nowhere
+to hide. Cards with no photo (.shk-card--coming-soon) are held near the old size inside a showcase section, otherwise the
+empty placeholder becomes the biggest shape on screen and the real dishes read as the exception. · src/styles/components.css</div>
     </section>
 
     <!-- ═══════════ PRICE SEAL ═══════════ -->
@@ -589,12 +598,17 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
 by position. Three or four over the whole menu is the ceiling: the effect works because it is rare, and past that the gutter
 stops being a surprise and becomes wallpaper. Sides alternate down the scroll.
 Rules the component must keep:
-· It lives ONLY in the gutter, never under the grid. Cards are transparent cut-outs with no tile chrome, so anything sliding
-  behind them shows through the gaps as stray fragments of food. The anchor is measured from the section's centre line
-  — left: calc(50% + var(--content-max) / 2 - 20px) — which is the viewport centre for a contained section AND for a
-  full-bleed tinted one, so one rule serves both.
-· Width is gutter + 220px of deliberate overspill, capped at 720px, so the photo reads as cropped by the page rather than
-  parked beside it. It widens with the window instead of being pinned to a size.
+· It lives ONLY in the gutter, never under a filled grid. Cards are transparent cut-outs with no tile chrome, so anything
+  sliding behind them shows through the gaps as stray fragments of food. The anchor is measured from the section's centre
+  line — left: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)) — which is the viewport centre for a contained
+  section AND for a full-bleed tinted one, so one rule serves both.
+· --art-inset is how far the art may reach back INSIDE the content column. Default 20px = just kissing the edge. Raise it
+  ONLY where that side of the section is genuinely empty: Potato Tacos uses 200px because the tiers layout stops ~190px
+  short of the right edge, which lets the big taco sit beside the small ones and show ~70% of itself instead of half.
+  Never raise it over a full grid. Set per section in App.jsx (SECTION_ART.inset); measure the clearance, don't guess.
+· Width is gutter + 420px of deliberate overspill, capped at 980px, so the photo reads as cropped by the page rather than
+  parked beside it. It widens with the window instead of being pinned to a size. The overspill sets the SCALE, not the
+  footprint — the visible slice is still only the gutter (plus any --art-inset), so a wider box shows less dish, larger.
 · The file is attached as background:var(--art) INSIDE @media (min-width:1440px) — a phone never downloads it. An &lt;img&gt;
   here would cost every mobile guest ~200 KB of decoration they cannot see. 1440 is also the first width where the gutter
   reads as a photograph rather than a sliver.
