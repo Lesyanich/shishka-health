@@ -87,6 +87,68 @@ const CLAIM_GLUTEN =
 const CLAIM_CELIAC =
   "No. We bake wheat sourdough in the same kitchen, so we cannot promise a celiac-safe environment. Every other dish is made without gluten-containing ingredients.";
 
+/* ------------------------------------------------------- the honest guide --
+
+   WP-5. A page that recommends our competitors, because that is the only kind
+   of "where should I eat" page an answer engine has any reason to quote. An ad
+   dressed as a guide is worth nothing here.
+
+   HARD RULES for anything in this block (plan § WP-5 acceptance):
+   - Every line about another business is a checkable public fact from their own
+     listing. No opinions on their food, no invented prices, no ratings.
+   - No fabricated threads, comments, upvotes or personas. Ever.
+   - Our own limitations are real ones, not humble-brags.
+   - Our affiliation is stated on the page, at the top.
+
+   Hours and details drift. REVIEWED is the date a human last checked these
+   against the sources, and the page says so — bump it only when that actually
+   happens. A build-time date would claim freshness every deploy and earn it
+   never.
+*/
+const REVIEWED = "29 July 2026";
+
+const ALTERNATIVES = [
+  {
+    name: "Raw Cafe & Vegan Bistro",
+    fact: "Raw, vegan and vegetarian cooking. Open 9:00–19:00, closed Mondays.",
+    pick: "you are eating late — it is the only one here still serving after 18:30",
+  },
+  {
+    name: "Pure Vegan Heaven",
+    fact: "100% vegan. The Rawai branch sits in a large garden. Known for its Mexican bowl and raw zucchini pasta.",
+    pick: "you want to sit somewhere green for a couple of hours",
+  },
+  {
+    name: "Stay Green Cafe",
+    fact: "Organic plant-based menu, cold-pressed juices and house-roasted organic coffee, at Rawai Stay Wellbeing on Soi Suksan 2.",
+    pick: "you care most about organic sourcing and coffee",
+  },
+  {
+    name: "WeCafe Rawai",
+    fact: "By Nai Harn Lake on Wiset Road. Open 8:00–18:00 daily. Avocado toast and açaí bowls.",
+    pick: "you want breakfast with a view of the lake",
+  },
+  {
+    name: "Go Vegan Cafe",
+    fact: "Inside the Yoga by Niti studio. Open 7:00–17:00 daily. Vegan breakfasts, wraps, salads and smoothie bowls.",
+    pick: "you are coming straight off a morning yoga class",
+  },
+];
+
+/*
+  Real limitations, each derivable from something verifiable: our own opening
+  hours, the 32 m² unit on the lease, the live menu_public counts, and the fact
+  that we bake wheat. If one of these stops being true, delete it — do not
+  soften it.
+*/
+const LIMITATIONS = [
+  "We close at 18:30, so we are not a dinner option. If you are looking for somewhere to eat in the evening, Raw Cafe & Vegan Bistro runs until 19:00.",
+  "We are a 32 m² counter inside a Tops Daily, not a garden cafe. It is a good place to pick food up and a poor place to spend an afternoon.",
+  "We are not vegan. We cook grass-fed beef and lamb, chicken, shrimp and tuna. If you are strictly vegan, every other place on this list will give you far more range than we can.",
+  "Our salad menu is still filling out — most of it is not on the counter yet.",
+  "We bake wheat sourdough on site, so we are not a celiac-safe kitchen.",
+];
+
 /* --------------------------------------------------------------- utilities */
 
 const escHtml = (s) =>
@@ -449,6 +511,61 @@ ${menuBody}`,
 <h2>Every dish comes with its numbers</h2>
 ${dishList(dishes.filter((d) => d.calories != null).slice(0, 24))}`,
       faqs: sharedFaq,
+    },
+    {
+      /*
+        WP-5. Slug deliberately omits "reddit" even though the plan allows it:
+        the page earns community-query traffic by being an honest comparison, and
+        borrowing a platform's name to catch its modifier is the exact move that
+        makes a page read as manipulation to the reader it is trying to reach.
+      */
+      slug: "where-to-eat-healthy-rawai",
+      title: "Where to Eat Clean and Healthy in Rawai — An Honest Local Guide",
+      description:
+        "An honest guide to clean eating in Rawai, Phuket, written by one of the kitchens on the list. Five places, what each is good for, and where we are the wrong choice.",
+      h1: "Where to Eat Clean and Healthy in Rawai",
+      answer:
+        "Rawai has a real clean-eating scene, and almost all of it is vegan. Below are five other kitchens worth knowing, what each one is actually good for, where we fit among them, and — since we are one of the six — the situations where we are the wrong answer and somebody else on this list is the right one.",
+      body: `<p class="claim">We run SHiSHKA Healthy Kitchen, one of the places on this list. We have written this because a guide that only names its author is not a guide. Everything below about the other kitchens is a public fact from their own listings, checked on ${escHtml(REVIEWED)} — not our opinion of their cooking. Hours change; check before you travel.</p>
+
+<h2>The thing nobody tells you about Rawai</h2>
+<p>If you search for healthy food here, you will find vegan food. Nearly every dedicated clean-eating kitchen in Rawai is plant-based, and several of the best ones are entirely vegan. That is genuinely good news if you eat that way, and a real gap if you are eating clean but want animal protein — which is the gap we set out to fill.</p>
+
+<h2>Six places worth knowing, ours included</h2>
+<ul class="dishes">
+${ALTERNATIVES.map(
+  (a) => `  <li><span class="dish-name">${escHtml(a.name)}<span class="dish-desc">${escHtml(a.fact)}</span><span class="dish-desc">Go if ${escHtml(a.pick)}.</span></span></li>`
+).join("\n")}
+  <li><span class="dish-name">SHiSHKA Healthy Kitchen (us)<span class="dish-desc">Inside Tops Daily on Soi Naya 2. Open ${escHtml(NAP.hoursHuman)}. No seed oils, no MSG, nothing deep-fried; grass-fed beef and lamb; calories and protein on every dish.</span><span class="dish-desc">Go if you want clean food with real protein, or you are picking something up rather than sitting down.</span></span></li>
+</ul>
+
+<h2>Where we are the wrong choice</h2>
+<p>Five honest ones, because every list like this is written by someone with a stake in it:</p>
+<ul class="dishes">
+${LIMITATIONS.map((l) => `  <li><span class="dish-name">${escHtml(l)}</span></li>`).join("\n")}
+</ul>
+
+<h2>How to choose in one line</h2>
+<p>Strictly vegan, or want to linger: pick one of the other five. Eating clean but want meat, fish or a high-protein lunch to take away: that is us. Eating after 18:30: Raw Cafe &amp; Vegan Bistro.</p>`,
+      faqs: [
+        {
+          q: "Is Rawai good for healthy food?",
+          a: "Yes, unusually so for its size — but the scene skews heavily vegan. Rawai has several dedicated plant-based kitchens; options that combine clean cooking with animal protein are rarer.",
+        },
+        {
+          q: "Where can I eat healthy in Rawai after 6pm?",
+          a: `Most clean-eating kitchens in Rawai close between 17:00 and 18:30, including ours. Raw Cafe & Vegan Bistro runs until 19:00 and is closed on Mondays. Checked ${REVIEWED}.`,
+        },
+        {
+          q: "Is there anywhere in Rawai that is healthy but not vegan?",
+          a: "That is the gap. SHiSHKA Healthy Kitchen cooks grass-fed beef and lamb, chicken, shrimp and tuna with no seed oils and nothing deep-fried. Most of the other dedicated clean kitchens in Rawai are plant-based.",
+        },
+        {
+          q: "Who wrote this guide?",
+          a: "SHiSHKA Healthy Kitchen, which is one of the places listed on it. We have said so at the top of the page and listed the situations where another kitchen on this list is the better choice.",
+        },
+        ...sharedFaq.slice(0, 2),
+      ],
     },
   ];
 }
