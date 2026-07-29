@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { IconButton } from "../primitives/IconButton.jsx";
 import { XIcon } from "../Icons.jsx";
 import { tierPrice, bundleTotal, alaCarteTotal, totalQty } from "../../lib/bundles.js";
+import { optimizedSrc } from "../../lib/img.js";
 
 /*
   Build-your-own manakish set. Strict counts: exactly `manakishCount` manakish
@@ -57,8 +58,20 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
     onClose?.();
   };
 
+  // A chosen row keeps a tinted state so the picture doesn't make the count
+  // harder to read at a glance than the plain text rows did.
   const Row = ({ dish, qty, price, canAdd, onInc, onDec }) => (
-    <li className="shk-bundle__row">
+    <li className={`shk-bundle__row${qty > 0 ? " is-picked" : ""}`}>
+      {dish.image_url ? (
+        <img
+          className="shk-bundle__row-img"
+          src={optimizedSrc(dish.image_url, 128)}
+          alt=""
+          loading="lazy"
+        />
+      ) : (
+        <span className="shk-bundle__row-img shk-bundle__row-img--ph" aria-hidden="true" />
+      )}
       <div className="shk-bundle__row-info">
         <span className="shk-bundle__row-name">{dish.name}</span>
         <span className="shk-bundle__row-price num">

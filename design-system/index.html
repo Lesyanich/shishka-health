@@ -59,6 +59,18 @@
     .ds-contract strong { color: var(--text-strong); }
     .ds-box-demo { position: relative; height: 160px; border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg); overflow: hidden; }
+    /* Fruit demo: the real .shk-fruitfall classes, held still. In the app the
+       positions come from a rAF loop and a cut fades out in 620ms — neither is
+       any use on a page you're meant to read, so the tile supplies the box and
+       the halves are pinned visible. Nothing here is a re-implementation. */
+    /* The tile is much bigger than the fruit: halves fly 42% out either side —
+       ±37px at the demo's 88px — and *which* way depends on the cut angle, so
+       the clearance has to exist in both axes. */
+    .ds-fruit { position: relative; width: 176px; height: 176px; }
+    .ds-fruit .shk-fruitfall__item { position: absolute; top: 44px; left: 50%; margin-left: -44px;
+      width: 88px; height: 88px; opacity: 1; transition: none; }
+    .ds-fruit .shk-fruitfall__item.is-cut .shk-fruitfall__half { opacity: 1; transition: none; }
+    .ds-fruit .shk-fruitfall__splash { display: none; }
     ul { padding-left: 1.1rem; }
   </style>
 </head>
@@ -69,6 +81,19 @@
     <symbol id="shk-seal-edge" viewBox="0 0 100 100">
       <path class="shk-seal__edge" fill-rule="evenodd" d="M 50.00 1.00 L 54.87 6.77 L 60.90 2.23 L 64.37 8.94 L 71.26 5.85 L 73.14 13.17 L 80.55 11.69 L 80.76 19.24 L 88.31 19.45 L 86.83 26.86 L 94.15 28.74 L 91.06 35.63 L 97.77 39.10 L 93.23 45.13 L 99.00 50.00 L 93.23 54.87 L 97.77 60.90 L 91.06 64.37 L 94.15 71.26 L 86.83 73.14 L 88.31 80.55 L 80.76 80.76 L 80.55 88.31 L 73.14 86.83 L 71.26 94.15 L 64.37 91.06 L 60.90 97.77 L 54.87 93.23 L 50.00 99.00 L 45.13 93.23 L 39.10 97.77 L 35.63 91.06 L 28.74 94.15 L 26.86 86.83 L 19.45 88.31 L 19.24 80.76 L 11.69 80.55 L 13.17 73.14 L 5.85 71.26 L 8.94 64.37 L 2.23 60.90 L 6.77 54.87 L 1.00 50.00 L 6.77 45.13 L 2.23 39.10 L 8.94 35.63 L 5.85 28.74 L 13.17 26.86 L 11.69 19.45 L 19.24 19.24 L 19.45 11.69 L 26.86 13.17 L 28.74 5.85 L 35.63 8.94 L 39.10 2.23 L 45.13 6.77 L 50.00 1.00 Z M 91 50 A 41 41 0 1 1 9 50 A 41 41 0 1 1 91 50 Z" />
     </symbol>
+  </svg>
+
+
+  <!-- Fruit sprite for this page only.
+       GENERATED — do not hand-edit. These three are copied out of the live app
+       (lib/fruitArt.jsx owns all 59); a guide page is static HTML and can't
+       import JSX, so the drawings are pasted rather than authored twice.
+       To refresh: open the site, then in the console
+         ['orange','kiwi','watermelon'].map(k=>document.getElementById('shk-fruit-'+k).outerHTML).join('\\n') -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="shk-fruit-orange" viewBox="0 0 100 100"><circle cx="50" cy="50" r="49" fill="#F3A63B"/><circle cx="50" cy="50" r="43" fill="#FEF3E0"/><circle cx="50" cy="50" r="38" fill="#F58B22"/><g stroke="#FEF3E0" stroke-width="2.6" stroke-linecap="round"><line x1="54.0" y1="50.0" x2="87.0" y2="50.0"/><line x1="53.2" y1="52.4" x2="79.9" y2="71.7"/><line x1="51.2" y1="53.8" x2="61.4" y2="85.2"/><line x1="48.8" y1="53.8" x2="38.6" y2="85.2"/><line x1="46.8" y1="52.4" x2="20.1" y2="71.7"/><line x1="46.0" y1="50.0" x2="13.0" y2="50.0"/><line x1="46.8" y1="47.6" x2="20.1" y2="28.3"/><line x1="48.8" y1="46.2" x2="38.6" y2="14.8"/><line x1="51.2" y1="46.2" x2="61.4" y2="14.8"/><line x1="53.2" y1="47.6" x2="79.9" y2="28.3"/></g><circle cx="50" cy="50" r="4.5" fill="#FEF3E0"/></symbol>
+    <symbol id="shk-fruit-kiwi" viewBox="0 0 100 100"><circle cx="50" cy="50" r="49" fill="#8A6F3A"/><circle cx="50" cy="50" r="46" fill="#A3C34A"/><g stroke="#E9F2CE" stroke-width="1.5" stroke-linecap="round" opacity="0.8"><line x1="65.0" y1="50.0" x2="93.0" y2="50.0"/><line x1="64.6" y1="53.6" x2="91.8" y2="60.3"/><line x1="63.3" y1="57.0" x2="88.1" y2="70.0"/><line x1="61.2" y1="59.9" x2="82.2" y2="78.5"/><line x1="58.5" y1="62.3" x2="74.4" y2="85.4"/><line x1="55.3" y1="64.0" x2="65.2" y2="90.2"/><line x1="51.8" y1="64.9" x2="55.2" y2="92.7"/><line x1="48.2" y1="64.9" x2="44.8" y2="92.7"/><line x1="44.7" y1="64.0" x2="34.8" y2="90.2"/><line x1="41.5" y1="62.3" x2="25.6" y2="85.4"/><line x1="38.8" y1="59.9" x2="17.8" y2="78.5"/><line x1="36.7" y1="57.0" x2="11.9" y2="70.0"/><line x1="35.4" y1="53.6" x2="8.2" y2="60.3"/><line x1="35.0" y1="50.0" x2="7.0" y2="50.0"/><line x1="35.4" y1="46.4" x2="8.2" y2="39.7"/><line x1="36.7" y1="43.0" x2="11.9" y2="30.0"/><line x1="38.8" y1="40.1" x2="17.8" y2="21.5"/><line x1="41.5" y1="37.7" x2="25.6" y2="14.6"/><line x1="44.7" y1="36.0" x2="34.8" y2="9.8"/><line x1="48.2" y1="35.1" x2="44.8" y2="7.3"/><line x1="51.8" y1="35.1" x2="55.2" y2="7.3"/><line x1="55.3" y1="36.0" x2="65.2" y2="9.8"/><line x1="58.5" y1="37.7" x2="74.4" y2="14.6"/><line x1="61.2" y1="40.1" x2="82.2" y2="21.5"/><line x1="63.3" y1="43.0" x2="88.1" y2="30.0"/><line x1="64.6" y1="46.4" x2="91.8" y2="39.7"/></g><circle cx="50" cy="50" r="13" fill="#F2F7DE"/><g transform="rotate(0.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(30.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(60.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(90.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(120.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(150.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(180.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(210.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(240.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(270.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(300.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g><g transform="rotate(330.0 50 50)"><ellipse cx="50" cy="31" rx="1.6" ry="2.9" fill="#2B2B22"/></g></symbol>
+    <symbol id="shk-fruit-watermelon" viewBox="0 0 100 100"><circle cx="50" cy="50" r="49" fill="#3F7A33"/><circle cx="50" cy="50" r="45" fill="#EAF4D5"/><circle cx="50" cy="50" r="41.5" fill="#E63946"/><g transform="rotate(12.0 50 50)"><ellipse cx="50" cy="24" rx="2.4" ry="3.6" fill="#241F1C"/></g><g transform="rotate(63.4 50 50)"><ellipse cx="50" cy="24" rx="2.4" ry="3.6" fill="#241F1C"/></g><g transform="rotate(114.9 50 50)"><ellipse cx="50" cy="24" rx="2.4" ry="3.6" fill="#241F1C"/></g><g transform="rotate(166.3 50 50)"><ellipse cx="50" cy="24" rx="2.4" ry="3.6" fill="#241F1C"/></g><g transform="rotate(217.7 50 50)"><ellipse cx="50" cy="24" rx="2.4" ry="3.6" fill="#241F1C"/></g><g transform="rotate(269.1 50 50)"><ellipse cx="50" cy="24" rx="2.4" ry="3.6" fill="#241F1C"/></g><g transform="rotate(320.6 50 50)"><ellipse cx="50" cy="24" rx="2.4" ry="3.6" fill="#241F1C"/></g><g transform="rotate(40.0 50 50)"><ellipse cx="50" cy="12.5" rx="2.2" ry="3.3" fill="#241F1C"/></g><g transform="rotate(112.0 50 50)"><ellipse cx="50" cy="12.5" rx="2.2" ry="3.3" fill="#241F1C"/></g><g transform="rotate(184.0 50 50)"><ellipse cx="50" cy="12.5" rx="2.2" ry="3.3" fill="#241F1C"/></g><g transform="rotate(256.0 50 50)"><ellipse cx="50" cy="12.5" rx="2.2" ry="3.3" fill="#241F1C"/></g><g transform="rotate(328.0 50 50)"><ellipse cx="50" cy="12.5" rx="2.2" ry="3.3" fill="#241F1C"/></g></symbol>
   </svg>
 
   <div class="ds-wrap">
@@ -99,16 +124,17 @@
       <a href="#badges">Badges</a><a href="#icons">Icon btns</a><a href="#chips">Chips</a><a href="#tabs">Tabs</a>
       <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
       <a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
-      <a href="#hero">Hero</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
-      <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#manakish">Manakish</a><a href="#states">States</a>
-      <a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
+      <a href="#hero">Hero</a><a href="#secart">Section art</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
+      <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#manakish">Potato Tacos</a><a href="#states">States</a>
+      <a href="#fruit">Fruit</a><a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
     </nav>
 
     <!-- ═══════════ COLOR ═══════════ -->
     <section class="ds-section" id="color">
       <div class="ds-h">Color</div>
-      <p class="ds-lead">Green = life · Red = energy · Purple = antioxidants · Cream = warmth. The site is one continuous
-        royal-green canvas with reversed-out cream text. Always reference the <em>semantic</em> token in UI.</p>
+      <p class="ds-lead">Green = life · Red = energy · Purple = antioxidants · Cream = warmth. The site is a white page in
+        royal-green ink — the printed-menu look — banded with a soft mint wash. Always reference the
+        <em>semantic</em> token in UI.</p>
 
       <div class="ds-sub">Brand · semantic</div>
       <div class="ds-swatches">
@@ -126,6 +152,26 @@
         <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-2)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-2</div><div class="ds-swatch__hex">#3C481A</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-3)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-3</div><div class="ds-swatch__hex">#56641F</div></div></div>
       </div>
+
+      <div class="ds-sub">Fresh bands (light theme — the printed-menu look)</div>
+      <div class="ds-swatches">
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--band-mint)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--band-mint · Salads band</div><div class="ds-swatch__hex">#E9F3EC</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--band-warm)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--band-warm · Coffee band (= --cream-50)</div><div class="ds-swatch__hex">#FBF8F0</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--produce-shadow)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--produce-shadow · falling-fruit cast</div><div class="ds-swatch__hex">rgba(139,151,219,.55)</div></div></div>
+      </div>
+      <div class="ds-recipe">The page is white; exactly two sections carry a wash, chosen by name in App.jsx (SECTION_TINT), never
+by position. Salads → --band-mint (.shk-app__section--tint); Coffee → --band-warm (.shk-app__section--warm), which is --cream-50
+off the brand warm-white ramp, so drinks change key without a second green. Striping every other section was tried
+and read as a barcode. Both bands are edge-to-edge — on wide screens they break out of the centred column with
+margin-inline: calc(50% - 50vw) and put the width back as padding. The colour change is the only divider: a straight
+edge, no hairline and no shaped one.
+Dish photos are transparent cut-outs and carry NO cast shadow. They used to sit on a periwinkle
+drop-shadow(-5px 11px 9px var(--produce-shadow)) to fake them floating off the page; on the light theme that read as
+grime under the food rather than lift, so it was removed — the food sits flat on the card. If a photo ever needs
+lifting again it is drop-shadow, never box-shadow, so the cast traces the silhouette and not a rectangle.
+The fruit/veg slices are drawn as SVG, not photographed —
+one drawing serves every size — and all 59 live in lib/fruitArt.jsx, shared by both surfaces that use them
+(see Fruit below).</div>
 
       <div class="ds-sub">Green scale</div>
       <div class="ds-ramp">
@@ -157,7 +203,7 @@
       </div>
       <div class="ds-sub">Macro / nutrition data</div>
       <div class="ds-row">
-        <span class="shk-badge" style="background:rgba(226,59,46,.18);color:#E23B2E">protein #E23B2E</span>
+        <span class="shk-badge" style="background:rgba(214,45,110,.18);color:#D62D6E">protein #D62D6E</span>
         <span class="shk-badge" style="background:rgba(240,138,36,.18);color:#F08A24">carbs #F08A24</span>
         <span class="shk-badge" style="background:rgba(245,194,17,.18);color:#F5C211">fat #F5C211</span>
         <span class="shk-badge" style="background:rgba(63,145,66,.2);color:#7E944A">kcal #3F9142</span>
@@ -249,7 +295,7 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <button class="shk-tab" aria-selected="true">Fresh Spring Rolls</button>
           <button class="shk-tab">Dips & Sides</button>
           <button class="shk-tab">Bread & Crackers</button>
-          <button class="shk-tab">Manakish</button>
+          <button class="shk-tab">Potato Tacos</button>
           <button class="shk-tab">Sauces & Dressings</button>
           <button class="shk-tab">Drinks</button>
         </div>
@@ -401,10 +447,10 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
     <!-- ═══════════ SETS ═══════════ -->
     <section class="ds-section" id="sets">
       <div class="ds-h">Bundle Sets</div>
-      <p class="ds-lead">"Build your set" tiles (Manakish) — savings %, count, from-price, CTA.</p>
+      <p class="ds-lead">"Build your set" tiles — savings %, count, from-price, CTA. The row is a horizontal scroller, so it reads the same whether one tier is live or three. Live today: sets of 4 (−10%) and 8 (−15%); the set of 12 exists in <code>price_tiers</code> but is switched off. <code>__from</code> is always the <em>cheapest</em> build at that discount (all-vege), computed by <code>bundleFloor</code> — never a fixed bundle price.</p>
       <div class="shk-sets" role="list">
-        <button type="button" class="shk-set" role="listitem"><span class="shk-set__pct"><small>save</small>22%</span><span class="shk-set__num">3</span><span class="shk-set__title">Manakish</span><span class="shk-set__sub">set of 3 + 2 sauce free</span><span class="shk-set__from">from ฿569</span><span class="shk-set__cta">build your set <span aria-hidden="true">→</span></span></button>
-        <button type="button" class="shk-set" role="listitem"><span class="shk-set__pct"><small>save</small>10%</span><span class="shk-set__num">4</span><span class="shk-set__title">Manakish</span><span class="shk-set__sub">set of 4 + 1 sauce free</span><span class="shk-set__from">from ฿212</span><span class="shk-set__cta">build your set <span aria-hidden="true">→</span></span></button>
+        <button type="button" class="shk-set" role="listitem"><span class="shk-set__pct"><small>save</small>10%</span><span class="shk-set__num">4</span><span class="shk-set__title">Potato Tacos</span><span class="shk-set__sub">set of 4 + 1 sauce free</span><span class="shk-set__from">from ฿248</span><span class="shk-set__cta">build your set <span aria-hidden="true">→</span></span></button>
+        <button type="button" class="shk-set" role="listitem"><span class="shk-set__pct"><small>save</small>15%</span><span class="shk-set__num">8</span><span class="shk-set__title">Potato Tacos</span><span class="shk-set__sub">set of 8 + 2 sauce free</span><span class="shk-set__from">from ฿472</span><span class="shk-set__cta">build your set <span aria-hidden="true">→</span></span></button>
       </div>
       <div class="ds-recipe">shk-set: __pct(save%) · __num · __title · __sub · __from · __cta</div>
     </section>
@@ -413,29 +459,38 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
     <section class="ds-section" id="bundle">
       <div class="ds-h">Bundle Dialog (Build-your-own set)</div>
       <p class="ds-lead">Opens from a <a href="#sets">Bundle Set</a> tile: grouped pickers with steppers and live counters, a running total at the tier discount, and an "Add to order" that stays disabled until the counts match. Counter turns green (<code>.is-full</code>) when a group is complete.</p>
+      <p class="ds-lead">Every row leads with a 44px dish photo (<code>__row-img</code>, <code>object-fit:contain</code> — the photos are transparent cut-outs, not fill crops); a dish with no photo falls back to a plain tinted square (<code>__row-img--ph</code>). Because the eye lands on the pictures first, a chosen row also carries <code>.is-picked</code> so the count stays scannable.</p>
       <div class="ds-pad" style="max-width:440px;padding:0;overflow:hidden">
-        <div class="shk-dlg shk-bundle" role="dialog" aria-modal="true" aria-label="Manakish · set of 3" style="position:static;max-width:none;max-height:none">
+        <div class="shk-dlg shk-bundle" role="dialog" aria-modal="true" aria-label="Potato Tacos set of 8" style="position:static;max-width:none;max-height:none">
           <div class="shk-bundle__head">
             <div>
-              <h2 class="shk-dlg__title">Manakish · set of 3</h2>
-              <p class="shk-bundle__sub">Pick 3 manakish + 2 sauces · save 22%</p>
+              <h2 class="shk-dlg__title">Potato Tacos set of 8 + 2 sauces free</h2>
+              <p class="shk-bundle__sub">Pick 8 potato tacos + 2 sauces · save 15%</p>
             </div>
             <button class="shk-iconbtn shk-iconbtn--solid" aria-label="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
           </div>
           <div class="shk-bundle__body">
             <section class="shk-bundle__group">
-              <div class="shk-bundle__group-head"><h3 class="shk-bundle__group-title">Manakish</h3><span class="shk-bundle__counter num">2 / 3</span></div>
+              <div class="shk-bundle__group-head"><h3 class="shk-bundle__group-title">Potato Tacos</h3><span class="shk-bundle__counter num">7 / 8</span></div>
               <ul class="shk-bundle__list">
-                <li class="shk-bundle__row">
-                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Za'atar</span><span class="shk-bundle__row-price num">฿77</span></div>
-                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one">+</button></div>
+                <li class="shk-bundle__row is-picked">
+                  <img class="shk-bundle__row-img" loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/40024674-0be3-4e0e-ba0c-f44547b2ad54/menu-vege-1783928778.png?v=1783928778" />
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Za'atar</span><span class="shk-bundle__row-price num">฿59</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">4</span><button type="button" aria-label="Add one">+</button></div>
+                </li>
+                <li class="shk-bundle__row is-picked">
+                  <img class="shk-bundle__row-img" loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/51891d3c-8596-4e21-b07a-c82505d356de/menu-v20260722.webp?v=20260722" />
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Lamb Grass-Fed</span><span class="shk-bundle__row-price num">฿76</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">3</span><button type="button" aria-label="Add one">+</button></div>
                 </li>
                 <li class="shk-bundle__row">
-                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Cheese</span><span class="shk-bundle__row-price num">฿108</span></div>
-                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one">+</button></div>
+                  <img class="shk-bundle__row-img" loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/cde9b8f2-42a3-400e-9fe9-ea5564fe7b47/menu-vege-1783928778.png?v=1783928778" />
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Cheese</span><span class="shk-bundle__row-price num">฿59</span></div>
+                  <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one" disabled>–</button><span class="num">0</span><button type="button" aria-label="Add one">+</button></div>
                 </li>
                 <li class="shk-bundle__row">
-                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Sujuk</span><span class="shk-bundle__row-price num">฿132</span></div>
+                  <span class="shk-bundle__row-img shk-bundle__row-img--ph" aria-hidden="true"></span>
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Pumpkin <em style="font-style:normal;opacity:.55">(no photo yet)</em></span><span class="shk-bundle__row-price num">฿59</span></div>
                   <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one" disabled>–</button><span class="num">0</span><button type="button" aria-label="Add one">+</button></div>
                 </li>
               </ul>
@@ -443,24 +498,26 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
             <section class="shk-bundle__group">
               <div class="shk-bundle__group-head"><h3 class="shk-bundle__group-title">Sauce · free</h3><span class="shk-bundle__counter num is-full">2 / 2</span></div>
               <ul class="shk-bundle__list">
-                <li class="shk-bundle__row">
-                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Garlic Toum</span><span class="shk-bundle__row-price num">free</span></div>
+                <li class="shk-bundle__row is-picked">
+                  <img class="shk-bundle__row-img" loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/de8ad210-6f05-48df-b8a1-c4ce85177a2f/menu-1GYt5J-YNZhr7PJhfJcdqsL97Zqp9gLZj.webp?v=1781973462656" />
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Tahini Tamarind Sauce</span><span class="shk-bundle__row-price num">free</span></div>
                   <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one" disabled>+</button></div>
                 </li>
-                <li class="shk-bundle__row">
-                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Chili Zhoug</span><span class="shk-bundle__row-price num">free</span></div>
+                <li class="shk-bundle__row is-picked">
+                  <img class="shk-bundle__row-img" loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/e5ed7dda-6680-4441-bcce-6431e273729f/menu-13HMQqi1vLPhIiG1688pC6u7vI-T7zL3f.webp?v=1782014944888" />
+                  <div class="shk-bundle__row-info"><span class="shk-bundle__row-name">Mango Sauce</span><span class="shk-bundle__row-price num">free</span></div>
                   <div class="shk-bundle__stepper"><button type="button" aria-label="Remove one">–</button><span class="num">1</span><button type="button" aria-label="Add one" disabled>+</button></div>
                 </li>
               </ul>
             </section>
           </div>
           <div class="shk-bundle__foot">
-            <div class="shk-bundle__totals"><span class="shk-bundle__total num">฿185</span><span class="shk-bundle__save num">save ฿52</span></div>
-            <button type="button" class="shk-bundle__add" disabled>Pick 1 more manakish</button>
+            <div class="shk-bundle__totals"><span class="shk-bundle__total num">฿464</span><span class="shk-bundle__save num">save ฿79</span></div>
+            <button type="button" class="shk-bundle__add" disabled>Pick 1 more potato tacos</button>
           </div>
         </div>
       </div>
-      <div class="ds-recipe">shk-bundle (in shk-dlg) &gt; __head(__title + __sub + close) + __body(__group &gt; __group-head(__group-title + __counter.is-full) + __list(__row(__row-info(__row-name + __row-price) + __stepper))) + __foot(__totals(__total + __save) + __add[disabled])</div>
+      <div class="ds-recipe">shk-bundle (in shk-dlg) &gt; __head(__title + __sub + close) + __body(__group &gt; __group-head(__group-title + __counter.is-full) + __list(__row[.is-picked](__row-img|__row-img--ph + __row-info(__row-name + __row-price) + __stepper))) + __foot(__totals(__total + __save) + __add[disabled])</div>
     </section>
 
     <!-- ═══════════ BUILDER ═══════════ -->
@@ -515,6 +572,35 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
         <button class="shk-orderfab shk-orderfab--empty" style="position:static">Browse menu</button>
       </div>
       <div class="ds-recipe">&lt;button class="shk-orderfab"&gt;…&lt;span class="shk-orderfab__count"&gt;3&lt;/span&gt;&lt;/button&gt;  ·  --brand-purple #511A52</div>
+    </section>
+
+    <!-- ═══════════ SECTION ART ═══════════ -->
+    <section class="ds-section" id="secart">
+      <div class="ds-h">Section Art (gutter cut-outs)</div>
+      <p class="ds-lead">Above 1200px the card grid stops growing and the page opens an empty white column either side of it.
+        <code>.shk-sec-art</code> drops one oversized dish photograph into that dead space, cropped by the viewport edge —
+        the printed menu's own trick, and the only element allowed to break the container.</p>
+      <div class="ds-pad" style="position:relative;overflow:hidden;min-height:220px">
+        <div style="position:absolute;top:50%;right:-60px;translate:0 -50%;width:260px;height:260px;
+                    background:url(../public/assets/section/tacos-lamb.webp) no-repeat center/contain;pointer-events:none"></div>
+        <div class="ds-src" style="max-width:24ch">the grid ends here →<br>art starts in the gutter</div>
+      </div>
+      <div class="ds-recipe">Which sections get art, and on which side, is decided in App.jsx (SECTION_ART) by name — not here and not
+by position. Three or four over the whole menu is the ceiling: the effect works because it is rare, and past that the gutter
+stops being a surprise and becomes wallpaper. Sides alternate down the scroll.
+Rules the component must keep:
+· It lives ONLY in the gutter, never under the grid. Cards are transparent cut-outs with no tile chrome, so anything sliding
+  behind them shows through the gaps as stray fragments of food. The anchor is measured from the section's centre line
+  — left: calc(50% + var(--content-max) / 2 - 20px) — which is the viewport centre for a contained section AND for a
+  full-bleed tinted one, so one rule serves both.
+· Width is gutter + 220px of deliberate overspill, capped at 720px, so the photo reads as cropped by the page rather than
+  parked beside it. It widens with the window instead of being pinned to a size.
+· The file is attached as background:var(--art) INSIDE @media (min-width:1440px) — a phone never downloads it. An &lt;img&gt;
+  here would cost every mobile guest ~200 KB of decoration they cannot see. 1440 is also the first width where the gutter
+  reads as a photograph rather than a sliver.
+· aria-hidden + pointer-events:none. It is scenery, never a target, and never the only place a dish appears.
+· Same shadow law as the cards: transparent cut-out, no cast shadow.
+Assets: transparent WebP, longest edge 1200, alpha-trimmed, in public/assets/section/ · src/styles/components.css</div>
     </section>
 
     <!-- ═══════════ DISH DETAIL ═══════════ -->
@@ -692,22 +778,169 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
 
     <!-- ═══════════ MANAKISH ═══════════ -->
     <section class="ds-section" id="manakish">
-      <div class="ds-h">Manakish</div>
-      <p class="ds-lead">Signature category block: gluten-free crust header + per-size price seals. Free-sauce bundles use <a href="#sets">Bundle Sets</a>.</p>
+      <div class="ds-h">Potato Tacos</div>
+      <p class="ds-lead">Signature category block: gluten-free crust header + per-tier price seals. Free-sauce sets use <a href="#sets">Bundle Sets</a>. The class prefix is still <code>shk-mana</code> — the block was built for manakish and kept its name when the product was renamed; only the copy moved.</p>
       <div class="shk-mana" style="background:var(--surface-2);border-radius:var(--radius-lg);padding:var(--sp-5);overflow:hidden">
         <header class="shk-mana__head">
-          <h2 class="shk-mana__title">Manakish</h2>
+          <h2 class="shk-mana__title">Potato Tacos</h2>
           <p class="shk-mana__tag">our signature gluten-free crust crafted from potato &amp; rice</p>
           <span class="shk-diet shk-diet--diet"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22 16 8"></path><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path></svg><span>Gluten-free</span></span>
         </header>
         <div class="ds-row" style="gap:var(--sp-6);margin-top:var(--sp-4)">
-          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Za'atar"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">99</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Za'atar</span></div>
-          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Cheese"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">139</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Cheese</span></div>
-          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Sujuk"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">169</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Sujuk</span></div>
+          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Vege"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">69</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Vege</span></div>
+          <div class="ds-stack" style="align-items:center;gap:var(--sp-2)"><button type="button" class="shk-seal" style="width:56px;height:56px;font-size:14px" aria-label="Meat"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">89</span><span class="shk-seal__cur">thb</span></span></button><span class="ds-src">Meat</span></div>
         </div>
       </div>
       <div class="ds-recipe">shk-mana &gt; __head(__title + __tag + diet) · price tiers render as shk-seal · bundles via shk-set</div>
-      <div class="ds-src" style="margin-top:var(--sp-4)">Also in the system (documented, app-shell): <code>shk-app</code> (page wrapper) · <code>shk-bcard</code> (compact bundle card) · <code>shk-visually</code> (sr-only a11y helper).</div>
+      <div class="ds-src" style="margin-top:var(--sp-4)">Also in the system (documented, app-shell): <code>shk-app</code> (page wrapper) · <code>shk-visually</code> (sr-only a11y helper).</div>
+    </section>
+
+    <!-- ═══════════ FRUIT ═══════════ -->
+    <section class="ds-section" id="fruit">
+      <div class="ds-h">Fruit</div>
+      <p class="ds-lead">Fifty-nine produce cut-outs, drawn as SVG in <code>lib/fruitArt.jsx</code> — one source, two surfaces:
+      the still scatter behind the hero copy (<code>FruitConfetti.jsx</code>) and the falling, sliceable layer over the whole
+      site (<code>FruitFall.jsx</code>). Every slice is authored in a 100×100 box as a circle centred on (50,50) — the top-down
+      "cut through the middle" view. That's not just a style rule: it's why the falling layer can treat any item as a circle of
+      radius 50 for hit detection without special-casing a single one.</p>
+
+      <p class="ds-lead">The library is <strong>one table</strong>, <code>PRODUCE</code>, where each row declares everything about
+      an item at once — <code>{ kind, score, juice, art, scale?, w? }</code> — and the flat maps (<code>SLICE_ART</code>,
+      <code>JUICE</code>, <code>SCORE</code>, <code>SCALE</code>, <code>KIND</code>) are derived from it. With sixty items, four
+      hand-maintained parallel maps would drift within a week. Four families: <strong>fruit</strong> (citrus, pome, stone, berry,
+      melon, tropical), <strong>veg</strong>, <strong>nut</strong> and <strong>seed</strong>. Families share drawing templates —
+      <code>citrus()</code>, <code>pome()</code>, <code>stone()</code>, <code>gourd()</code>, <code>capsicum()</code>,
+      <code>beads()</code> — so a new orange variety is one line, not forty paths.</p>
+
+      <p class="ds-lead">Nuts and seeds are drawn to fill the same 100×100 box and shrunk at spawn with <code>scale</code> instead
+      of being given a custom hit box. One hit rule survives, and the small items become genuinely harder to hit — which is what
+      their higher scores are paying for. The chili uses the same trick against the bell pepper: identical template, half the size.</p>
+
+      <div class="ds-sub">Whole and cut</div>
+      <div class="ds-row" style="gap:var(--sp-2);align-items:center;flex-wrap:wrap">
+        <div class="ds-stack" style="align-items:center;gap:var(--sp-2)">
+          <div class="ds-fruit"><div class="shk-fruitfall__item"><div class="shk-fruitfall__cut">
+            <div class="shk-fruitfall__half shk-fruitfall__half--a"><svg class="shk-fruitfall__art" viewBox="0 0 100 100"><use href="#shk-fruit-orange"/></svg></div>
+            <div class="shk-fruitfall__half shk-fruitfall__half--b"><svg class="shk-fruitfall__art" viewBox="0 0 100 100"><use href="#shk-fruit-orange"/></svg></div>
+          </div></div></div>
+          <span class="ds-src">whole · seam invisible</span>
+        </div>
+        <div class="ds-stack" style="align-items:center;gap:var(--sp-2)">
+          <div class="ds-fruit"><div class="shk-fruitfall__item is-cut"><div class="shk-fruitfall__cut" style="transform:rotate(-90deg)">
+            <div class="shk-fruitfall__half shk-fruitfall__half--a"><svg class="shk-fruitfall__art" viewBox="0 0 100 100" style="transform:rotate(90deg)"><use href="#shk-fruit-orange"/></svg></div>
+            <div class="shk-fruitfall__half shk-fruitfall__half--b"><svg class="shk-fruitfall__art" viewBox="0 0 100 100" style="transform:rotate(90deg)"><use href="#shk-fruit-orange"/></svg></div>
+          </div></div></div>
+          <span class="ds-src">swipe 0° (across)</span>
+        </div>
+        <div class="ds-stack" style="align-items:center;gap:var(--sp-2)">
+          <div class="ds-fruit"><div class="shk-fruitfall__item is-cut"><div class="shk-fruitfall__cut" style="transform:rotate(-55deg)">
+            <div class="shk-fruitfall__half shk-fruitfall__half--a"><svg class="shk-fruitfall__art" viewBox="0 0 100 100" style="transform:rotate(55deg)"><use href="#shk-fruit-kiwi"/></svg></div>
+            <div class="shk-fruitfall__half shk-fruitfall__half--b"><svg class="shk-fruitfall__art" viewBox="0 0 100 100" style="transform:rotate(55deg)"><use href="#shk-fruit-kiwi"/></svg></div>
+          </div></div></div>
+          <span class="ds-src">swipe 35°</span>
+        </div>
+        <div class="ds-stack" style="align-items:center;gap:var(--sp-2)">
+          <div class="ds-fruit"><div class="shk-fruitfall__item is-cut"><div class="shk-fruitfall__cut">
+            <div class="shk-fruitfall__half shk-fruitfall__half--a"><svg class="shk-fruitfall__art" viewBox="0 0 100 100"><use href="#shk-fruit-watermelon"/></svg></div>
+            <div class="shk-fruitfall__half shk-fruitfall__half--b"><svg class="shk-fruitfall__art" viewBox="0 0 100 100"><use href="#shk-fruit-watermelon"/></svg></div>
+          </div></div></div>
+          <span class="ds-src">swipe 90° (down)</span>
+        </div>
+      </div>
+      <p class="ds-lead" style="margin-top:var(--sp-4)">A fruit is the same drawing rendered twice, each copy clipped to one half
+      (<code>inset(0 49.7% 0 0)</code> / <code>inset(0 0 0 49.7%)</code> — the 0.3% overlap kills a hairline seam on fractional
+      DPRs). Whole, the halves sit on top of each other and read as one piece; cutting only moves them apart. The cut is aligned
+      by rotating their shared parent to <code>swipe − 90° − spin</code>, and the drawing inside each half counter-rotates by the
+      same amount — so the split follows the finger but the fruit never appears to snap round when it's hit.</p>
+
+      <div class="ds-sub">Juice</div>
+      <div class="ds-row" style="gap:var(--sp-2);flex-wrap:wrap">
+        <span class="ds-src" style="margin:0">--jc per fruit:</span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#F3D53C" title="lemon"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#A8CD52" title="lime"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#F58B22" title="orange"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#D63A2A" title="blood orange"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#A3C34A" title="kiwi"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#E63946" title="watermelon"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#5468A0" title="blueberry"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#EC4A54" title="strawberry"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#C6E2A4" title="cucumber"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#E8483A" title="tomato"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#DE2A79" title="dragonfruit"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#C4102E" title="pomegranate"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#FBC02D" title="mango"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#C8D96F" title="avocado"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#9E2A58" title="beetroot"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#EE8A32" title="carrot"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#F5C232" title="corn"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#4A7A33" title="broccoli"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#E6C89C" title="cashew"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#9DBE4A" title="pistachio"></span>
+        <span style="width:22px;height:22px;border-radius:50%;background:#3E3830" title="chia"></span>
+      </div>
+      <div class="ds-src">JUICE map in fruitArt.jsx — the flesh colour of each slice, set as --jc on spawn so a cut lemon throws yellow.
+      It doubles as the colour of the "+N" credit that pops where the blade crossed.</div>
+
+      <div class="ds-sub">Calories</div>
+      <p class="ds-lead">The counter adds up <strong>the calories the guest actually burns swiping</strong>. There is no goal, no
+      prize and nothing to win — it is a toy, and it touches the order in no way at all.</p>
+      <p class="ds-lead">Each row's <code>score</code> is an <em>effort</em> rating — how hard the item is to hit (lemon 60,
+      pomegranate 300, cashew 520, a scatter of chia 1100). Calories are derived from it in one place,
+      <code>state/slicer.jsx</code>, so retuning difficulty can never desync from the number on screen. Spawn weights
+      (<code>w</code>) keep the rare, high-effort items rare; <code>pickProduce()</code> walks a cumulative weight table, so
+      tuning rarity is editing one number in one place.</p>
+      <p class="ds-lead"><strong>The numbers are small because that is what a swipe costs</strong>, and this is the one rule here
+      worth defending. Every dish on this site publishes a real calorie count. A counter claiming the guest burned thousands while
+      browsing would sit on the same screen as those figures and quietly make a liar of them — a kitchen selling honest food should
+      not be the one place a customer meets invented nutrition maths. Small and true is funnier than big and made up: "you have
+      burned 0.4 calories" is the joke, and it only works if the 0.4 is real.</p>
+      <p class="ds-lead">The counter (<code>SliceScore.jsx</code>, bottom-left, mirroring the Order button opposite) <strong>does not
+      exist until you have cut something</strong>. Nobody arrives at a restaurant menu wanting a game explained to them. A "PLAY!"
+      badge on a menu is an ad; a counter that appears after you have already played is a wink.</p>
+
+      <div class="ds-recipe">Counter       state/slicer.jsx — localStorage "shk.slicer.v3" (v2 held credits + a discount; both removed)
+              kcal = 0.02 × √(effort ÷ 60)  →  easiest slice 0.020, hardest 0.086, average ≈ 0.038
+Why a root, not a multiplier: effort spans 18× because it rates how hard a thing is to HIT. The energy cost of
+the swipes does not — a hard slice is a faster, longer arm movement, but it is still one arm movement. Scaling
+linearly would keep the ordering and lose the physics (chia would "burn" half a calorie in a single flick).
+The root keeps the ordering, compresses the spread to ~4×, and leaves both ends defensible out loud.
+0.02 kcal ≈ a half-second arm movement at roughly 3 kcal/min above resting.
+Display       total: 2 decimals under 1 cal, 1 decimal above — early on a single slice IS most of the total and
+              one decimal would show a stubborn 0.0. Pops: always 2 decimals, so "+0.1" never looks like a bug.
+Two tabs share one key, so writes merge rather than overwrite and the total stays monotonic — it only goes up.
+A `storage` listener lets an idle tab catch up instead of showing a stale number.
+NO DISCOUNT. The counter feeds nothing: the cart does not read it and no price anywhere depends on it. If a
+promotion is ever wanted, it belongs in the POS with server-issued codes, not in a number the guest can edit
+from devtools in thirty seconds.
+
+SLICE_ART (59 items) · SCORE · SCALE · KIND · ART_KEYS · JUICE · pickProduce() · FruitSymbols — all lib/fruitArt.jsx, one &lt;symbol&gt; per item,
+rendered once per page and referenced by &lt;use&gt;. That indirection is what lets the falling layer respawn a slot as a
+different item by swapping one href, with no React render.
+
+Falling layer  .shk-fruitfall(fixed, inset 0, z-index 20, pointer-events none, opacity .62)
+               &gt; __item[.is-cut] &gt; __cut &gt; __half--a|--b &gt; __art  +  __splash &gt; i × 8
+z-index 20 is chosen against the real ladder: cards &lt; 20 &lt; header 25 &lt; tabs 30 &lt; cart 55 &lt; filter sheet 60 &lt; scrims 70.
+(.shk-header was z-index:auto until the fruit landed — it got 25 so no slice ever drifts across the logo.)
+Fruit therefore never covers a control, and pointer-events:none means it can never take a tap on a dish or Order.
+pool 10 slots · gravity 70px/s² (a quarter of real — a fruit takes ~5s to cross) · spawn every 700–2100ms
+size 38–74px desktop, 30–52px phone, × the row's SCALE · slice needs pointer ≥550px/s within 43% of the radius
+Calorie pop    .shk-fruitfall__pop × 8, a ring buffer — "+0.03" in the item's juice colour, rising 46px over 900ms.
+               Restarted by removing .is-live, forcing reflow, re-adding it; text-shadow keeps it legible over photography.
+Counter        .shk-slicer (fixed bottom-left, z-index 50, pointer-events none) on --royal-green
+               hidden entirely under prefers-reduced-motion. __hint ("burned · N sliced") stays at every width:
+               at 390px the counter ends ~98px clear of the Order button, and without the caption a phone
+               shows a bare number with no unit of meaning attached.
+cut halves fly apart 42% over 620ms, then the slot recycles · juice burst 520ms
+One rAF loop writes transform straight to nodes held by ref: React renders the pool once at mount and never again.
+Never put a transition on __item — it fights the loop every frame. Only the cut halves animate in CSS, once.
+touchmove is listened to alongside pointermove: once the browser claims a gesture for scrolling it fires pointercancel
+and stops sending pointermove, so on a phone the fruit is sliced by the same flick that scrolls the menu.
+prefers-reduced-motion: the loop is never mounted and the layer is display:none.
+
+Hero scatter    .shk-confetti &gt; __slice[--wide-only] — still, authored positions, never randomised, behind the hero
+copy only (z-index -1). On phones there is no side gutter, so slices with no mx/my are dropped rather than overlapped.</div>
+      <div class="ds-src" style="margin-top:var(--sp-3)">Note: fruit is decoration over an ordering surface. Keep it faded and
+      keep it under the controls — if it ever competes with the food photography or a price, it has stopped earning its place.</div>
     </section>
 
     <!-- ═══════════ SPACING ═══════════ -->

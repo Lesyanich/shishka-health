@@ -59,7 +59,7 @@ const MINOR_WORDS = new Set([
 
 // Acronyms kept uppercase. Everything else that is ALL-CAPS (e.g. a section
 // name stored as "DRINKS" / "APPETIZERS & DIPS") is title-cased normally.
-const KEEP_ACRONYMS = new Set(["DNA"]);
+const KEEP_ACRONYMS = new Set(["DNA", "MSG"]);
 
 // Capitalise one whitespace-free token, preserving acronyms / stylised caps.
 function capWord(word, force) {
@@ -115,9 +115,9 @@ function titleCaseDish(d) {
   };
 }
 
-// Title-case the editable marketing content. The hero is kept verbatim so its
-// bespoke "from the SOIL to the SOUL." styling (and the NO SEED OIL banner)
-// stay exactly as authored. URLs / hours time are left untouched by titleCase.
+// Title-case the editable marketing content. The hero is kept verbatim so the
+// NO SEED OIL banner stays exactly as authored. URLs / hours time are left
+// untouched by titleCase.
 function titleCaseContent(c) {
   if (!c || typeof c !== "object") return c;
   const out = { ...c };
@@ -127,6 +127,8 @@ function titleCaseContent(c) {
       eyebrow: titleCase(c.rule.eyebrow),
       title: titleCase(c.rule.title),
       lead: titleCase(c.rule.lead),
+      // Object items are authored verbatim (they carry deliberate caps like
+      // "Gluten FREE options"); only the plain-string ones get title-cased.
       items: Array.isArray(c.rule.items) ? c.rule.items.map(titleCase) : c.rule.items,
     };
   }
@@ -137,14 +139,6 @@ function titleCaseContent(c) {
       title: titleCase(c.cta.title),
       sub: titleCase(c.cta.sub),
       hoursLabel: titleCase(c.cta.hoursLabel),
-    };
-  }
-  if (c.bundles) {
-    out.bundles = {
-      ...c.bundles,
-      title: titleCase(c.bundles.title),
-      badge: titleCase(c.bundles.badge),
-      sub: titleCase(c.bundles.sub),
     };
   }
   if (c.sectionIntros && typeof c.sectionIntros === "object") {

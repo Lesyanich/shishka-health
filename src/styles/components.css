@@ -290,11 +290,11 @@ button.shk-seal { cursor: pointer; transition: transform 0.2s var(--ease-out); }
 button.shk-seal:hover { transform: scale(1.07) rotate(8deg); }
 button.shk-seal:active { transform: scale(0.93); }
 .shk-seal__ring { grid-area: 1 / 1; width: 100%; height: 100%; }
-.shk-seal__edge { fill: var(--cream-50, #FBF8F0); }
+.shk-seal__edge { fill: var(--seal-ink, var(--cream-50)); }
 .shk-seal__stack {
   grid-area: 1 / 1; z-index: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  line-height: 0.9; color: var(--cream-50, #FBF8F0);
+  line-height: 0.9; color: var(--seal-ink, var(--cream-50));
   font-family: var(--font-sans); font-weight: var(--fw-bold);
 }
 .shk-seal__plus { font-size: 0.74em; font-weight: var(--fw-display); line-height: 0.6; }
@@ -303,7 +303,7 @@ button.shk-seal:active { transform: scale(0.93); }
 @media (prefers-reduced-motion: reduce) { button.shk-seal:hover { transform: scale(1.07); } }
 /* In the order → the price stamp fills purple (matches the order button) so
    selected items are obvious on the menu. */
-.shk-seal--active { border-radius: var(--radius-circle); background: var(--brand-purple); }
+.shk-seal--active { border-radius: var(--radius-circle); background: var(--brand-purple); --seal-ink: var(--cream-50); }
 
 .shk-card {
   position: relative; display: flex; flex-direction: column; align-items: center;
@@ -324,7 +324,13 @@ button.shk-seal:active { transform: scale(0.93); }
   position: relative; width: clamp(120px, 14vw, 184px); aspect-ratio: 4 / 5;
   overflow: visible; background: none; display: grid; place-items: end center;
 }
-.shk-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; display: block; }
+/* No cast shadow. The photos are transparent cut-outs and sat on a periwinkle
+   drop-shadow that faked them floating off the page; on the light theme it read
+   as grime under the food rather than lift. The food sits flat on the card now. */
+.shk-card__img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; object-position: center bottom; display: block;
+}
 .shk-card__media-scrim { display: none; }
 /* The Iced Cappuccino cutout is framed tighter (cup fills its canvas) than the
    other drink photos, so "contain" renders it larger. Scale just that one down
@@ -350,7 +356,7 @@ button.shk-seal:active { transform: scale(0.93); }
   position: absolute; top: 6px; right: 6px; z-index: 3;
   display: inline-flex; align-items: center;
 }
-.shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--white); }
+.shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--text-strong); }
 /* "from ฿X" fallback for build-your-own items (no fixed addable price). */
 .shk-card__pricefrom { font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--text-sm); color: var(--menu-price); white-space: nowrap; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
 
@@ -363,9 +369,37 @@ button.shk-seal:active { transform: scale(0.93); }
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-wrap: pretty;
 }
 
-/* Nutrition meta, diet icons + rating row all live in the dialog, keeping the
-   tile to image + name + price + description. */
+/* Weight, diet icons + rating row stay in the dialog. */
 .shk-card__meta, .shk-card__foot, .shk-card__kcal-inline { display: none; }
+
+/* Nutrition on the tile — the printed-menu treatment: a soft-green kcal pill
+   above the name, macros as a compact P/C/F line under it. Letters carry the
+   accent, figures stay green ink, so meaning is never colour-only. */
+.shk-card__kcal-pill {
+  display: inline-flex; align-items: baseline; gap: 4px;
+  padding: 3px 14px; border-radius: var(--radius-pill);
+  background: var(--menu-kcal-bg, var(--surface-3)); color: var(--menu-kcal);
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums; line-height: 1.25; white-space: nowrap;
+}
+.shk-card__kcal-pill b { font-size: var(--text-md); font-weight: var(--fw-bold); }
+
+.shk-card__macros {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  font-family: var(--font-sans); font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums; color: var(--text-body);
+}
+.shk-card__macro { white-space: nowrap; }
+.shk-card__macro i {
+  font-style: normal; font-weight: var(--fw-bold);
+  color: var(--menu-macro, var(--accent)); margin-right: 3px;
+}
+
+.shk-card--row .shk-card__macros { justify-content: flex-start; }
+
+/* Same kcal pill, tightened for the Potato Tacos tier grid. */
+.shk-mana__kcal { margin-top: 4px; padding: 2px 10px; font-size: var(--text-xs); }
+.shk-mana__kcal b { font-size: var(--text-sm); }
 
 /* Compact row variant (used in dense lists): small inline cutout + text. */
 .shk-card--row { flex-direction: row; align-items: center; gap: 12px; text-align: left; }
@@ -477,17 +511,26 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-boost--honey  { --_bd: var(--honey-300);        --_soft: #FBEFD2;          --_fg: var(--honey-600); }
 
 /* ---- App layout ---- */
-.shk-app { height: 100%; overflow-y: auto; background: var(--bg-page); }
+/* overflow-x: clip, not hidden — hidden would make this a second scroll
+   container; clip just absorbs the full-bleed bands' 100vw overshoot. */
+.shk-app { height: 100%; overflow-y: auto; overflow-x: clip; background: var(--bg-page); }
 .shk-app__main { padding-bottom: 12px; }
-.shk-app__section { padding: 22px 16px 2px; }
-.shk-app__section { padding: clamp(28px, 5vh, 64px) 16px 8px; }
-/* Divider line between top-level sections */
-.shk-app__section { border-top: 1px solid rgba(255, 255, 255, 0.10); }
-.shk-app__section:first-of-type { border-top: none; }
+/* position:relative is the anchor for .shk-sec-art (see below) — it measures
+   itself from the section's centre line. */
+.shk-app__section { position: relative; padding: clamp(28px, 5vh, 64px) 16px clamp(24px, 4vh, 48px); }
+/* Two sections carry a wash against the otherwise white page, so the colour
+   change is the divider — no hairline, and a straight edge, no shaped one.
+   Full-bleed by design: the tint runs edge to edge and the content stays
+   inside its own max-width. Which sections get which wash is decided in
+   App.jsx (SECTION_TINT), not by position. */
+.shk-app__section--tint { background: var(--band-mint); }
+/* Warm cream off the brand warm-white ramp (--cream-50), so the drinks half of
+   the menu shifts key without introducing a second green. */
+.shk-app__section--warm { background: var(--band-warm); }
 .shk-app__sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .shk-app__sec-title {
   font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(2rem, 5.5vw, 3.4rem); color: var(--white); letter-spacing: var(--tracking-tight);
+  font-size: clamp(2rem, 5.5vw, 3.4rem); color: var(--text-strong); letter-spacing: var(--tracking-tight);
   text-transform: none; line-height: 1;
 }
 .shk-app__sec-count { display: none; }
@@ -506,19 +549,53 @@ button.shk-seal:active { transform: scale(0.93); }
   text-transform: uppercase; letter-spacing: var(--tracking-wide);
 }
 .shk-app__sub-price { margin-left: auto; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); font-feature-settings: var(--num-feature); }
-/* ---- Bundle promo block (after the Manakish dishes) ---- */
-.shk-app__bundles-block { margin-top: 28px; }
-.shk-app__bundles-badge {
-  margin-left: auto; padding: 2px 9px; border-radius: 999px;
-  background: var(--accent); color: var(--text-on-gold);
-  font-family: var(--font-mono); font-size: var(--text-xs); font-weight: var(--fw-semibold);
-  letter-spacing: 0.02em; white-space: nowrap; font-feature-settings: var(--num-feature);
-}
-.shk-app__bundles-sub {
-  margin: -4px 0 14px; max-width: 60ch;
-  font-size: var(--text-sm); line-height: 1.5; color: var(--text-muted);
-}
 .shk-app__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-cards); align-items: start; }
+
+/* ---- Section art (large decorative cut-out in the desktop gutter) ----------
+   Above 1200px the grid stops growing and the page opens two empty white
+   columns either side of it. This drops one oversized dish photograph into
+   that dead space, bleeding off the viewport edge — the same trick the
+   printed menu uses, and the only thing on the page allowed to break the
+   container.
+
+   Rules it must obey:
+   · It lives ONLY in the gutter. The cards are transparent (no tile chrome),
+     so anything sliding under the grid would show through the gaps as stray
+     fragments of food. Hence the anchor below is measured from the *content
+     edge*, not from the viewport.
+   · The image is attached via `background: var(--art)` inside the media query,
+     so a phone never downloads the file. Keep it that way — an <img> here
+     would cost every mobile guest ~200 KB for decoration they cannot see.
+   · aria-hidden + pointer-events:none: it is scenery, never a target.
+
+   Which sections get art, and on which side, is decided in App.jsx
+   (SECTION_ART) — not here, and not by position. Assets: 1200px WebP,
+   transparent, in public/assets/section/. */
+.shk-sec-art { display: none; }
+
+/* 1440 is the first width where the gutter (120px a side) is big enough to
+   read as a photograph rather than a sliver peeking out. Below that the page
+   simply has no room and the art stays off. */
+@media (min-width: 1440px) {
+  .shk-sec-art {
+    display: block; position: absolute; top: 50%;
+    translate: 0 -50%;
+    /* Gutter + 420px of deliberate overspill past the viewport edge.
+       The overspill is what sets the *scale*, not the footprint: the visible
+       slice is always just the gutter, so a wider box doesn't take more room —
+       it shows less of the dish, larger. That is the printed-menu crop the CEO
+       asked for, and why this number is big. */
+    width: min(calc(50vw - var(--content-max) / 2 + 420px), 980px);
+    aspect-ratio: 1;
+    background: var(--art) no-repeat center / contain;
+    pointer-events: none;
+  }
+  /* Anchored from the section's centre line, which is the viewport centre for
+     both a contained section and a full-bleed tinted one — so one rule serves
+     both. The -20px lets it just kiss the content edge. */
+  .shk-sec-art--right { left: calc(50% + var(--content-max) / 2 - 20px); }
+  .shk-sec-art--left { right: calc(50% + var(--content-max) / 2 - 20px); }
+}
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
 .shk-foot { background: transparent; color: var(--text-on-dark); }
 .shk-foot__inner {
@@ -548,13 +625,26 @@ button.shk-seal:active { transform: scale(0.93); }
 
 .shk-app--wide .shk-app__main { max-width: var(--content-max); margin: 0 auto; padding: 0 32px 40px; }
 .shk-app--wide .shk-app__section { padding: 30px 0 4px; }
+/* On wide screens __main is a centred --content-max column, so a tinted section
+   would stop at the column edge and leave white gutters. Break the band out to
+   the viewport edges and put the width straight back as padding, so the tint is
+   full-bleed while its content stays in the column. `overflow-x: clip` on the
+   scroller absorbs the scrollbar's share of 100vw (see .shk-app). */
+.shk-app--wide .shk-app__section--tint,
+.shk-app--wide .shk-app__section--warm {
+  margin-inline: calc(50% - 50vw);
+  padding-inline: calc(50vw - 50%);
+}
 .shk-app--wide .shk-app__grid { grid-template-columns: repeat(5, 1fr); gap: clamp(20px, 2vw, 40px); }
 .shk-app--wide .shk-tabs { padding-left: 32px; padding-right: 32px; }
 .shk-app--wide .shk-app__sec-title { font-size: clamp(2.6rem, 4vw, 4rem); }
 
 /* ---- App header ---- */
+/* z-index 25 sits between the falling fruit (20) and the sticky tabs (30): the
+   header is opaque and carries the logo, and a fruit slice drifting across the
+   brand mark is the one place the decoration stops being charming. */
 .shk-header {
-  position: relative; display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 25; display: flex; align-items: center; justify-content: center;
   gap: 16px; background: var(--bg-page);
 }
 .shk-header--mobile { padding: 16px 16px 14px; }
@@ -594,9 +684,163 @@ button.shk-seal:active { transform: scale(0.93); }
    (no text over the image). */
 .shk-hero { position: relative; overflow: hidden; background: var(--royal-green); color: var(--text-on-dark); }
 .shk-hero__inner {
-  position: relative; z-index: 1; width: 100%; max-width: var(--content-max); margin: 0 auto;
+  position: relative; z-index: 2; width: 100%; max-width: var(--content-max); margin: 0 auto;
   padding: var(--space-10) var(--page-pad-mobile) var(--space-8); text-align: center;
 }
+/* Fruit/veg slice confetti (FruitConfetti.jsx): full-bleed horizontally but
+   only as tall as the text zone, so no slice ever lands on the salad-bar photo
+   below. z-index -1 keeps it under the copy without leaving the hero's own
+   background. Purely decorative — never eats a tap. */
+.shk-confetti {
+  position: absolute; inset: 0 calc(50% - 50vw); z-index: -1;
+  pointer-events: none; overflow: hidden;
+}
+/* Sizes are authored per slice for desktop; the vw term shrinks the whole set
+   on narrow screens so the big ones don't crowd the headline. */
+.shk-confetti__slice {
+  position: absolute; left: var(--x); top: var(--y); aspect-ratio: 1;
+  width: clamp(16px, calc(var(--size) * 0.35 + 3.2vw), var(--size));
+  transform: translate(-50%, -50%) rotate(var(--rot));
+  opacity: 0.9;
+}
+/* No side gutter on a phone: the slices that can't clear the headline are
+   dropped, and the rest move to the empty bands above and below the copy. */
+@media (max-width: 700px) {
+  .shk-confetti__slice { left: var(--mx); top: var(--my); }
+  .shk-confetti__slice--wide-only { display: none; }
+}
+/* ---- Falling sliceable fruit (FruitFall.jsx) ----
+   A fixed sheet over the whole site. z-index 20 is chosen against the real
+   ladder in this file: it clears the cards but stays under the sticky nav (30),
+   the cart button (55), the filter sheet (60) and the dialog scrims (70) — so
+   fruit never covers a control, and `pointer-events: none` means it can't take
+   a tap even where it overlaps one.
+
+   The positions are written by a rAF loop in JS, so there are no transitions on
+   the item itself: a transition here would fight the loop every frame. Only the
+   cut halves animate in CSS, and only once. */
+.shk-fruitfall {
+  position: fixed; inset: 0; z-index: 20;
+  pointer-events: none; overflow: hidden;
+  /* Deliberately faded. At full strength the fruit competes with the food
+     photography, which is the thing that actually sells. */
+  opacity: 0.62;
+}
+.shk-fruitfall__item {
+  position: absolute; top: 0; left: 0;
+  will-change: transform;
+  /* The slot is recycled off-screen, so nothing should ease back into view. */
+  transition: opacity 180ms linear;
+}
+.shk-fruitfall__cut,
+.shk-fruitfall__half { position: absolute; inset: 0; }
+.shk-fruitfall__art {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  filter: drop-shadow(0 2px 5px var(--produce-shadow));
+}
+/* 49.7% rather than 50%: a hairline overlap. An exact split leaves a 1px
+   see-through seam down the middle of every uncut fruit on fractional DPRs. */
+.shk-fruitfall__half--a { clip-path: inset(0 49.7% 0 0); }
+.shk-fruitfall__half--b { clip-path: inset(0 0 0 49.7%); }
+/* Cut: the halves slide apart along the local x-axis, which the JS has already
+   rotated to sit perpendicular to the swipe. */
+.shk-fruitfall__item.is-cut .shk-fruitfall__half {
+  transition: transform 620ms cubic-bezier(0.2, 0.7, 0.3, 1), opacity 620ms ease-out;
+  opacity: 0;
+}
+.shk-fruitfall__item.is-cut .shk-fruitfall__half--a { transform: translateX(-42%) rotate(-9deg); }
+.shk-fruitfall__item.is-cut .shk-fruitfall__half--b { transform: translateX(42%) rotate(9deg); }
+
+/* The juice burst. --jc is set per spawn from the JUICE map in fruitArt.jsx, so
+   a cut lemon throws yellow and a cut beet-red tomato throws red. */
+.shk-fruitfall__splash { position: absolute; inset: 0; }
+.shk-fruitfall__splash i {
+  position: absolute; left: 50%; top: 50%;
+  width: 22%; height: 22%; margin: -11% 0 0 -11%;
+  border-radius: 50%; background: var(--jc);
+  opacity: 0; transform: rotate(var(--a)) translateX(0) scale(0.3);
+}
+.shk-fruitfall__item.is-cut .shk-fruitfall__splash i {
+  animation: shk-juice 520ms cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+@keyframes shk-juice {
+  0%   { opacity: 0.95; transform: rotate(var(--a)) translateX(0) scale(0.9); }
+  100% { opacity: 0;    transform: rotate(var(--a)) translateX(var(--d)) scale(0.15); }
+}
+/* The "+N" credit popup. Positioned by JS at the point the blade crossed, so
+   the number stays put while the two halves fly off. Its font-size is fixed
+   rather than scaled to the item: a chia scatter is small, but 1,100 credits is
+   the biggest number on the board and deserves to be read. */
+.shk-fruitfall__pop {
+  position: absolute; top: 0; left: 0;
+  margin: -10px 0 0 -24px; width: 48px; text-align: center;
+  font-family: var(--font-mono); font-size: 13px; font-weight: var(--fw-bold);
+  font-feature-settings: var(--num-feature);
+  color: var(--jc, var(--text-strong));
+  /* The juice colours are chosen to read on food photography, not on white —
+     a thin ink halo keeps +60 legible over a cream card or a dark photo. */
+  text-shadow: 0 1px 2px rgba(20, 22, 13, 0.55);
+  opacity: 0;
+}
+.shk-fruitfall__pop.is-live { animation: shk-credit 900ms cubic-bezier(0.1, 0.7, 0.3, 1) forwards; }
+@keyframes shk-credit {
+  0%   { opacity: 0;   translate: 0 4px;   scale: 0.7; }
+  18%  { opacity: 1;   translate: 0 -6px;  scale: 1.15; }
+  40%  { opacity: 1;   translate: 0 -16px; scale: 1; }
+  100% { opacity: 0;   translate: 0 -46px; scale: 0.95; }
+}
+
+/* Belt and braces: the component doesn't mount its loop under reduced motion,
+   but if it ever renders the pool anyway, nothing here moves. */
+@media (prefers-reduced-motion: reduce) {
+  .shk-fruitfall { display: none; }
+}
+
+/* ---- Slice counter (SliceScore.jsx) ----
+   Bottom-left, opposite the Order button. z-index 50 keeps it under the cart
+   (55) and the scrims (70) — a toy must never sit on top of the thing the guest
+   actually came to do. Absent entirely until the first slice. */
+.shk-slicer {
+  position: fixed; left: var(--space-4); bottom: var(--space-4); z-index: 50;
+  display: inline-flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--royal-green); color: var(--cream-50);
+  box-shadow: var(--shadow-lg);
+  pointer-events: none; /* decorative readout — never intercepts a tap */
+  transition: transform 0.22s var(--ease-out), background 0.3s var(--ease-out);
+}
+.shk-slicer.is-bump { transform: scale(1.045); }
+.shk-slicer__icon { display: grid; place-items: center; opacity: 0.85; }
+.shk-slicer__icon svg { width: 17px; height: 17px; }
+.shk-slicer__body { display: grid; gap: 3px; }
+.shk-slicer__num {
+  font-family: var(--font-mono); font-size: var(--text-sm); font-weight: var(--fw-bold);
+  font-feature-settings: var(--num-feature); line-height: 1;
+}
+/* "cal" rides at the same size as the number but lighter, so the unit reads as
+   a label rather than another digit. */
+.shk-slicer__unit {
+  font-style: normal; font-weight: var(--fw-regular);
+  margin-left: 3px; opacity: 0.72;
+}
+.shk-slicer__hint {
+  font-size: 10px; letter-spacing: var(--tracking-wide);
+  text-transform: uppercase; opacity: 0.72; line-height: 1;
+}
+@media (max-width: 420px) {
+  /* The caption stays. It was hidden here once, on the assumption the counter
+     would crowd the Order button — measured at 390px it ends ~100px short of it.
+     Without it a phone shows a bare number with no unit of meaning attached, and
+     phones are most of this menu's traffic. */
+  .shk-slicer__hint { font-size: 10px; }
+}
+@media (min-width: 960px) { .shk-slicer { left: var(--space-6); bottom: var(--space-6); } }
+@media (prefers-reduced-motion: reduce) {
+  /* No falling fruit means no way to score, so there is nothing to show. */
+  .shk-slicer { display: none; }
+}
+
 .shk-hero__band { width: 100%; height: clamp(220px, 44vh, 480px); }
 .shk-hero__band picture { display: block; width: 100%; height: 100%; }
 .shk-hero__band img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
@@ -638,46 +882,40 @@ button.shk-seal:active { transform: scale(0.93); }
   font-size: var(--text-2xs); font-weight: var(--fw-bold); letter-spacing: var(--tracking-wider);
   text-transform: uppercase; color: var(--honey-300);
 }
-.shk-rule__title {
-  margin: 0 0 var(--space-3); font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(2rem, 8vw, var(--text-4xl)); line-height: var(--leading-none);
-  letter-spacing: var(--tracking-tight); color: var(--cream-50);
-}
+/* The manifesto sentence is the section's headline — display face, statement size. */
 .shk-rule__lead {
-  margin: 0 0 var(--space-6); max-width: 54ch; font-size: var(--text-md);
-  line-height: var(--leading-snug); color: var(--cream-200); /* AA on red bg */
+  margin: 0 0 var(--space-5); max-width: 26ch;
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(1.625rem, 6vw, 2.25rem); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance;
 }
-/* "no …" rules in the red-mockup style: a circular prohibition icon + a muted
-   "no" with the item in cream. Two columns on mobile, three when wide. */
-.shk-rule__grid {
+/* The exclusions: each a mark + its word, in energy red. A fixed column count
+   keeps the six reading as a deliberate list instead of a ragged wrap. */
+.shk-rule__line {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-5) var(--space-6);
+  display: grid; grid-template-columns: repeat(2, max-content);
+  gap: var(--space-3) var(--space-6);
+  font-family: var(--font-body); font-size: var(--text-sm);
+  line-height: 1.3; color: var(--accent);
 }
-.shk-rule__item { display: flex; align-items: center; gap: 14px; }
-.shk-rule__icon {
-  flex: 0 0 auto; width: 44px; height: 44px; display: block;
-  color: rgba(255, 255, 255, 0.5);
+.shk-rule__item {
+  display: flex; align-items: center; gap: var(--space-2); white-space: nowrap;
 }
-.shk-rule__icon svg { width: 100%; height: 100%; }
-.shk-rule__label {
-  font-family: var(--font-body); font-size: var(--text-lg);
-  line-height: 1.15; text-transform: lowercase;
-}
-.shk-rule__no { font-weight: var(--fw-semibold); color: rgba(255, 255, 255, 0.5); }
-.shk-rule__what { font-weight: var(--fw-semibold); color: var(--cream-50); }
+.shk-rule__icon { display: block; flex: none; width: 24px; height: 27px; }
+.shk-rule__icon svg { display: block; width: 100%; height: 100%; }
+.shk-rule__no { font-weight: var(--fw-semibold); opacity: 0.7; text-transform: lowercase; }
+.shk-rule__what { font-weight: var(--fw-bold); }
 .shk-visually-hidden {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .shk-rule--wide .shk-rule__inner { padding: var(--space-16) var(--space-8); }
-.shk-rule--wide .shk-rule__icon { width: 52px; height: 52px; }
-.shk-rule--wide .shk-rule__label { font-size: var(--text-xl); }
-.shk-rule--wide .shk-rule__grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6) var(--space-8);
+.shk-rule--wide .shk-rule__lead { font-size: clamp(2rem, 3.4vw, 3rem); max-width: 28ch; }
+.shk-rule--wide .shk-rule__line {
+  font-size: var(--text-md);
+  grid-template-columns: repeat(3, max-content); gap: var(--space-4) var(--space-10);
 }
-.shk-rule--wide .shk-rule__title { font-size: var(--text-5xl); }
-.shk-rule--wide .shk-rule__lead { font-size: var(--text-lg); }
+.shk-rule--wide .shk-rule__icon { width: 30px; height: 34px; }
 
 /* ---- Brand accent: visit & order CTA (deep-green band, end of menu) ---- */
 .shk-cta { background: transparent; color: var(--text-on-dark); }
@@ -780,29 +1018,6 @@ button.shk-seal:active { transform: scale(0.93); }
    Manakish bundles + order builder (cart)
    ───────────────────────────────────────────────────────────── */
 
-/* Bundle cards row at the top of the Manakish section */
-.shk-app__bundles {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-3); margin-bottom: var(--space-5);
-}
-.shk-bcard {
-  position: relative; text-align: left; cursor: pointer;
-  display: flex; flex-direction: column; gap: 4px;
-  padding: var(--space-4); border-radius: var(--radius-lg);
-  background: var(--bg-surface); border: var(--border-width) solid var(--border-gold);
-  transition: box-shadow .15s ease, transform .15s ease;
-}
-.shk-bcard:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-1px); }
-.shk-bcard__badge {
-  position: absolute; top: var(--space-3); right: var(--space-3);
-  background: var(--accent); color: var(--text-on-gold);
-  font-size: var(--text-2xs); font-weight: var(--fw-semibold);
-  padding: 2px 8px; border-radius: var(--radius-pill); font-feature-settings: var(--num-feature);
-}
-.shk-bcard__name { font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--text-lg); color: var(--text-strong); padding-right: 52px; }
-.shk-bcard__meta { font-size: var(--text-xs); color: var(--text-mute); line-height: var(--leading-snug); }
-.shk-bcard__price { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); margin-top: 2px; font-feature-settings: var(--num-feature); }
-
 /* "Add to order" button inside the dish dialog */
 .shk-dlg__add, .shk-bundle__add {
   width: 100%; min-height: var(--hit-min); border: none; cursor: pointer;
@@ -825,7 +1040,16 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-bundle__counter.is-full { color: var(--brand-green); }
 .shk-bundle__list { display: flex; flex-direction: column; gap: var(--space-2); }
 .shk-bundle__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--bg-surface); }
-.shk-bundle__row-info { display: flex; flex-direction: column; min-width: 0; }
+/* The picture is the fastest way to tell two potato tacos apart, so it leads the
+   row; `contain` because dish photos are transparent cut-outs, not fill crops. */
+.shk-bundle__row-img {
+  flex: none; width: 44px; height: 44px; border-radius: var(--radius-sm);
+  object-fit: contain; background: var(--surface-3);
+}
+.shk-bundle__row-img--ph { display: block; }
+/* A picked row needs to read as picked even once the eye is on the photos. */
+.shk-bundle__row.is-picked { background: var(--highlight-soft); }
+.shk-bundle__row-info { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
 .shk-bundle__row-name { font-size: var(--text-sm); color: var(--text-strong); }
 .shk-bundle__row-price { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--menu-price); font-feature-settings: var(--num-feature); }
 .shk-bundle__stepper, .shk-cart__stepper { display: flex; align-items: center; gap: var(--space-3); }
@@ -966,13 +1190,13 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-mana__title {
   margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(2.6rem, 8vw, 5rem); line-height: 0.9; color: var(--white);
+  font-size: clamp(2.6rem, 8vw, 5rem); line-height: 0.9; color: var(--text-strong);
   letter-spacing: var(--tracking-tight); text-transform: none;
 }
 .shk-mana__tag {
   margin: 0; max-width: 48ch; text-align: left;
   font-size: clamp(var(--text-md), 1.4vw, var(--text-xl));
-  font-weight: var(--fw-semibold); color: var(--white); line-height: 1.18;
+  font-weight: var(--fw-semibold); color: var(--text-strong); line-height: 1.18;
 }
 
 /* ---- Tiers stacked vertically — the whole range is visible at once ----- */
@@ -1014,14 +1238,14 @@ button.shk-seal:active { transform: scale(0.93); }
   margin-bottom: clamp(20px, 3vh, 40px);
 }
 .shk-mana__price {
-  display: flex; flex-direction: column; line-height: 0.95; color: var(--white);
+  display: flex; flex-direction: column; line-height: 0.95; color: var(--text-strong);
   font-family: var(--font-mono); font-feature-settings: var(--num-feature);
 }
 .shk-mana__price b { font-size: clamp(1.6rem, 2.6vw, 2.4rem); font-weight: var(--fw-bold); }
 .shk-mana__price small { font-size: var(--text-xs); color: rgba(255, 255, 255, 0.75); font-weight: var(--fw-medium); }
 .shk-mana__tier-name {
   font-family: var(--font-sans); font-weight: var(--fw-bold);
-  font-size: clamp(var(--text-md), 1.6vw, var(--text-xl)); color: var(--white);
+  font-size: clamp(var(--text-md), 1.6vw, var(--text-xl)); color: var(--text-strong);
 }
 
 /* ---- Items: big clean cutouts packed in a dense, flush-left wrapping grid.
@@ -1051,7 +1275,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__priceitem .shk-seal { width: 64%; height: 64%; font-size: clamp(19px, 2.8vw, 33px); }
 .shk-mana__price-label {
   font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--text-sm);
-  color: var(--white); letter-spacing: 0.02em; text-align: center;
+  color: var(--text-strong); letter-spacing: 0.02em; text-align: center;
 }
 .shk-mana__col.is-premium .shk-mana__price-label { color: var(--honey-300); }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -1064,7 +1288,7 @@ button.shk-seal:active { transform: scale(0.93); }
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
 }
-.shk-mana__dot:hover { transform: scale(1.18); border-color: var(--white); }
+.shk-mana__dot:hover { transform: scale(1.18); border-color: var(--text-strong); }
 .shk-mana__dot:active { transform: scale(0.9); }
 .shk-mana__dot.is-on {
   background: var(--purple-400); border-color: #fff;
@@ -1076,7 +1300,7 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-mana__item-name {
   font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-medium);
-  color: var(--white); text-align: center; line-height: 1.18;
+  color: var(--text-strong); text-align: center; line-height: 1.18;
 }
 
 /* ---- Dietary footer ---------------------------------------------------- */
@@ -1093,7 +1317,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__claims li {
   font-family: var(--font-sans); font-weight: var(--fw-bold);
   font-size: var(--text-sm); letter-spacing: 0.04em; text-transform: lowercase;
-  color: var(--white);
+  color: var(--text-strong);
 }
 
 @media (max-width: 760px) {
@@ -1137,12 +1361,12 @@ button.shk-seal:active { transform: scale(0.93); }
 
 .shk-set__num {
   font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(3.4rem, 13vw, 5.25rem); line-height: 0.82; color: var(--white);
+  font-size: clamp(3.4rem, 13vw, 5.25rem); line-height: 0.82; color: var(--text-strong);
   font-feature-settings: var(--num-feature);
 }
 .shk-set__title {
   font-family: var(--font-display); font-weight: var(--fw-display);
-  font-size: clamp(1.35rem, 4.4vw, 2rem); color: var(--white);
+  font-size: clamp(1.35rem, 4.4vw, 2rem); color: var(--text-strong);
   letter-spacing: var(--tracking-tight); line-height: 1; margin-top: 4px;
 }
 .shk-set__sub { font-size: var(--text-sm); color: var(--text-body); font-weight: var(--fw-medium); margin-top: 5px; }
@@ -1168,7 +1392,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-row {
   display: flex; align-items: baseline; gap: 10px; width: 100%;
   background: none; border: none; padding: 10px 6px; cursor: pointer;
-  color: var(--white); font-family: var(--font-sans); text-align: left;
+  color: var(--text-strong); font-family: var(--font-sans); text-align: left;
   border-radius: var(--radius-sm, 8px);
   transition: background var(--dur-base) var(--ease-out);
   -webkit-tap-highlight-color: transparent;

@@ -93,13 +93,6 @@
       "why": "The free-sauce slots in a bundle come from this prefix plus a price ceiling."
     },
     {
-      "id": "appetizers-section-name",
-      "resource": "menu_public",
-      "query": "section_name=eq.%F0%9F%A5%9F%20Appetizers%20%26%20Dips",
-      "min": 1,
-      "why": "useMenu.js renames this exact string, emoji included, to 'Dips & Sides Appetizers'. Editing the section name in the admin panel breaks the rename silently."
-    },
-    {
       "id": "coffee-split",
       "resource": "menu_public",
       "query": "category_name=ilike.*coffee*",

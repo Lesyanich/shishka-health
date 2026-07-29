@@ -165,13 +165,13 @@ async function fetchFromSupabase() {
   // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    // Spring rolls lead the menu as their own section; the original Appetizers
-    // section keeps the dips + sides under a renamed header.
+    // Spring rolls get their own section; the original Appetizers section keeps
+    // the dips + sides under a renamed header. Sort 3 is the slot mig 385 left
+    // free for them, between Salads (2) and Sauces & Dressings (4).
     const isSpringRoll = d.product_code?.startsWith("SALE-SUMMER_ROLLS");
     const sectionId = isSpringRoll ? "sec-spring-rolls" : (d.section_id ?? d.category_id);
     let sectionName = isSpringRoll ? "Fresh Spring Roll" : (d.section_name ?? d.category_name);
-    const sectionSort = isSpringRoll ? 0 : (d.section_sort_order ?? d.category_sort_order ?? 0);
-    if (sectionName === "🥟 Appetizers & Dips") sectionName = "Dips & Sides Appetizers";
+    const sectionSort = isSpringRoll ? 3 : (d.section_sort_order ?? d.category_sort_order ?? 0);
     if (sectionId && !catMap.has(sectionId)) {
       catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }

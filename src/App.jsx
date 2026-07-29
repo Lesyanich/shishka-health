@@ -16,6 +16,9 @@ import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import { BundleDialog } from "./components/menu/BundleDialog.jsx";
 import { Cart } from "./components/cart/Cart.jsx";
+import { FruitFall } from "./components/menu/FruitFall.jsx";
+import { SliceScore } from "./components/menu/SliceScore.jsx";
+import { FruitSymbols } from "./lib/fruitArt.jsx";
 import { useCart } from "./state/cart.jsx";
 import { manakishPool as getManakishPool, saucePool as getSaucePool, bundleFloor } from "./lib/bundles.js";
 import {
@@ -38,6 +41,38 @@ const ALLERGEN_ICONS = {
   "contains-dairy":  <MilkIcon />,
   "contains-nuts":   <NutIcon />,
   "contains-egg":    <EggIcon />,
+};
+
+/*
+  Section backgrounds are keyed by name, not alternated by index. Striping every
+  other section made the page read as a barcode; two deliberate washes give the
+  scroll two resting points instead. Anything not listed here stays white.
+  Salads gets the mint band (it's the produce hero of the menu), Coffee gets the
+  warm cream, so the drinks half feels like a different room without a second
+  green.
+*/
+const SECTION_TINT = {
+  Salads: "shk-app__section--tint",
+  Coffee: "shk-app__section--warm",
+};
+
+/*
+  One oversized dish photograph per listed section, dropped into the empty
+  column the centred grid leaves on wide desktops and cropped by the viewport
+  edge. Keyed by name and side so the page alternates down the scroll instead
+  of leaning to one side.
+
+  Only listed sections get art — the effect works because it is rare. Three or
+  four over the whole menu is the ceiling; past that the gutter stops being a
+  surprise and starts being wallpaper.
+
+  The file is loaded by CSS (.shk-sec-art, components.css) inside a 1440px
+  media query, so phones never fetch it. Assets are transparent 1200px WebP in
+  public/assets/section/.
+*/
+const SECTION_ART = {
+  Salads: { src: "/assets/section/salads-fattoush.webp", side: "left" },
+  "Potato Tacos": { src: "/assets/section/tacos-lamb.webp", side: "right" },
 };
 
 function dishPasses(dish, diets, excl) {
@@ -247,175 +282,192 @@ export default function App() {
   };
 
   return (
-    <div
-      ref={scrollRef}
-      className={`shk-app ${wide ? "shk-app--wide" : ""}`}
-      style={{ height: "100dvh" }}
-    >
-      <MenuHeader
-        filterCount={diets.length + excl.length}
-        onOpenFilters={() => setFilterOpen(true)}
-        wide={wide}
-      />
+    <>
+      {/* Both live outside the scroll container on purpose. The symbol sheet is
+          the one copy of every fruit drawing on the page, and the falling layer
+          is `position: fixed` — nesting either inside a scrolling, clipped box
+          only invites it to be clipped. */}
+      <FruitSymbols />
+      <FruitFall />
+      <SliceScore />
 
-      <Hero wide={wide} content={content.hero} />
+      <div
+        ref={scrollRef}
+        className={`shk-app ${wide ? "shk-app--wide" : ""}`}
+        style={{ height: "100dvh" }}
+      >
+        <MenuHeader
+          filterCount={diets.length + excl.length}
+          onOpenFilters={() => setFilterOpen(true)}
+          wide={wide}
+        />
 
-      <CategoryTabs
-        categories={byCat.map((c) => ({ id: c.id, label: c.name, count: c.items.length }))}
-        active={active}
-        onChange={goToCat}
-      />
+        <Hero wide={wide} content={content.hero} />
 
-      <main className="shk-app__main">
-        {loading && <LoadingSkeleton />}
+        <CategoryTabs
+          categories={byCat.map((c) => ({ id: c.id, label: c.name, count: c.items.length }))}
+          active={active}
+          onChange={goToCat}
+        />
 
-        {/* The menu could not be loaded. Say so plainly rather than falling back
-            to hardcoded prices — a wrong price is worse than a missing menu. */}
-        {!loading && error && (
-          <div className="shk-app__empty">
-            <p>The menu is temporarily unavailable.</p>
-            <button className="shk-app__clear" onClick={() => window.location.reload()}>
-              Reload
-            </button>
-            {content.cta?.instagramUrl && (
-              <p>
-                Today&rsquo;s menu is always on{" "}
-                <a href={content.cta.instagramUrl} target="_blank" rel="noreferrer">
-                  Instagram
-                </a>
-                .
-              </p>
-            )}
-          </div>
-        )}
+        <main className="shk-app__main">
+          {loading && <LoadingSkeleton />}
 
-        {!loading && !error && byCat.length === 0 && (
-          <div className="shk-app__empty">
-            <p>No dishes match these filters.</p>
-            <button
-              className="shk-app__clear"
-              onClick={() => { setDiets([]); setExcl([]); }}
-            >
-              Clear filters
-            </button>
-          </div>
-        )}
+          {/* The menu could not be loaded. Say so plainly rather than falling back
+              to hardcoded prices — a wrong price is worse than a missing menu. */}
+          {!loading && error && (
+            <div className="shk-app__empty">
+              <p>The menu is temporarily unavailable.</p>
+              <button className="shk-app__clear" onClick={() => window.location.reload()}>
+                Reload
+              </button>
+              {content.cta?.instagramUrl && (
+                <p>
+                  Today&rsquo;s menu is always on{" "}
+                  <a href={content.cta.instagramUrl} target="_blank" rel="noreferrer">
+                    Instagram
+                  </a>
+                  .
+                </p>
+              )}
+            </div>
+          )}
 
-        {byCat.map((cat, i) => (
-          <Fragment key={cat.id}>
-            <section
-              ref={(el) => (sectionRefs.current[cat.id] = el)}
-              className="shk-app__section"
-            >
-              {cat.name === "Potato Tacos" ? (
-                <ManakishTiers section={cat} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
-              ) : (
-                <>
-                  <div className="shk-app__sec-head">
-                    <h2 className="shk-app__sec-title">{cat.name}</h2>
-                    <span className="shk-app__sec-count num">{cat.items.length}</span>
-                  </div>
+          {!loading && !error && byCat.length === 0 && (
+            <div className="shk-app__empty">
+              <p>No dishes match these filters.</p>
+              <button
+                className="shk-app__clear"
+                onClick={() => { setDiets([]); setExcl([]); }}
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
 
-                  {content.sectionIntros?.[cat.name] && (
-                    <p className="shk-app__sec-intro">
-                      {content.sectionIntros[cat.name]}
-                    </p>
-                  )}
+          {byCat.map((cat, i) => (
+            <Fragment key={cat.id}>
+              <section
+                ref={(el) => (sectionRefs.current[cat.id] = el)}
+                className={`shk-app__section ${SECTION_TINT[cat.name] ?? ""}`}
+              >
+                {SECTION_ART[cat.name] && (
+                  <div
+                    className={`shk-sec-art shk-sec-art--${SECTION_ART[cat.name].side}`}
+                    style={{ "--art": `url(${SECTION_ART[cat.name].src})` }}
+                    aria-hidden="true"
+                  />
+                )}
+                {cat.name === "Potato Tacos" ? (
+                  <ManakishTiers section={cat} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
+                ) : (
+                  <>
+                    <div className="shk-app__sec-head">
+                      <h2 className="shk-app__sec-title">{cat.name}</h2>
+                      <span className="shk-app__sec-count num">{cat.items.length}</span>
+                    </div>
 
-                  {(() => {
-                    const subs = subcategoriesOf(cat.items, cat.id);
-                    const cards = (items) => (
-                      <div className="shk-app__grid">
-                        {items.map((dish) => renderDish(dish, cat.name))}
-                      </div>
-                    );
-                    return hasSubcategories(subs, cat.id) ? (
-                      subs.map((sub) => (
-                        <div key={sub.id} className="shk-app__tier">
-                          <div className="shk-app__subhead">
-                            <h3 className="shk-app__sub-title">{sub.name}</h3>
-                            <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
-                          </div>
-                          {photoless(sub.items) ? (
-                            <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
-                          ) : (
-                            cards(sub.items)
-                          )}
+                    {content.sectionIntros?.[cat.name] && (
+                      <p className="shk-app__sec-intro">
+                        {content.sectionIntros[cat.name]}
+                      </p>
+                    )}
+
+                    {(() => {
+                      const subs = subcategoriesOf(cat.items, cat.id);
+                      const cards = (items) => (
+                        <div className="shk-app__grid">
+                          {items.map((dish) => renderDish(dish, cat.name))}
                         </div>
-                      ))
-                    ) : photoless(cat.items) ? (
-                      <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
-                    ) : (
-                      cards(cat.items)
-                    );
-                  })()}
-                </>
-              )}
+                      );
+                      return hasSubcategories(subs, cat.id) ? (
+                        subs.map((sub) => (
+                          <div key={sub.id} className="shk-app__tier">
+                            <div className="shk-app__subhead">
+                              <h3 className="shk-app__sub-title">{sub.name}</h3>
+                              <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
+                            </div>
+                            {photoless(sub.items) ? (
+                              <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
+                            ) : (
+                              cards(sub.items)
+                            )}
+                          </div>
+                        ))
+                      ) : photoless(cat.items) ? (
+                        <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
+                      ) : (
+                        cards(cat.items)
+                      );
+                    })()}
+                  </>
+                )}
 
-              {cat.items.some((d) => (d.category_code || "").startsWith("KP-FIN-MAN")) &&
-                bundleCards.length > 0 && (
-                <ManakishSets
-                  bundles={bundleCards}
-                  pool={manaPool}
-                  sauces={saucePoolList}
-                  onSelect={setActiveBundle}
-                />
-              )}
-            </section>
+                {cat.items.some((d) => (d.category_code || "").startsWith("KP-FIN-MAN")) &&
+                  bundleCards.length > 0 && (
+                    <ManakishSets
+                      bundles={bundleCards}
+                      pool={manaPool}
+                      sauces={saucePoolList}
+                      onSelect={setActiveBundle}
+                    />
+                  )}
+              </section>
 
-            {/* Brand accent block after the configured category */}
-            {i === ruleAfter && <BrandRule wide={wide} content={content.rule} />}
-          </Fragment>
-        ))}
+              {/* Brand accent block after the configured category */}
+              {i === ruleAfter && <BrandRule wide={wide} content={content.rule} />}
+            </Fragment>
+          ))}
 
-        {!loading && byCat.length > 0 && <MenuCTA wide={wide} content={content.cta} />}
+          {!loading && byCat.length > 0 && <MenuCTA wide={wide} content={content.cta} />}
 
-        {!loading && <SiteFooter wide={wide} instagramUrl={content.cta?.instagramUrl} />}
-      </main>
+          {!loading && <SiteFooter wide={wide} instagramUrl={content.cta?.instagramUrl} />}
+        </main>
 
-      <FilterPanel
-        open={filterOpen}
-        onClose={() => setFilterOpen(false)}
-        dietOptions={dietOptions}
-        allergenOptions={allergenOptions}
-        selectedDiets={diets}
-        excludedAllergens={excl}
-        onToggleDiet={(id) => toggle(diets, setDiets, id)}
-        onToggleAllergen={(id) => toggle(excl, setExcl, id)}
-        onClear={() => { setDiets([]); setExcl([]); }}
-        onApply={() => setFilterOpen(false)}
-        resultCount={filtered.length}
-      />
+        <FilterPanel
+          open={filterOpen}
+          onClose={() => setFilterOpen(false)}
+          dietOptions={dietOptions}
+          allergenOptions={allergenOptions}
+          selectedDiets={diets}
+          excludedAllergens={excl}
+          onToggleDiet={(id) => toggle(diets, setDiets, id)}
+          onToggleAllergen={(id) => toggle(excl, setExcl, id)}
+          onClear={() => { setDiets([]); setExcl([]); }}
+          onApply={() => setFilterOpen(false)}
+          resultCount={filtered.length}
+        />
 
-      <DishDialog
-        open={!!selected}
-        dish={selected}
-        onClose={() => setSelected(null)}
-        onShare={selected ? () => handleShare(selected) : undefined}
-        onAdd={
-          selected && !selected.comingSoon && selected.price != null
-            ? (build) => {
-                if (selected.modifierGroups?.length && build) {
-                  cart.addConfiguredDish(selected, build);
-                } else {
-                  cart.addDish(selected);
+        <DishDialog
+          open={!!selected}
+          dish={selected}
+          onClose={() => setSelected(null)}
+          onShare={selected ? () => handleShare(selected) : undefined}
+          onAdd={
+            selected && !selected.comingSoon && selected.price != null
+              ? (build) => {
+                  if (selected.modifierGroups?.length && build) {
+                    cart.addConfiguredDish(selected, build);
+                  } else {
+                    cart.addDish(selected);
+                  }
+                  setSelected(null);
                 }
-                setSelected(null);
-              }
-            : undefined
-        }
-      />
+              : undefined
+          }
+        />
 
-      <BundleDialog
-        open={!!activeBundle}
-        bundle={activeBundle}
-        manakishPool={manaPool}
-        saucePool={saucePoolList}
-        onClose={() => setActiveBundle(null)}
-        onAdd={cart.addBundle}
-      />
+        <BundleDialog
+          open={!!activeBundle}
+          bundle={activeBundle}
+          manakishPool={manaPool}
+          saucePool={saucePoolList}
+          onClose={() => setActiveBundle(null)}
+          onAdd={cart.addBundle}
+        />
 
-      <Cart />
-    </div>
+        <Cart />
+      </div>
+    </>
   );
 }
