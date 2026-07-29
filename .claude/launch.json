@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "menu-dev", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "--port", "5199"], "port": 5199 }
+    { "name": "menu-dev", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "--port", "5199"], "port": 5199 },
+    { "name": "menu-dist", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "preview", "--port", "5200"], "port": 5200 }
   ]
 }
