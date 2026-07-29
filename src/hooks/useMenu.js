@@ -38,8 +38,12 @@ import { benefitsForDish } from "../lib/benefits.js";
 // the roll (none for Veggie). Removing a chip doesn't recompute base macros.
 function springRollModifiers(productCode) {
   const code = productCode || "";
+  // The rolls are served with mango sauce. They were listed with a peanut-lime
+  // sauce that the kitchen no longer makes — peanut is an anaphylaxis-grade
+  // allergen, so a stale sauce here is not a copy bug. Do not reintroduce a
+  // sauce name without confirming it against the kitchen (MC 3a11032b).
   const remove = [
-    "Mango", "Carrot", "Cucumber", "Lettuce", "Mint", "Coriander", "Peanut-Lime Sauce",
+    "Mango", "Carrot", "Cucumber", "Lettuce", "Mint", "Coriander", "Mango Sauce",
   ];
   if (code.includes("TUNA")) remove.splice(1, 0, "Sweet Corn"); // tuna roll has corn
   const removeOpts = remove.map((name, i) => ({
@@ -58,8 +62,10 @@ function springRollModifiers(productCode) {
   const addRaw = [
     { name: "Avocado", priceDelta: 30, calories: 120, protein: 1.5, carbs: 6, fat: 11 },
     ...(proteinExtra ? [proteinExtra] : []),
-    { name: "Extra Peanut-Lime Sauce", priceDelta: 15, calories: 60, protein: 2, carbs: 4, fat: 4 },
-    { name: "Crushed Peanuts", priceDelta: 20, calories: 90, protein: 4, carbs: 3, fat: 7 },
+    // Price and macros are the real SALE-SAUCE_MANGO cup (50 g, ฿39) rather than
+    // the ฿15 the retired peanut sauce carried — the counter sells that exact cup
+    // at ฿39, and a cheaper number here is an argument at the till.
+    { name: "Extra Mango Sauce", priceDelta: 39, calories: 32, protein: 0.3, carbs: 8.2, fat: 0.1 },
     { name: "Extra Mango", priceDelta: 20, calories: 50, protein: 0.5, carbs: 13, fat: 0 },
   ];
   const addOpts = addRaw.map((o, i) => ({ emoji: null, isDefault: false, sort: i, ...o }));
