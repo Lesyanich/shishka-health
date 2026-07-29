@@ -1,12 +1,13 @@
 import { DEFAULT_CONTENT } from "../../lib/content.js";
 import { optimizedSrc } from "../../lib/img.js";
+import { FruitConfetti } from "./FruitConfetti.jsx";
 
 const HERO_BASE = "https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing";
 const HERO_PORTRAIT = `${HERO_BASE}/salad-bar-portrait.webp?v=20260612`;
 const HERO_SQUARE = `${HERO_BASE}/salad-bar-square.webp?v=20260612`;
 const HERO_LANDSCAPE = `${HERO_BASE}/main-salad-bar.webp?v=20260612`;
 
-// Wrap ALL-CAPS words (e.g. SOIL, SOUL) in an accent span; leave the rest as-is.
+// Wrap ALL-CAPS words in an accent span; leave the rest as-is.
 function renderTitle(title) {
   return title.split(/(\s+)/).map((tok, i) => {
     const letters = tok.replace(/[^A-Za-z]/g, "");
@@ -17,11 +18,13 @@ function renderTitle(title) {
 
 export function Hero({ wide = false, content }) {
   const c = { ...DEFAULT_CONTENT.hero, ...(content || {}) };
+  // The banner carries the page's only h1; the title is an optional second line.
   return (
     <section className={`shk-hero ${wide ? "shk-hero--wide" : ""}`} aria-label="Shishka Healthy Kitchen">
       <div className="shk-hero__inner">
-        {c.banner && <p className="shk-hero__banner">{c.banner}</p>}
-        <h1 className="shk-hero__title">{renderTitle(c.title)}</h1>
+        <FruitConfetti />
+        {c.banner && <h1 className="shk-hero__banner">{c.banner}</h1>}
+        {c.title && <p className="shk-hero__title">{renderTitle(c.title)}</p>}
         {c.sub && <p className="shk-hero__sub">{c.sub}</p>}
       </div>
       <div className="shk-hero__band" aria-hidden="true">

@@ -5,7 +5,7 @@ export function SiteFooter({ wide = false }) {
       <div className="shk-foot__inner">
         <img
           className="shk-foot__logo"
-          src="/assets/logo-full-white.png"
+          src="/assets/logo-full-color.png"
           alt="Shishka Healthy Kitchen"
         />
 

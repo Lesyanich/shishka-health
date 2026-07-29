@@ -12,18 +12,26 @@
 export const DEFAULT_CONTENT = {
   hero: {
     eyebrow: "SHiSHKA · Healthy Kitchen",
-    // Big claim shown above the headline. Kept verbatim (not title-cased).
+    // The headline. Kept verbatim (not title-cased).
     banner: "NO SEED OIL",
-    // ALL-CAPS words in the title are auto-accented in honey.
-    title: "from the SOIL to the SOUL.",
-    sub: "fresh, unprocessed, scientifically balanced — real food, made daily.",
+    // Optional second line under the banner; ALL-CAPS words auto-accent.
+    title: "",
+    sub: "fresh, unprocessed, real food, made daily.",
   },
   rule: {
     eyebrow: "the rule",
-    title: "no compromises.",
-    lead: "we eliminate the noise that harms the human machine, and replace it with powerful nutrition that resonates with your DNA.",
-    items: ["seed oils", "industrial gluten", "fake food", "fried food", "preservatives", "toxic"],
-    afterCategory: 1, // render the block after the Nth category (1-based)
+    lead: "eat clean feel good",
+    // A string renders as "no <thing>"; an object with deny:false is a positive
+    // claim, rendered without the "no". The list is red throughout.
+    items: [
+      "seed oils",
+      { label: "Gluten FREE options", deny: false, icon: "industrial gluten" },
+      "fake food",
+      "fried food",
+      "preservatives",
+      "monosodium glutamate (MSG)",
+    ],
+    afterCategory: 2, // render the block after the Nth category (1-based)
   },
   cta: {
     eyebrow: "visit us in phuket",
@@ -40,13 +48,6 @@ export const DEFAULT_CONTENT = {
     "Potato Tacos":
       "Our healthy take on tacos — a gluten-free potato dough instead of a tortilla, piled high with fresh veggies and bold flavors. Protein options like shish tawook and shrimp coming soon.",
   },
-  // Promo header for the build-your-own bundle cards (rendered after the
-  // Potato Tacos dishes). `badge` is optional; omit to hide it.
-  bundles: {
-    title: "Buy more, save more",
-    badge: "up to −20%",
-    sub: "Build your own set — bigger sets, bigger savings, with free sauces on us.",
-  },
 };
 
 // Merge fetched rows ([{ key, data }]) over the defaults, per field.
@@ -56,7 +57,6 @@ export function mergeContent(rows) {
     rule: { ...DEFAULT_CONTENT.rule },
     cta: { ...DEFAULT_CONTENT.cta },
     sectionIntros: { ...DEFAULT_CONTENT.sectionIntros },
-    bundles: { ...DEFAULT_CONTENT.bundles },
   };
   for (const row of rows ?? []) {
     if (out[row?.key] && row.data && typeof row.data === "object") {

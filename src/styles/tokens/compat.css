@@ -114,8 +114,9 @@
   --danger:   var(--error);
 
   /* ---- Macro / nutrition data colors (used by MacroBar / CalorieDonut) --
-     Clear, colourful scheme: protein red · carbs orange · fat yellow · kcal green. */
-  --macro-protein: #E23B2E;
+     Clear, colourful scheme: protein pink · carbs orange · fat yellow · kcal green.
+     Pink is dark enough to hold AA on white for the small bold "P 12g" figures. */
+  --macro-protein: #D62D6E;
   --macro-carbs:   #F08A24;
   --macro-fat:     #F5C211;
   --macro-kcal:    #3F9142;

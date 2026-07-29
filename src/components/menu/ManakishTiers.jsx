@@ -95,6 +95,11 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
                         )}
                       </span>
                       <span className="shk-mana__item-name">{d.name}</span>
+                      {d.calories != null && (
+                        <span className="shk-card__kcal-pill shk-mana__kcal">
+                          <b>{Math.round(d.calories)}</b> kcal
+                        </span>
+                      )}
                     </div>
                   </li>
                 ))}

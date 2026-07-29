@@ -254,9 +254,10 @@ export const MOCK_DATA = {
       badges: [],
     },
   ],
+  // Mirrors the active rows in `price_tiers` (bundle4, bundle8), in sort order.
+  // The set of 12 still exists in the DB but is switched off.
   bundles: [
-    { tierCode: "SET-4",  label: "Potato Tacos set of 4",  manakishCount: 4,  sauceCount: 1, discountPct: 10 },
-    { tierCode: "SET-8",  label: "Potato Tacos set of 8",  manakishCount: 8,  sauceCount: 2, discountPct: 15 },
-    { tierCode: "SET-12", label: "Potato Tacos set of 12", manakishCount: 12, sauceCount: 3, discountPct: 20 },
+    { tierCode: "SET-4", label: "Potato Tacos set of 4", manakishCount: 4, sauceCount: 1, discountPct: 10 },
+    { tierCode: "SET-8", label: "Potato Tacos set of 8", manakishCount: 8, sauceCount: 2, discountPct: 15 },
   ],
 };

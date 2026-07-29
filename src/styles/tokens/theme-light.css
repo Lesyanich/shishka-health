@@ -1,0 +1,117 @@
+/* ===========================================================================
+   SHISHKA — WHITE & GREEN THEME  (reverse of theme-royal)
+   ---------------------------------------------------------------------------
+   White page, royal-green ink — the printed-menu look (see the Potato Tacos /
+   Fattoush posters). Same semantic aliases as theme-royal.css, flipped, so the
+   components need no per-theme branching. Imported LAST so it wins.
+   Contrast measured against #FFFFFF:
+     royal-green ink 13.5:1 · body α.86 8.2:1 · muted α.70 5.1:1 · red-700 12.7:1
+   =========================================================================== */
+:root {
+  /* ---- Surfaces: white page; panels tint faintly green ------------------- */
+  --bg-canvas:      #FFFFFF;
+  --bg-page:        #FFFFFF;
+  --bg-base:        #FFFFFF;
+  --bg-surface:     #FFFFFF;
+  --bg-surface-alt: #F4F8EC;
+  --surface-1:      #FFFFFF;
+  --surface-2:      #F4F8EC;
+  --surface-3:      #E7EFD6;
+  --surface-inset:  rgba(30, 57, 3, 0.05);
+
+  /* ---- Text: royal green on white ---------------------------------------- */
+  --text-strong: #1E3903;
+  --text-body:   rgba(30, 57, 3, 0.86);
+  --text-muted:  rgba(30, 57, 3, 0.70);
+  --text-mute:   rgba(30, 57, 3, 0.70);
+  --text-faint:  rgba(30, 57, 3, 0.55);
+
+  /* ---- Menu data ink ------------------------------------------------------
+     Gold prices are unreadable on white. Green is the brand's lead colour, so
+     prices carry it; red stays a spot accent (macro letters, shout words). */
+  --menu-price:  var(--royal-green);
+  --menu-muted:  rgba(30, 57, 3, 0.70);
+  --menu-kcal:   #1E3903;
+  --menu-kcal-bg: var(--green-100);
+  --menu-macro:  var(--red-700);
+
+  /* ---- The price seal: green sunburst stamp ------------------------------ */
+  --seal-ink:    var(--royal-green);
+
+  /* ---- Borders / hairlines ------------------------------------------------ */
+  --border:         rgba(30, 57, 3, 0.14);
+  --border-strong:  rgba(30, 57, 3, 0.26);
+  --border-subtle:  rgba(30, 57, 3, 0.10);
+  --border-default: rgba(30, 57, 3, 0.16);
+
+  /* ---- Links / selection --------------------------------------------------- */
+  --text-accent: var(--red-700);
+  --selection:   rgba(92, 113, 41, 0.20);
+
+  /* ---- "On dark" no longer means dark: the canvas is white ---------------- */
+  --text-on-dark:       var(--text-strong);
+  --text-on-dark-muted: var(--text-muted);
+  --text-on-dark-faint: var(--text-muted);
+
+  /* ---- Fresh bands ---------------------------------------------------------
+     The two washes that break up the white page, so it reads as a rhythm of
+     colour instead of one flat sheet. Both are desaturated enough to keep
+     royal-green ink at AA.
+     `--band-mint` is the green one (Salads). `--band-warm` is the coffee half:
+     cream-50 off the brand warm-white ramp, so the drinks change key without
+     introducing a second green.
+     `--produce-shadow` is the periwinkle cast under the falling SVG fruit. It
+     was on the dish photos too until it read as grime beneath the food on the
+     light theme; those are flat now and this is the only thing still using it. */
+  --band-mint:      #E9F3EC;
+  --band-warm:      var(--cream-50);
+  --produce-shadow: rgba(139, 151, 219, 0.55);
+}
+
+/* ---------------------------------------------------------------------------
+   Decorative fills authored as white-on-dark. They vanish on a white canvas,
+   so they flip to green ink here. (Structural fix is to tokenize them in
+   components.css; kept scoped while the theme is under review.)
+   --------------------------------------------------------------------------- */
+.shk-card__ph,
+.shk-mana__disc-ph {
+  background: radial-gradient(circle at 35% 28%, rgba(30, 57, 3, 0.08), rgba(30, 57, 3, 0.03) 72%);
+}
+.shk-mana__price small { color: rgba(30, 57, 3, 0.75); }
+.shk-mana__rail { background: rgba(30, 57, 3, 0.04); }
+.shk-mana__dot:hover { border-color: var(--text-strong); }
+.shk-set { background: rgba(30, 57, 3, 0.035); }
+.shk-set:hover { border-color: rgba(30, 57, 3, 0.45); background: rgba(30, 57, 3, 0.06); }
+.shk-row:hover { background: rgba(30, 57, 3, 0.05); }
+.shk-seal { filter: drop-shadow(0 1px 3px rgba(30, 57, 3, 0.18)); }
+.shk-set { border-color: var(--border-strong); }
+
+/* Purple carried the "selected / in your order" state under the dark theme. It
+   appears nowhere in the logo, so those states take royal green instead. */
+.shk-seal--active { background: var(--royal-green); }
+.shk-orderfab { background: var(--royal-green); }
+.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--royal-green-soft); }
+.shk-orderfab__count { color: var(--royal-green); }
+.shk-mana__dot { background: #FFFFFF; border-color: rgba(30, 57, 3, 0.55); }
+.shk-mana__dot.is-on { background: var(--royal-green); border-color: var(--royal-green); }
+
+/* ---------------------------------------------------------------------------
+   Hero + brand rule: the green band goes white. Gold emphasis is unreadable on
+   white, so the shout words take energy red — the printed menu's own emphasis.
+   --------------------------------------------------------------------------- */
+.shk-hero { background: var(--bg-canvas); color: var(--text-strong); }
+.shk-hero__eyebrow { color: var(--text-muted); }
+.shk-hero__banner { color: var(--accent); }
+.shk-hero__title { color: var(--text-strong); }
+.shk-hero__title span { color: var(--accent); }
+.shk-hero__sub { color: var(--text-body); }
+.shk-rule { color: var(--text-strong); }
+
+/* Dialog photo placeholder was a green block behind a green logo. */
+.shk-dlg__ph { background: var(--surface-3); }
+.shk-dlg__ph-word { color: var(--text-muted); }
+
+/* The closing CTA / footer: cream copy authored for the green canvas. */
+.shk-cta__title,
+.shk-cta__hours-time { color: var(--text-strong); }
+.shk-cta__btn--ghost:hover { color: var(--accent); }

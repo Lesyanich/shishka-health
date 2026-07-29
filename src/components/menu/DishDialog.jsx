@@ -126,7 +126,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
             </>
           ) : (
             <div className="shk-dlg__ph" aria-hidden="true">
-              <img className="shk-dlg__ph-logo" src="/assets/logo-mark-white.png" alt="" />
+              <img className="shk-dlg__ph-logo" src="/assets/logo-mark-green.png" alt="" />
               {category && <div className="shk-dlg__ph-word">{category}</div>}
             </div>
           )}
