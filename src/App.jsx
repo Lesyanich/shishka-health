@@ -71,7 +71,29 @@ const SECTION_TINT = {
   public/assets/section/.
 */
 const SECTION_ART = {
-  Salads: { src: "/assets/section/salads-fattoush.webp", side: "left" },
+  // Salads is the one SPLIT section: the grid is pushed into the right half and
+  // the photograph owns the left, so the inset is half the content column (600)
+  // plus overspill off the viewport edge. Safe only because the left half is
+  // deliberately empty — see .shk-app__section--split in components.css.
+  //
+  // pool instead of src: the big salad rotates, so the section is not identical
+  // on every visit. Every salad that gets photographed can be added here.
+  Salads: {
+    pool: [
+      "/assets/section/salads-fattoush.webp",
+      "/assets/section/salads-tabbouleh.webp",
+    ],
+    side: "left",
+    inset: 600,
+    // align "under": the bowl starts just below the section title instead of
+    // being centred in the band. Centring is right when the art is a crop in a
+    // narrow gutter, but here it owns half the column against a 1800px-tall
+    // section — centred, it floated in the middle with a big hole above it and
+    // read as unrelated to the heading. Anchored under the title, the eye goes
+    // Salads → bowl → the two dishes beside it.
+    align: "under",
+    width: "min(calc(50vw - var(--content-max) / 2 + 760px), 1040px)",
+  },
   // inset: how far the art may reach back inside the content column. The tiers
   // layout stops ~190px short of the right edge, so the big taco can move into
   // that dead space and sit beside the small ones — showing ~70% of itself
@@ -91,15 +113,45 @@ const SECTION_ART = {
   },
 };
 
+/*
+  How long one photograph stays up in a rotating section (cfg.pool).
+
+  Bucketed off the wall clock rather than Math.random on purpose: everyone who
+  loads the page inside the same window sees the same salad, so the site is
+  reproducible in a screenshot and a hard refresh does not reshuffle it. The
+  guest gets a different one when they come back later, which is the point.
+*/
+const ART_ROTATE_MS = 12 * 60 * 1000;
+
+function useRotatingArt(cfg) {
+  const pool = cfg?.pool;
+  const [bucket, setBucket] = useState(() => Math.floor(Date.now() / ART_ROTATE_MS));
+  useEffect(() => {
+    if (!pool || pool.length < 2) return;
+    // Coarse poll rather than a timeout aligned to the boundary: a tab left open
+    // across a boundary catches up within a minute, and a minute-long interval
+    // costs nothing. Cheaper to reason about than clock arithmetic.
+    const id = setInterval(() => setBucket(Math.floor(Date.now() / ART_ROTATE_MS)), 60_000);
+    return () => clearInterval(id);
+  }, [pool]);
+  if (!cfg) return null;
+  if (!pool || pool.length === 0) return cfg.src;
+  return pool[bucket % pool.length];
+}
+
 function SectionArt({ cfg }) {
+  const src = useRotatingArt(cfg);
   if (!cfg) return null;
   return (
     <div
+      // align is a vertical anchor, and the value IS the class suffix: "top"
+      // (just above the section, for column art) or "under" (below the section
+      // title). Absent means centred on the band, which is the default.
       className={`shk-sec-art shk-sec-art--${cfg.side}${
-        cfg.align === "top" ? " shk-sec-art--top" : ""
+        cfg.align ? ` shk-sec-art--${cfg.align}` : ""
       }`}
       style={{
-        "--art": `url(${cfg.src})`,
+        "--art": `url(${src})`,
         ...(cfg.inset && { "--art-inset": `${cfg.inset}px` }),
         ...(cfg.ratio && { "--art-ratio": cfg.ratio }),
         ...(cfg.width && { "--art-w": cfg.width }),
@@ -115,6 +167,27 @@ function SectionArt({ cfg }) {
   sections where the photography is strong enough to be seen big.
 */
 const SECTION_SHOWCASE = new Set(["Salads"]);
+
+/*
+  Split sections go further: two dishes per row, pushed into the right half of
+  the content column, with the left half given over to one oversized rotating
+  photograph. It is the most expensive layout on the page — it halves how many
+  dishes a guest sees per screen — so it is worth it only where the photograph
+  is the selling argument. Pairs with SECTION_ART[name].inset = 600.
+*/
+const SECTION_SPLIT = new Set(["Salads"]);
+
+/*
+  Stable partition: dishes that have a photograph keep their display_order at
+  the front, the rest keep theirs behind them. Not a sort by a boolean — that
+  would let the comparator reshuffle equal items differently across renders.
+*/
+function photosFirst(items) {
+  const shot = items.filter((d) => d.cardImage);
+  return shot.length === 0 || shot.length === items.length
+    ? items
+    : [...shot, ...items.filter((d) => !d.cardImage)];
+}
 
 function dishPasses(dish, diets, excl) {
   const d = dish.diets || [];
@@ -236,7 +309,17 @@ export default function App() {
 
   const filtered = dishes.filter((d) => dishPasses(d, diets, excl));
   const byCat = categories
-    .map((c) => ({ ...c, items: filtered.filter((d) => (d.section_id ?? d.category_id) === c.id) }))
+    .map((c) => {
+      const items = filtered.filter((d) => (d.section_id ?? d.category_id) === c.id);
+      // A split section shows two dishes per row, so its first row is the most
+      // valuable real estate on the page — and in Salads five of seven dishes
+      // are not photographed yet, which put an empty placeholder in the top
+      // slot next to the big photograph. Float the unphotographed ones to the
+      // end HERE ONLY; every other section keeps display_order untouched. This
+      // undoes itself as the photos land, and is a display rule only — nothing
+      // is written back to the database.
+      return { ...c, items: SECTION_SPLIT.has(c.name) ? photosFirst(items) : items };
+    })
     .filter((c) => c.items.length > 0);
 
   // Index after which the "the RULE" accent block is inserted (1-based in config).
@@ -392,7 +475,7 @@ export default function App() {
                 ref={(el) => (sectionRefs.current[cat.id] = el)}
                 className={`shk-app__section ${SECTION_TINT[cat.name] ?? ""} ${
                   SECTION_SHOWCASE.has(cat.name) ? "shk-app__section--showcase" : ""
-                }`}
+                } ${SECTION_SPLIT.has(cat.name) ? "shk-app__section--split" : ""}`}
               >
                 <SectionArt cfg={SECTION_ART[cat.name]} />
                 {cat.name === "Potato Tacos" ? (

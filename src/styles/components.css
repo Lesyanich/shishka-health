@@ -301,9 +301,9 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-seal__num { font-size: 1em; font-weight: var(--fw-display); letter-spacing: -0.02em; }
 .shk-seal__cur { font-size: 0.48em; font-weight: var(--fw-semibold); text-transform: lowercase; letter-spacing: 0.03em; }
 @media (prefers-reduced-motion: reduce) { button.shk-seal:hover { transform: scale(1.07); } }
-/* In the order → the price stamp fills purple (matches the order button) so
-   selected items are obvious on the menu. */
-.shk-seal--active { border-radius: var(--radius-circle); background: var(--brand-purple); --seal-ink: var(--cream-50); }
+/* In the order → the price stamp fills with the selection colour (same token
+   as the Order button and the quick-add dots) so selected items are obvious. */
+.shk-seal--active { border-radius: var(--radius-circle); background: var(--selected); --seal-ink: var(--cream-50); }
 
 .shk-card {
   position: relative; display: flex; flex-direction: column; align-items: center;
@@ -576,6 +576,10 @@ button.shk-seal:active { transform: scale(0.93); }
    Which sections get art, and on which side, is decided in App.jsx
    (SECTION_ART) — not here, and not by position. Assets: 1200px WebP,
    transparent, in public/assets/section/. */
+/* Off by default and only switched on inside the 1440 query below — the default
+   has to be display:none rather than just unpositioned, or the absolutely-
+   positioned element would fall back into the normal flow and push the
+   section's own content around. */
 .shk-sec-art { display: none; }
 
 /* 1440 is the first width where the gutter (120px a side) is big enough to
@@ -622,7 +626,25 @@ button.shk-seal:active { transform: scale(0.93); }
      guest meets the end of the roll, where the fresh veg and mango are, and the
      rest runs off down the page. */
   .shk-sec-art--top { top: 0; translate: 0 -140px; }
+
+  /* Art that owns half the content column (the split Salads section) is not a
+     crop in a gutter — it is the second thing on the page after the heading, so
+     it hangs off the heading rather than floating in the middle of the band. The
+     offset clears the title's own box; --art-top overrides it per section if a
+     heading ever gets taller. translate is reset to 0 because top is now an
+     absolute anchor, not a centre line. */
+  .shk-sec-art--under { top: var(--art-top, 104px); translate: 0 0; }
+
 }
+
+/* No produce garnish in the gutter. Circular cut-outs of real produce photos
+   were built here and rejected on sight: beside dish photographs they read as
+   stickers stuck to the margin, and the eye keeps going to them instead of to
+   the food. The gutter belongs to SECTION_ART alone — one big photograph of an
+   actual dish per section, nothing orbiting it. The site's fruit lives in two
+   places on purpose: the hero scatter and the falling sliceable layer, both
+   vector (lib/fruitArt.jsx). Do not reintroduce a third. */
+
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
 .shk-foot { background: transparent; color: var(--text-on-dark); }
 .shk-foot__inner {
@@ -684,6 +706,33 @@ button.shk-seal:active { transform: scale(0.93); }
    align-items:start. Delete this once every dish in a showcase section is shot. */
 .shk-app--wide .shk-app__section--showcase .shk-card--coming-soon {
   --card-media: clamp(140px, 15vw, 190px);
+}
+
+/* ---- Split section (photograph owns one half, dishes the other) -------
+   Showcase makes the food bigger; split goes further and gives half the
+   content column to a single oversized photograph, with the dishes two-up in
+   the other half. The grid is MOVED, not just narrowed: margin-inline-start
+   pushes it into the right half so the left half is genuinely empty, which is
+   the only reason the art is allowed a 600px inset (cards are transparent
+   cut-outs — art behind a filled grid shows through the gaps).
+   Cost is real: half as many dishes per screen. Reserved for sections where
+   the photograph is the selling argument. Set in App.jsx (SECTION_SPLIT), and
+   the matching SECTION_ART entry must carry inset: 600. */
+.shk-app--wide .shk-app__section--split {
+  --cols-wide: 2;
+  /* Two columns inside half of --content-max, so the media has to come back
+     down from the 320px showcase size or the cards overflow their column. */
+  --card-media: clamp(180px, 19vw, 264px);
+}
+.shk-app--wide .shk-app__section--split .shk-app__grid {
+  margin-inline-start: 50%;
+}
+/* The title stays over the empty half at full width — it is the one thing that
+   may sit above the photograph, and it is set in royal green on a light tint,
+   so it holds. Nudge it clear of the art's top edge. */
+.shk-app--wide .shk-app__section--split .shk-app__sec-title {
+  position: relative;
+  z-index: 1;
 }
 .shk-app--wide .shk-tabs { padding-left: 32px; padding-right: 32px; }
 .shk-app--wide .shk-app__sec-title { font-size: clamp(2.6rem, 4vw, 4rem); }
@@ -1119,16 +1168,16 @@ button.shk-seal:active { transform: scale(0.93); }
   position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 55;
   display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;
   padding: var(--space-3) var(--space-5); border: none; border-radius: var(--radius-pill);
-  background: var(--brand-purple); color: var(--cream-50); box-shadow: var(--shadow-lg);
+  background: var(--selected); color: var(--cream-50); box-shadow: var(--shadow-lg);
   font-family: var(--font-body); font-size: var(--text-base); font-weight: var(--fw-semibold);
   transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
-.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--purple-600); }
+.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--selected-hover); }
 .shk-orderfab:hover { transform: translateY(-2px); }
 .shk-orderfab:active { transform: translateY(0); }
 .shk-orderfab__icon { display: grid; place-items: center; }
 .shk-orderfab__icon svg { width: 20px; height: 20px; }
-.shk-orderfab__count { background: #fff; color: var(--purple-700); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
+.shk-orderfab__count { background: #fff; color: var(--selected-ink); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 .shk-orderfab__total { font-family: var(--font-mono); font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 /* Empty state: friendly red CTA to start an order. */
 .shk-orderfab--empty { background: var(--royal-green); color: var(--cream-50); }
@@ -1322,14 +1371,22 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__priceitem { cursor: default; }
 .shk-mana__priceitem:hover { transform: none; }
 .shk-mana__priceitem .shk-seal { width: 64%; height: 64%; font-size: clamp(19px, 2.8vw, 33px); }
+/* This is the tier's CATEGORY name (Vege / Meat), not another dish name. At
+   --text-sm with no case change it read as a fourth label in a row of dish
+   labels; uppercase + a size above the dish names makes it head the row.
+   0.08em tracking is the same figure .shk-mana__tier-badge uses — caps need
+   the extra space to stay legible at this weight. */
 .shk-mana__price-label {
-  font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--text-sm);
-  color: var(--text-strong); letter-spacing: 0.02em; text-align: center;
+  font-family: var(--font-sans); font-weight: var(--fw-bold);
+  font-size: clamp(var(--text-md), 1.5vw, var(--text-xl));
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-strong); text-align: center;
 }
 .shk-mana__col.is-premium .shk-mana__price-label { color: var(--honey-300); }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
-/* Quick-add dot on each manakish — tap to add; fills bright purple while the
-   dish is in the order. */
+/* Quick-add dot on each manakish — tap to add; fills with the selection colour
+   while the dish is in the order, so the dot and the Order button always read
+   as the same state. */
 .shk-mana__dot {
   position: absolute; top: 5px; right: 5px; z-index: 3; cursor: pointer;
   width: 19px; height: 19px; border-radius: 50%; box-sizing: border-box;
@@ -1340,8 +1397,8 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__dot:hover { transform: scale(1.18); border-color: var(--text-strong); }
 .shk-mana__dot:active { transform: scale(0.9); }
 .shk-mana__dot.is-on {
-  background: var(--purple-400); border-color: #fff;
-  box-shadow: 0 0 0 2px rgba(154, 79, 149, 0.45), 0 1px 4px rgba(0, 0, 0, 0.25);
+  background: var(--selected); border-color: #fff;
+  box-shadow: 0 0 0 2px var(--selected-glow), 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 .shk-mana__disc-ph {
   width: 88%; height: 88%; border-radius: 50%;

@@ -365,15 +365,15 @@ empty placeholder becomes the biggest shape on screen and the real dishes read a
     <!-- ═══════════ PRICE SEAL ═══════════ -->
     <section class="ds-section" id="seal">
       <div class="ds-h">Price Seal <span style="font-size:var(--text-sm);color:var(--honey-300)">★ signature</span></div>
-      <p class="ds-lead">The brand's price treatment: every price lives inside a 60-point "stamp" echoing the mandala in the logo. It's a real add-to-order button on each card corner. Adding to order fills it <strong style="color:var(--purple-400)">purple</strong>.</p>
+      <p class="ds-lead">The brand's price treatment: every price lives inside a 60-point "stamp" echoing the mandala in the logo. It's a real add-to-order button on each card corner. Adding to order fills it <strong style="color:var(--red-600)">energy red</strong> — the shared selection colour <code>--selected</code>.</p>
       <div class="ds-row" style="gap:var(--sp-6);align-items:center">
         <button type="button" class="shk-seal" style="width:88px;height:88px;font-size:22px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
-        <button type="button" class="shk-seal shk-seal--active" style="width:88px;height:88px;font-size:22px;background:var(--brand-purple)" aria-label="In order — tap to remove" title="In order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
+        <button type="button" class="shk-seal shk-seal--active" style="width:88px;height:88px;font-size:22px;background:var(--selected)" aria-label="In order — tap to remove" title="In order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
         <button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">89</span><span class="shk-seal__cur">thb</span></span></button>
       </div>
       <div class="ds-recipe">&lt;button class="shk-seal"&gt;&lt;svg class="shk-seal__ring"&gt;&lt;path class="shk-seal__edge"/&gt;&lt;/svg&gt;
   &lt;span class="shk-seal__stack"&gt;&lt;span class="shk-seal__plus"&gt;+&lt;span class="shk-seal__num"&gt;199&lt;span class="shk-seal__cur"&gt;thb&lt;/button&gt;
-size scales via inline width/height/font-size · added state → shk-seal--active fills var(--brand-purple) · components.css:283</div>
+size scales via inline width/height/font-size · added state → shk-seal--active fills var(--selected) · components.css:283</div>
     </section>
 
     <!-- ═══════════ NUTRITION ═══════════ -->
@@ -575,12 +575,17 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
     <!-- ═══════════ ORDER FAB ═══════════ -->
     <section class="ds-section" id="order">
       <div class="ds-h">Order FAB</div>
-      <p class="ds-lead">Floating purple action button (bottom-right in production). Empty state is dark green; filled shows count + total.</p>
+      <p class="ds-lead">Floating action button (bottom-right in production). Empty = royal green "Order"; the moment anything is in the order it goes <strong style="color:var(--red-600)">energy red</strong> and shows count + total.</p>
       <div class="ds-row">
         <button class="shk-orderfab" style="position:static">View order <span class="shk-orderfab__count">3</span> · ฿417</button>
         <button class="shk-orderfab shk-orderfab--empty" style="position:static">Browse menu</button>
       </div>
-      <div class="ds-recipe">&lt;button class="shk-orderfab"&gt;…&lt;span class="shk-orderfab__count"&gt;3&lt;/span&gt;&lt;/button&gt;  ·  --brand-purple #511A52</div>
+      <div class="ds-recipe">&lt;button class="shk-orderfab"&gt;…&lt;span class="shk-orderfab__count"&gt;3&lt;/span&gt;&lt;/button&gt;  ·  filled var(--selected) #B62A23 · empty var(--royal-green)
+
+SELECTION IS ONE COLOUR. --selected / --selected-hover / --selected-ink / --selected-glow (tokens/colors.css) drive every
+"this is in your order" surface together: the Order FAB, .shk-seal--active, and the .shk-mana__dot.is-on quick-add dots that
+sit on top of each dish image. Change the token, all three move. They must never share a hue with the RESTING state — the
+previous theme-light pass painted both resting and selected royal green, so adding a dish produced no visible feedback at all.</div>
     </section>
 
     <!-- ═══════════ SECTION ART ═══════════ -->
@@ -621,6 +626,16 @@ Rules the component must keep:
   middle, and a 1808px-tall roll centred on a 490px section shows only its middle — an anonymous wall of shrimp with both
   ends off-screen. --top pins it to the section's top edge (translate 0 -140px) so the guest meets the roll's cut end,
   where the fresh veg and mango are, and the rest runs off down the page.
+· .shk-sec-art--under (App.jsx: align:"under") is for art that owns half the CONTENT column rather than a gutter crop —
+  today only Salads, whose section carries .shk-app__section--split (--cols-wide:2, grid pushed to margin-inline-start:50%,
+  title raised to z-index 1). That art is the second thing on the page after the heading, so centring it on an 1800px band
+  left a hole above it and read as unrelated to the title. --under pins it just below the heading (top: var(--art-top,104px),
+  translate reset to 0 because top is now an absolute anchor, not a centre line) so the eye runs Salads → bowl → dishes.
+  --art-top is the escape hatch if a heading ever gets taller.
+· NO second decoration in the gutter. Circular cut-outs of real produce photography (.shk-sec-produce) were built to sit
+  alongside the art and were cut after review: beside dish photographs they read as stickers stuck to the margin and pulled
+  the eye off the food. One big photograph of an actual dish per section, nothing orbiting it. The site's fruit lives in
+  exactly two places — the hero scatter and the falling sliceable layer, both vector (lib/fruitArt.jsx). Do not add a third.
 · Tall art overhangs its neighbours by hundreds of pixels, so it cannot be signed off by eye at one scroll position. Sweep
   it in DOCUMENT space (add scroller.scrollTop, not viewport rects) against .shk-card__media, .shk-card__name, .shk-seal,
   .shk-mana__item, .shk-set, .shk-rows li and .shk-app__sec-title over the whole page; the answer must be zero overlaps.
