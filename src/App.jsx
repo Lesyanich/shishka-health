@@ -78,7 +78,36 @@ const SECTION_ART = {
   // instead of half. Safe only because nothing is rendered there; see the
   // --art-inset note in components.css before copying this to another section.
   "Potato Tacos": { src: "/assets/section/tacos-lamb.webp", side: "right", inset: 200 },
+  // A spring roll is a column (0.26 wide-to-tall), so it gets the whole-and-tall
+  // treatment rather than the viewport crop — see --art-w in components.css.
+  // Width is gutter + inset, capped, and the height follows from the ratio.
+  "Fresh Spring Roll": {
+    src: "/assets/section/springroll-shrimp.webp",
+    side: "right",
+    inset: 200,
+    ratio: 0.26,
+    align: "top",
+    width: "min(calc(50vw - var(--content-max) / 2 + 200px), 470px)",
+  },
 };
+
+function SectionArt({ cfg }) {
+  if (!cfg) return null;
+  return (
+    <div
+      className={`shk-sec-art shk-sec-art--${cfg.side}${
+        cfg.align === "top" ? " shk-sec-art--top" : ""
+      }`}
+      style={{
+        "--art": `url(${cfg.src})`,
+        ...(cfg.inset && { "--art-inset": `${cfg.inset}px` }),
+        ...(cfg.ratio && { "--art-ratio": cfg.ratio }),
+        ...(cfg.width && { "--art-w": cfg.width }),
+      }}
+      aria-hidden="true"
+    />
+  );
+}
 
 /*
   Sections that trade density for size: three dishes per row instead of five,
@@ -365,18 +394,7 @@ export default function App() {
                   SECTION_SHOWCASE.has(cat.name) ? "shk-app__section--showcase" : ""
                 }`}
               >
-                {SECTION_ART[cat.name] && (
-                  <div
-                    className={`shk-sec-art shk-sec-art--${SECTION_ART[cat.name].side}`}
-                    style={{
-                      "--art": `url(${SECTION_ART[cat.name].src})`,
-                      ...(SECTION_ART[cat.name].inset && {
-                        "--art-inset": `${SECTION_ART[cat.name].inset}px`,
-                      }),
-                    }}
-                    aria-hidden="true"
-                  />
-                )}
+                <SectionArt cfg={SECTION_ART[cat.name]} />
                 {cat.name === "Potato Tacos" ? (
                   <ManakishTiers section={cat} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
                 ) : (

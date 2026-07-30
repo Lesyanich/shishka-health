@@ -585,13 +585,20 @@ button.shk-seal:active { transform: scale(0.93); }
   .shk-sec-art {
     display: block; position: absolute; top: 50%;
     translate: 0 -50%;
-    /* Gutter + 420px of deliberate overspill past the viewport edge.
+    /* Default: gutter + 420px of deliberate overspill past the viewport edge.
        The overspill is what sets the *scale*, not the footprint: the visible
        slice is always just the gutter, so a wider box doesn't take more room —
-       it shows less of the dish, larger. That is the printed-menu crop the CEO
-       asked for, and why this number is big. */
-    width: min(calc(50vw - var(--content-max) / 2 + 420px), 980px);
-    aspect-ratio: 1;
+       it shows less of the dish, larger. That is the printed-menu crop, and why
+       this number is big.
+
+       --art-w / --art-ratio exist because that only holds for a roughly SQUARE
+       dish. A column-shaped one (a spring roll is 0.26 wide-to-tall) cannot be
+       cropped by the viewport edge: to make it wide enough to reach the edge you
+       would have to make it thousands of pixels tall. Such art is shown whole
+       and tall in the gutter instead, sized by --art-w with its own ratio. Both
+       are set per section in App.jsx. */
+    width: var(--art-w, min(calc(50vw - var(--content-max) / 2 + 420px), 980px));
+    aspect-ratio: var(--art-ratio, 1);
     background: var(--art) no-repeat center / contain;
     pointer-events: none;
   }
@@ -608,6 +615,13 @@ button.shk-seal:active { transform: scale(0.93); }
      instead of behind a tile. Set per section in App.jsx (SECTION_ART.inset). */
   .shk-sec-art--right { left: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
   .shk-sec-art--left { right: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
+
+  /* Column-shaped art is several times taller than its section, so centring it
+     shows the middle of the dish and hides both ends — a spring roll becomes an
+     anonymous wall of shrimp. Anchor it just above the section top instead: the
+     guest meets the end of the roll, where the fresh veg and mango are, and the
+     rest runs off down the page. */
+  .shk-sec-art--top { top: 0; translate: 0 -140px; }
 }
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
 .shk-foot { background: transparent; color: var(--text-on-dark); }
