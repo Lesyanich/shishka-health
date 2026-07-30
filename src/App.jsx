@@ -224,10 +224,6 @@ function priceHint(items) {
   const min = Math.min(...prices), max = Math.max(...prices);
   return min === max ? `฿${min}` : `฿${min}–${max}`;
 }
-// A subsection with zero photography renders as classic menu rows instead of
-// a grid of placeholder discs (photo coverage is still catching up).
-const photoless = (items) => items.every((d) => !d.image_url);
-
 function LoadingSkeleton() {
   return (
     <div className="shk-app__section">
@@ -500,6 +496,34 @@ export default function App() {
                           {items.map((dish) => renderDish(dish, cat.name))}
                         </div>
                       );
+                      const rows = (items) => (
+                        <DishRows items={items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
+                      );
+                      /*
+                        A card is nine parts photograph. Give one to a dish that
+                        has no photo and you get a 380px empty disc — Salads had
+                        five of them in a row and the bottom half of the section
+                        was nothing but pale ovals and white space.
+
+                        So a group renders by what it actually HAS: photographed
+                        dishes take the grid, the rest fall to menu rows below it.
+                        A wholly photoless group (the drinks) comes out of the
+                        same branch as rows, exactly as before, and any dish
+                        rejoins the grid by itself the day it gets a photo — no
+                        list to maintain.
+                      */
+                      const group = (items) => {
+                        const shot = items.filter((d) => d.cardImage);
+                        if (!shot.length) return rows(items);
+                        const plain = items.filter((d) => !d.cardImage);
+                        if (!plain.length) return cards(items);
+                        return (
+                          <>
+                            {cards(shot)}
+                            {rows(plain)}
+                          </>
+                        );
+                      };
                       return hasSubcategories(subs, cat.id) ? (
                         subs.map((sub) => (
                           <div key={sub.id} className="shk-app__tier">
@@ -507,17 +531,11 @@ export default function App() {
                               <h3 className="shk-app__sub-title">{sub.name}</h3>
                               <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
                             </div>
-                            {photoless(sub.items) ? (
-                              <DishRows items={sub.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
-                            ) : (
-                              cards(sub.items)
-                            )}
+                            {group(sub.items)}
                           </div>
                         ))
-                      ) : photoless(cat.items) ? (
-                        <DishRows items={cat.items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
                       ) : (
-                        cards(cat.items)
+                        group(cat.items)
                       );
                     })()}
                   </>

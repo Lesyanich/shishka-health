@@ -724,9 +724,14 @@ button.shk-seal:active { transform: scale(0.93); }
      down from the 320px showcase size or the cards overflow their column. */
   --card-media: clamp(180px, 19vw, 264px);
 }
-.shk-app--wide .shk-app__section--split .shk-app__grid {
+.shk-app--wide .shk-app__section--split .shk-app__grid,
+.shk-app--wide .shk-app__section--split .shk-rows {
   margin-inline-start: 50%;
 }
+/* The split section has already given half its width to the photograph, so the
+   rows keep a single column — two columns inside 600px would set the names in
+   a gutter barely wider than the price seal beside them. */
+.shk-app--wide .shk-app__section--split .shk-rows { grid-template-columns: 1fr; }
 /* The title stays over the empty half at full width — it is the one thing that
    may sit above the photograph, and it is set in royal green on a light tint,
    so it holds. Nudge it clear of the art's top edge. */
@@ -1492,6 +1497,10 @@ button.shk-seal:active { transform: scale(0.93); }
   list-style: none; margin: 0; padding: 0;
   display: grid; grid-template-columns: 1fr; row-gap: 2px;
 }
+/* When rows follow a card grid in the same group (a section where only some
+   dishes are photographed), they need air — otherwise the first row reads as a
+   caption hanging off the last card. */
+.shk-app__grid + .shk-rows { margin-top: clamp(20px, 2.6vw, 40px); }
 @media (min-width: 960px) {
   .shk-rows { grid-template-columns: 1fr 1fr; column-gap: clamp(40px, 6vw, 96px); }
 }

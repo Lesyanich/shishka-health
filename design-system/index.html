@@ -808,7 +808,7 @@ capping the longest edge instead would have starved it to ~310px wide and left i
     <!-- ═══════════ MENU ROWS ═══════════ -->
     <section class="ds-section" id="rows">
       <div class="ds-h">Menu Rows</div>
-      <p class="ds-lead">Photoless items (drinks, sauces): name + meta on the left, dotted leader, price seal on the right.</p>
+      <p class="ds-lead">Photoless items (drinks, sauces, dishes still awaiting a shot): name + meta on the left, dotted leader, price seal on the right.</p>
       <ul class="shk-rows">
         <li class="shk-row-wrap">
           <button type="button" class="shk-row"><span class="shk-row__main"><span class="shk-row__name">Iced Americano</span><span class="shk-row__meta num">12 kcal · 350ml</span></span><span class="shk-row__dots" aria-hidden="true"></span></button>
@@ -819,7 +819,13 @@ capping the longest edge instead would have starved it to ~310px wide and left i
           <button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">120</span><span class="shk-seal__cur">thb</span></span></button>
         </li>
       </ul>
-      <div class="ds-recipe">shk-rows &gt; shk-row-wrap ( shk-row(__main(__name+__meta) + __dots) + shk-seal )</div>
+      <div class="ds-recipe">shk-rows &gt; shk-row-wrap ( shk-row(__main(__name+__meta) + __dots) + shk-seal )
+
+CARDS OR ROWS IS DECIDED PER DISH, NOT PER SECTION (App.jsx `group()`). A card is nine parts photograph, so a dish without
+one renders a ~380px empty disc — Salads had five in a row and its bottom half was pale ovals and white space. Photographed
+dishes take .shk-app__grid; the rest fall to .shk-rows underneath (.shk-app__grid + .shk-rows adds the gap). A wholly
+photoless group comes out of the same branch as rows, exactly as before, and a dish rejoins the grid the day it gets a photo.
+Inside .shk-app__section--split the rows follow the grid into the far half (margin-inline-start:50%) and stay single-column.</div>
     </section>
 
     <!-- ═══════════ MANAKISH ═══════════ -->
