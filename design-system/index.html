@@ -289,7 +289,7 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
     <!-- ═══════════ TABS ═══════════ -->
     <section class="ds-section" id="tabs">
       <div class="ds-h">Category Tabs</div>
-      <p class="ds-lead">Sticky, horizontally scrollable pill tabs. Selected fills <code>--highlight</code> green; idle is muted cream.</p>
+      <p class="ds-lead">Sticky, horizontally scrollable pill tabs. The active tab fills <code>--nav-active</code> red; idle is muted cream.</p>
       <div class="ds-pad" style="padding:0">
         <div class="shk-tabs" style="position:static">
           <button class="shk-tab" aria-selected="true">Fresh Spring Rolls</button>
@@ -300,7 +300,17 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <button class="shk-tab">Drinks</button>
         </div>
       </div>
-      <div class="ds-recipe">&lt;div class="shk-tabs"&gt;&lt;button class="shk-tab" aria-selected="true"&gt;…&lt;/button&gt;…&lt;/div&gt;  ·  arrow-key nav required (see MASTER.md)</div>
+      <div class="ds-recipe">&lt;div class="shk-tabs"&gt;&lt;button class="shk-tab" aria-selected="true"&gt;…&lt;/button&gt;…&lt;/div&gt;  ·  arrow-key nav required (see MASTER.md)
+
+"YOU ARE HERE" IS RED. THE CHOICES YOU MAKE ARE STILL GREEN.
+· The active tab was --highlight green and sank into the page, which is green everywhere else — headings, rules,
+  section art, the resting Order button. The guest could not tell at a glance which part of the menu they were in.
+· It runs on its OWN token, --nav-active / --nav-active-ink, not on --selected, even though both resolve to red-600
+  today. --selected means "you put this in your order"; this means navigation. They are never adjacent — tabs sit at
+  the top of the page, order states live on the cards and the FAB — so one red carries both without ambiguity. If the
+  order language ever moves hue again, the tabs must NOT follow by accident. Change one without the other.
+· Scoped to .shk-tab only. The diet chips in the filter panel keep --highlight green: those are choices you are
+  making, not a place you are standing. cream-50 on red-600 = 6.1:1.
     </section>
 
     <!-- ═══════════ CARDS ═══════════ -->
@@ -1003,7 +1013,13 @@ pool 10 slots · gravity 70px/s² (a quarter of real — a fruit takes ~5s to cr
 size 38–74px desktop, 30–52px phone, × the row's SCALE · slice needs pointer ≥550px/s within 43% of the radius
 Calorie pop    .shk-fruitfall__pop × 8, a ring buffer — "+0.03" in the item's juice colour, rising 46px over 900ms.
                Restarted by removing .is-live, forcing reflow, re-adding it; text-shadow keeps it legible over photography.
-Counter        .shk-slicer (fixed bottom-left, z-index 50, pointer-events none) on --royal-green
+Counter        .shk-slicer (fixed bottom-left, z-index 50, pointer-events none) on --brand-purple
+               PURPLE IS THE GAME'S COLOUR AND ONLY THE GAME'S. It was royal green — which is also the page,
+               the headings, the resting Order button and the section art — so the one element on screen that is
+               play rather than menu wore the same colour as everything that is not. The counter only exists once
+               you have sliced something, so a new colour arriving IS the signal that a different kind of thing
+               just started. Free to use because selection moved off purple onto red (82cfc15): purple no longer
+               claims a state. Never reuse it for anything transactional. cream-50 on --purple-700 = 12.5:1.
                hidden entirely under prefers-reduced-motion. __hint ("burned · N sliced") stays at every width:
                at 390px the counter ends ~98px clear of the Order button, and without the caption a phone
                shows a bare number with no unit of meaning attached.
