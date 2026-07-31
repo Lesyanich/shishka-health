@@ -337,11 +337,24 @@ button.shk-seal:active { transform: scale(0.93); }
   object-fit: contain; object-position: center bottom; display: block;
 }
 .shk-card__media-scrim { display: none; }
-/* The Iced Cappuccino cutout is framed tighter (cup fills its canvas) than the
-   other drink photos, so "contain" renders it larger. Scale just that one down
-   to sit at the same size until the source image is re-exported with matching
-   padding. */
+/* PHOTO SCALE IS SET BY THE ASSET'S PADDING, NOT BY THE DISH.
+   Every card gets the same 184x230 box and object-fit:contain, so how big the
+   food looks is decided entirely by how much empty canvas the cut-out was
+   exported with. Two dishes shot at the same distance render at wildly
+   different sizes if one file is cropped tight, and the card grid turns into a
+   lie about portion size. These overrides pin the offenders back to the scale
+   of their neighbours until the source images are re-exported with matching
+   padding; measure the PAINTED ink, not the file, before picking a number.
+
+   · Iced Cappuccino: the cup fills its canvas where the other drinks float in
+     theirs.
+   · Seed Crackers: ink fills 89% of a 527x1080 file, against 54% for the bun
+     photos beside it, so the stack rendered 205px tall next to a 67px pair of
+     buns — three times their height, for a cracker the guest is told is small.
+     0.6 brings it to ~123px, a little under twice the buns, which is what the
+     two actually look like on a plate. */
 .shk-card[data-code="SALE-COFFEE_ICED_CAPPUCCINO"] .shk-card__img { transform: scale(0.82); transform-origin: center bottom; }
+.shk-card[data-code="SALE-SEED_CRACKERS"] .shk-card__img { transform: scale(0.6); transform-origin: center bottom; }
 
 .shk-card__flags { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; }
 

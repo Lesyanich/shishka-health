@@ -360,6 +360,15 @@ Opt a section in via SECTION_SHOWCASE in App.jsx. Mobile is untouched — the ru
 keep 2-up at 120px. Use it only where the photography can carry the size: at 320px a soft or badly-lit shot has nowhere
 to hide. Cards with no photo (.shk-card--coming-soon) are held near the old size inside a showcase section, otherwise the
 empty placeholder becomes the biggest shape on screen and the real dishes read as the exception. · src/styles/components.css</div>
+      <div class="ds-recipe">HOW BIG THE FOOD LOOKS IS SET BY THE ASSET, NOT THE CSS. Every card gets the same box and object-fit:contain, so the
+only thing deciding the dish's on-screen size is how much empty canvas its cut-out was exported with. A tightly cropped
+file renders two or three times larger than a generously padded one shot at the same distance, and the grid stops being
+comparable — the card grid starts lying about portion size. Seed Crackers filled 89% of its file against 54% for the bun
+photos beside it and rendered a 205px tower next to 67px buns, for a cracker the menu calls small.
+  .shk-card[data-code="SALE-SEED_CRACKERS"] .shk-card__img { transform: scale(0.6); transform-origin: center bottom; }
+Two of these exist (Iced Cappuccino 0.82, Seed Crackers 0.6). They are patches, not the fix — re-export the source with
+matching padding and delete the rule. Before choosing a number, measure the PAINTED ink of both files (draw to a canvas,
+scan alpha) and compare rendered ink heights; the file's own dimensions tell you nothing. · src/styles/components.css</div>
     </section>
 
     <!-- ═══════════ PRICE SEAL ═══════════ -->
