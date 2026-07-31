@@ -109,6 +109,13 @@ const SECTION_ART = {
     inset: 200,
     ratio: 0.26,
     align: "top",
+    // rise: how far above its own section the roll starts. At the default 140
+    // it began in the empty gap between the RULE block and this section, which
+    // read as a picture parked beside a heading. Lifted so the top of the roll
+    // breaks into the green Salads band above and the whole thing reads as one
+    // column running down the page. The RULE block's own gutter is empty, so
+    // there is nothing up there to collide with.
+    rise: 350,
     width: "min(calc(50vw - var(--content-max) / 2 + 200px), 470px)",
   },
 };
@@ -155,6 +162,7 @@ function SectionArt({ cfg }) {
         ...(cfg.inset && { "--art-inset": `${cfg.inset}px` }),
         ...(cfg.ratio && { "--art-ratio": cfg.ratio }),
         ...(cfg.width && { "--art-w": cfg.width }),
+        ...(cfg.rise && { "--art-rise": `${cfg.rise}px` }),
       }}
       aria-hidden="true"
     />

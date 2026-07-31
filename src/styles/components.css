@@ -624,8 +624,15 @@ button.shk-seal:active { transform: scale(0.93); }
      shows the middle of the dish and hides both ends — a spring roll becomes an
      anonymous wall of shrimp. Anchor it just above the section top instead: the
      guest meets the end of the roll, where the fresh veg and mango are, and the
-     rest runs off down the page. */
-  .shk-sec-art--top { top: 0; translate: 0 -140px; }
+     rest runs off down the page.
+
+     --art-rise is how far above its own section the art starts, set per section
+     in App.jsx. Tall art wants to break INTO the block above rather than begin
+     in the gap between them: starting in the neighbour's tinted band is what
+     makes it read as one column running down the page instead of a picture
+     parked beside a heading. Raise it only as far as that neighbour's gutter is
+     empty — the roll clears the RULE block's longest line by ~120px at 1440. */
+  .shk-sec-art--top { top: 0; translate: 0 calc(-1 * var(--art-rise, 140px)); }
 
   /* Art that owns half the content column (the split Salads section) is not a
      crop in a gutter — it is the second thing on the page after the heading, so

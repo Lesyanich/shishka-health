@@ -624,8 +624,15 @@ Rules the component must keep:
   At ultrawide the cap leaves clean gutter to the right of the art; that is correct, not a gap to fill.
 · .shk-sec-art--top (App.jsx: align:"top") is mandatory for column art. The default anchor centres the box on the section's
   middle, and a 1808px-tall roll centred on a 490px section shows only its middle — an anonymous wall of shrimp with both
-  ends off-screen. --top pins it to the section's top edge (translate 0 -140px) so the guest meets the roll's cut end,
-  where the fresh veg and mango are, and the rest runs off down the page.
+  ends off-screen. --top pins it above the section's top edge (translate 0 calc(-1 * var(--art-rise, 140px))) so the guest
+  meets the roll's cut end, where the fresh veg and mango are, and the rest runs off down the page.
+· --art-rise (App.jsx: rise, px) is how far above its own section the art starts. At the 140 default the roll began in the
+  empty gap between the block above and its own heading, which read as a picture parked beside a title. Tall art wants to
+  break INTO the neighbour above — starting inside that block's tinted band is what makes it read as one column running down
+  the page. Raise it only as far as the neighbour's gutter is genuinely empty, and verify against PAINTED ink, not the box:
+  a webp's box is opaque-rectangle-shaped but the dish inside it is not, so a box-level hit can be nothing at all. Fresh
+  Spring Roll sits at rise:350 — the ink breaks 40px into the green Salads band and clears the last row's price seal by its
+  own radius. That is the ceiling; more and the leaf tips land inside the seal.
 · .shk-sec-art--under (App.jsx: align:"under") is for art that owns half the CONTENT column rather than a gutter crop —
   today only Salads, whose section carries .shk-app__section--split (--cols-wide:2, grid pushed to margin-inline-start:50%,
   title raised to z-index 1). That art is the second thing on the page after the heading, so centring it on an 1800px band
