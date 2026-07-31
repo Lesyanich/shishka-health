@@ -5,9 +5,6 @@ import { StarIcon } from "../Icons.jsx";
 import { PriceSeal } from "./PriceSeal.jsx";
 import { optimizedSrc } from "../../lib/img.js";
 
-// Macros read as whole grams on the tile; the dish dialog keeps the exact figure.
-const g = (n) => Math.round(Number(n) || 0);
-
 function Placeholder({ category }) {
   return (
     <div className="shk-card__ph" aria-hidden="true">
@@ -27,9 +24,11 @@ export function DishCard({
   kcal,
   weight,
   weightUnit = "g",
-  protein = 0,
-  carbs = 0,
-  fat = 0,
+  // The tile shows kcal only; P/C/F live in the dish dialog. These three are
+  // still destructured so they do not fall through ...rest onto the DOM node.
+  protein: _protein,
+  carbs: _carbs,
+  fat: _fat,
   diets = [],
   badges = [],
   rating,
@@ -126,17 +125,6 @@ export function DishCard({
         <div className="shk-card__topline">
           <span className="shk-card__name">{name}</span>
         </div>
-
-        {(protein > 0 || carbs > 0 || fat > 0) && (
-          <div
-            className="shk-card__macros"
-            aria-label={`Protein ${g(protein)} grams, carbs ${g(carbs)} grams, fat ${g(fat)} grams`}
-          >
-            <span className="shk-card__macro"><i>P</i>{g(protein)}g</span>
-            <span className="shk-card__macro"><i>C</i>{g(carbs)}g</span>
-            <span className="shk-card__macro"><i>F</i>{g(fat)}g</span>
-          </div>
-        )}
 
         {(kcal != null || weight != null) && (
           <div className="shk-card__meta">
