@@ -289,7 +289,7 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
     <!-- ═══════════ TABS ═══════════ -->
     <section class="ds-section" id="tabs">
       <div class="ds-h">Category Tabs</div>
-      <p class="ds-lead">Sticky, horizontally scrollable pill tabs. Selected fills <code>--highlight</code> green; idle is muted cream.</p>
+      <p class="ds-lead">Sticky, horizontally scrollable pill tabs. The active tab fills <code>--nav-active</code> red; idle is muted cream.</p>
       <div class="ds-pad" style="padding:0">
         <div class="shk-tabs" style="position:static">
           <button class="shk-tab" aria-selected="true">Fresh Spring Rolls</button>
@@ -300,7 +300,17 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <button class="shk-tab">Drinks</button>
         </div>
       </div>
-      <div class="ds-recipe">&lt;div class="shk-tabs"&gt;&lt;button class="shk-tab" aria-selected="true"&gt;…&lt;/button&gt;…&lt;/div&gt;  ·  arrow-key nav required (see MASTER.md)</div>
+      <div class="ds-recipe">&lt;div class="shk-tabs"&gt;&lt;button class="shk-tab" aria-selected="true"&gt;…&lt;/button&gt;…&lt;/div&gt;  ·  arrow-key nav required (see MASTER.md)
+
+"YOU ARE HERE" IS RED. THE CHOICES YOU MAKE ARE STILL GREEN.
+· The active tab was --highlight green and sank into the page, which is green everywhere else — headings, rules,
+  section art, the resting Order button. The guest could not tell at a glance which part of the menu they were in.
+· It runs on its OWN token, --nav-active / --nav-active-ink, not on --selected, even though both resolve to red-600
+  today. --selected means "you put this in your order"; this means navigation. They are never adjacent — tabs sit at
+  the top of the page, order states live on the cards and the FAB — so one red carries both without ambiguity. If the
+  order language ever moves hue again, the tabs must NOT follow by accident. Change one without the other.
+· Scoped to .shk-tab only. The diet chips in the filter panel keep --highlight green: those are choices you are
+  making, not a place you are standing. cream-50 on red-600 = 6.1:1.
     </section>
 
     <!-- ═══════════ CARDS ═══════════ -->
@@ -313,8 +323,8 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Chicken Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3f4dc520-a1ba-46dc-91a7-e55ba976c646/menu-1lr0MV9Lz4_sBEXnJJQ6jjzRLsgG_g0ez.webp?v=1782014582495" /><span class="shk-card__media-scrim"></span></div>
           <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button></div>
           <div class="shk-card__body">
+            <span class="shk-card__kcal-pill"><b>394</b> kcal</span>
             <div class="shk-card__topline"><span class="shk-card__name">Chicken Fresh Spring Rolls</span></div>
-            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>394</b> kcal</span></div>
             <p class="shk-card__desc">Sous-vide chicken, rice noodles, fresh herbs, mango &amp; crunchy veg — peanut-lime dip.</p>
           </div>
         </div>
@@ -322,8 +332,8 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Shrimp Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/1573295f-c5a4-44fb-b9fd-d2659f99a104/menu-1iPht1o9g9YhKTKL1BPmIVLtVmEgyWjV0.webp?v=1782014581759" /><span class="shk-card__media-scrim"></span></div>
           <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">159</span><span class="shk-seal__cur">thb</span></span></button></div>
           <div class="shk-card__body">
+            <span class="shk-card__kcal-pill"><b>360</b> kcal</span>
             <div class="shk-card__topline"><span class="shk-card__name">Shrimp Fresh Spring Rolls</span></div>
-            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>360</b> kcal</span></div>
             <p class="shk-card__desc">Poached shrimp, rice noodles, fresh herbs, mango &amp; crunchy veg.</p>
           </div>
         </div>
@@ -331,8 +341,8 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Veggie Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/d691b4fb-c0d4-4bea-8a86-5363f32dd5a4/menu-1hukAmkAdLUyFLAa3B2hN9B_Luk_O3ZA7.webp?v=1782014581744" /><span class="shk-card__media-scrim"></span></div>
           <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">139</span><span class="shk-seal__cur">thb</span></span></button></div>
           <div class="shk-card__body">
+            <span class="shk-card__kcal-pill"><b>320</b> kcal</span>
             <div class="shk-card__topline"><span class="shk-card__name">Veggie Fresh Spring Rolls</span></div>
-            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>320</b> kcal</span></div>
             <p class="shk-card__desc">Fresh vegetables, mango, rice noodles &amp; herbs with peanut-lime dip.</p>
           </div>
         </div>
@@ -340,8 +350,8 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Tuna & Corn Fresh Spring Rolls" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3dc7416d-6a99-451e-aa78-2738b1cb7ee2/menu-1UwCUxSbS0jAf00vTo5mgetKAz6r0qhCV.webp?v=1782014581638" /><span class="shk-card__media-scrim"></span></div>
           <div class="shk-card__corner"><button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">179</span><span class="shk-seal__cur">thb</span></span></button></div>
           <div class="shk-card__body">
+            <span class="shk-card__kcal-pill"><b>410</b> kcal</span>
             <div class="shk-card__topline"><span class="shk-card__name">Tuna &amp; Corn Fresh Spring Rolls</span></div>
-            <div class="shk-card__meta"><span class="shk-card__meta-item shk-card__meta-item--kcal"><b>410</b> kcal</span></div>
             <p class="shk-card__desc">Flaked tuna, sweet corn, rice noodles, fresh herbs &amp; mango.</p>
           </div>
         </div>
@@ -349,22 +359,49 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
       <div class="ds-recipe">&lt;div class="shk-card" role="button" tabindex="0"&gt;
   &lt;div class="shk-card__media"&gt;&lt;img class="shk-card__img"&gt;&lt;span class="shk-card__media-scrim"&gt;&lt;/div&gt;
   &lt;div class="shk-card__corner"&gt;&lt;button class="shk-seal"&gt;…price stamp…&lt;/button&gt;&lt;/div&gt;
-  &lt;div class="shk-card__body"&gt;&lt;div class="shk-card__topline"&gt;&lt;span class="shk-card__name"&gt; · __meta--kcal · __desc&lt;/div&gt;
+  &lt;div class="shk-card__body"&gt;&lt;span class="shk-card__kcal-pill"&gt; · &lt;div class="shk-card__topline"&gt;&lt;span class="shk-card__name"&gt; · __desc&lt;/div&gt;
 The price lives in the corner SEAL (next section), not a text label. · src/styles/components.css</div>
+      <div class="ds-recipe">ONE NUMBER ON THE TILE. Nutrition on a card is the kcal pill and nothing else. A P/C/F line under the name was tried
+and cut: three more figures per tile across a 5-up grid turned a section into a spreadsheet and the guest read numbers
+instead of looking at food. Macros belong to the dish dialog (shk-donut + shk-macro), where someone has already picked the
+dish and is asking about it — and the dialog shows them to a decimal the tile was rounding away anyway.
+Sizes are one step apart on purpose, so the tile always reads name-then-number:
+  .shk-card__kcal-pill      --text-base, figure --text-lg   (--card-media default)
+  .shk-mana__kcal           --text-sm,   figure --text-base (Potato Tacos tier grid, denser, smaller names)
+__meta / __meta-item--kcal and __foot still exist in DishCard.jsx but are display:none — weight, diet icons and rating are
+dialog-only. Don't revive them on the tile without deciding what comes OFF it. · src/styles/components.css</div>
+      <div class="ds-recipe">GRID DENSITY — the photo is sized by --card-media, NOT by the grid column. A cut-out is transparent with no tile
+chrome, so a card that stretched to fill its column would only add empty space around the food; the dish would not get
+bigger. Enlarging a section therefore takes TWO changes, which is what .shk-app__section--showcase does:
+  --cols-wide: 3            (default 5 — set on .shk-app--wide .shk-app__grid)
+  --card-media: clamp(200px, 24vw, 320px)   (default clamp(120px, 14vw, 184px))
+Opt a section in via SECTION_SHOWCASE in App.jsx. Mobile is untouched — the rule is scoped to .shk-app--wide, so phones
+keep 2-up at 120px. Use it only where the photography can carry the size: at 320px a soft or badly-lit shot has nowhere
+to hide. Cards with no photo (.shk-card--coming-soon) are held near the old size inside a showcase section, otherwise the
+empty placeholder becomes the biggest shape on screen and the real dishes read as the exception. · src/styles/components.css</div>
+      <div class="ds-recipe">HOW BIG THE FOOD LOOKS IS SET BY THE ASSET, NOT THE CSS. Every card gets the same box and object-fit:contain, so the
+only thing deciding the dish's on-screen size is how much empty canvas its cut-out was exported with. A tightly cropped
+file renders two or three times larger than a generously padded one shot at the same distance, and the grid stops being
+comparable — the card grid starts lying about portion size. Seed Crackers filled 89% of its file against 54% for the bun
+photos beside it and rendered a 205px tower next to 67px buns, for a cracker the menu calls small.
+  .shk-card[data-code="SALE-SEED_CRACKERS"] .shk-card__img { transform: scale(0.6); transform-origin: center bottom; }
+Two of these exist (Iced Cappuccino 0.82, Seed Crackers 0.6). They are patches, not the fix — re-export the source with
+matching padding and delete the rule. Before choosing a number, measure the PAINTED ink of both files (draw to a canvas,
+scan alpha) and compare rendered ink heights; the file's own dimensions tell you nothing. · src/styles/components.css</div>
     </section>
 
     <!-- ═══════════ PRICE SEAL ═══════════ -->
     <section class="ds-section" id="seal">
       <div class="ds-h">Price Seal <span style="font-size:var(--text-sm);color:var(--honey-300)">★ signature</span></div>
-      <p class="ds-lead">The brand's price treatment: every price lives inside a 60-point "stamp" echoing the mandala in the logo. It's a real add-to-order button on each card corner. Adding to order fills it <strong style="color:var(--purple-400)">purple</strong>.</p>
+      <p class="ds-lead">The brand's price treatment: every price lives inside a 60-point "stamp" echoing the mandala in the logo. It's a real add-to-order button on each card corner. Adding to order fills it <strong style="color:var(--red-600)">energy red</strong> — the shared selection colour <code>--selected</code>.</p>
       <div class="ds-row" style="gap:var(--sp-6);align-items:center">
         <button type="button" class="shk-seal" style="width:88px;height:88px;font-size:22px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
-        <button type="button" class="shk-seal shk-seal--active" style="width:88px;height:88px;font-size:22px;background:var(--brand-purple)" aria-label="In order — tap to remove" title="In order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
+        <button type="button" class="shk-seal shk-seal--active" style="width:88px;height:88px;font-size:22px;background:var(--selected)" aria-label="In order — tap to remove" title="In order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__num">199</span><span class="shk-seal__cur">thb</span></span></button>
         <button type="button" class="shk-seal" style="width:59px;height:59px;font-size:14.8px" aria-label="Add to order" title="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">89</span><span class="shk-seal__cur">thb</span></span></button>
       </div>
       <div class="ds-recipe">&lt;button class="shk-seal"&gt;&lt;svg class="shk-seal__ring"&gt;&lt;path class="shk-seal__edge"/&gt;&lt;/svg&gt;
   &lt;span class="shk-seal__stack"&gt;&lt;span class="shk-seal__plus"&gt;+&lt;span class="shk-seal__num"&gt;199&lt;span class="shk-seal__cur"&gt;thb&lt;/button&gt;
-size scales via inline width/height/font-size · added state → shk-seal--active fills var(--brand-purple) · components.css:283</div>
+size scales via inline width/height/font-size · added state → shk-seal--active fills var(--selected) · components.css:283</div>
     </section>
 
     <!-- ═══════════ NUTRITION ═══════════ -->
@@ -566,20 +603,26 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
     <!-- ═══════════ ORDER FAB ═══════════ -->
     <section class="ds-section" id="order">
       <div class="ds-h">Order FAB</div>
-      <p class="ds-lead">Floating purple action button (bottom-right in production). Empty state is dark green; filled shows count + total.</p>
+      <p class="ds-lead">Floating action button (bottom-right in production). Empty = royal green "Order"; the moment anything is in the order it goes <strong style="color:var(--red-600)">energy red</strong> and shows count + total.</p>
       <div class="ds-row">
         <button class="shk-orderfab" style="position:static">View order <span class="shk-orderfab__count">3</span> · ฿417</button>
         <button class="shk-orderfab shk-orderfab--empty" style="position:static">Browse menu</button>
       </div>
-      <div class="ds-recipe">&lt;button class="shk-orderfab"&gt;…&lt;span class="shk-orderfab__count"&gt;3&lt;/span&gt;&lt;/button&gt;  ·  --brand-purple #511A52</div>
+      <div class="ds-recipe">&lt;button class="shk-orderfab"&gt;…&lt;span class="shk-orderfab__count"&gt;3&lt;/span&gt;&lt;/button&gt;  ·  filled var(--selected) #B62A23 · empty var(--royal-green)
+
+SELECTION IS ONE COLOUR. --selected / --selected-hover / --selected-ink / --selected-glow (tokens/colors.css) drive every
+"this is in your order" surface together: the Order FAB, .shk-seal--active, and the .shk-mana__dot.is-on quick-add dots that
+sit on top of each dish image. Change the token, all three move. They must never share a hue with the RESTING state — the
+previous theme-light pass painted both resting and selected royal green, so adding a dish produced no visible feedback at all.</div>
     </section>
 
     <!-- ═══════════ SECTION ART ═══════════ -->
     <section class="ds-section" id="secart">
       <div class="ds-h">Section Art (gutter cut-outs)</div>
       <p class="ds-lead">Above 1200px the card grid stops growing and the page opens an empty white column either side of it.
-        <code>.shk-sec-art</code> drops one oversized dish photograph into that dead space, cropped by the viewport edge —
-        the printed menu's own trick, and the only element allowed to break the container.</p>
+        <code>.shk-sec-art</code> drops one oversized dish photograph into that dead space — the printed menu's own trick,
+        and the only element allowed to break the container. Two shapes, two treatments: a roughly square dish is blown up
+        past the viewport edge and cropped by it; a column-shaped dish (a spring roll) is shown whole and tall instead.</p>
       <div class="ds-pad" style="position:relative;overflow:hidden;min-height:220px">
         <div style="position:absolute;top:50%;right:-60px;translate:0 -50%;width:260px;height:260px;
                     background:url(../public/assets/section/tacos-lamb.webp) no-repeat center/contain;pointer-events:none"></div>
@@ -589,18 +632,56 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
 by position. Three or four over the whole menu is the ceiling: the effect works because it is rare, and past that the gutter
 stops being a surprise and becomes wallpaper. Sides alternate down the scroll.
 Rules the component must keep:
-· It lives ONLY in the gutter, never under the grid. Cards are transparent cut-outs with no tile chrome, so anything sliding
-  behind them shows through the gaps as stray fragments of food. The anchor is measured from the section's centre line
-  — left: calc(50% + var(--content-max) / 2 - 20px) — which is the viewport centre for a contained section AND for a
-  full-bleed tinted one, so one rule serves both.
-· Width is gutter + 220px of deliberate overspill, capped at 720px, so the photo reads as cropped by the page rather than
-  parked beside it. It widens with the window instead of being pinned to a size.
+· It lives ONLY in the gutter, never under a filled grid. Cards are transparent cut-outs with no tile chrome, so anything
+  sliding behind them shows through the gaps as stray fragments of food. The anchor is measured from the section's centre
+  line — left: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)) — which is the viewport centre for a contained
+  section AND for a full-bleed tinted one, so one rule serves both.
+· --art-inset is how far the art may reach back INSIDE the content column. Default 20px = just kissing the edge. Raise it
+  ONLY where that side of the section is genuinely empty: Potato Tacos uses 200px because the tiers layout stops ~190px
+  short of the right edge, which lets the big taco sit beside the small ones and show ~70% of itself instead of half.
+  Never raise it over a full grid. Set per section in App.jsx (SECTION_ART.inset); measure the clearance, don't guess.
+· SQUARE-ISH ART (default, aspect-ratio 1): width is gutter + 420px of deliberate overspill, capped at 980px, so the photo
+  reads as cropped by the page rather than parked beside it. It widens with the window instead of being pinned to a size.
+  The overspill sets the SCALE, not the footprint — the visible slice is still only the gutter (plus any --art-inset), so a
+  wider box shows less dish, larger. Potato Tacos and Salads are this kind.
+· COLUMN-SHAPED ART (--art-w + --art-ratio, set per section in App.jsx): overspill is geometrically impossible here. A
+  spring roll is 0.26 wide-to-tall, so widening the box until it reached the viewport edge would make it thousands of pixels
+  tall, and cropping its right side would slice the roll open lengthwise instead of trimming a margin. Such art is shown
+  WHOLE and tall in the gutter: --art-w sizes it (gutter + inset, capped — Fresh Spring Roll caps at 470px, roughly the
+  900px asset's limit before it upscales) and --art-ratio replaces the square default so the height follows the file.
+  At ultrawide the cap leaves clean gutter to the right of the art; that is correct, not a gap to fill.
+· .shk-sec-art--top (App.jsx: align:"top") is mandatory for column art. The default anchor centres the box on the section's
+  middle, and a 1808px-tall roll centred on a 490px section shows only its middle — an anonymous wall of shrimp with both
+  ends off-screen. --top pins it above the section's top edge (translate 0 calc(-1 * var(--art-rise, 140px))) so the guest
+  meets the roll's cut end, where the fresh veg and mango are, and the rest runs off down the page.
+· --art-rise (App.jsx: rise, px) is how far above its own section the art starts. At the 140 default the roll began in the
+  empty gap between the block above and its own heading, which read as a picture parked beside a title. Tall art wants to
+  break INTO the neighbour above — starting inside that block's tinted band is what makes it read as one column running down
+  the page. Raise it only as far as the neighbour's gutter is genuinely empty, and verify against PAINTED ink, not the box:
+  a webp's box is opaque-rectangle-shaped but the dish inside it is not, so a box-level hit can be nothing at all. Fresh
+  Spring Roll sits at rise:350 — the ink breaks 40px into the green Salads band and clears the last row's price seal by its
+  own radius. That is the ceiling; more and the leaf tips land inside the seal.
+· .shk-sec-art--under (App.jsx: align:"under") is for art that owns half the CONTENT column rather than a gutter crop —
+  today only Salads, whose section carries .shk-app__section--split (--cols-wide:2, grid pushed to margin-inline-start:50%,
+  title raised to z-index 1). That art is the second thing on the page after the heading, so centring it on an 1800px band
+  left a hole above it and read as unrelated to the title. --under pins it just below the heading (top: var(--art-top,104px),
+  translate reset to 0 because top is now an absolute anchor, not a centre line) so the eye runs Salads → bowl → dishes.
+  --art-top is the escape hatch if a heading ever gets taller.
+· NO second decoration in the gutter. Circular cut-outs of real produce photography (.shk-sec-produce) were built to sit
+  alongside the art and were cut after review: beside dish photographs they read as stickers stuck to the margin and pulled
+  the eye off the food. One big photograph of an actual dish per section, nothing orbiting it. The site's fruit lives in
+  exactly two places — the hero scatter and the falling sliceable layer, both vector (lib/fruitArt.jsx). Do not add a third.
+· Tall art overhangs its neighbours by hundreds of pixels, so it cannot be signed off by eye at one scroll position. Sweep
+  it in DOCUMENT space (add scroller.scrollTop, not viewport rects) against .shk-card__media, .shk-card__name, .shk-seal,
+  .shk-mana__item, .shk-set, .shk-rows li and .shk-app__sec-title over the whole page; the answer must be zero overlaps.
 · The file is attached as background:var(--art) INSIDE @media (min-width:1440px) — a phone never downloads it. An &lt;img&gt;
   here would cost every mobile guest ~200 KB of decoration they cannot see. 1440 is also the first width where the gutter
   reads as a photograph rather than a sliver.
 · aria-hidden + pointer-events:none. It is scenery, never a target, and never the only place a dish appears.
 · Same shadow law as the cards: transparent cut-out, no cast shadow.
-Assets: transparent WebP, longest edge 1200, alpha-trimmed, in public/assets/section/ · src/styles/components.css</div>
+Assets: transparent WebP, alpha-trimmed, in public/assets/section/ — size the dimension the box actually constrains: square
+art to a longest edge of 1200, column art to a WIDTH of 900 (springroll-shrimp.webp is 900x3467, 196 KB, ratio 0.260;
+capping the longest edge instead would have starved it to ~310px wide and left it soft). · src/styles/components.css</div>
     </section>
 
     <!-- ═══════════ DISH DETAIL ═══════════ -->
@@ -762,7 +843,7 @@ Assets: transparent WebP, longest edge 1200, alpha-trimmed, in public/assets/sec
     <!-- ═══════════ MENU ROWS ═══════════ -->
     <section class="ds-section" id="rows">
       <div class="ds-h">Menu Rows</div>
-      <p class="ds-lead">Photoless items (drinks, sauces): name + meta on the left, dotted leader, price seal on the right.</p>
+      <p class="ds-lead">Photoless items (drinks, sauces, dishes still awaiting a shot): name + meta on the left, dotted leader, price seal on the right.</p>
       <ul class="shk-rows">
         <li class="shk-row-wrap">
           <button type="button" class="shk-row"><span class="shk-row__main"><span class="shk-row__name">Iced Americano</span><span class="shk-row__meta num">12 kcal · 350ml</span></span><span class="shk-row__dots" aria-hidden="true"></span></button>
@@ -773,7 +854,13 @@ Assets: transparent WebP, longest edge 1200, alpha-trimmed, in public/assets/sec
           <button type="button" class="shk-seal" style="width:51px;height:51px;font-size:12.75px" aria-label="Add to order"><svg class="shk-seal__ring" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><use href="#shk-seal-edge" /></svg><span class="shk-seal__stack"><span class="shk-seal__plus">+</span><span class="shk-seal__num">120</span><span class="shk-seal__cur">thb</span></span></button>
         </li>
       </ul>
-      <div class="ds-recipe">shk-rows &gt; shk-row-wrap ( shk-row(__main(__name+__meta) + __dots) + shk-seal )</div>
+      <div class="ds-recipe">shk-rows &gt; shk-row-wrap ( shk-row(__main(__name+__meta) + __dots) + shk-seal )
+
+CARDS OR ROWS IS DECIDED PER DISH, NOT PER SECTION (App.jsx `group()`). A card is nine parts photograph, so a dish without
+one renders a ~380px empty disc — Salads had five in a row and its bottom half was pale ovals and white space. Photographed
+dishes take .shk-app__grid; the rest fall to .shk-rows underneath (.shk-app__grid + .shk-rows adds the gap). A wholly
+photoless group comes out of the same branch as rows, exactly as before, and a dish rejoins the grid the day it gets a photo.
+Inside .shk-app__section--split the rows follow the grid into the far half (margin-inline-start:50%) and stay single-column.</div>
     </section>
 
     <!-- ═══════════ MANAKISH ═══════════ -->
@@ -926,7 +1013,13 @@ pool 10 slots · gravity 70px/s² (a quarter of real — a fruit takes ~5s to cr
 size 38–74px desktop, 30–52px phone, × the row's SCALE · slice needs pointer ≥550px/s within 43% of the radius
 Calorie pop    .shk-fruitfall__pop × 8, a ring buffer — "+0.03" in the item's juice colour, rising 46px over 900ms.
                Restarted by removing .is-live, forcing reflow, re-adding it; text-shadow keeps it legible over photography.
-Counter        .shk-slicer (fixed bottom-left, z-index 50, pointer-events none) on --royal-green
+Counter        .shk-slicer (fixed bottom-left, z-index 50, pointer-events none) on --brand-purple
+               PURPLE IS THE GAME'S COLOUR AND ONLY THE GAME'S. It was royal green — which is also the page,
+               the headings, the resting Order button and the section art — so the one element on screen that is
+               play rather than menu wore the same colour as everything that is not. The counter only exists once
+               you have sliced something, so a new colour arriving IS the signal that a different kind of thing
+               just started. Free to use because selection moved off purple onto red (82cfc15): purple no longer
+               claims a state. Never reuse it for anything transactional. cream-50 on --purple-700 = 12.5:1.
                hidden entirely under prefers-reduced-motion. __hint ("burned · N sliced") stays at every width:
                at 390px the counter ends ~98px clear of the Order button, and without the caption a phone
                shows a bare number with no unit of meaning attached.

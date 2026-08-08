@@ -87,13 +87,12 @@
 .shk-set { border-color: var(--border-strong); }
 
 /* Purple carried the "selected / in your order" state under the dark theme. It
-   appears nowhere in the logo, so those states take royal green instead. */
-.shk-seal--active { background: var(--royal-green); }
-.shk-orderfab { background: var(--royal-green); }
-.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--royal-green-soft); }
-.shk-orderfab__count { color: var(--royal-green); }
+   appears nowhere in the logo, so it was retired — but repainting every
+   selected state royal green made them identical to the RESTING states, which
+   are green too: adding a dish changed nothing you could see. Selection now
+   runs on --selected (energy red, colors.css) everywhere, and only the
+   resting/unselected treatments are overridden here. */
 .shk-mana__dot { background: #FFFFFF; border-color: rgba(30, 57, 3, 0.55); }
-.shk-mana__dot.is-on { background: var(--royal-green); border-color: var(--royal-green); }
 
 /* ---------------------------------------------------------------------------
    Hero + brand rule: the green band goes white. Gold emphasis is unreadable on

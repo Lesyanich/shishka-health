@@ -111,6 +111,27 @@
   --focus-ring:     rgba(182, 42, 35, 0.45);
   --selection:      rgba(92, 113, 41, 0.22);
 
+  /* "In your order" — ONE colour for every selected state: the Order button,
+     the price seals, the quick-add dots. It must never be the same hue as the
+     resting/empty state (royal green), or selecting a dish reads as no
+     feedback at all — which is exactly what happened while both were green.
+     Energy red is the brand's own emphasis colour, so the whole selection
+     language moves together: tap a dot, the dot and the button go red. */
+  --selected:       var(--red-600);
+  --selected-hover: var(--red-500);
+  --selected-ink:   var(--red-700); /* red-on-white, e.g. the count chip */
+  --selected-glow:  rgba(182, 42, 35, 0.40);
+
+  /* "You are here" — the active category tab. Lands on the same red as
+     --selected today, but it is deliberately its OWN token, because it means
+     something different: --selected is "you put this in your order", this is
+     navigation. They are never adjacent (tabs sit at the top of the page, order
+     states on the cards and the FAB), so one red carries both without ambiguity
+     — but if the order language ever moves hue again, the tabs must not follow
+     it by accident. Change one without the other. */
+  --nav-active:     var(--red-600);
+  --nav-active-ink: var(--cream-50);
+
   /* Status (kept on-brand, warm) */
   --ok:    var(--green-500);
   --warn:  var(--honey-600);

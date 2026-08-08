@@ -25,7 +25,7 @@
       "kind": "view",
       "select": "id,name,product_code,customer_short_name,customer_photo_url,image_url,customer_description,customer_ingredients,price,is_available,is_featured,pos_status,stock_state,calories,protein,carbs,fat,portion_size,portion_unit,category_id,display_order,category_code,category_name,category_sort_order,section_id,section_name,section_sort_order,bundle_min_price",
       "minRows": 1,
-      "note": "Row filter is baked into the view: product_code LIKE 'SALE-%' AND pos_status='synced' AND is_available=true."
+      "note": "Row filter is baked into the view: product_code LIKE 'SALE-%' AND is_web_visible=true AND NOT is_deleted AND name NOT ILIKE '[ARCHIVED]%'. is_web_visible is the ONLY publish switch — a dish can be live on the site while pos_status is still 'draft' (Mango Sauce is, today). Do not assume pos_status or is_available gate the site; they don't."
     },
     {
       "name": "nomenclature_tags",

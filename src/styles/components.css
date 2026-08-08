@@ -228,7 +228,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 .shk-tab:hover { color: var(--text-strong); }
-.shk-tab[aria-selected="true"] { color: var(--highlight-ink); background: var(--highlight); }
+/* The active category reads red, not green. Green is the page — the headings,
+   the rules, the section art — so a green "you are here" chip sank into it and
+   the guest could not tell at a glance which part of the menu they were looking
+   at. Red is the brand's emphasis colour and the only thing on the page louder
+   than the food. Scoped to the tabs on purpose: the diet chips inside the filter
+   panel stay on --highlight, because those are choices you are making, not a
+   place you are standing. */
+.shk-tab[aria-selected="true"] { color: var(--nav-active-ink); background: var(--nav-active); }
 .shk-tab__count { font-family: var(--font-mono); font-size: 0.8em; opacity: 0.7; margin-left: 5px; }
 
 /* ---- FilterPanel ---- */
@@ -301,9 +308,9 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-seal__num { font-size: 1em; font-weight: var(--fw-display); letter-spacing: -0.02em; }
 .shk-seal__cur { font-size: 0.48em; font-weight: var(--fw-semibold); text-transform: lowercase; letter-spacing: 0.03em; }
 @media (prefers-reduced-motion: reduce) { button.shk-seal:hover { transform: scale(1.07); } }
-/* In the order → the price stamp fills purple (matches the order button) so
-   selected items are obvious on the menu. */
-.shk-seal--active { border-radius: var(--radius-circle); background: var(--brand-purple); --seal-ink: var(--cream-50); }
+/* In the order → the price stamp fills with the selection colour (same token
+   as the Order button and the quick-add dots) so selected items are obvious. */
+.shk-seal--active { border-radius: var(--radius-circle); background: var(--selected); --seal-ink: var(--cream-50); }
 
 .shk-card {
   position: relative; display: flex; flex-direction: column; align-items: center;
@@ -320,8 +327,13 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-card--coming-soon { cursor: default; opacity: 0.55; }
 .shk-card--coming-soon:hover { transform: none; }
 
+/* The photo is sized by --card-media, NOT by the grid column. The cut-outs are
+   transparent with no tile chrome, so a card that stretched to fill its column
+   would just add empty space around the food — the dish would not get bigger.
+   That is why enlarging a section takes TWO changes (fewer columns AND a bigger
+   --card-media); see .shk-app__section--showcase. */
 .shk-card__media {
-  position: relative; width: clamp(120px, 14vw, 184px); aspect-ratio: 4 / 5;
+  position: relative; width: var(--card-media, clamp(120px, 14vw, 184px)); aspect-ratio: 4 / 5;
   overflow: visible; background: none; display: grid; place-items: end center;
 }
 /* No cast shadow. The photos are transparent cut-outs and sat on a periwinkle
@@ -332,11 +344,24 @@ button.shk-seal:active { transform: scale(0.93); }
   object-fit: contain; object-position: center bottom; display: block;
 }
 .shk-card__media-scrim { display: none; }
-/* The Iced Cappuccino cutout is framed tighter (cup fills its canvas) than the
-   other drink photos, so "contain" renders it larger. Scale just that one down
-   to sit at the same size until the source image is re-exported with matching
-   padding. */
+/* PHOTO SCALE IS SET BY THE ASSET'S PADDING, NOT BY THE DISH.
+   Every card gets the same 184x230 box and object-fit:contain, so how big the
+   food looks is decided entirely by how much empty canvas the cut-out was
+   exported with. Two dishes shot at the same distance render at wildly
+   different sizes if one file is cropped tight, and the card grid turns into a
+   lie about portion size. These overrides pin the offenders back to the scale
+   of their neighbours until the source images are re-exported with matching
+   padding; measure the PAINTED ink, not the file, before picking a number.
+
+   · Iced Cappuccino: the cup fills its canvas where the other drinks float in
+     theirs.
+   · Seed Crackers: ink fills 89% of a 527x1080 file, against 54% for the bun
+     photos beside it, so the stack rendered 205px tall next to a 67px pair of
+     buns — three times their height, for a cracker the guest is told is small.
+     0.6 brings it to ~123px, a little under twice the buns, which is what the
+     two actually look like on a plate. */
 .shk-card[data-code="SALE-COFFEE_ICED_CAPPUCCINO"] .shk-card__img { transform: scale(0.82); transform-origin: center bottom; }
+.shk-card[data-code="SALE-SEED_CRACKERS"] .shk-card__img { transform: scale(0.6); transform-origin: center bottom; }
 
 .shk-card__flags { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; flex-wrap: wrap; }
 
@@ -372,34 +397,27 @@ button.shk-seal:active { transform: scale(0.93); }
 /* Weight, diet icons + rating row stay in the dialog. */
 .shk-card__meta, .shk-card__foot, .shk-card__kcal-inline { display: none; }
 
-/* Nutrition on the tile — the printed-menu treatment: a soft-green kcal pill
-   above the name, macros as a compact P/C/F line under it. Letters carry the
-   accent, figures stay green ink, so meaning is never colour-only. */
+/* Nutrition on the tile is ONE number: the soft-green kcal pill above the name.
+   A P/C/F line used to sit under the name as well, and three more figures per
+   tile across a 5-up grid turned the section into a spreadsheet — the guest was
+   reading numbers instead of looking at food. Macros belong to the dish dialog,
+   where someone has already chosen the dish and is asking about it. The pill
+   carries the size that line was using: it is the only nutrition on the tile now,
+   so it can be read at a glance instead of squinted at. */
 .shk-card__kcal-pill {
-  display: inline-flex; align-items: baseline; gap: 4px;
-  padding: 3px 14px; border-radius: var(--radius-pill);
+  display: inline-flex; align-items: baseline; gap: 5px;
+  padding: 4px 16px; border-radius: var(--radius-pill);
   background: var(--menu-kcal-bg, var(--surface-3)); color: var(--menu-kcal);
-  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  font-family: var(--font-sans); font-size: var(--text-base); font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums; line-height: 1.25; white-space: nowrap;
 }
-.shk-card__kcal-pill b { font-size: var(--text-md); font-weight: var(--fw-bold); }
+.shk-card__kcal-pill b { font-size: var(--text-lg); font-weight: var(--fw-bold); }
 
-.shk-card__macros {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
-  font-family: var(--font-sans); font-size: var(--text-xs);
-  font-variant-numeric: tabular-nums; color: var(--text-body);
-}
-.shk-card__macro { white-space: nowrap; }
-.shk-card__macro i {
-  font-style: normal; font-weight: var(--fw-bold);
-  color: var(--menu-macro, var(--accent)); margin-right: 3px;
-}
-
-.shk-card--row .shk-card__macros { justify-content: flex-start; }
-
-/* Same kcal pill, tightened for the Potato Tacos tier grid. */
-.shk-mana__kcal { margin-top: 4px; padding: 2px 10px; font-size: var(--text-xs); }
-.shk-mana__kcal b { font-size: var(--text-sm); }
+/* Same kcal pill, tightened for the Potato Tacos tier grid — it sits under a
+   small tier name in a dense 4-up row, so it stays one step below the card
+   pill rather than matching it. It tracks that pill when the pill moves. */
+.shk-mana__kcal { margin-top: 4px; padding: 3px 11px; font-size: var(--text-sm); }
+.shk-mana__kcal b { font-size: var(--text-base); }
 
 /* Compact row variant (used in dense lists): small inline cutout + text. */
 .shk-card--row { flex-direction: row; align-items: center; gap: 12px; text-align: left; }
@@ -571,6 +589,10 @@ button.shk-seal:active { transform: scale(0.93); }
    Which sections get art, and on which side, is decided in App.jsx
    (SECTION_ART) — not here, and not by position. Assets: 1200px WebP,
    transparent, in public/assets/section/. */
+/* Off by default and only switched on inside the 1440 query below — the default
+   has to be display:none rather than just unpositioned, or the absolutely-
+   positioned element would fall back into the normal flow and push the
+   section's own content around. */
 .shk-sec-art { display: none; }
 
 /* 1440 is the first width where the gutter (120px a side) is big enough to
@@ -580,22 +602,69 @@ button.shk-seal:active { transform: scale(0.93); }
   .shk-sec-art {
     display: block; position: absolute; top: 50%;
     translate: 0 -50%;
-    /* Gutter + 420px of deliberate overspill past the viewport edge.
+    /* Default: gutter + 420px of deliberate overspill past the viewport edge.
        The overspill is what sets the *scale*, not the footprint: the visible
        slice is always just the gutter, so a wider box doesn't take more room —
-       it shows less of the dish, larger. That is the printed-menu crop the CEO
-       asked for, and why this number is big. */
-    width: min(calc(50vw - var(--content-max) / 2 + 420px), 980px);
-    aspect-ratio: 1;
+       it shows less of the dish, larger. That is the printed-menu crop, and why
+       this number is big.
+
+       --art-w / --art-ratio exist because that only holds for a roughly SQUARE
+       dish. A column-shaped one (a spring roll is 0.26 wide-to-tall) cannot be
+       cropped by the viewport edge: to make it wide enough to reach the edge you
+       would have to make it thousands of pixels tall. Such art is shown whole
+       and tall in the gutter instead, sized by --art-w with its own ratio. Both
+       are set per section in App.jsx. */
+    width: var(--art-w, min(calc(50vw - var(--content-max) / 2 + 420px), 980px));
+    aspect-ratio: var(--art-ratio, 1);
     background: var(--art) no-repeat center / contain;
     pointer-events: none;
   }
   /* Anchored from the section's centre line, which is the viewport centre for
      both a contained section and a full-bleed tinted one — so one rule serves
-     both. The -20px lets it just kiss the content edge. */
-  .shk-sec-art--right { left: calc(50% + var(--content-max) / 2 - 20px); }
-  .shk-sec-art--left { right: calc(50% + var(--content-max) / 2 - 20px); }
+     both.
+
+     --art-inset is how far the art is allowed to reach back INSIDE the content
+     column, and it defaults to 20px: just kissing the edge. Only raise it for a
+     section that has real dead space on that side (the Potato Tacos tiers stop
+     ~190px short of the right edge, so the taco can move in and sit beside the
+     small ones). Never raise it for a section whose grid is full — the cards are
+     transparent cut-outs, so the art would show through the gaps between them
+     instead of behind a tile. Set per section in App.jsx (SECTION_ART.inset). */
+  .shk-sec-art--right { left: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
+  .shk-sec-art--left { right: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
+
+  /* Column-shaped art is several times taller than its section, so centring it
+     shows the middle of the dish and hides both ends — a spring roll becomes an
+     anonymous wall of shrimp. Anchor it just above the section top instead: the
+     guest meets the end of the roll, where the fresh veg and mango are, and the
+     rest runs off down the page.
+
+     --art-rise is how far above its own section the art starts, set per section
+     in App.jsx. Tall art wants to break INTO the block above rather than begin
+     in the gap between them: starting in the neighbour's tinted band is what
+     makes it read as one column running down the page instead of a picture
+     parked beside a heading. Raise it only as far as that neighbour's gutter is
+     empty — the roll clears the RULE block's longest line by ~120px at 1440. */
+  .shk-sec-art--top { top: 0; translate: 0 calc(-1 * var(--art-rise, 140px)); }
+
+  /* Art that owns half the content column (the split Salads section) is not a
+     crop in a gutter — it is the second thing on the page after the heading, so
+     it hangs off the heading rather than floating in the middle of the band. The
+     offset clears the title's own box; --art-top overrides it per section if a
+     heading ever gets taller. translate is reset to 0 because top is now an
+     absolute anchor, not a centre line. */
+  .shk-sec-art--under { top: var(--art-top, 104px); translate: 0 0; }
+
 }
+
+/* No produce garnish in the gutter. Circular cut-outs of real produce photos
+   were built here and rejected on sight: beside dish photographs they read as
+   stickers stuck to the margin, and the eye keeps going to them instead of to
+   the food. The gutter belongs to SECTION_ART alone — one big photograph of an
+   actual dish per section, nothing orbiting it. The site's fruit lives in two
+   places on purpose: the hero scatter and the falling sliceable layer, both
+   vector (lib/fruitArt.jsx). Do not reintroduce a third. */
+
 /* ---- Brand footer (deepest green, closes the dark CTA → footer run) ---- */
 .shk-foot { background: transparent; color: var(--text-on-dark); }
 .shk-foot__inner {
@@ -635,7 +704,61 @@ button.shk-seal:active { transform: scale(0.93); }
   margin-inline: calc(50% - 50vw);
   padding-inline: calc(50vw - 50%);
 }
-.shk-app--wide .shk-app__grid { grid-template-columns: repeat(5, 1fr); gap: clamp(20px, 2vw, 40px); }
+.shk-app--wide .shk-app__grid { grid-template-columns: repeat(var(--cols-wide, 5), 1fr); gap: clamp(20px, 2vw, 40px); }
+
+/* ---- Showcase section (fewer, much larger dishes) --------------------------
+   Five-across is the menu's default density: it fits the whole range on one
+   screen and reads as a list. A showcase section trades that reach for
+   appetite — three across, with the photo scaled up to match, so the food is
+   the thing you see rather than the name under it.
+   Both variables are needed: dropping to 3 columns alone only widens the empty
+   column, because --card-media is what actually sizes the food (see
+   .shk-card__media). Use it on sections whose photography can carry the size —
+   at 320px a soft or badly-lit shot has nowhere to hide. */
+.shk-app--wide .shk-app__section--showcase {
+  --cols-wide: 3;
+  --card-media: clamp(200px, 24vw, 320px);
+}
+/* A card with no photograph has nothing to enlarge. At showcase size its empty
+   placeholder becomes the biggest shape in the section and the two real dishes
+   read as the exception. Hold the photoless ones at roughly the old size so the
+   section still leads with food. Rows stay tidy because the grid is
+   align-items:start. Delete this once every dish in a showcase section is shot. */
+.shk-app--wide .shk-app__section--showcase .shk-card--coming-soon {
+  --card-media: clamp(140px, 15vw, 190px);
+}
+
+/* ---- Split section (photograph owns one half, dishes the other) -------
+   Showcase makes the food bigger; split goes further and gives half the
+   content column to a single oversized photograph, with the dishes two-up in
+   the other half. The grid is MOVED, not just narrowed: margin-inline-start
+   pushes it into the right half so the left half is genuinely empty, which is
+   the only reason the art is allowed a 600px inset (cards are transparent
+   cut-outs — art behind a filled grid shows through the gaps).
+   Cost is real: half as many dishes per screen. Reserved for sections where
+   the photograph is the selling argument. Set in App.jsx (SECTION_SPLIT), and
+   the matching SECTION_ART entry must carry inset: 600. */
+.shk-app--wide .shk-app__section--split {
+  --cols-wide: 2;
+  /* Two columns inside half of --content-max, so the media has to come back
+     down from the 320px showcase size or the cards overflow their column. */
+  --card-media: clamp(180px, 19vw, 264px);
+}
+.shk-app--wide .shk-app__section--split .shk-app__grid,
+.shk-app--wide .shk-app__section--split .shk-rows {
+  margin-inline-start: 50%;
+}
+/* The split section has already given half its width to the photograph, so the
+   rows keep a single column — two columns inside 600px would set the names in
+   a gutter barely wider than the price seal beside them. */
+.shk-app--wide .shk-app__section--split .shk-rows { grid-template-columns: 1fr; }
+/* The title stays over the empty half at full width — it is the one thing that
+   may sit above the photograph, and it is set in royal green on a light tint,
+   so it holds. Nudge it clear of the art's top edge. */
+.shk-app--wide .shk-app__section--split .shk-app__sec-title {
+  position: relative;
+  z-index: 1;
+}
 .shk-app--wide .shk-tabs { padding-left: 32px; padding-right: 32px; }
 .shk-app--wide .shk-app__sec-title { font-size: clamp(2.6rem, 4vw, 4rem); }
 
@@ -799,13 +922,24 @@ button.shk-seal:active { transform: scale(0.93); }
 /* ---- Slice counter (SliceScore.jsx) ----
    Bottom-left, opposite the Order button. z-index 50 keeps it under the cart
    (55) and the scrims (70) — a toy must never sit on top of the thing the guest
-   actually came to do. Absent entirely until the first slice. */
+   actually came to do. Absent entirely until the first slice.
+
+   PURPLE IS THE GAME'S COLOUR, AND ONLY THE GAME'S.
+   It was royal green, which is also the page, the headings, the resting Order
+   button and the section art — so the one element on screen that is play rather
+   than menu was painted the same colour as everything that is not. Brand purple
+   (antioxidant purple, --purple-700) separates them: the counter only exists
+   once you have sliced something, so the moment it appears the guest sees a new
+   colour arrive and reads it as a different kind of thing.
+   This is free precisely because 82cfc15 moved "in your order" off purple and
+   onto red — purple no longer claims a state, so the toy can have it. Do not
+   reuse it for anything transactional. */
 .shk-slicer {
   position: fixed; left: var(--space-4); bottom: var(--space-4); z-index: 50;
   display: inline-flex; align-items: center; gap: var(--space-3);
   padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
-  background: var(--royal-green); color: var(--cream-50);
+  background: var(--brand-purple); color: var(--cream-50);
   box-shadow: var(--shadow-lg);
   pointer-events: none; /* decorative readout — never intercepts a tap */
   transition: transform 0.22s var(--ease-out), background 0.3s var(--ease-out);
@@ -1070,16 +1204,16 @@ button.shk-seal:active { transform: scale(0.93); }
   position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 55;
   display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;
   padding: var(--space-3) var(--space-5); border: none; border-radius: var(--radius-pill);
-  background: var(--brand-purple); color: var(--cream-50); box-shadow: var(--shadow-lg);
+  background: var(--selected); color: var(--cream-50); box-shadow: var(--shadow-lg);
   font-family: var(--font-body); font-size: var(--text-base); font-weight: var(--fw-semibold);
   transition: transform 0.16s var(--ease-out), background 0.16s var(--ease-out);
 }
-.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--purple-600); }
+.shk-orderfab:not(.shk-orderfab--empty):hover { background: var(--selected-hover); }
 .shk-orderfab:hover { transform: translateY(-2px); }
 .shk-orderfab:active { transform: translateY(0); }
 .shk-orderfab__icon { display: grid; place-items: center; }
 .shk-orderfab__icon svg { width: 20px; height: 20px; }
-.shk-orderfab__count { background: #fff; color: var(--purple-700); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
+.shk-orderfab__count { background: #fff; color: var(--selected-ink); border-radius: var(--radius-circle); min-width: 22px; height: 22px; padding: 0 6px; display: grid; place-items: center; font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 .shk-orderfab__total { font-family: var(--font-mono); font-weight: var(--fw-bold); font-feature-settings: var(--num-feature); }
 /* Empty state: friendly red CTA to start an order. */
 .shk-orderfab--empty { background: var(--royal-green); color: var(--cream-50); }
@@ -1273,14 +1407,22 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__priceitem { cursor: default; }
 .shk-mana__priceitem:hover { transform: none; }
 .shk-mana__priceitem .shk-seal { width: 64%; height: 64%; font-size: clamp(19px, 2.8vw, 33px); }
+/* This is the tier's CATEGORY name (Vege / Meat), not another dish name. At
+   --text-sm with no case change it read as a fourth label in a row of dish
+   labels; uppercase + a size above the dish names makes it head the row.
+   0.08em tracking is the same figure .shk-mana__tier-badge uses — caps need
+   the extra space to stay legible at this weight. */
 .shk-mana__price-label {
-  font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--text-sm);
-  color: var(--text-strong); letter-spacing: 0.02em; text-align: center;
+  font-family: var(--font-sans); font-weight: var(--fw-bold);
+  font-size: clamp(var(--text-md), 1.5vw, var(--text-xl));
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-strong); text-align: center;
 }
 .shk-mana__col.is-premium .shk-mana__price-label { color: var(--honey-300); }
 .shk-mana__disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
-/* Quick-add dot on each manakish — tap to add; fills bright purple while the
-   dish is in the order. */
+/* Quick-add dot on each manakish — tap to add; fills with the selection colour
+   while the dish is in the order, so the dot and the Order button always read
+   as the same state. */
 .shk-mana__dot {
   position: absolute; top: 5px; right: 5px; z-index: 3; cursor: pointer;
   width: 19px; height: 19px; border-radius: 50%; box-sizing: border-box;
@@ -1291,8 +1433,8 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__dot:hover { transform: scale(1.18); border-color: var(--text-strong); }
 .shk-mana__dot:active { transform: scale(0.9); }
 .shk-mana__dot.is-on {
-  background: var(--purple-400); border-color: #fff;
-  box-shadow: 0 0 0 2px rgba(154, 79, 149, 0.45), 0 1px 4px rgba(0, 0, 0, 0.25);
+  background: var(--selected); border-color: #fff;
+  box-shadow: 0 0 0 2px var(--selected-glow), 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 .shk-mana__disc-ph {
   width: 88%; height: 88%; border-radius: 50%;
@@ -1386,6 +1528,10 @@ button.shk-seal:active { transform: scale(0.93); }
   list-style: none; margin: 0; padding: 0;
   display: grid; grid-template-columns: 1fr; row-gap: 2px;
 }
+/* When rows follow a card grid in the same group (a section where only some
+   dishes are photographed), they need air — otherwise the first row reads as a
+   caption hanging off the last card. */
+.shk-app__grid + .shk-rows { margin-top: clamp(20px, 2.6vw, 40px); }
 @media (min-width: 960px) {
   .shk-rows { grid-template-columns: 1fr 1fr; column-gap: clamp(40px, 6vw, 96px); }
 }
