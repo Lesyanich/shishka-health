@@ -54,22 +54,24 @@ export function DishCard({
     .join(" ");
 
   return (
+    /*
+      Coming-soon cards open their dialog like any other. Only ORDERING is
+      gated (the quick-add seal below) — the description, photo and nutrition
+      are information a guest is entitled to whether or not the dish is in
+      stock today, and a tile that silently swallows a click reads as broken.
+      So: no aria-disabled, no tabIndex -1, no stripped handler.
+    */
     <div
       className={cls}
       role="button"
-      tabIndex={comingSoon ? -1 : 0}
-      onClick={comingSoon ? undefined : onClick}
-      onKeyDown={
-        comingSoon
-          ? undefined
-          : (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onClick?.();
-              }
-            }
-      }
-      aria-disabled={comingSoon || undefined}
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       {...rest}
     >
       <div className="shk-card__media">
