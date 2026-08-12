@@ -231,7 +231,19 @@ const HERO_FILL_TARGET = 0.96;
 const HERO_FILL_MAX = 1.35;
 
 async function measureFill(src) {
-  const bmp = await createImageBitmap(await (await fetch(src, { mode: "cors" })).blob());
+  /*
+    The Accept header is load-bearing, not boilerplate. In production these URLs
+    go through /_vercel/image, which content-negotiates the format — and a bare
+    fetch() sends `Accept: * / *`, for which Vercel answers JPEG. JPEG has no
+    alpha, so every pixel reads as opaque, the bounding box below comes out as
+    the whole square, and the frame is silently scored "already full" (scale 1)
+    instead of its real 1.23. The <img> next to us is unaffected: the browser
+    sends its own image/* Accept and gets a format that keeps the transparency.
+    Caught in production on the Fattoush frame, which is the one .webp source in
+    the ring and rendered visibly smaller than the other six because of it.
+  */
+  const res = await fetch(src, { mode: "cors", headers: { Accept: "image/webp,image/apng,image/png,image/*,*/*" } });
+  const bmp = await createImageBitmap(await res.blob());
   const S = 64;
   const ctx = new OffscreenCanvas(S, S).getContext("2d", { willReadFrequently: true });
   ctx.drawImage(bmp, 0, 0, S, S);
