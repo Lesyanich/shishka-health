@@ -783,18 +783,32 @@ button.shk-seal:active { transform: scale(0.93); }
    Index 0 sits at 12 o'clock and the ring runs clockwise from there, which
    keeps DOM order, menu order and reading order the same thing.
 
-   Gated on @supports: without CSS trig the selectors never apply and the
-   section stays the ordinary centred grid, which is a perfectly good menu. */
-.shk-app--wide .shk-app__section--orbit { --card-media: clamp(130px, 13vw, 176px); }
-/* Below --wide there is no room for a ring, so the middle photograph is not
-   rendered at all rather than being dropped into the 2-column flow. */
+   Gated twice, and both gates matter:
+
+   @supports — without CSS trig the selectors never apply and the section stays
+   the ordinary centred grid, which is a perfectly good menu.
+
+   1280px — the ring needs room the --wide breakpoint (960px) does not
+   guarantee. The binding pair is a long name against its neighbour's bowl:
+   "Pumpkin, Beetroot & Feta" wraps wide enough to cross into Smoked Salmon by
+   3px at 1200 and to touch it exactly at 1250. 1280 is the first width where
+   every gap is measurably positive (4px between cards, 16px to the middle),
+   and it is a real laptop width rather than a round number. Below it the plain
+   grid ships, which is what every other section uses anyway. */
+/* Below the ring's threshold the middle photograph is not rendered at all,
+   rather than being dropped into the 2-column flow. */
 .shk-orbit__hero { display: none; }
 
 @supports (top: calc(sin(0.25turn) * 10px)) {
+ @media (min-width: 1280px) {
+  /* Scoped in here with the rest: if the ring is not running, the section must
+     size its cards like every other section, not keep the ring's tighter
+     override and render a subtly-smaller grid for no reason. */
+  .shk-app--wide .shk-app__section--orbit { --card-media: clamp(130px, 13vw, 176px); }
   .shk-app--wide .shk-app__section--orbit .shk-orbit {
     /* Radius drives everything else. The container is the ring plus one card
        width plus breathing room, so nothing in the ring clips at the edges. */
-    --orbit-r: clamp(230px, 26vw, 375px);
+    --orbit-r: clamp(230px, 27vw, 400px);
     position: relative;
     display: block;
     width: min(100%, calc(var(--orbit-r) * 2 + var(--card-media) + 150px));
@@ -822,10 +836,34 @@ button.shk-seal:active { transform: scale(0.93); }
     left: 50%;
     top: 50%;
     translate: -50% -50%;
-    width: clamp(200px, 22vw, 310px);
+    /* Sized to the ring's INNER CONTENT, not its bounding boxes. A slot's box
+       is 224x292 but its bowl is only 176 wide and its name is centred, so the
+       box corners aimed at the middle are empty. The hero is a square holding a
+       round bowl on transparent ground, so its corners are empty too. Letting
+       those two sets of corners interleave buys ~90px of diameter that a
+       box-to-box fit would have thrown away. Verified against the rendered
+       photo and text rects, not the boxes.
+
+       Sized from BOTH ring variables, never its own clamp. Two earlier attempts
+       failed and it is worth recording why:
+
+       - clamp(200px, 30vw, 430px): correct at 1512, overlapped the bottom two
+         bowls by 8px at 1280. An independent clamp knows nothing about the ring.
+       - calc(--orbit-r * 1.07): a fixed ratio to the radius alone. Also wrong,
+         because --card-media tops out at 176px (1354px viewport) while the
+         radius keeps growing to its own ceiling (1481px). Between those two
+         widths the cards are proportionally smaller, so no single ratio holds.
+
+       The room in the middle is what the radius gives minus what the cards
+       take, so the expression says exactly that. Coefficients are a linear fit
+       to the measured limit at three widths, less 40px of deliberate air.
+       Re-measure if --card-media or the slot's padding changes. */
+    width: calc(var(--orbit-r) * 2.11 - var(--card-media) * 2.17 - 40px);
     aspect-ratio: 1;
     place-items: center;
-    /* Scenery, not a target: the ring is what the guest clicks. */
+    /* Scenery, not a target: the ring is what the guest clicks. And with the
+       hero this large it now overlaps the slots' empty corners, so without
+       this it would start swallowing clicks meant for the salads. */
     pointer-events: none;
   }
   /* Frames stack in one cell and cross-fade, so a swap never flashes the
@@ -839,6 +877,7 @@ button.shk-seal:active { transform: scale(0.93); }
     transition: opacity 900ms ease;
   }
   .shk-app--wide .shk-app__section--orbit .shk-orbit__hero-img.is-on { opacity: 1; }
+ }
 }
 @media (prefers-reduced-motion: reduce) {
   .shk-orbit__hero-img { transition: none; }
