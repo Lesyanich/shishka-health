@@ -19,6 +19,7 @@ import { Cart } from "./components/cart/Cart.jsx";
 import { FruitFall } from "./components/menu/FruitFall.jsx";
 import { SliceScore } from "./components/menu/SliceScore.jsx";
 import { FruitSymbols } from "./lib/fruitArt.jsx";
+import { optimizedSrc } from "./lib/img.js";
 import { useCart } from "./state/cart.jsx";
 import { manakishPool as getManakishPool, saucePool as getSaucePool, bundleFloor } from "./lib/bundles.js";
 import {
@@ -71,29 +72,10 @@ const SECTION_TINT = {
   public/assets/section/.
 */
 const SECTION_ART = {
-  // Salads is the one SPLIT section: the grid is pushed into the right half and
-  // the photograph owns the left, so the inset is half the content column (600)
-  // plus overspill off the viewport edge. Safe only because the left half is
-  // deliberately empty — see .shk-app__section--split in components.css.
+  // Salads has no gutter art: it is the ORBIT section, and its big photograph
+  // lives in the middle of the ring rather than off in the margin. See
+  // SECTION_ORBIT / OrbitHero below.
   //
-  // pool instead of src: the big salad rotates, so the section is not identical
-  // on every visit. Every salad that gets photographed can be added here.
-  Salads: {
-    pool: [
-      "/assets/section/salads-fattoush.webp",
-      "/assets/section/salads-tabbouleh.webp",
-    ],
-    side: "left",
-    inset: 600,
-    // align "under": the bowl starts just below the section title instead of
-    // being centred in the band. Centring is right when the art is a crop in a
-    // narrow gutter, but here it owns half the column against a 1800px-tall
-    // section — centred, it floated in the middle with a big hole above it and
-    // read as unrelated to the heading. Anchored under the title, the eye goes
-    // Salads → bowl → the two dishes beside it.
-    align: "under",
-    width: "min(calc(50vw - var(--content-max) / 2 + 760px), 1040px)",
-  },
   // inset: how far the art may reach back inside the content column. The tiers
   // layout stops ~190px short of the right edge, so the big taco can move into
   // that dead space and sit beside the small ones — showing ~70% of itself
@@ -174,7 +156,7 @@ function SectionArt({ cfg }) {
   with the photo scaled up to match (.shk-app__section--showcase). Reserved for
   sections where the photography is strong enough to be seen big.
 */
-const SECTION_SHOWCASE = new Set(["Salads"]);
+const SECTION_SHOWCASE = new Set([]);
 
 /*
   Split sections go further: two dishes per row, pushed into the right half of
@@ -182,8 +164,73 @@ const SECTION_SHOWCASE = new Set(["Salads"]);
   photograph. It is the most expensive layout on the page — it halves how many
   dishes a guest sees per screen — so it is worth it only where the photograph
   is the selling argument. Pairs with SECTION_ART[name].inset = 600.
+
+  Empty since Salads moved to ORBIT: split put the grid in the right half and
+  the art in the left, but the art only covered the top ~900px of an 1800px
+  section, so the bottom half of the left column was a void. Kept because the
+  mechanism is sound for a SHORT section; do not point it at a long one.
 */
-const SECTION_SPLIT = new Set(["Salads"]);
+const SECTION_SPLIT = new Set([]);
+
+/*
+  Orbit: one oversized photograph in the middle of the section with the dishes
+  ringed around it. Unlike split (art in a margin) the art is the centre of the
+  composition, so there is no dead column — the empty middle IS the art.
+
+  The centre photograph rotates through the section's own dish photos, so it
+  costs no extra assets and any dish that gets shot joins the rotation for free.
+  Only worth it for a section with enough photographed dishes to close a ring
+  (>= 5); below that the ring reads as a broken circle. Falls back to the plain
+  grid below --wide, where there is no room for a ring.
+*/
+const SECTION_ORBIT = new Set(["Salads"]);
+
+/*
+  How long one photograph holds the centre of an orbit section.
+
+  Short enough to be noticed while the guest is reading the ring, long enough
+  not to nag. Unlike ART_ROTATE_MS (wall-clock bucketed, 12 min, deliberately
+  reproducible) this one is per-visit and genuinely animated — it is the
+  section's motion, not its seed.
+*/
+const ORBIT_ROTATE_MS = 7000;
+
+/*
+  The rotating centre of an orbit section.
+
+  Frames come from the dishes themselves rather than a curated pool: whatever is
+  photographed in this section is what the middle cycles through, in menu order.
+  Two <img> layers cross-fade so a frame swap never flashes the background.
+
+  Honours prefers-reduced-motion by holding the first frame — a photo that
+  changes under you is exactly the kind of unrequested motion that rule exists
+  for.
+*/
+function OrbitHero({ items }) {
+  const frames = items.filter((d) => d.cardImage).map((d) => d.cardImage);
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (frames.length < 2) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setI((n) => (n + 1) % frames.length), ORBIT_ROTATE_MS);
+    return () => clearInterval(id);
+  }, [frames.length]);
+
+  if (frames.length === 0) return null;
+  return (
+    <div className="shk-orbit__hero" aria-hidden="true">
+      {frames.map((src, n) => (
+        <img
+          key={src}
+          className={`shk-orbit__hero-img${n === i % frames.length ? " is-on" : ""}`}
+          src={optimizedSrc(src, 1080)}
+          alt=""
+          loading={n === 0 ? "eager" : "lazy"}
+        />
+      ))}
+    </div>
+  );
+}
 
 /*
   Stable partition: dishes that have a photograph keep their display_order at
@@ -479,7 +526,9 @@ export default function App() {
                 ref={(el) => (sectionRefs.current[cat.id] = el)}
                 className={`shk-app__section ${SECTION_TINT[cat.name] ?? ""} ${
                   SECTION_SHOWCASE.has(cat.name) ? "shk-app__section--showcase" : ""
-                } ${SECTION_SPLIT.has(cat.name) ? "shk-app__section--split" : ""}`}
+                } ${SECTION_SPLIT.has(cat.name) ? "shk-app__section--split" : ""} ${
+                  SECTION_ORBIT.has(cat.name) ? "shk-app__section--orbit" : ""
+                }`}
               >
                 <SectionArt cfg={SECTION_ART[cat.name]} />
                 {cat.name === "Potato Tacos" ? (
@@ -499,9 +548,26 @@ export default function App() {
 
                     {(() => {
                       const subs = subcategoriesOf(cat.items, cat.id);
+                      const orbit = SECTION_ORBIT.has(cat.name);
+                      /*
+                        The ring needs to know how many cards it is placing
+                        (--n) so the CSS can space them evenly around the
+                        circle, and each card needs its index (--i). Below
+                        --wide both are ignored and this is a plain grid.
+                      */
                       const cards = (items) => (
-                        <div className="shk-app__grid">
-                          {items.map((dish) => renderDish(dish, cat.name))}
+                        <div
+                          className={`shk-app__grid${orbit ? " shk-orbit" : ""}`}
+                          style={orbit ? { "--n": items.length } : undefined}
+                        >
+                          {orbit && <OrbitHero items={items} />}
+                          {items.map((dish, n) => (
+                            <Fragment key={dish.id}>
+                              {orbit
+                                ? <div className="shk-orbit__slot" style={{ "--i": n }}>{renderDish(dish, cat.name)}</div>
+                                : renderDish(dish, cat.name)}
+                            </Fragment>
+                          ))}
                         </div>
                       );
                       const rows = (items) => (

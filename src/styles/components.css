@@ -323,9 +323,12 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-card:hover { transform: scale(1.05); }
 .shk-card:active { transform: scale(0.97); }
 
-/* Coming soon / out of stock: visible but not orderable. */
-.shk-card--coming-soon { cursor: default; opacity: 0.55; }
-.shk-card--coming-soon:hover { transform: none; }
+/* Coming soon / out of stock: not ORDERABLE, but still readable — the card
+   opens its dialog like any other, only the quick-add seal is inert. A guest
+   who cannot yet buy the dish is exactly the guest most likely to want to read
+   about it. Held at 0.78 rather than 0.55: faint enough to read as "not yet",
+   solid enough that it does not look broken next to its neighbours. */
+.shk-card--coming-soon { opacity: 0.78; }
 
 /* The photo is sized by --card-media, NOT by the grid column. The cut-outs are
    transparent with no tile chrome, so a card that stretched to fill its column
@@ -723,8 +726,15 @@ button.shk-seal:active { transform: scale(0.93); }
    placeholder becomes the biggest shape in the section and the two real dishes
    read as the exception. Hold the photoless ones at roughly the old size so the
    section still leads with food. Rows stay tidy because the grid is
-   align-items:start. Delete this once every dish in a showcase section is shot. */
-.shk-app--wide .shk-app__section--showcase .shk-card--coming-soon {
+   align-items:start. Delete this once every dish in a showcase section is shot.
+
+   Keyed on :has(.shk-card__ph) — the placeholder disc — because "has no photo"
+   is the actual condition. This used to key on .shk-card--coming-soon as a
+   proxy, which was wrong the moment a coming-soon dish had a photo: three
+   photographed Salads rendered at 190px beside their 264px neighbours and the
+   grid became a lie about portion size. Stock state and photo state are
+   unrelated; do not conflate them again. */
+.shk-app--wide .shk-app__section--showcase .shk-card:has(.shk-card__ph) {
   --card-media: clamp(140px, 15vw, 190px);
 }
 
@@ -759,6 +769,120 @@ button.shk-seal:active { transform: scale(0.93); }
   position: relative;
   z-index: 1;
 }
+/* ---- Orbit section (photograph in the middle, dishes ringed around it) -----
+   Split's failure mode was a long section: the art covered the top half of the
+   left column and the bottom half was a void. Orbit removes the possibility —
+   the empty middle IS where the photograph goes, so the composition closes no
+   matter how tall the ring gets.
+
+   Geometry lives entirely in CSS trig off two custom properties set in App.jsx:
+   --n (how many dishes are in the ring) and --i (this dish's index). Nothing
+   here hardcodes a dish count, so the ring re-spaces itself the day a salad is
+   added or gets its first photo.
+
+   Index 0 sits at 12 o'clock and the ring runs clockwise from there, which
+   keeps DOM order, menu order and reading order the same thing.
+
+   Gated twice, and both gates matter:
+
+   @supports — without CSS trig the selectors never apply and the section stays
+   the ordinary centred grid, which is a perfectly good menu.
+
+   1280px — the ring needs room the --wide breakpoint (960px) does not
+   guarantee. The binding pair is a long name against its neighbour's bowl:
+   "Pumpkin, Beetroot & Feta" wraps wide enough to cross into Smoked Salmon by
+   3px at 1200 and to touch it exactly at 1250. 1280 is the first width where
+   every gap is measurably positive (4px between cards, 16px to the middle),
+   and it is a real laptop width rather than a round number. Below it the plain
+   grid ships, which is what every other section uses anyway. */
+/* Below the ring's threshold the middle photograph is not rendered at all,
+   rather than being dropped into the 2-column flow. */
+.shk-orbit__hero { display: none; }
+
+@supports (top: calc(sin(0.25turn) * 10px)) {
+ @media (min-width: 1280px) {
+  /* Scoped in here with the rest: if the ring is not running, the section must
+     size its cards like every other section, not keep the ring's tighter
+     override and render a subtly-smaller grid for no reason. */
+  .shk-app--wide .shk-app__section--orbit { --card-media: clamp(130px, 13vw, 176px); }
+  .shk-app--wide .shk-app__section--orbit .shk-orbit {
+    /* Radius drives everything else. The container is the ring plus one card
+       width plus breathing room, so nothing in the ring clips at the edges. */
+    --orbit-r: clamp(230px, 27vw, 400px);
+    position: relative;
+    display: block;
+    width: min(100%, calc(var(--orbit-r) * 2 + var(--card-media) + 150px));
+    aspect-ratio: 1;
+    margin-inline: auto;
+    /* Clear of the section title: the top card sits on the container's very
+       top edge, so without this the ring starts under the heading's descenders. */
+    margin-block-start: 18px;
+  }
+  /* The ring trades the description for the geometry. At eight-ish words a
+     card's text block is the tallest thing in the slot, and pointing seven of
+     them at a circle's centre closes the hole the photograph needs. Name, kcal
+     and price survive; the description is one click away in the dialog. */
+  .shk-app--wide .shk-app__section--orbit .shk-card__desc { display: none; }
+  .shk-app--wide .shk-app__section--orbit .shk-orbit__slot {
+    position: absolute;
+    width: calc(var(--card-media) + 48px);
+    left: calc(50% + sin(var(--i) / var(--n) * 1turn) * var(--orbit-r));
+    top: calc(50% - cos(var(--i) / var(--n) * 1turn) * var(--orbit-r));
+    translate: -50% -50%;
+  }
+  .shk-app--wide .shk-app__section--orbit .shk-orbit__hero {
+    display: grid;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    /* Sized to the ring's INNER CONTENT, not its bounding boxes. A slot's box
+       is 224x292 but its bowl is only 176 wide and its name is centred, so the
+       box corners aimed at the middle are empty. The hero is a square holding a
+       round bowl on transparent ground, so its corners are empty too. Letting
+       those two sets of corners interleave buys ~90px of diameter that a
+       box-to-box fit would have thrown away. Verified against the rendered
+       photo and text rects, not the boxes.
+
+       Sized from BOTH ring variables, never its own clamp. Two earlier attempts
+       failed and it is worth recording why:
+
+       - clamp(200px, 30vw, 430px): correct at 1512, overlapped the bottom two
+         bowls by 8px at 1280. An independent clamp knows nothing about the ring.
+       - calc(--orbit-r * 1.07): a fixed ratio to the radius alone. Also wrong,
+         because --card-media tops out at 176px (1354px viewport) while the
+         radius keeps growing to its own ceiling (1481px). Between those two
+         widths the cards are proportionally smaller, so no single ratio holds.
+
+       The room in the middle is what the radius gives minus what the cards
+       take, so the expression says exactly that. Coefficients are a linear fit
+       to the measured limit at three widths, less 40px of deliberate air.
+       Re-measure if --card-media or the slot's padding changes. */
+    width: calc(var(--orbit-r) * 2.11 - var(--card-media) * 2.17 - 40px);
+    aspect-ratio: 1;
+    place-items: center;
+    /* Scenery, not a target: the ring is what the guest clicks. And with the
+       hero this large it now overlaps the slots' empty corners, so without
+       this it would start swallowing clicks meant for the salads. */
+    pointer-events: none;
+  }
+  /* Frames stack in one cell and cross-fade, so a swap never flashes the
+     section tint through the gap. */
+  .shk-app--wide .shk-app__section--orbit .shk-orbit__hero-img {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 900ms ease;
+  }
+  .shk-app--wide .shk-app__section--orbit .shk-orbit__hero-img.is-on { opacity: 1; }
+ }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shk-orbit__hero-img { transition: none; }
+}
+
 .shk-app--wide .shk-tabs { padding-left: 32px; padding-right: 32px; }
 .shk-app--wide .shk-app__sec-title { font-size: clamp(2.6rem, 4vw, 4rem); }
 

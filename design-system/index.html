@@ -125,7 +125,7 @@
       <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
       <a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
       <a href="#hero">Hero</a><a href="#secart">Section art</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
-      <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#manakish">Potato Tacos</a><a href="#states">States</a>
+      <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#orbit">Orbit</a><a href="#manakish">Potato Tacos</a><a href="#states">States</a>
       <a href="#fruit">Fruit</a><a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
     </nav>
 
@@ -861,6 +861,62 @@ one renders a ~380px empty disc — Salads had five in a row and its bottom half
 dishes take .shk-app__grid; the rest fall to .shk-rows underneath (.shk-app__grid + .shk-rows adds the gap). A wholly
 photoless group comes out of the same branch as rows, exactly as before, and a dish rejoins the grid the day it gets a photo.
 Inside .shk-app__section--split the rows follow the grid into the far half (margin-inline-start:50%) and stay single-column.</div>
+    </section>
+
+    <!-- ═══════════ ORBIT ═══════════ -->
+    <section class="ds-section" id="orbit">
+      <div class="ds-h">Orbit Section</div>
+      <p class="ds-lead">A section layout, not a component: one photograph in the middle that cross-fades between the
+      section's own dishes every 7s, with the dishes themselves laid on a ring around it. Built for Salads, which had a
+      photogenic line-up and an 800px hole where the old split layout left the right column to fend for itself.
+      Geometry is pure CSS trig off two custom properties — <code>--n</code> (how many are in the ring) and
+      <code>--i</code> (this one's index) — so nothing hardcodes a dish count and the ring re-spaces itself the day a
+      salad is added or gets its first photo. Index 0 sits at 12 o'clock and it runs clockwise, keeping DOM order, menu
+      order and reading order the same thing.</p>
+      <div class="shk-app--wide">
+        <div class="shk-app__section shk-app__section--orbit">
+          <!-- Scaled down for the guide via the same two knobs the real thing uses:
+               production is --orbit-r:400px / --card-media:176px at 1512. -->
+          <div class="shk-app__grid shk-orbit" style="--n:7;--orbit-r:300px;--card-media:132px">
+            <div class="shk-orbit__hero" aria-hidden="true">
+              <img class="shk-orbit__hero-img is-on" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/cb75a0e0-9ab1-496d-9b99-6c40d35c8c93/menu-tabbouleh.png?v=1600" />
+              <img class="shk-orbit__hero-img" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/c6146cac-6a05-41fb-a559-4cffdc5fc41b/menu-fattoush.webp?v=1785294288930" />
+            </div>
+            <div class="shk-orbit__slot" style="--i:0"><div class="shk-card" role="button" tabindex="0"><div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Tabbouleh" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/cb75a0e0-9ab1-496d-9b99-6c40d35c8c93/menu-tabbouleh.png?v=1600" /><span class="shk-card__media-scrim"></span></div><div class="shk-card__body"><span class="shk-card__kcal-pill"><b>308</b> kcal</span><div class="shk-card__topline"><span class="shk-card__name">Tabbouleh</span></div></div></div></div>
+            <div class="shk-orbit__slot" style="--i:1"><div class="shk-card" role="button" tabindex="0"><div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Fattoush" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/c6146cac-6a05-41fb-a559-4cffdc5fc41b/menu-fattoush.webp?v=1785294288930" /><span class="shk-card__media-scrim"></span></div><div class="shk-card__body"><span class="shk-card__kcal-pill"><b>333</b> kcal</span><div class="shk-card__topline"><span class="shk-card__name">Fattoush</span></div></div></div></div>
+            <div class="shk-orbit__slot" style="--i:2"><div class="shk-card" role="button" tabindex="0"><div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Chicken Caesar Tawook" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/90f521cf-4064-409a-84a5-abe47b3bc46c/customer.png?v=20260809d" /><span class="shk-card__media-scrim"></span></div><div class="shk-card__body"><span class="shk-card__kcal-pill"><b>507</b> kcal</span><div class="shk-card__topline"><span class="shk-card__name">Chicken Caesar Tawook</span></div></div></div></div>
+            <div class="shk-orbit__slot" style="--i:3"><div class="shk-card" role="button" tabindex="0"><div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Greek Salad" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/1a8c010c-5684-453c-9e02-b14df1020229/customer.png?v=20260809b" /><span class="shk-card__media-scrim"></span></div><div class="shk-card__body"><span class="shk-card__kcal-pill"><b>353</b> kcal</span><div class="shk-card__topline"><span class="shk-card__name">Greek Salad</span></div></div></div></div>
+            <div class="shk-orbit__slot" style="--i:4"><div class="shk-card" role="button" tabindex="0"><div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Shrimp Caesar" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/d6dd78a9-395c-458d-96b7-3958ea227f79/customer.png?v=20260809d" /><span class="shk-card__media-scrim"></span></div><div class="shk-card__body"><span class="shk-card__kcal-pill"><b>402</b> kcal</span><div class="shk-card__topline"><span class="shk-card__name">Shrimp Caesar</span></div></div></div></div>
+            <div class="shk-orbit__slot" style="--i:5"><div class="shk-card" role="button" tabindex="0"><div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Smoked Salmon" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/e3c4c04c-6152-4095-b71f-773308cf70d7/customer.png?v=20260809d" /><span class="shk-card__media-scrim"></span></div><div class="shk-card__body"><span class="shk-card__kcal-pill"><b>481</b> kcal</span><div class="shk-card__topline"><span class="shk-card__name">Smoked Salmon</span></div></div></div></div>
+            <div class="shk-orbit__slot" style="--i:6"><div class="shk-card" role="button" tabindex="0"><div class="shk-card__media"><img class="shk-card__img" loading="lazy" alt="Pumpkin, Beetroot &amp; Feta" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/50caeb0d-a3e1-45fa-9d91-e24419dc658a/customer.png?v=20260809b" /><span class="shk-card__media-scrim"></span></div><div class="shk-card__body"><span class="shk-card__kcal-pill"><b>407</b> kcal</span><div class="shk-card__topline"><span class="shk-card__name">Pumpkin, Beetroot &amp; Feta</span></div></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-recipe">shk-app--wide &gt; shk-app__section--orbit &gt; shk-orbit[--n] ( shk-orbit__hero(__hero-img.is-on) + shk-orbit__slot[--i] &gt; shk-card )
+
+OPT IN FROM JS, NOT CSS: App.jsx holds `SECTION_ORBIT`, a Set of category names. Membership adds .shk-app__section--orbit
+and wraps each dish in .shk-orbit__slot; everything else is this stylesheet. The middle photo is its own component
+(`OrbitHero`) that cycles the section's cardImages on a 7s interval and stands still under prefers-reduced-motion.
+
+GATED TWICE, AND BOTH MATTER. @supports (sin()) — without CSS trig the selectors never apply and the section renders as
+the ordinary centred grid, which is a perfectly good menu. min-width:1280px — the ring needs room --wide (960px) does not
+guarantee: at 1250 and below a long name ("Pumpkin, Beetroot & Feta") wraps far enough to touch its neighbour's bowl.
+
+THE MIDDLE PHOTO IS DERIVED, NOT CHOSEN: calc(--orbit-r * 2.11 - --card-media * 2.17 - 40px). Two simpler expressions
+both shipped an overlap at a width nobody had looked at — a bare clamp() knows nothing about the ring, and a fixed ratio
+to --orbit-r alone breaks because --card-media tops out at a different viewport width than the radius does. Re-measure
+the coefficients if --card-media or the slot's 48px padding ever changes.
+
+DESCRIPTIONS ARE HIDDEN IN THE RING (.shk-card__desc display:none). At eight-ish words the text block is the tallest
+thing in a slot, and pointing seven of them at a circle's centre closes the hole the middle photograph needs.
+The hero is pointer-events:none — it overlaps the slots' empty corners by design, and must not eat their clicks.
+
+Photoless dishes never reach the ring at all: `group()` sends them to .shk-rows underneath (see Menu Rows).</div>
+      <div class="ds-src">Demo runs at --orbit-r:300px / --card-media:132px so it fits the guide; production is 400/176 at
+      1512px. Note the ratio between the two is kept at production's ~0.44 deliberately — the card's TEXT does not scale with
+      --card-media, so shrinking the ring harder than this makes the names proportionally huge and the middle photo's formula
+      (fitted at production scale) over-sizes into them. A first pass at 158/60 overlapped by 12px for exactly that reason.
+      Below 1280px this demo correctly falls back to a plain grid.</div>
     </section>
 
     <!-- ═══════════ MANAKISH ═══════════ -->
