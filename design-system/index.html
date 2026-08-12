@@ -875,9 +875,12 @@ Inside .shk-app__section--split the rows follow the grid into the far half (marg
       order and reading order the same thing.</p>
       <div class="shk-app--wide">
         <div class="shk-app__section shk-app__section--orbit">
-          <!-- Scaled down for the guide via the same two knobs the real thing uses:
-               production is --orbit-r:400px / --card-media:176px at 1512. -->
-          <div class="shk-app__grid shk-orbit" style="--n:7;--orbit-r:300px;--card-media:132px">
+          <!-- Scaled down for the guide via the same two knobs the real thing uses. Setting
+               them inline overrides the production derivation below; at 1512 that derivation
+               resolves to --orbit-r:537px / --card-media:160px. Do not shrink --orbit-r below
+               ~360 here: the card TEXT does not scale with it, and at 300 the tall cards
+               overlapped each other by 18px (which this demo did, unnoticed, until 2026-08). -->
+          <div class="shk-app__grid shk-orbit" style="--n:7;--orbit-r:360px;--card-media:132px">
             <div class="shk-orbit__hero" aria-hidden="true">
               <img class="shk-orbit__hero-img is-on" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/cb75a0e0-9ab1-496d-9b99-6c40d35c8c93/menu-tabbouleh.png?v=1600" />
               <img class="shk-orbit__hero-img" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/c6146cac-6a05-41fb-a559-4cffdc5fc41b/menu-fattoush.webp?v=1785294288930" />
@@ -902,21 +905,51 @@ GATED TWICE, AND BOTH MATTER. @supports (sin()) — without CSS trig the selecto
 the ordinary centred grid, which is a perfectly good menu. min-width:1280px — the ring needs room --wide (960px) does not
 guarantee: at 1250 and below a long name ("Pumpkin, Beetroot & Feta") wraps far enough to touch its neighbour's bowl.
 
-THE MIDDLE PHOTO IS DERIVED, NOT CHOSEN: calc(--orbit-r * 2.11 - --card-media * 2.17 - 40px). Two simpler expressions
-both shipped an overlap at a width nobody had looked at — a bare clamp() knows nothing about the ring, and a fixed ratio
-to --orbit-r alone breaks because --card-media tops out at a different viewport width than the radius does. Re-measure
-the coefficients if --card-media or the slot's 48px padding ever changes.
+THE RING IS ALLOWED OUT OF THE TEXT COLUMN, AND THAT IS THE MAIN LEVER. Every other section lives inside --content-max
+(1200px, less __main's 32px gutters = a 1136px column); the tint band only looks full-bleed because the section is pulled
+out to the viewport (margin-inline: 50% - 50vw) and the width put straight back as padding. --orbit-bleed hands part of
+that padding back: clamp(0px, (100vw - --content-max)/2 - 32px, 140px) — the gutter between column and viewport, less
+32px so the ring never touches the glass, capped at 140 so the composition stops spreading on a 4K panel. It self-limits
+(8px at 1280, 124px at 1512). --orbit-r is then DERIVED from the room that buys, not guessed with a vw clamp:
+  --orbit-col: --content-max - 64px;  --orbit-r: (--orbit-col + 2*--orbit-bleed - --card-media - 150px) / 2
+A vw clamp cannot express this, because the bleed and the column hit their ceilings at different widths.
+
+THE MIDDLE PHOTO IS DERIVED TOO, NOT CHOSEN: calc(--orbit-r * 1.98 - --card-media * 1.3 - 155px). Two simpler
+expressions both shipped an overlap at a width nobody had looked at — a bare clamp() knows nothing about the ring, and a
+fixed ratio to --orbit-r alone breaks because --card-media tops out at a different viewport width than the radius does.
+These coefficients are a fit, not a derivation: binary-searched for the largest hero still clearing every slot by 16px,
+sampled at six radii across 405–645px, holding within 2.5px (the 155 carries that error plus the air). They REPLACED an
+earlier 2.11/2.17/40 fit taken over radii 230–400, which drifted badly once the bleed pushed the radius past 500.
+Re-measure if --card-media, the slot's 48px padding, or the bleed ceiling ever changes.
+
+--card-media IS 160 HERE, NOT THE SITE'S 176. The ring's cards are the supporting cast: each 16px off them is ~21px onto
+the middle, and it also bought back the card-to-card gap at the 1280 end (4px before, 24px now).
+
+--hero-fill NORMALISES EACH FRAME, AND IS MEASURED, NOT GUESSED. The dish PNGs carry different amounts of transparent
+margin — content fills anywhere from 78% to 94% of the square — so the same box renders visibly different bowl sizes and
+the food appears to jump on every cross-fade. useHeroFill (App.jsx) draws each frame to a 64x64 OffscreenCanvas, finds
+the alpha bounding box, and sets scale: --hero-fill per image so the content lands at 96% of the box (clamped to 1.35, so
+an already-tight crop is never blown up). It defaults to 1: if OffscreenCanvas or the fetch is unavailable the photo is
+left at its natural size rather than guessed at. Needs same-origin pixels — fine because optimizedSrc() routes through
+/_vercel/image.
 
 DESCRIPTIONS ARE HIDDEN IN THE RING (.shk-card__desc display:none). At eight-ish words the text block is the tallest
 thing in a slot, and pointing seven of them at a circle's centre closes the hole the middle photograph needs.
 The hero is pointer-events:none — it overlaps the slots' empty corners by design, and must not eat their clicks.
 
 Photoless dishes never reach the ring at all: `group()` sends them to .shk-rows underneath (see Menu Rows).</div>
-      <div class="ds-src">Demo runs at --orbit-r:300px / --card-media:132px so it fits the guide; production is 400/176 at
-      1512px. Note the ratio between the two is kept at production's ~0.44 deliberately — the card's TEXT does not scale with
-      --card-media, so shrinking the ring harder than this makes the names proportionally huge and the middle photo's formula
-      (fitted at production scale) over-sizes into them. A first pass at 158/60 overlapped by 12px for exactly that reason.
-      Below 1280px this demo correctly falls back to a plain grid.</div>
+      <div class="ds-src">Demo runs at --orbit-r:360px / --card-media:132px so it fits the guide's 1040px column;
+      production derives 537/160 at 1512px, for a 700px middle photo. MEASURE CLEARANCE RADIALLY, NOT RECT-TO-RECT: the
+      middle photo is round inside a square box, so a card at 45° legitimately overlaps that box's transparent corner —
+      a rect metric reports a 34px "overlap" in production where the eye sees 18px of air. Distance from the ring's centre
+      minus the photo's radius is the number that matters. Here: hero 386px, every card clears it by 21px, nearest two
+      cards 15px apart, nothing spills. The demo keeps a fatter card:radius ratio than production (0.37 vs 0.30) because
+      the card's TEXT does not scale with --card-media — shrink the ring without fattening the cards and the names go
+      proportionally huge. That is a live trap, not a hypothetical: this demo sat at --orbit-r:300px for months with its
+      cards overlapping each other by 18px, and an earlier pass at 158/60 overlapped by 12px. The demo's radius also sits
+      below the 405–645px window the hero coefficients were fitted over, where the expression errs small rather than large
+      — safe here, but do not read demo proportions as production truth. Below 1280px this demo correctly falls back to a
+      plain grid.</div>
     </section>
 
     <!-- ═══════════ MANAKISH ═══════════ -->

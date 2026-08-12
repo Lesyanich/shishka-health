@@ -206,9 +206,72 @@ const ORBIT_ROTATE_MS = 7000;
   changes under you is exactly the kind of unrequested motion that rule exists
   for.
 */
+/*
+  How much of its own square each salad photograph actually fills, and the scale
+  that evens them out.
+
+  The cut-outs are squares of transparent ground with a bowl somewhere in the
+  middle, and the bowl's share of that square runs from 78% to 94% depending on
+  how each shot was cropped. Painted at one size they visibly jump as the centre
+  rotates — the same "why are these different sizes" that the ring's cards were
+  fixed for, just spread over time instead of across a row. Scaling each frame by
+  what it measures evens them out AND spends the empty margin on the food, which
+  is most of what "zoom in" means here: at 96% of the frame the bowl gains ~20%
+  over its natural size before the geometry contributes anything.
+
+  Measured from the decoded pixels because nothing records it: 64x64 is plenty
+  for a bounding box, and it is the alpha channel we need, not detail. The larger
+  of the two axes wins so a scaled frame can never overflow its box.
+
+  A photo on opaque ground measures 1 and is left alone, which is the correct
+  answer for it. Any failure — canvas blocked, fetch refused, no OffscreenCanvas
+  — also lands on 1 and the photo renders exactly as it does today.
+*/
+const HERO_FILL_TARGET = 0.96;
+const HERO_FILL_MAX = 1.35;
+
+async function measureFill(src) {
+  const bmp = await createImageBitmap(await (await fetch(src, { mode: "cors" })).blob());
+  const S = 64;
+  const ctx = new OffscreenCanvas(S, S).getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(bmp, 0, 0, S, S);
+  bmp.close?.();
+  const { data } = ctx.getImageData(0, 0, S, S);
+  let minX = S, minY = S, maxX = -1, maxY = -1;
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      if (data[(y * S + x) * 4 + 3] > 12) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) return 1;
+  const fill = Math.max((maxX - minX + 1) / S, (maxY - minY + 1) / S);
+  return Math.min(HERO_FILL_MAX, Math.max(1, HERO_FILL_TARGET / fill));
+}
+
+function useHeroFill(srcs) {
+  const [fill, setFill] = useState({});
+  const key = srcs.join("|");
+  useEffect(() => {
+    let alive = true;
+    if (typeof OffscreenCanvas === "undefined" || typeof createImageBitmap === "undefined") return;
+    Promise.all(srcs.map((s) => measureFill(s).catch(() => 1))).then((scales) => {
+      if (alive) setFill(Object.fromEntries(srcs.map((s, n) => [s, scales[n]])));
+    });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+  return fill;
+}
+
 function OrbitHero({ items }) {
-  const frames = items.filter((d) => d.cardImage).map((d) => d.cardImage);
+  const frames = items.filter((d) => d.cardImage).map((d) => optimizedSrc(d.cardImage, 1440));
   const [i, setI] = useState(0);
+  const fill = useHeroFill(frames);
   useEffect(() => {
     if (frames.length < 2) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -223,7 +286,8 @@ function OrbitHero({ items }) {
         <img
           key={src}
           className={`shk-orbit__hero-img${n === i % frames.length ? " is-on" : ""}`}
-          src={optimizedSrc(src, 1080)}
+          style={{ "--hero-fill": fill[src] ?? 1 }}
+          src={src}
           alt=""
           loading={n === 0 ? "eager" : "lazy"}
         />
