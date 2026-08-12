@@ -931,7 +931,9 @@ the food appears to jump on every cross-fade. useHeroFill (App.jsx) draws each f
 the alpha bounding box, and sets scale: --hero-fill per image so the content lands at 96% of the box (clamped to 1.35, so
 an already-tight crop is never blown up). It defaults to 1: if OffscreenCanvas or the fetch is unavailable the photo is
 left at its natural size rather than guessed at. Needs same-origin pixels — fine because optimizedSrc() routes through
-/_vercel/image.
+/_vercel/image. That routing carries one trap, found in production: /_vercel/image content-negotiates, and a bare fetch()
+sends Accept: */*, for which it answers JPEG. JPEG has no alpha, so the bounding box comes out as the whole square and the
+frame scores a silent, wrong 1. The fetch must ask for an alpha-capable format explicitly.
 
 DESCRIPTIONS ARE HIDDEN IN THE RING (.shk-card__desc display:none). At eight-ish words the text block is the tallest
 thing in a slot, and pointing seven of them at a circle's centre closes the hole the middle photograph needs.
