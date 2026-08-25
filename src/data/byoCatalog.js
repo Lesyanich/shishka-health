@@ -81,13 +81,34 @@ export const DEFAULT_PREMIUM_SURCHARGE = 40;
 
 /* Step 1. Not a menu section — a question asked of a guest standing at the
    counter deciding what shape their lunch is. The order is deliberate: salad
-   first because it is what we are known for, cup last because it is the
-   grab-and-go afterthought. */
+   first because it is what we are known for, breakfast last because it is the
+   one a guest has to be told is available at all.
+
+   BREAKFAST IS NOT A VESSEL. The first three tiles answer "what shape?" and the
+   fourth answers "what time?", which is a category error on paper and the CEO's
+   call anyway — and it survives contact because the breakfast build runs on the
+   same bar as the other three: greens or grains, the topping allowance, egg off
+   the protein list, a dressing. The note has to carry that, which is why it
+   names the egg rather than saying "served all day". A tile that promises a
+   breakfast the salad bar cannot assemble is the one thing that would break it.
+   Open question logged for the CEO: does breakfast get its own components —
+   labneh, granola, sourdough — or is it the same bar with an egg on top? */
 export const STYLES = [
-  { code: "salad", en: "Salad",  th: "สลัด",       note: "In the bowl, greens up",   noteTh: "จานสลัดผักสด" },
-  { code: "bowl",  en: "Bowl",   th: "ข้าวกล่อง",   note: "On grains, warm or cold",  noteTh: "ราดบนธัญพืช" },
-  { code: "wrap",  en: "Wrap",   th: "แร็พ",        note: "Rolled to go",             noteTh: "ห่อพร้อมทาน" },
-  { code: "cup",   en: "Cup",    th: "ถ้วยสลัด",    note: "Half size, one hand",      noteTh: "ขนาดครึ่ง ถือได้" },
+  { code: "salad",     en: "Salad",  ru: "Салат",  th: "สลัด",     note: "In the bowl, greens up",  noteRu: "В миске, зелень сверху", noteTh: "จานสลัดผักสด" },
+  { code: "bowl",      en: "Bowl",   ru: "Боул",   th: "ข้าวกล่อง", note: "On grains, warm or cold", noteRu: "На крупах, тёплый или холодный", noteTh: "ราดบนธัญพืช" },
+  { code: "wrap",      en: "Wrap",   ru: "Врап",   th: "แร็พ",      note: "Rolled to go",            noteRu: "Свёрнут с собой", noteTh: "ห่อพร้อมทาน" },
+  {
+    code: "breakfast",
+    /* Two words on two lines by hand. "All Day Breakfast" set as one string at
+       the tile size wraps wherever the box happens to run out, and the break
+       landing after "All" is not a thing to leave to chance on a wall. */
+    en: "All Day Breakfast",
+    ru: "Завтрак весь день",
+    th: "อาหารเช้าทั้งวัน",
+    note: "Egg on top, any hour",
+    noteRu: "С яйцом, в любое время",
+    noteTh: "ใส่ไข่ เสิร์ฟทั้งวัน",
+  },
 ];
 
 /* Steps 2-5.
@@ -105,36 +126,51 @@ export const STEPS = [
     code: "base",
     n: "01",
     en: "Choose your base",
+    ru: "Выберите основу",
     th: "เลือกฐานของคุณ",
     tagline: "Greens, grains or noodles.",
+    taglineRu: "Зелень, крупы или лапша.",
     taglineTh: "ผักสด ธัญพืช หรือเส้น",
     columns: 2,
     items: [
-      { en: "Iceberg lettuce",   th: "ผักกาดแก้ว" },
-      { en: "Romaine lettuce",   th: "ผักกาดคอส" },
-      { en: "Green oak lettuce", th: "ผักกาดกรีนโอ๊ค" },
-      { en: "Cabbage",           th: "กะหล่ำปลี" },
-      { en: "Red cabbage",       th: "กะหล่ำปลีม่วง" },
-      { en: "Cooked quinoa",     th: "คีนัวสุก" },
-      { en: "Riceberry rice",    th: "ข้าวไรซ์เบอร์รี่" },
-      { en: "Konjac noodles",    th: "เส้นบุก" },
+      { en: "Iceberg lettuce",   ru: "Айсберг",           th: "ผักกาดแก้ว" },
+      { en: "Romaine lettuce",   ru: "Романо",            th: "ผักกาดคอส" },
+      { en: "Green oak lettuce", ru: "Дубовый лист",      th: "ผักกาดกรีนโอ๊ค" },
+      { en: "Cabbage",           ru: "Капуста",           th: "กะหล่ำปลี" },
+      { en: "Red cabbage",       ru: "Краснокочанная",    th: "กะหล่ำปลีม่วง" },
+      { en: "Cooked quinoa",     ru: "Киноа",             th: "คีนัวสุก" },
+      { en: "Riceberry rice",    ru: "Рис райсберри",     th: "ข้าวไรซ์เบอร์รี่" },
+      { en: "Konjac noodles",    ru: "Лапша конняку",     th: "เส้นบุก" },
     ],
   },
   {
     code: "topping",
     n: "02",
     en: "Stack it up",
+    ru: "Добавьте топпинги",
     th: "จัดให้เต็มที่",
     /* The tagline has to carry the whole rule in one line, because it is the
        one line a guest in a queue will actually read. "Included" is doing
        deliberate work: the picks are not an upsell, they are what they already
        paid for. */
     tagline: "picks included — take them from any row.",
+    taglineRu: "порций включено — берите из любой колонки.",
     taglineTh: "เลือกได้ตามจำนวนในแต่ละแถว",
+    /* THE ONE SCREEN WITHOUT RUSSIAN ON THE ITEM NAMES, and the omission is
+       measured rather than lazy. Forty-five names in seven columns already
+       clear the overscan safe area by twelve pixels; a third line on each is
+       roughly ninety more and puts the free strip behind the bezel. The rule
+       itself — the group names and their counts — is in all three languages,
+       because that is the part a Russian guest cannot infer. The part they can
+       infer is exactly what is left: this is the screen of tomato, avocado,
+       feta, olives, parmesan. Screens 01, 03 and 04 carry Russian on every
+       name, and they are the ones with "Firm tofu" and "Chipotle honey" on
+       them. If this ever has to change, split the screen in two rather than
+       shrinking the type — 1.15vw was tried and lands at 1015 of 977. */
     layout: "groups",
     groups: [
       {
-        en: "Vegetables", th: "ผัก", pick: 4,
+        en: "Vegetables", ru: "Овощи", th: "ผัก", pick: 4,
         /* Twelve is the longest column on the board and sets the row count for
            the whole screen, so it renders in two sub-columns. Names are the
            short forms — "Bell peppers" not "Tricolor bell peppers" — because a
@@ -156,7 +192,7 @@ export const STEPS = [
         ],
       },
       {
-        en: "Beans & corn", th: "ถั่วและข้าวโพด", pick: 2,
+        en: "Beans & corn", ru: "Бобовые и кукуруза", th: "ถั่วและข้าวโพด", pick: 2,
         items: [
           { en: "Edamame",     th: "ถั่วแระญี่ปุ่น" },
           { en: "Black beans", th: "ถั่วดำ" },
@@ -164,7 +200,7 @@ export const STEPS = [
         ],
       },
       {
-        en: "Fruit & pickles", th: "ผลไม้และของดอง", pick: 2,
+        en: "Fruit & pickles", ru: "Фрукты и соленья", th: "ผลไม้และของดอง", pick: 2,
         items: [
           { en: "Ripe mango",      th: "มะม่วงสุก" },
           { en: "Pomegranate",     th: "ทับทิม" },
@@ -177,7 +213,7 @@ export const STEPS = [
         ],
       },
       {
-        en: "Nuts & seeds", th: "ถั่วและเมล็ดพืช", pick: 1,
+        en: "Nuts & seeds", ru: "Орехи и семена", th: "ถั่วและเมล็ดพืช", pick: 1,
         items: [
           { en: "Almonds",      th: "อัลมอนด์" },
           { en: "Walnuts",      th: "วอลนัท" },
@@ -195,7 +231,7 @@ export const STEPS = [
            They stay on the manakeesh line where they are priced for.
 
            THESE HAVE NO FRIDGE LABEL YET. Print three before this goes live. */
-        en: "Cheese", th: "ชีส", pick: 1,
+        en: "Cheese", ru: "Сыр", th: "ชีส", pick: 1,
         items: [
           { en: "Feta",     th: "เฟต้า" },
           { en: "Parmesan", th: "พาร์เมซาน" },
@@ -203,7 +239,7 @@ export const STEPS = [
         ],
       },
       {
-        en: "Scoops", th: "ของตักเพิ่ม", pick: 1,
+        en: "Scoops", ru: "Салаты и дипы", th: "ของตักเพิ่ม", pick: 1,
         items: [
           { en: "Guacamole",       th: "กัวคาโมเล่" },
           { en: "Coleslaw",        th: "สลัดโคลสลอว์" },
@@ -224,8 +260,10 @@ export const STEPS = [
        baht it costs, and it gives the allowance somewhere generous to land. */
     free: {
       en: "Herbs, lemon & crunch",
+      ru: "Травы, лимон и хруст",
       th: "สมุนไพร เลมอน และของกรุบ",
       label: "always free",
+      labelRu: "всегда бесплатно",
       labelTh: "ฟรีทุกเมนู",
       items: [
         { en: "Parsley",       th: "พาร์สลีย์" },
@@ -243,8 +281,10 @@ export const STEPS = [
     code: "protein",
     n: "03",
     en: "Load the protein",
+    ru: "Выберите белок",
     th: "เพิ่มโปรตีน",
     tagline: "One with every build.",
+    taglineRu: "Один в каждом блюде.",
     taglineTh: "เลือกได้ 1 อย่างในทุกเมนู",
     /* Two columns, same as the bases: these are the twin decisions that
        determine what the meal actually is, either side of the topping bar. */
@@ -256,20 +296,22 @@ export const STEPS = [
        expensive is priced honestly. Crab stick still carries cost_per_unit
        0.00 in nomenclature and needs costing before it can be defended. */
     items: [
-      { en: "Grilled chicken", th: "ไก่ย่าง" },
-      { en: "Grilled shrimp",  th: "กุ้งย่าง", premium: true },
-      { en: "Firm tofu",       th: "เต้าหู้แข็ง" },
-      { en: "Chickpeas",       th: "ถั่วลูกไก่" },
-      { en: "Boiled egg",      th: "ไข่ต้ม" },
-      { en: "Crab stick",      th: "ปูอัด" },
+      { en: "Grilled chicken", ru: "Курица гриль",  th: "ไก่ย่าง" },
+      { en: "Grilled shrimp",  ru: "Креветки гриль", th: "กุ้งย่าง", premium: true },
+      { en: "Firm tofu",       ru: "Тофу",          th: "เต้าหู้แข็ง" },
+      { en: "Chickpeas",       ru: "Нут",           th: "ถั่วลูกไก่" },
+      { en: "Boiled egg",      ru: "Варёное яйцо",  th: "ไข่ต้ม" },
+      { en: "Crab stick",      ru: "Крабовые палочки", th: "ปูอัด" },
     ],
   },
   {
     code: "dressing",
     n: "04",
     en: "Dress it right",
+    ru: "Выберите заправку",
     th: "ราดน้ำสลัด",
     tagline: "One ladle, poured to order.",
+    taglineRu: "Один половник, наливаем при вас.",
     taglineTh: "ราดสดใหม่ตอนสั่ง",
 
     /* THE LIST IS SLICED, NOT FIXED  (CEO, 2026-08-25: "9 or 12")
@@ -306,15 +348,15 @@ export const STEPS = [
     sliceable: true,
     items: [
       // --- the nine ---------------------------------------------------------
-      { en: "Olive oil & lemon",  th: "น้ำมันมะกอกกับเลมอน", code: "PF-OLIVE_LEMON_DRESSING",    cost: 15.91 },
-      { en: "Tahini vinaigrette", th: "น้ำสลัดงาขาว",         code: "SALE-SAUCE_TAHINI_TAMARIND", cost: 6.98, live: true },
-      { en: "Yogurt tahini",      th: "โยเกิร์ตงาขาว",        code: "SALE-SAUCE_YOGURT_TAHINI",   cost: 8.43, live: true },
-      { en: "Hummus",             th: "ซอสฮัมมูส",            code: "SALE-SAUCE_HUMMUS",          cost: 5.20, live: true },
-      { en: "Caesar",             th: "ซีซาร์",               code: "PF-CAESAR_YOGURT_DRESSING",  cost: 6.91 },
-      { en: "Chipotle honey",     th: "ชิโปตเล่น้ำผึ้ง",       code: "PF-CHIPOTLE_HONEY_DRESSING", cost: 12.29 },
-      { en: "Thai peanut",        th: "น้ำสลัดถั่วลิสงไทย",    code: "PF-DRESSING_THAI_PEANUT",    cost: 8.48 },
-      { en: "Clean teriyaki",     th: "ซอสเทริยากิ",          code: "PF-TERIYAKI_CLEAN",          cost: 4.31 },
-      { en: "Mango",              th: "ซอสมะม่วง",            code: "SALE-SAUCE_MANGO",           cost: 6.48, live: true },
+      { en: "Olive oil & lemon", ru: "Оливковое масло и лимон",  th: "น้ำมันมะกอกกับเลมอน", code: "PF-OLIVE_LEMON_DRESSING",    cost: 15.91 },
+      { en: "Tahini vinaigrette", ru: "Тахини-винегрет", th: "น้ำสลัดงาขาว",         code: "SALE-SAUCE_TAHINI_TAMARIND", cost: 6.98, live: true },
+      { en: "Yogurt tahini", ru: "Йогурт-тахини",      th: "โยเกิร์ตงาขาว",        code: "SALE-SAUCE_YOGURT_TAHINI",   cost: 8.43, live: true },
+      { en: "Hummus", ru: "Хумус",             th: "ซอสฮัมมูส",            code: "SALE-SAUCE_HUMMUS",          cost: 5.20, live: true },
+      { en: "Caesar", ru: "Цезарь",             th: "ซีซาร์",               code: "PF-CAESAR_YOGURT_DRESSING",  cost: 6.91 },
+      { en: "Chipotle honey", ru: "Чипотле с мёдом",     th: "ชิโปตเล่น้ำผึ้ง",       code: "PF-CHIPOTLE_HONEY_DRESSING", cost: 12.29 },
+      { en: "Thai peanut", ru: "Тайский арахис",        th: "น้ำสลัดถั่วลิสงไทย",    code: "PF-DRESSING_THAI_PEANUT",    cost: 8.48 },
+      { en: "Clean teriyaki", ru: "Терияки",     th: "ซอสเทริยากิ",          code: "PF-TERIYAKI_CLEAN",          cost: 4.31 },
+      { en: "Mango", ru: "Манго",              th: "ซอสมะม่วง",            code: "SALE-SAUCE_MANGO",           cost: 6.48, live: true },
 
       // --- and the three that make it twelve --------------------------------
       /* Sumac is the Fattoush and Tabbouleh dressing and the most obviously
@@ -322,9 +364,9 @@ export const STEPS = [
          a ladle, 11% of a 219 ticket for the dressing alone. That is either a
          genuinely expensive dressing or a unit trap in the BOM, and it should
          not go on a flat-price board until someone has looked at which. */
-      { en: "Sumac",              th: "ซูแมค",                code: "PF-SUMAC_DRESSING",          cost: 25.08 },
-      { en: "Strawberry",         th: "สตรอว์เบอร์รี่",        code: "SALE-SAUCE_STRAWBERRY",      cost: 11.01, live: true },
-      { en: "Maple",              th: "เมเปิ้ล",              code: "SALE-SAUCE_MAPLE",           cost: 18.33, live: true },
+      { en: "Sumac", ru: "Сумах",              th: "ซูแมค",                code: "PF-SUMAC_DRESSING",          cost: 25.08 },
+      { en: "Strawberry", ru: "Клубника",         th: "สตรอว์เบอร์รี่",        code: "SALE-SAUCE_STRAWBERRY",      cost: 11.01, live: true },
+      { en: "Maple", ru: "Кленовый сироп",              th: "เมเปิ้ล",              code: "SALE-SAUCE_MAPLE",           cost: 18.33, live: true },
     ],
   },
 ];

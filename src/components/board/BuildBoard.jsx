@@ -107,21 +107,25 @@ function useWakeLock() {
 function StyleScreen({ on, price }) {
   return (
     <section className={`shk-byo__screen shk-byo__screen--hero${on ? " is-on" : ""}`} aria-hidden={!on}>
-      <p className="shk-board__eyebrow">Build your own · สร้างเมนูของคุณเอง</p>
+      <p className="shk-board__eyebrow">Build your own · Собери сам · สร้างเมนูของคุณเอง</p>
 
-      <h1 className="shk-byo__hero-title">
-        Start with
-        <br />
-        your style
-      </h1>
-      <p className="shk-byo__hero-th">เริ่มจากสไตล์ที่คุณชอบ</p>
+      {/* One line, not two. The hand-set break was affordable when this screen
+          carried two languages; with three it costs a 5.4vw line and pushes the
+          price block off the panel. */}
+      <h1 className="shk-byo__hero-title">Start with your style</h1>
+      <p className="shk-byo__hero-ru" lang="ru">Начните со стиля</p>
+      <p className="shk-byo__hero-th" lang="th">เริ่มจากสไตล์ที่คุณชอบ</p>
 
       <ul className="shk-byo__styles">
         {STYLES.map((s) => (
           <li className="shk-byo__style" key={s.code}>
             <span className="shk-byo__style-en">{s.en}</span>
-            <span className="shk-byo__style-th">{s.th}</span>
-            <span className="shk-byo__style-note">{s.note}</span>
+            <span className="shk-byo__style-ru" lang="ru">{s.ru}</span>
+            <span className="shk-byo__style-th" lang="th">{s.th}</span>
+            <span className="shk-byo__style-note">
+              {s.note}
+              <em lang="ru"> · {s.noteRu}</em>
+            </span>
           </li>
         ))}
       </ul>
@@ -135,7 +139,8 @@ function StyleScreen({ on, price }) {
             is one they can count. It also happens to be true. */}
         <span className="shk-byo__flat-note">
           any style · {PICKS_INCLUDED} picks included
-          <em>ทุกสไตล์ ราคาเดียว เลือกท็อปปิ้งได้ {PICKS_INCLUDED} อย่าง</em>
+          <em lang="ru">любой стиль · {PICKS_INCLUDED} добавок включено</em>
+          <em lang="th">ทุกสไตล์ ราคาเดียว เลือกท็อปปิ้งได้ {PICKS_INCLUDED} อย่าง</em>
         </span>
       </p>
     </section>
@@ -147,7 +152,12 @@ function StyleScreen({ on, price }) {
 /* One component name, rendered the same everywhere it appears — inside a plain
    list, inside an allowance group, or in the free strip. Extracted because it
    is now used in three places and a component whose Thai line goes missing in
-   one of them is a bug nobody in this room can see. */
+   one of them is a bug nobody in this room can see.
+
+   Russian renders only where the catalog supplies it, which is every list
+   except the forty-five-name topping screen — see the note on that step in
+   byoCatalog.js. Conditional rather than blank so a missing name costs no
+   vertical space instead of leaving a hole in the column. */
 function Item({ item }) {
   return (
     <li className={`shk-byo__item${item.premium ? " is-premium" : ""}`}>
@@ -155,7 +165,8 @@ function Item({ item }) {
         {item.en}
         {item.tag && <b className="shk-byo__item-tag">{item.tag}</b>}
       </span>
-      <span className="shk-byo__item-th">{item.th}</span>
+      {item.ru && <span className="shk-byo__item-ru" lang="ru">{item.ru}</span>}
+      <span className="shk-byo__item-th" lang="th">{item.th}</span>
     </li>
   );
 }
@@ -173,7 +184,8 @@ function Group({ group }) {
         </span>
         <span className="shk-byo__group-names">
           <span className="shk-byo__group-en">{group.en}</span>
-          <span className="shk-byo__group-th">{group.th}</span>
+          <span className="shk-byo__group-ru" lang="ru">{group.ru}</span>
+          <span className="shk-byo__group-th" lang="th">{group.th}</span>
         </span>
       </header>
       <ul className="shk-byo__group-list">
@@ -194,7 +206,8 @@ function FreeStrip({ free }) {
       <header className="shk-byo__free-head">
         <span className="shk-byo__free-label">{free.label}</span>
         <span className="shk-byo__free-en">{free.en}</span>
-        <span className="shk-byo__free-th">{free.th}</span>
+        <span className="shk-byo__free-ru" lang="ru">{free.ru}</span>
+        <span className="shk-byo__free-th" lang="th">{free.th}</span>
       </header>
       <ul className="shk-byo__free-list">
         {free.items.map((item) => (
@@ -240,9 +253,17 @@ function StepScreen({ step, on, premium, sauces }) {
         <span className="shk-byo__n" aria-hidden="true">
           {step.n}
         </span>
+        {/* English and Russian on ONE line, not stacked. Stacked, the third
+            language cost this header fifty pixels and pushed the topping
+            screen's free strip past the bezel — and side by side is what was
+            asked for anyway. The Thai keeps the line beneath, where it has
+            always been. */}
         <div className="shk-byo__headings">
-          <h2 className="shk-byo__title">{step.en}</h2>
-          <p className="shk-byo__title-th">{step.th}</p>
+          <div className="shk-byo__title-row">
+            <h2 className="shk-byo__title">{step.en}</h2>
+            <p className="shk-byo__title-ru" lang="ru">{step.ru}</p>
+          </div>
+          <p className="shk-byo__title-th" lang="th">{step.th}</p>
         </div>
         <p className="shk-byo__count">
           <span className="shk-byo__count-n num">{countOf(step, items)}</span>
@@ -261,7 +282,11 @@ function StepScreen({ step, on, premium, sauces }) {
           )}
           {step.tagline}
         </span>
-        <em>{step.taglineTh}</em>
+        <em lang="ru">
+          {isGroups && <b className="shk-byo__tag-n num">{PICKS_INCLUDED}&nbsp;</b>}
+          {step.taglineRu}
+        </em>
+        <em lang="th">{step.taglineTh}</em>
       </p>
 
       {isGroups ? (
@@ -287,7 +312,8 @@ function StepScreen({ step, on, premium, sauces }) {
         <p className="shk-byo__legend">
           <span className="shk-byo__dot" aria-hidden="true" />
           add {premium} {CURRENCY}
-          <em>คิดเพิ่ม {premium} บาท</em>
+          <em lang="ru">доплата {premium} {CURRENCY}</em>
+          <em lang="th">คิดเพิ่ม {premium} บาท</em>
         </p>
       )}
     </section>
@@ -399,7 +425,7 @@ export default function BuildBoard() {
           that a crawler or a screen reader can land on, and five aria-hidden
           sections would otherwise leave it silent. */}
       <p className="shk-sr-only">
-        Build your own salad, bowl, wrap or cup — {TOPPING_COUNT} toppings on the
+        Build your own salad, bowl, wrap or all-day breakfast — {TOPPING_COUNT} toppings on the
         bar, {PICKS_INCLUDED} picks included, flat price {price} {CURRENCY}.
       </p>
     </div>

@@ -59,17 +59,40 @@
 .shk-byo__hero-title {
   margin: 1.5vh 0 0;
   font-family: var(--font-display);
-  font-size: 7vw;
+  font-size: 5.4vw;
   font-weight: var(--weight-black);
   line-height: var(--leading-none);
   letter-spacing: var(--tracking-tighter);
   color: var(--cream-50);
 }
 
+/* --- THE THIRD LANGUAGE ---------------------------------------------------
+   Rawai's guests are Russian before they are anything else, so Russian is not
+   a courtesy line here — it sits directly under the English at a size a guest
+   reads from the queue, and Thai keeps the small line beneath it. The order is
+   EN / RU / TH everywhere, without exception, because a board whose language
+   order changes screen to screen makes a reader hunt for their own line.
+
+   Russian is set in the sans face rather than the Thai one: Albert Sans has a
+   complete Cyrillic set, and letting the Thai fallback pick up Cyrillic on a
+   TV we cannot inspect is exactly the kind of thing that looks fine here and
+   wrong on the wall. Every Russian and Thai node carries a real `lang`
+   attribute so the panel's own font matching has something to go on. --------- */
+
+.shk-byo__hero-ru {
+  margin: 1.8vh 0 0;
+  font-family: var(--font-sans);
+  font-size: 2.6vw;
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
+  color: var(--cream-50);
+}
+
 .shk-byo__hero-th {
   margin: 1.6vh 0 0;
   font-family: var(--font-th);
-  font-size: 2.2vw;
+  font-size: 1.7vw;
   font-weight: var(--weight-medium);
   color: var(--text-on-dark-muted);
 }
@@ -87,10 +110,15 @@
   width: 100%;
 }
 
+/* justify-content matters now that one tile's name is two lines. The grid
+   stretches all four to the tallest, and without this the three short tiles
+   hang their text from the top with the slack pooled underneath — which reads
+   as three tiles that failed to finish rendering. */
 .shk-byo__style {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.6vh;
   padding: 3vh 1vw;
   border: 0.22vh solid var(--royal-green-line);
@@ -100,26 +128,40 @@
 
 .shk-byo__style-en {
   font-family: var(--font-display);
-  font-size: 3.2vw;
+  font-size: 2.45vw;
   font-weight: var(--weight-bold);
   line-height: var(--leading-none);
   letter-spacing: var(--tracking-tight);
   color: var(--honey-300);
 }
 
+.shk-byo__style-ru {
+  font-family: var(--font-sans);
+  font-size: 1.45vw;
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--cream-50);
+}
+
 .shk-byo__style-th {
   font-family: var(--font-th);
-  font-size: 1.5vw;
+  font-size: 1.15vw;
   color: var(--text-on-dark);
 }
 
 .shk-byo__style-note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3vh;
   font-family: var(--font-sans);
   font-size: 1vw;
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--text-on-dark-faint);
 }
+
+.shk-byo__style-note em { font-style: normal; }
+.shk-byo__style-note { display: block; }
 
 /* The flat price is the concept's whole promise, so it gets the treatment the
    dish board gives a dish price — same honey, same weight, same tabular figures
@@ -212,6 +254,25 @@
   color: var(--cream-50);
 }
 
+/* Baseline-aligned, so the Russian sits on the English's baseline rather than
+   floating in the middle of its cap height. The gap is the only thing keeping
+   them from reading as one string. */
+.shk-byo__title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1vw;
+  min-width: 0;
+}
+
+.shk-byo__title-ru {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 2.3vw;
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--cream-50);
+}
+
 .shk-byo__title-th {
   margin: 0.4vh 0 0;
   font-family: var(--font-th);
@@ -265,6 +326,20 @@
   color: var(--text-on-dark-faint);
 }
 
+.shk-byo__tag em[lang="ru"] {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-sans);
+  font-size: 1.35vw;
+  color: var(--text-on-dark);
+}
+
+/* The allowance figure is repeated inside the Russian line, not borrowed from
+   the English one beside it. "11" is the number the whole screen exists to
+   deliver, and a Russian speaker reading their own line should not have to
+   glance back at a language they do not read to find it. */
+.shk-byo__tag em[lang="ru"] .shk-byo__tag-n { font-size: 1.5vw; }
+
 /* The allowance total, set inside the tagline rather than beside it. It is the
    one number on this screen a guest has to leave with, and a figure inside a
    sentence is read as part of the sentence — "11 picks included" — where a
@@ -281,9 +356,20 @@
 /* --- the list ------------------------------------------------------------ */
 
 .shk-byo__grid {
+  --row-gap: 1.7vh;
   flex: 1;
   list-style: none;
-  margin: 3vh 0 0;
+  /* The negative bottom margin cancels the last row's own margin-bottom, which
+     is otherwise trapped inside the column box. This is a multicol container,
+     not a grid, so there is no `row-gap` to use instead — the space between
+     rows has to be a margin on the item, and a margin on the item means every
+     column ends with one hanging off the bottom. Invisible on the three screens
+     where the list is the last thing on the screen, but the protein screen puts
+     a legend after it: without this line that screen's "add 40 THB" started at
+     y=978 on a panel whose safe area ends at 977.4, pushed there by 70px of
+     nothing. One knob per step, declared below, so the gap and its cancellation
+     can never drift apart. */
+  margin: 3vh 0 calc(var(--row-gap) * -1);
   padding: 0;
   column-gap: 2.5vw;
   /* Nothing splits across a column break — an English name in one column and
@@ -295,7 +381,7 @@
   break-inside: avoid;
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.7vh;
+  margin-bottom: var(--row-gap);
 }
 
 .shk-byo__item-en {
@@ -303,6 +389,13 @@
   font-weight: var(--weight-semibold);
   line-height: var(--leading-snug);
   color: var(--text-on-dark);
+}
+
+.shk-byo__item-ru {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+  color: var(--text-on-dark-muted);
 }
 
 .shk-byo__item-th {
@@ -358,6 +451,8 @@
   text-transform: uppercase;
   color: var(--honey-300);
 }
+
+.shk-byo__legend em[lang="ru"] { font-family: var(--font-sans); }
 
 .shk-byo__legend em {
   font-family: var(--font-th);
@@ -462,6 +557,19 @@
   color: var(--cream-50);
 }
 
+/* Sentence case, not the uppercase the English header uses. Set in caps the
+   longer Russian group names run wider than their column and wrap where the
+   English does not, and a header that wraps on two of six groups pulls those
+   two lists out of alignment — which is the alignment the whole allowance
+   reads off. */
+.shk-byo__group-ru {
+  font-family: var(--font-sans);
+  font-size: 0.92vw;
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--text-on-dark);
+}
+
 .shk-byo__group-th {
   font-family: var(--font-th);
   font-size: 0.8vw;
@@ -513,6 +621,14 @@
   color: var(--cream-50);
 }
 
+.shk-byo__free-ru {
+  font-family: var(--font-sans);
+  font-size: 0.92vw;
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--text-on-dark);
+}
+
 .shk-byo__free-th {
   font-family: var(--font-th);
   font-size: 0.8vw;
@@ -552,11 +668,24 @@
    and share a scale on purpose: they are the twin decisions that determine what
    the meal actually is, either side of the topping bar. */
 [data-step="base"]     .shk-byo__item-en,
-[data-step="protein"]  .shk-byo__item-en { font-size: 2.9vw; }
+[data-step="protein"]  .shk-byo__item-en { font-size: 2.52vw; }
 [data-step="base"]     .shk-byo__item-th,
-[data-step="protein"]  .shk-byo__item-th { font-size: 1.7vw; }
-[data-step="base"]     .shk-byo__item,
-[data-step="protein"]  .shk-byo__item    { margin-bottom: 6vh; }     /* 4 rows  */
+[data-step="protein"]  .shk-byo__item-th { font-size: 1.48vw; }
+[data-step="base"]     .shk-byo__item-ru,
+[data-step="protein"]  .shk-byo__item-ru { font-size: 1.65vw; }
+/* Was 6vh. The Russian line costs roughly 35px a row and there are four rows,
+   so the gap gives back what the language takes — the list still has to reach
+   the bottom of its own screen and no further. */
+/* Base and protein share a type scale but NOT a row gap: eight bases lay out as
+   four rows and six proteins as three, so one gap cannot make both lists reach
+   the bottom of their own screen. They were the same number until the Russian
+   line changed the row height and split them. */
+[data-step="base"]     .shk-byo__grid    { --row-gap: 2.6vh; }       /* 4 rows  */
+/* Purely how the three rows are spread, not whether they fit: the grid is
+   `flex: 1`, so it absorbs the slack and the legend under it is anchored to the
+   bottom of the padding box no matter what this says. Worth knowing before
+   tuning it — the number moves the proteins, never the "add 40 THB". */
+[data-step="protein"]  .shk-byo__grid    { --row-gap: 6vh; }         /* 3 rows  */
 
 /* Nine or twelve sauces both lay out as three rows (3 or 4 columns), so this
    scale survives whichever count the CEO settles on and only the column width
@@ -568,7 +697,8 @@
 /* Three rows have to fill the same panel four rows of bases fill, so the gap is
    large — it is how the list reaches the bottom of its own screen rather than
    stopping two-thirds down and reading as a board that failed to load. */
-[data-step="dressing"] .shk-byo__item    { margin-bottom: 16.8vh; }  /* 3 rows  */
+[data-step="dressing"] .shk-byo__item-ru { font-size: 1.4vw; }
+[data-step="dressing"] .shk-byo__grid    { --row-gap: 11.8vh; }      /* 3 rows  */
 
 /* The topping screen is the tight one, and it is the screen that decides the
    type scale for the whole board: six group headers, the tallest column eight
@@ -590,9 +720,22 @@
    Legibility at four metres is the floor and this is at it; the next item added
    to fruit & pickles makes it nine rows and does not fit. Give that group a
    `wide: true` and drop a one-column group instead of shrinking this further. */
+/* THE HEADERS ON THIS SCREEN DROP THEIR THAI, and only on this screen. The
+   six group names are the rule — "four vegetables, one cheese" — and a Russian
+   guest has nowhere else to read it, because the forty-five names beneath are
+   EN/TH only. A Thai guest is in the opposite position: they have forty-five
+   Thai names directly under the header, so the header's Thai is the one line
+   on this board that repeats information already on screen. Dropping it buys
+   back the line the Russian costs, exactly, and no language loses a screen. */
+[data-step="topping"]  .shk-byo__group-th,
+[data-step="topping"]  .shk-byo__free-th  { display: none; }
+[data-step="topping"]  .shk-byo__group-ru,
+[data-step="topping"]  .shk-byo__free-ru  { font-size: 0.82vw; }
+[data-step="topping"]  .shk-byo__group-head { min-height: 8.4vh; }
+
 [data-step="topping"]  .shk-byo__item-en { font-size: 1.05vw; }
 [data-step="topping"]  .shk-byo__item-th { font-size: 0.78vw; }
-[data-step="topping"]  .shk-byo__item    { margin-bottom: 0.6vh; }   /* 8 rows  */
+[data-step="topping"]  .shk-byo__grid    { --row-gap: 0.55vh; }      /* 8 rows  */
 
 /* --- where you are in the journey ---------------------------------------- */
 
@@ -707,7 +850,10 @@
 
   [data-step] .shk-byo__item-en { font-size: 4.6vw; }
   [data-step] .shk-byo__item-th { font-size: 3.2vw; }
-  [data-step] .shk-byo__item    { margin-bottom: 1.6vh; }
+  /* Set the knob, not the item margin: the container cancels its trailing row
+     with `calc(var(--row-gap) * -1)`, so overriding one without the other would
+     leave the two fighting — an 11.8vh cancellation against a 1.6vh gap. */
+  [data-step] .shk-byo__grid    { --row-gap: 1.6vh !important; }
 
   .shk-byo__dot-i         { width: 6vw; }
   .shk-byo__dot-i:first-child { width: 2.4vw; height: 2.4vw; }
