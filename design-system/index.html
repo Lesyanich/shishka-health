@@ -125,7 +125,7 @@
       <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
       <a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
       <a href="#hero">Hero</a><a href="#secart">Section art</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
-      <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#orbit">Orbit</a><a href="#manakish">Potato Tacos</a><a href="#states">States</a>
+      <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#orbit">Orbit</a><a href="#manakish">Potato Tacos</a><a href="#board">TV board</a><a href="#states">States</a>
       <a href="#fruit">Fruit</a><a href="#spacing">Spacing</a><a href="#radius">Radius</a><a href="#shadow">Shadow & Motion</a><a href="#theme">Theme</a><a href="#aliases">Aliases</a><a href="#anti">Anti-patterns</a>
     </nav>
 
@@ -763,6 +763,16 @@ capping the longest edge instead would have starved it to ~310px wide and left i
         </div>
       </footer>
       <div class="ds-recipe">shk-foot--wide &gt; __inner ( __logo + __rule + __fine + __copy )</div>
+    </section>
+
+    <!-- ═══════════ TV BOARD ═══════════ -->
+    <section class="ds-section" id="board">
+      <div class="ds-h">TV Board <span style="opacity:.6;font-weight:400">— /board</span></div>
+      <p class="ds-lead">The screen bolted to the wall in the restaurant: one dish at a time, landscape, unattended. Not a page a guest navigates to — it has no interaction, no scroll and no chrome beyond the logo and a slide-progress bar.</p>
+      <p class="ds-lead">It is the only genuinely dark surface left on the site, so it re-declares <code>--text-on-dark*</code> as cream on its own root (theme-light remaps those to green ink for the white canvas). Everything is sized in <code>vw</code>/<code>vh</code>, not <code>rem</code>: the same stylesheet has to read from four metres away on a 43&quot; panel and on a 75&quot; one.</p>
+      <iframe src="https://shishka.health/board?s=6" title="Live /board preview" loading="lazy"
+              style="width:100%;aspect-ratio:16/9;border:1px solid var(--border);border-radius:var(--radius-lg);display:block"></iframe>
+      <div class="ds-recipe">shk-board &gt; __stage ( __slide.is-on &gt; __photo &gt; __img + __info ( __eyebrow(+__portion) + __name + __desc + __ing + __facts &gt; __fact ( __fact-label + __fact-value ) + __price ( __from + __amount + __cur ) ) ) + __mark + __bar &gt; __bar-fill · empty state = shk-board--wait &gt; __wait-logo · prices print THB, never ฿ (Albert Sans has no glyph)</div>
     </section>
 
     <!-- ═══════════ STATES ═══════════ -->

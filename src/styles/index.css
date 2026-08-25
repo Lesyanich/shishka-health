@@ -5,4 +5,5 @@
 @import url("./tokens/base.css");
 @import url("./tokens/compat.css");
 @import url("./components.css");
+@import url("./board.css");
 @import url("./tokens/theme-light.css");
