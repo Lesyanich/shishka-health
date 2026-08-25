@@ -558,9 +558,17 @@
 [data-step="base"]     .shk-byo__item,
 [data-step="protein"]  .shk-byo__item    { margin-bottom: 6vh; }     /* 4 rows  */
 
-[data-step="dressing"] .shk-byo__item-en { font-size: 1.9vw; }
-[data-step="dressing"] .shk-byo__item-th { font-size: 1.25vw; }
-[data-step="dressing"] .shk-byo__item    { margin-bottom: 5.5vh; }   /* 5 rows  */
+/* Nine or twelve sauces both lay out as three rows (3 or 4 columns), so this
+   scale survives whichever count the CEO settles on and only the column width
+   moves. Sized against the twelve case, which is the narrow one: at four
+   columns a column is ~396px and "Olive oil & lemon" is the longest name on the
+   screen. A name that wraps at four metres is a name nobody reads. */
+[data-step="dressing"] .shk-byo__item-en { font-size: 2.2vw; }
+[data-step="dressing"] .shk-byo__item-th { font-size: 1.4vw; }
+/* Three rows have to fill the same panel four rows of bases fill, so the gap is
+   large — it is how the list reaches the bottom of its own screen rather than
+   stopping two-thirds down and reading as a board that failed to load. */
+[data-step="dressing"] .shk-byo__item    { margin-bottom: 16.8vh; }  /* 3 rows  */
 
 /* The topping screen is the tight one, and it is the screen that decides the
    type scale for the whole board: six group headers, the tallest column eight

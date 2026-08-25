@@ -6,6 +6,10 @@ import {
   PICKS_INCLUDED,
   DEFAULT_FLAT_PRICE,
   DEFAULT_PREMIUM_SURCHARGE,
+  DEFAULT_SAUCE_COUNT,
+  SAUCE_COUNT_OPTIONS,
+  stepItems,
+  stepColumns,
 } from "../../data/byoCatalog.js";
 
 /*
@@ -57,10 +61,19 @@ function knobs() {
     if (!Number.isFinite(raw) || raw <= 0) return fallback;
     return Math.min(hi, Math.max(lo, raw));
   };
+  /* Nine sauces or twelve — the CEO's open question, and the kind that is
+     settled by looking at the panel rather than by reasoning about it. Snapped
+     to the two real options instead of clamped to a range, because ten sauces
+     is not a proposal anyone made and would silently leave a ragged row. */
+  const sauces = SAUCE_COUNT_OPTIONS.includes(Number(q.get("sauces")))
+    ? Number(q.get("sauces"))
+    : DEFAULT_SAUCE_COUNT;
+
   return {
     seconds: num("s", DEFAULT_SCREEN_SECONDS, MIN_SCREEN_SECONDS, MAX_SCREEN_SECONDS),
     price: num("p", DEFAULT_FLAT_PRICE, 1, 9999),
     premium: num("x", DEFAULT_PREMIUM_SURCHARGE, 1, 999),
+    sauces,
   };
 }
 
@@ -195,18 +208,24 @@ function FreeStrip({ free }) {
 /* Counted, never typed: the badge says what is on the bar, and the bar is this
    list. A board that promises more toppings than the salad bar has is a board
    the guest catches out from three metres away. */
-function countOf(step) {
-  if (step.items) return step.items.length;
+function countOf(step, items) {
+  if (items) return items.length;
   return (
     step.groups.reduce((n, g) => n + g.items.length, 0) + step.free.items.length
   );
 }
 
-function StepScreen({ step, on, premium }) {
+function StepScreen({ step, on, premium, sauces }) {
   const isGroups = step.layout === "groups";
+  /* The sauce list is sliced to the chosen count, so everything downstream —
+     the list, the column count and the "N to choose from" badge — has to read
+     the resolved list. A header that says 12 over nine printed names is exactly
+     the kind of thing a guest notices and staff never do. */
+  const items = isGroups ? null : stepItems(step, sauces);
+  const columns = isGroups ? null : stepColumns(step, sauces);
   // Only the plain lists carry a surcharge now — under the allowance the
   // premium marks came off the toppings entirely (see byoCatalog.js).
-  const hasPremium = Boolean(step.items?.some((i) => i.premium));
+  const hasPremium = Boolean(items?.some((i) => i.premium));
 
   return (
     /* data-step drives the type scale: eight bases and forty-three toppings
@@ -226,7 +245,7 @@ function StepScreen({ step, on, premium }) {
           <p className="shk-byo__title-th">{step.th}</p>
         </div>
         <p className="shk-byo__count">
-          <span className="shk-byo__count-n num">{countOf(step)}</span>
+          <span className="shk-byo__count-n num">{countOf(step, items)}</span>
           <span className="shk-byo__count-label">to choose from</span>
         </p>
       </header>
@@ -254,11 +273,11 @@ function StepScreen({ step, on, premium }) {
         </div>
       ) : (
         /* CSS columns rather than a grid: the plain lists are different lengths
-           (8 bases, 17 dressings) and columns let each screen fill its own
-           width without a bespoke grid definition per step. The topping screen
-           is the one that needed real columns, and it has its own branch. */
-        <ul className="shk-byo__grid" style={{ columnCount: step.columns }}>
-          {step.items.map((item) => (
+           (8 bases, 9 sauces) and columns let each screen fill its own width
+           without a bespoke grid definition per step. The topping screen is the
+           one that needed real columns, and it has its own branch. */
+        <ul className="shk-byo__grid" style={{ columnCount: columns }}>
+          {items.map((item) => (
             <Item item={item} key={item.en} />
           ))}
         </ul>
@@ -278,7 +297,7 @@ function StepScreen({ step, on, premium }) {
 /* --- board --------------------------------------------------------------- */
 
 export default function BuildBoard() {
-  const { seconds, price, premium } = useMemo(knobs, []);
+  const { seconds, price, premium, sauces } = useMemo(knobs, []);
   const [idx, setIdx] = useState(0);
   useWakeLock();
 
@@ -337,7 +356,13 @@ export default function BuildBoard() {
           s.key === "hero" ? (
             <StyleScreen key={s.key} on={i === idx} price={price} />
           ) : (
-            <StepScreen key={s.key} step={s.step} on={i === idx} premium={premium} />
+            <StepScreen
+              key={s.key}
+              step={s.step}
+              on={i === idx}
+              premium={premium}
+              sauces={sauces}
+            />
           ),
         )}
       </div>

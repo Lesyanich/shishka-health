@@ -207,8 +207,12 @@ export const STEPS = [
         items: [
           { en: "Guacamole",       th: "กัวคาโมเล่" },
           { en: "Coleslaw",        th: "สลัดโคลสลอว์" },
+          /* Named as the POS names them (SALE-SAUCE_MANGO_SALSA,
+             SALE-SAUCE_PICO_DE_GALLO). "Tomato salsa" was my paraphrase and it
+             is the kind of small drift that ends with the wall and the till
+             calling the same tub two different things. */
           { en: "Mango salsa",     th: "ซัลซ่ามะม่วง" },
-          { en: "Tomato salsa",    th: "ซัลซ่ามะเขือเทศ" },
+          { en: "Pico de gallo",   th: "ซัลซ่ามะเขือเทศ" },
           { en: "Wakame seaweed",  th: "สลัดสาหร่ายวากาเมะ" },
         ],
       },
@@ -265,35 +269,86 @@ export const STEPS = [
     n: "04",
     en: "Dress it right",
     th: "ราดน้ำสลัด",
-    tagline: "Our signature dressings do the rest.",
-    taglineTh: "น้ำสลัดสูตรพิเศษของเรา",
-    columns: 4,
-    /* All PF- dressings currently is_available in nomenclature. Seven still
-       carry a zero or null cost_per_unit — Balsamic, Fresh Herb, Ginger Lime,
-       Mushroom Truffle, Basil Pesto, Cashew Cream. Safe to show (they exist and
-       are ladled every day) but the flat price cannot be fully defended until
-       they are costed. Flagged on the MC epic. */
+    tagline: "One ladle, poured to order.",
+    taglineTh: "ราดสดใหม่ตอนสั่ง",
+
+    /* THE LIST IS SLICED, NOT FIXED  (CEO, 2026-08-25: "9 or 12")
+       ------------------------------------------------------------------
+       Ordered by priority; the board shows the first N. Nine is the default and
+       twelve is /board?sauces=12, so the count gets chosen standing in front of
+       the panel rather than argued about in this file.
+
+       The order is not a ranking of quality, it is coverage: the first nine put
+       one sauce in every flavour family we sell into — neutral, Middle Eastern,
+       western creamy, Asian, spicy, fruit. Each of the last three is the SECOND
+       of a kind (sumac after two tahinis; strawberry and maple after mango),
+       which is the real argument for nine — twelve buys a third sweet dressing
+       and three more open bottles with a shelf life.
+
+       WHY THIS LIST CHANGED COMPLETELY  (CEO: "the sauce you have is wrong")
+       ------------------------------------------------------------------
+       The first cut was transcribed from `PF-` semi-finished rows — the prep
+       recipes — on the assumption that a prep which exists is a sauce a guest
+       can be handed. It is not, and six of the seventeen names on that board
+       were dead: Balsamic, Fresh Herb, Ginger Lime and both Mushroom Truffles
+       are is_available=false with cost_per_unit=0, and Basil Pesto and Cashew
+       Cream price at 0.89 — which is the cost of the empty 2 oz cup
+       (RAW-SAUCE_CUP_2OZ) and nothing whatsoever in it. A wall that offers a
+       dressing the line cannot pour is worse than a wall with nine on it.
+
+       So every entry carries the code it came from, and the state that matters
+       is recorded rather than assumed:
+         · `live: true` — a SALE- sauce SKU, is_available AND is_web_visible.
+         · no `live`    — the prep is real and is ladled into dishes today, but
+                          has no sellable standalone SKU. Those must be created
+                          in the POS before this screen is true. On the epic.
+       `cost` is THB per 50 g ladle, for whoever revisits the flat price. */
+    sliceable: true,
     items: [
-      { en: "Olive oil & lemon",   th: "น้ำมันมะกอกกับเลมอน" },
-      { en: "Sumac",               th: "ซูแมค" },
-      { en: "Tahini vinaigrette",  th: "น้ำสลัดงาขาว" },
-      { en: "Yogurt tahini",       th: "โยเกิร์ตงาขาว" },
-      { en: "Caesar",              th: "ซีซาร์" },
-      { en: "Avocado caesar",      th: "ซีซาร์อะโวคาโด" },
-      { en: "Chipotle honey",      th: "ชิโปตเล่น้ำผึ้ง" },
-      { en: "Thai peanut",         th: "น้ำสลัดถั่วลิสงไทย" },
-      { en: "Clean teriyaki",      th: "ซอสเทริยากิ" },
-      { en: "Balsamic",            th: "บัลซามิก" },
-      { en: "Fresh herb",          th: "สมุนไพรสด" },
-      { en: "Ginger lime",         th: "ขิงมะนาว" },
-      { en: "Maple",               th: "เมเปิ้ล" },
-      { en: "Strawberry",          th: "สตรอว์เบอร์รี่" },
-      { en: "Mushroom truffle",    th: "เห็ดทรัฟเฟิล" },
-      { en: "Basil pesto",         th: "เพสโต้โหระพา" },
-      { en: "Cashew cream",        th: "ครีมมะม่วงหิมพานต์" },
+      // --- the nine ---------------------------------------------------------
+      { en: "Olive oil & lemon",  th: "น้ำมันมะกอกกับเลมอน", code: "PF-OLIVE_LEMON_DRESSING",    cost: 15.91 },
+      { en: "Tahini vinaigrette", th: "น้ำสลัดงาขาว",         code: "SALE-SAUCE_TAHINI_TAMARIND", cost: 6.98, live: true },
+      { en: "Yogurt tahini",      th: "โยเกิร์ตงาขาว",        code: "SALE-SAUCE_YOGURT_TAHINI",   cost: 8.43, live: true },
+      { en: "Hummus",             th: "ซอสฮัมมูส",            code: "SALE-SAUCE_HUMMUS",          cost: 5.20, live: true },
+      { en: "Caesar",             th: "ซีซาร์",               code: "PF-CAESAR_YOGURT_DRESSING",  cost: 6.91 },
+      { en: "Chipotle honey",     th: "ชิโปตเล่น้ำผึ้ง",       code: "PF-CHIPOTLE_HONEY_DRESSING", cost: 12.29 },
+      { en: "Thai peanut",        th: "น้ำสลัดถั่วลิสงไทย",    code: "PF-DRESSING_THAI_PEANUT",    cost: 8.48 },
+      { en: "Clean teriyaki",     th: "ซอสเทริยากิ",          code: "PF-TERIYAKI_CLEAN",          cost: 4.31 },
+      { en: "Mango",              th: "ซอสมะม่วง",            code: "SALE-SAUCE_MANGO",           cost: 6.48, live: true },
+
+      // --- and the three that make it twelve --------------------------------
+      /* Sumac is the Fattoush and Tabbouleh dressing and the most obviously
+         "ours" of the twelve, but PF-SUMAC_DRESSING prices at 501.55/kg — 25.08
+         a ladle, 11% of a 219 ticket for the dressing alone. That is either a
+         genuinely expensive dressing or a unit trap in the BOM, and it should
+         not go on a flat-price board until someone has looked at which. */
+      { en: "Sumac",              th: "ซูแมค",                code: "PF-SUMAC_DRESSING",          cost: 25.08 },
+      { en: "Strawberry",         th: "สตรอว์เบอร์รี่",        code: "SALE-SAUCE_STRAWBERRY",      cost: 11.01, live: true },
+      { en: "Maple",              th: "เมเปิ้ล",              code: "SALE-SAUCE_MAPLE",           cost: 18.33, live: true },
     ],
   },
 ];
+
+/* Nine unless the panel says otherwise (/board?sauces=12). The dressing step
+   above explains why nine is the default. Both counts divide by three, so the
+   screen is three rows either way and only the column count moves. */
+export const DEFAULT_SAUCE_COUNT = 9;
+export const SAUCE_COUNT_OPTIONS = [9, 12];
+
+/* Resolve a step to what actually goes on screen. Only the sauces slice today,
+   but the board asks every step through here so a second sliceable list does
+   not need a second branch in the component. */
+export function stepItems(step, sauceCount) {
+  if (!step.sliceable) return step.items;
+  return step.items.slice(0, sauceCount);
+}
+
+/* Three rows on the dressing screen at either count — 9/3 and 12/3 — which is
+   why the type scale does not have to change with the CEO's answer. */
+export function stepColumns(step, sauceCount) {
+  if (!step.sliceable) return step.columns;
+  return Math.ceil(sauceCount / 3);
+}
 
 const TOPPING_STEP = STEPS.find((s) => s.code === "topping");
 
