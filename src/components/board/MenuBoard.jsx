@@ -192,11 +192,12 @@ export default function MenuBoard() {
   }
 
   /*
-    Only the current slide and its immediate neighbours are mounted. All 18 at
-    once means 18 decoded full-screen photographs resident at all times, which
-    is exactly the kind of thing that makes a smart-TV browser fall over after
-    an hour. The outgoing slide has to stay mounted for the crossfade, hence the
-    previous one rather than just the next.
+    Only the current slide and its immediate neighbours are mounted. Mounting
+    the whole reel — currently ~24 slides, and it grows every time the running
+    order does — means that many decoded full-screen photographs resident at all
+    times, which is exactly the kind of thing that makes a smart-TV browser fall
+    over after an hour. The outgoing slide has to stay mounted for the crossfade,
+    hence the previous one rather than just the next.
   */
   const n = reel.length;
   const mounted = new Set([(safeIdx - 1 + n) % n, safeIdx, (safeIdx + 1) % n]);
