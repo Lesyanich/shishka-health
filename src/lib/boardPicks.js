@@ -50,6 +50,17 @@ export const BOARD_RUNNING_ORDER = [
   "SALE-SMOOTHIE_CHOCO_AVO", //            Choco Avocado Smoothie
   "SALE-CHOC_COCONUT_SQ", //               Coconut Bounty
   "SALE-CHOC_HIGH_COCOA_MILK", //          High Cocoa Milk Chocolate
+
+  // Added 2026-08-25, in the order he listed them. They sit together at the
+  // tail rather than being woven into the block above because the reel loops:
+  // "last" is only ever one slide away from "first", so appending costs nothing
+  // and keeps his original running order legible as the thing he actually wrote.
+  "SALE-TOAST_SALMON_GOAT_CHEESE", //      Smoked Salmon Toast
+  "SALE-SANDWICH_MEATLOAF_MELT", //        Ham Meatloaf Melt
+  "SALE-HUMMUS_KEBAB_BEEF", //             Hummus Kebab Grass-Fed Beef
+  "SALE-TOAST_SHRIMP_GUACAMOLE", //        Shrimp Guacamole Toast
+  "SALE-MATCHA_ORANGE", //                 Orange Matcha
+  "SALE-MATCHA_ICED_LATTE", //             Iced Matcha Latte
 ];
 
 // A slide is nine parts photograph and one part price. Without either there is
