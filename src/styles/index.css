@@ -6,4 +6,8 @@
 @import url("./tokens/compat.css");
 @import url("./components.css");
 @import url("./board.css");
+/* Layers onto board.css — .shk-byo is always used together with .shk-board and
+   inherits the full-screen shell, the green ground and the cream-ink override
+   from it, so it has to come after. */
+@import url("./byo-board.css");
 @import url("./tokens/theme-light.css");
