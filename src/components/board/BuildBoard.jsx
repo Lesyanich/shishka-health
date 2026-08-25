@@ -3,6 +3,7 @@ import {
   STYLES,
   STEPS,
   TOPPING_COUNT,
+  PICKS_INCLUDED,
   DEFAULT_FLAT_PRICE,
   DEFAULT_PREMIUM_SURCHARGE,
 } from "../../data/byoCatalog.js";
@@ -115,9 +116,13 @@ function StyleScreen({ on, price }) {
       <p className="shk-byo__flat">
         <span className="shk-byo__flat-amount num">{price}</span>
         <span className="shk-byo__flat-cur">{CURRENCY}</span>
+        {/* This line used to say "unlimited toppings". It says a number now
+            because the offer changed, and a number is the stronger promise of
+            the two: "unlimited" is a claim a guest discounts on sight, eleven
+            is one they can count. It also happens to be true. */}
         <span className="shk-byo__flat-note">
-          any style · unlimited toppings
-          <em>ทุกสไตล์ ราคาเดียว ตักผักไม่อั้น</em>
+          any style · {PICKS_INCLUDED} picks included
+          <em>ทุกสไตล์ ราคาเดียว เลือกท็อปปิ้งได้ {PICKS_INCLUDED} อย่าง</em>
         </span>
       </p>
     </section>
@@ -126,8 +131,82 @@ function StyleScreen({ on, price }) {
 
 /* --- one of the four steps ----------------------------------------------- */
 
+/* One component name, rendered the same everywhere it appears — inside a plain
+   list, inside an allowance group, or in the free strip. Extracted because it
+   is now used in three places and a component whose Thai line goes missing in
+   one of them is a bug nobody in this room can see. */
+function Item({ item }) {
+  return (
+    <li className={`shk-byo__item${item.premium ? " is-premium" : ""}`}>
+      <span className="shk-byo__item-en">
+        {item.en}
+        {item.tag && <b className="shk-byo__item-tag">{item.tag}</b>}
+      </span>
+      <span className="shk-byo__item-th">{item.th}</span>
+    </li>
+  );
+}
+
+/* The badge, and the reason this screen was rebuilt. A flat list of forty-five
+   names can say "lots"; it cannot say "four of these, one of those". A column
+   with a count on top of it says the rule without a sentence, in a script the
+   guest does not have to be able to read. */
+function Group({ group }) {
+  return (
+    <section className={`shk-byo__group${group.wide ? " is-wide" : ""}`}>
+      <header className="shk-byo__group-head">
+        <span className="shk-byo__pick num" aria-hidden="true">
+          ×{group.pick}
+        </span>
+        <span className="shk-byo__group-names">
+          <span className="shk-byo__group-en">{group.en}</span>
+          <span className="shk-byo__group-th">{group.th}</span>
+        </span>
+      </header>
+      <ul className="shk-byo__group-list">
+        {group.items.map((item) => (
+          <Item item={item} key={item.en} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* What the guest sees when the counting stops. It sits below the rule rather
+   than inside it, and it is the widest thing on the screen, because the point
+   of an allowance board is that the last thing you read is generous. */
+function FreeStrip({ free }) {
+  return (
+    <section className="shk-byo__free">
+      <header className="shk-byo__free-head">
+        <span className="shk-byo__free-label">{free.label}</span>
+        <span className="shk-byo__free-en">{free.en}</span>
+        <span className="shk-byo__free-th">{free.th}</span>
+      </header>
+      <ul className="shk-byo__free-list">
+        {free.items.map((item) => (
+          <Item item={item} key={item.en} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/* Counted, never typed: the badge says what is on the bar, and the bar is this
+   list. A board that promises more toppings than the salad bar has is a board
+   the guest catches out from three metres away. */
+function countOf(step) {
+  if (step.items) return step.items.length;
+  return (
+    step.groups.reduce((n, g) => n + g.items.length, 0) + step.free.items.length
+  );
+}
+
 function StepScreen({ step, on, premium }) {
-  const hasPremium = step.items.some((i) => i.premium);
+  const isGroups = step.layout === "groups";
+  // Only the plain lists carry a surcharge now — under the allowance the
+  // premium marks came off the toppings entirely (see byoCatalog.js).
+  const hasPremium = Boolean(step.items?.some((i) => i.premium));
 
   return (
     /* data-step drives the type scale: eight bases and forty-three toppings
@@ -147,33 +226,43 @@ function StepScreen({ step, on, premium }) {
           <p className="shk-byo__title-th">{step.th}</p>
         </div>
         <p className="shk-byo__count">
-          <span className="shk-byo__count-n num">{step.items.length}</span>
+          <span className="shk-byo__count-n num">{countOf(step)}</span>
           <span className="shk-byo__count-label">to choose from</span>
         </p>
       </header>
 
+      {/* Two numbers, deliberately, and only on the topping screen: 45 on the
+          bar, 11 in the bowl. Abundance in the header, the rule in the line
+          under it — in that order, because a guest who reads the limit before
+          the range reads a restriction rather than an offer. */}
       <p className="shk-byo__tag">
-        {step.tagline}
+        <span>
+          {isGroups && (
+            <b className="shk-byo__tag-n num">{PICKS_INCLUDED}&nbsp;</b>
+          )}
+          {step.tagline}
+        </span>
         <em>{step.taglineTh}</em>
       </p>
 
-      {/* CSS columns rather than a grid: the lists are wildly different lengths
-          (8 bases, 43 toppings) and columns let each screen fill its own width
-          without four bespoke grid definitions. */}
-      <ul className="shk-byo__grid" style={{ columnCount: step.columns }}>
-        {step.items.map((item) => (
-          <li
-            className={`shk-byo__item${item.premium ? " is-premium" : ""}`}
-            key={item.en}
-          >
-            <span className="shk-byo__item-en">
-              {item.en}
-              {item.tag && <b className="shk-byo__item-tag">{item.tag}</b>}
-            </span>
-            <span className="shk-byo__item-th">{item.th}</span>
-          </li>
-        ))}
-      </ul>
+      {isGroups ? (
+        <div className="shk-byo__groups">
+          {step.groups.map((g) => (
+            <Group group={g} key={g.en} />
+          ))}
+          <FreeStrip free={step.free} />
+        </div>
+      ) : (
+        /* CSS columns rather than a grid: the plain lists are different lengths
+           (8 bases, 17 dressings) and columns let each screen fill its own
+           width without a bespoke grid definition per step. The topping screen
+           is the one that needed real columns, and it has its own branch. */
+        <ul className="shk-byo__grid" style={{ columnCount: step.columns }}>
+          {step.items.map((item) => (
+            <Item item={item} key={item.en} />
+          ))}
+        </ul>
+      )}
 
       {hasPremium && (
         <p className="shk-byo__legend">
@@ -195,10 +284,11 @@ export default function BuildBoard() {
 
   /*
     Screen dwell is not uniform, and that is the point. The style screen is the
-    one a guest has to actually decide from, and the topping screen has 43 names
-    on it — you cannot read either in the time it takes to register "01 Choose
-    your base", which has eight. Weighting the loop rather than slowing all of
-    it keeps the whole journey inside the ~90 seconds someone spends queueing.
+    one a guest has to actually decide from, and the topping screen carries
+    forty-five names in six counted groups — you cannot read either in the time
+    it takes to register "01 Choose your base", which has eight. Weighting the
+    loop rather than slowing all of it keeps the whole journey inside the ~90
+    seconds someone spends queueing.
   */
   const screens = useMemo(
     () => [
@@ -284,8 +374,8 @@ export default function BuildBoard() {
           that a crawler or a screen reader can land on, and five aria-hidden
           sections would otherwise leave it silent. */}
       <p className="shk-sr-only">
-        Build your own salad, bowl, wrap or cup — {TOPPING_COUNT} toppings, flat
-        price {price} {CURRENCY}.
+        Build your own salad, bowl, wrap or cup — {TOPPING_COUNT} toppings on the
+        bar, {PICKS_INCLUDED} picks included, flat price {price} {CURRENCY}.
       </p>
     </div>
   );

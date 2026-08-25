@@ -265,6 +265,19 @@
   color: var(--text-on-dark-faint);
 }
 
+/* The allowance total, set inside the tagline rather than beside it. It is the
+   one number on this screen a guest has to leave with, and a figure inside a
+   sentence is read as part of the sentence — "11 picks included" — where a
+   figure in its own box competes with the 45 already in the header. */
+.shk-byo__tag-n {
+  font-family: var(--font-display);
+  font-size: 2.2vw;
+  font-weight: var(--weight-black);
+  letter-spacing: var(--tracking-tight);
+  color: var(--honey-300);
+  font-variant-numeric: tabular-nums;
+}
+
 /* --- the list ------------------------------------------------------------ */
 
 .shk-byo__grid {
@@ -364,6 +377,164 @@
   flex: none;
 }
 
+/* --- the allowance groups (step 02) --------------------------------------
+   The topping screen is the only one that is not a list, because under an
+   allowance the grouping IS the message. Seven columns: vegetables take two of
+   them and flow internally in two sub-columns, which is what keeps twelve
+   vegetables from setting a twelve-row height for the entire screen. The other
+   five groups take one column each, so the tallest single column is fruit &
+   pickles at eight — and eight rows is what the type scale below is sized to.
+
+   Explicit grid rather than the multicol the other steps use: multicol has no
+   way to say "this one is twice as wide", and a guest reading down a column
+   has to be reading one group, not the tail of one and the head of the next.
+   -------------------------------------------------------------------------- */
+
+.shk-byo__groups {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  column-gap: 1.7vw;
+  row-gap: 2.2vh;
+  align-content: start;
+  margin-top: 2.2vh;
+}
+
+.shk-byo__group {
+  /* Grid items default to min-content and a long Thai group name would
+     otherwise push its column wider than its 1fr share. */
+  min-width: 0;
+}
+
+.shk-byo__group.is-wide { grid-column: span 2; }
+
+.shk-byo__group.is-wide .shk-byo__group-list {
+  column-count: 2;
+  column-gap: 1.5vw;
+}
+
+.shk-byo__group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55vw;
+  /* Every head is as tall as the tallest, so the six rules underneath them land
+     on one line and all six lists start together. Without it "Beans & corn"
+     wraps to two lines in its narrow column, drops its own list below its
+     neighbours', and the row of groups reads as six things that were laid out
+     separately rather than one rule. Sized to clear the two-line case with the
+     Thai name under it — measured at 85px on a 1080p panel, so 8.4vh. */
+  min-height: 8.4vh;
+  padding-bottom: 0.8vh;
+  margin-bottom: 1.1vh;
+  border-bottom: 0.18vh solid var(--royal-green-line);
+}
+
+/* The count, as a filled gold chip. Solid rather than outlined because this is
+   the only element on the board a guest has to obey, and because six of them
+   down one row is how the rule gets read — the eye compares ×4 to ×1 across the
+   screen long before anyone reads the word "vegetables". */
+.shk-byo__pick {
+  flex: none;
+  padding: 0.35vh 0.5vw;
+  border-radius: 0.6vh;
+  background: var(--honey-500);
+  color: var(--royal-green-deeper);
+  font-family: var(--font-display);
+  font-size: 1.3vw;
+  font-weight: var(--weight-black);
+  line-height: var(--leading-none);
+  font-variant-numeric: tabular-nums;
+}
+
+.shk-byo__group-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.shk-byo__group-en {
+  font-family: var(--font-sans);
+  font-size: 1.05vw;
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--cream-50);
+}
+
+.shk-byo__group-th {
+  font-family: var(--font-th);
+  font-size: 0.8vw;
+  line-height: var(--leading-snug);
+  color: var(--text-on-dark-faint);
+}
+
+.shk-byo__group-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- the free strip ------------------------------------------------------ */
+
+/* Full width, under the rule, on its own side of a line. The counting stops
+   here and the layout says so before the label does. */
+.shk-byo__free {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.8vw;
+  padding-top: 1.4vh;
+  border-top: 0.18vh solid var(--royal-green-line);
+}
+
+.shk-byo__free-head {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.shk-byo__free-label {
+  font-family: var(--font-sans);
+  font-size: 0.8vw;
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--honey-500);
+}
+
+.shk-byo__free-en {
+  font-family: var(--font-sans);
+  font-size: 1.05vw;
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--cream-50);
+}
+
+.shk-byo__free-th {
+  font-family: var(--font-th);
+  font-size: 0.8vw;
+  line-height: var(--leading-snug);
+  color: var(--text-on-dark-faint);
+}
+
+/* One row, wrapping only if a name grows. The eight of them are set as a row
+   rather than a column so the strip reads as a run-on afterthought — which is
+   what "and help yourself to the herbs" is. */
+.shk-byo__free-list {
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4vh 1.6vw;
+}
+
+.shk-byo__free-list .shk-byo__item { margin-bottom: 0; }
+
 /* --- per-step type scale -------------------------------------------------
    Eight bases and forty-three toppings cannot share a size: one screen would
    look starved and the other cramped. Each step gets the size that fills its
@@ -392,19 +563,28 @@
 [data-step="dressing"] .shk-byo__item    { margin-bottom: 5.5vh; }   /* 5 rows  */
 
 /* The topping screen is the tight one, and it is the screen that decides the
-   type scale for the whole board: forty-three names in nine rows plus a
-   surcharge legend under them has to finish inside the overscan safe area, not
-   merely inside the panel. Sized so the legend lands above the padding edge —
-   a legend that clears 1080px but not the bezel is a legend nobody in the
-   restaurant ever reads.
+   type scale for the whole board: six group headers, the tallest column eight
+   rows deep, and a free strip beneath all of it, finishing inside the overscan
+   safe area rather than merely inside the panel. A strip that clears 1080px but
+   not the bezel is a strip nobody in the restaurant ever reads.
 
-   1.3vw is 25px on a 1080p preview and 50px on a 55" 4K panel, which is still
-   comfortably legible at four metres. Adding a tenth row of toppings breaks
-   this; go to six columns before shrinking the type further. */
-[data-step="topping"]  .shk-byo__item-en { font-size: 1.3vw; }
-[data-step="topping"]  .shk-byo__item-th { font-size: 0.95vw; }
-[data-step="topping"]  .shk-byo__item    { margin-bottom: 1.15vh; }  /* 9 rows  */
-[data-step="topping"]  .shk-byo__grid    { margin-top: 2.4vh; }
+   1.05vw is 20px on a 1080p preview and 40px on a 55" 4K panel — smaller than
+   the other steps, which is the honest cost of grouping. Measured, not guessed:
+   at 1.15vw the free strip lands at 1015px, 38px past the safe area and behind
+   the bezel. This scale puts it at 958 and leaves ~20px for the font metrics of
+   whatever Thai face the actual panel resolves, which is the one variable that
+   cannot be checked from here.
+
+   The ragged column bottoms are not a fault to be tuned out — beans has three
+   items and fruit has eight, and pretending otherwise by stretching one of them
+   would break the alignment that makes the six counts comparable.
+
+   Legibility at four metres is the floor and this is at it; the next item added
+   to fruit & pickles makes it nine rows and does not fit. Give that group a
+   `wide: true` and drop a one-column group instead of shrinking this further. */
+[data-step="topping"]  .shk-byo__item-en { font-size: 1.05vw; }
+[data-step="topping"]  .shk-byo__item-th { font-size: 0.78vw; }
+[data-step="topping"]  .shk-byo__item    { margin-bottom: 0.6vh; }   /* 8 rows  */
 
 /* --- where you are in the journey ---------------------------------------- */
 
@@ -496,6 +676,22 @@
   .shk-byo__tag           { font-size: 3.2vw; flex-direction: column; gap: 0.5vh; }
   .shk-byo__tag em        { font-size: 2.8vw; }
   .shk-byo__grid          { column-count: 1 !important; overflow: hidden; }
+  .shk-byo__tag-n         { font-size: 4vw; }
+
+  /* One group under another, the wide one no longer wide, and the whole thing
+     clipped: six counted columns do not exist on a phone at any type size. The
+     portrait preview shows the top of the rule and is honest about being a
+     preview rather than pretending to be the board. */
+  .shk-byo__groups        { grid-template-columns: 1fr; row-gap: 2vh; overflow: hidden; }
+  .shk-byo__group.is-wide { grid-column: span 1; }
+  .shk-byo__group.is-wide .shk-byo__group-list { column-count: 2; }
+  .shk-byo__pick          { font-size: 3.4vw; padding: 0.4vh 1.4vw; }
+  .shk-byo__group-en,
+  .shk-byo__free-en       { font-size: 3vw; }
+  .shk-byo__group-th,
+  .shk-byo__free-th,
+  .shk-byo__free-label    { font-size: 2.2vw; }
+  .shk-byo__free          { flex-direction: column; gap: 1vh; }
   .shk-byo__legend        { font-size: 2.6vw; }
   .shk-byo__legend em     { font-size: 2.2vw; }
   .shk-byo__dot,
