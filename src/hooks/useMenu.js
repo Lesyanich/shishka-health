@@ -171,22 +171,22 @@ async function fetchFromSupabase() {
   // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    // Spring rolls get their own section, promoted out of Appetizers & Sides by
-    // product_code prefix. That parent holds nothing else, so it never reaches
-    // catMap and no empty section renders.
+    // Sections come straight from the view's rollup — no dish is promoted here
+    // any more. Spring rolls used to be lifted out of Appetizers & Sides by
+    // product_code into a synthetic "Fresh Spring Roll" section, sorted half a
+    // step ahead of their parent, which since mig 409 landed them at 18.5, down
+    // among the sides. The CEO's ruling — a spring roll is a wrap, the wrapper
+    // is rice paper — is now in the database: mig 414 moved them to
+    // KP-FIN-WRP-RPW "Rice Paper Wraps", a subsection of Wraps, so they arrive
+    // in the third main category with a subheader of their own and this file
+    // does not need to know they exist.
     //
-    // The sort is DERIVED, not a constant, and that is the whole point. It used
-    // to be a hard-coded 3 — the slot mig 385 left free between Salads (2) and
-    // Sauces & Dressings (4). Mig 409 rebuilt the taxonomy around the CEO's four
-    // categories and put Wraps on 3, so the constant silently collided and would
-    // have dropped spring rolls into the middle of the hero sections. Half a step
-    // ahead of their own parent pins them next to the dishes they belong with and
-    // survives the next re-sort without anyone remembering this file exists.
+    // isSpringRoll survives for ONE reason, below: menu_modifiers still has no
+    // rows for these four dishes, so their add-ons are hand-rolled.
     const isSpringRoll = d.product_code?.startsWith("SALE-SUMMER_ROLLS");
-    const sectionId = isSpringRoll ? "sec-spring-rolls" : (d.section_id ?? d.category_id);
-    let sectionName = isSpringRoll ? "Fresh Spring Roll" : (d.section_name ?? d.category_name);
-    const parentSort = d.section_sort_order ?? d.category_sort_order ?? 0;
-    const sectionSort = isSpringRoll ? parentSort - 0.5 : parentSort;
+    const sectionId = d.section_id ?? d.category_id;
+    const sectionName = d.section_name ?? d.category_name;
+    const sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
     if (sectionId && !catMap.has(sectionId)) {
       catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }
@@ -224,10 +224,7 @@ async function fetchFromSupabase() {
     let subId = d.category_id ?? sectionId;
     let subName = d.category_name ?? sectionName;
     let subSort = d.category_sort_order ?? 0;
-    if (isSpringRoll) {
-      // Own flat section — no subheader.
-      subId = "sec-spring-rolls"; subName = "Fresh Spring Roll"; subSort = 0;
-    } else if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
+    if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
       // The grilled potato becomes the Sides subgroup (more to come).
       subId = "grp-sides"; subName = "🥔 Sides"; subSort = 99;
     } else if (/coffee/i.test(d.category_name || "")) {

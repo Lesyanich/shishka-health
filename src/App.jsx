@@ -86,19 +86,32 @@ const SECTION_ART = {
   // A spring roll is a column (0.26 wide-to-tall), so it gets the whole-and-tall
   // treatment rather than the viewport crop — see --art-w in components.css.
   // Width is gutter + inset, capped, and the height follows from the ratio.
-  "Fresh Spring Roll": {
+  //
+  // Keyed on "Wraps" since mig 414: the rolls no longer have a section of their
+  // own, they are the Rice Paper Wraps half of Wraps. The photograph still earns
+  // its place — it is the only art on the page between Salads (which has the
+  // orbit instead) and Potato Tacos, and Wraps is now a six-dish section rather
+  // than a two-dish stub.
+  Wraps: {
     src: "/assets/section/springroll-shrimp.webp",
     side: "right",
     inset: 200,
     ratio: 0.26,
     align: "top",
-    // rise: how far above its own section the roll starts. At the default 140
-    // it began in the empty gap between the RULE block and this section, which
-    // read as a picture parked beside a heading. Lifted so the top of the roll
-    // breaks into the green Salads band above and the whole thing reads as one
-    // column running down the page. The RULE block's own gutter is empty, so
-    // there is nothing up there to collide with.
-    rise: 350,
+    // rise: how far above its own section the roll starts. At the default 140 it
+    // begins in the gap beside the section heading, which reads as a picture
+    // parked next to a title. Lifted so the top of the roll breaks into the
+    // "Eat Clean Feel Good" RULE block above and the whole thing reads as one
+    // column running down the page. That block's own gutter is empty, so there
+    // is nothing up there to collide with.
+    //
+    // 260, not the 350 this carried while the rolls were their own section: the
+    // RULE block sits after Bowls (content.rule.afterCategory), and Bowls is a
+    // two-column list whose right-hand price badges reach into the gutter. At
+    // 350 the top of the roll ran up behind them. Re-measure this if the RULE
+    // block moves or Bowls changes length — it is tuned to clear real content,
+    // not to a round number.
+    rise: 260,
     width: "min(calc(50vw - var(--content-max) / 2 + 200px), 470px)",
   },
 };

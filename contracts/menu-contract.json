@@ -76,7 +76,7 @@
       "resource": "menu_public",
       "query": "product_code=like.SALE-SUMMER_ROLLS*",
       "min": 1,
-      "why": "useMenu.js promotes these into their own section by product_code prefix. Renaming the prefix silently empties the section."
+      "why": "The four rolls carry hand-rolled modifier groups in useMenu.js (menu_modifiers has no rows for them) and one is named outright in boardPicks.js, both keyed on this product_code prefix. Renaming the prefix silently strips their add-ons and blanks a board slide. Their SECTION is no longer synthesised here: mig 414 put them in KP-FIN-WRP-RPW, Rice Paper Wraps, a subsection of Wraps. Moving them again is safe; renaming their codes is not. The id keeps the word \"section\" only because migrations 410 and 414 cite it by name."
     },
     {
       "id": "taco-bundle-pool",
