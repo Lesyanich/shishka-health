@@ -81,34 +81,29 @@ export const DEFAULT_PREMIUM_SURCHARGE = 40;
 
 /* Step 1. Not a menu section — a question asked of a guest standing at the
    counter deciding what shape their lunch is. The order is deliberate: salad
-   first because it is what we are known for, breakfast last because it is the
-   one a guest has to be told is available at all.
+   first because it is what we are known for.
 
-   BREAKFAST IS NOT A VESSEL. The first three tiles answer "what shape?" and the
-   fourth answers "what time?", which is a category error on paper and the CEO's
-   call anyway — and it survives contact because the breakfast build runs on the
-   same bar as the other three: greens or grains, the topping allowance, egg off
-   the protein list, a dressing. The note has to carry that, which is why it
-   names the egg rather than saying "served all day". A tile that promises a
-   breakfast the salad bar cannot assemble is the one thing that would break it.
-   Open question logged for the CEO: does breakfast get its own components —
-   labneh, granola, sourdough — or is it the same bar with an egg on top? */
+   THERE WAS A FOURTH TILE HERE, AND IT WAS A CATEGORY ERROR. All Day Breakfast
+   sat alongside these three for one build. Three of the tiles answer "what
+   shape?" and that one answered "what time?", which I flagged at the time and
+   shipped anyway because it was the CEO's call.
+
+   It resolved itself rather than being argued. The menu architecture of
+   2026-08-26 makes All-Day Breakfast one of four fixed categories — its own
+   section with its own dishes, sitting beside Salads, Bowls and Wraps rather
+   than inside the build. Breakfast became something you order, not something
+   you assemble, and the three tiles left here are all vessels again. Migration
+   400 in the OS repo made that true in the database; this is the same decision
+   arriving in the catalog.
+
+   Which also answers the open question that used to sit under this comment —
+   does breakfast get its own components, labneh and granola and sourdough, or
+   is it the same bar with an egg on top? It needs none: those dishes are
+   cooked to order, so they put nothing on this bar. */
 export const STYLES = [
   { code: "salad",     en: "Salad",  ru: "Салат",  th: "สลัด",     note: "In the bowl, greens up",  noteRu: "В миске, зелень сверху", noteTh: "จานสลัดผักสด" },
   { code: "bowl",      en: "Bowl",   ru: "Боул",   th: "ข้าวกล่อง", note: "On grains, warm or cold", noteRu: "На крупах, тёплый или холодный", noteTh: "ราดบนธัญพืช" },
   { code: "wrap",      en: "Wrap",   ru: "Врап",   th: "แร็พ",      note: "Rolled to go",            noteRu: "Свёрнут с собой", noteTh: "ห่อพร้อมทาน" },
-  {
-    code: "breakfast",
-    /* Two words on two lines by hand. "All Day Breakfast" set as one string at
-       the tile size wraps wherever the box happens to run out, and the break
-       landing after "All" is not a thing to leave to chance on a wall. */
-    en: "All Day Breakfast",
-    ru: "Завтрак весь день",
-    th: "อาหารเช้าทั้งวัน",
-    note: "Egg on top, any hour",
-    noteRu: "С яйцом, в любое время",
-    noteTh: "ใส่ไข่ เสิร์ฟทั้งวัน",
-  },
 ];
 
 /* Steps 2-5.

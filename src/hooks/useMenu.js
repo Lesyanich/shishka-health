@@ -171,13 +171,22 @@ async function fetchFromSupabase() {
   // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    // Spring rolls get their own section; the original Appetizers section keeps
-    // the dips + sides under a renamed header. Sort 3 is the slot mig 385 left
-    // free for them, between Salads (2) and Sauces & Dressings (4).
+    // Spring rolls get their own section, promoted out of Appetizers & Sides by
+    // product_code prefix. That parent holds nothing else, so it never reaches
+    // catMap and no empty section renders.
+    //
+    // The sort is DERIVED, not a constant, and that is the whole point. It used
+    // to be a hard-coded 3 — the slot mig 385 left free between Salads (2) and
+    // Sauces & Dressings (4). Mig 409 rebuilt the taxonomy around the CEO's four
+    // categories and put Wraps on 3, so the constant silently collided and would
+    // have dropped spring rolls into the middle of the hero sections. Half a step
+    // ahead of their own parent pins them next to the dishes they belong with and
+    // survives the next re-sort without anyone remembering this file exists.
     const isSpringRoll = d.product_code?.startsWith("SALE-SUMMER_ROLLS");
     const sectionId = isSpringRoll ? "sec-spring-rolls" : (d.section_id ?? d.category_id);
     let sectionName = isSpringRoll ? "Fresh Spring Roll" : (d.section_name ?? d.category_name);
-    const sectionSort = isSpringRoll ? 3 : (d.section_sort_order ?? d.category_sort_order ?? 0);
+    const parentSort = d.section_sort_order ?? d.category_sort_order ?? 0;
+    const sectionSort = isSpringRoll ? parentSort - 0.5 : parentSort;
     if (sectionId && !catMap.has(sectionId)) {
       catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }

@@ -97,23 +97,32 @@
   color: var(--text-on-dark-muted);
 }
 
-/* The four styles. Equal width and equal weight on purpose: this is a question,
-   not a recommendation, and a guest who reads it as "the salad is the real one"
-   has been steered by the layout rather than by their appetite. */
+/* The styles. Equal width and equal weight on purpose: this is a question, not
+   a recommendation, and a guest who reads it as "the salad is the real one" has
+   been steered by the layout rather than by their appetite.
+
+   --style-count is set inline by BuildBoard from STYLES.length. The fallback of
+   3 is the current truth rather than a guess, so a stylesheet loaded without the
+   component still lays out correctly. */
 .shk-byo__styles {
   list-style: none;
   margin: 4.5vh 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(var(--style-count, 3), 1fr);
   gap: 1.6vw;
   width: 100%;
 }
 
-/* justify-content matters now that one tile's name is two lines. The grid
-   stretches all four to the tallest, and without this the three short tiles
-   hang their text from the top with the slack pooled underneath — which reads
-   as three tiles that failed to finish rendering. */
+/* justify-content is centre rather than the default because the grid stretches
+   every tile to the tallest in the row, and a tile with slack pools it under
+   the text — which reads as a tile that failed to finish rendering.
+
+   This mattered visibly when All Day Breakfast was here and wrapped to two
+   lines. That tile is gone and the three names left are all one word, so today
+   the rule is doing nothing you can see. It stays because the condition it
+   guards against is any name longer than the others, not that specific name,
+   and Russian is already the wider line on every tile. */
 .shk-byo__style {
   display: flex;
   flex-direction: column;

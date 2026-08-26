@@ -117,7 +117,13 @@ function StyleScreen({ on, price }) {
       <p className="shk-byo__hero-ru" lang="ru">Начните со стиля</p>
       <p className="shk-byo__hero-th" lang="th">เริ่มจากสไตล์ที่คุณชอบ</p>
 
-      <ul className="shk-byo__styles">
+      {/* The column count comes from the data, not from the stylesheet. This
+          list went three tiles, then four, then three again inside two days,
+          and the second of those moves left the CSS at repeat(4, 1fr) with
+          three tiles in it — a hole on the right of a wall-mounted TV. Binding
+          it here means adding or removing a style is a one-line change in
+          byoCatalog.js and the board relays it out correctly on its own. */}
+      <ul className="shk-byo__styles" style={{ "--style-count": STYLES.length }}>
         {STYLES.map((s) => (
           <li className="shk-byo__style" key={s.code}>
             <span className="shk-byo__style-en">{s.en}</span>
@@ -419,7 +425,7 @@ export default function BuildBoard() {
           that a crawler or a screen reader can land on, and five aria-hidden
           sections would otherwise leave it silent. */}
       <p className="shk-sr-only">
-        Build your own salad, bowl, wrap or all-day breakfast — {TOPPING_COUNT} toppings on the
+        Build your own salad, bowl or wrap — {TOPPING_COUNT} toppings on the
         bar, {PICKS_INCLUDED} picks included, flat price {price} {CURRENCY}.
       </p>
     </div>

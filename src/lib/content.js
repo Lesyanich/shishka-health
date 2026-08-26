@@ -41,7 +41,7 @@ export const DEFAULT_CONTENT = {
     enabled: true,
     eyebrow: "build your own",
     lead: "four steps, one price",
-    sub: "Salad, bowl, wrap or all-day breakfast — built in front of you at the counter.",
+    sub: "Salad, bowl or wrap — built in front of you at the counter.",
     // Kept out of the headline because the price is the fact most likely to
     // change, and a stale price on a menu is the one error guests remember.
     price: 219,
