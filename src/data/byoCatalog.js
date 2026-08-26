@@ -14,7 +14,8 @@
   So this is the interim contract, transcribed from sources that are already
   true rather than invented here:
 
-    · the four steps and their taglines — the concept the CEO approved 2026-08-25
+    · the four steps and their taglines — the concept the CEO approved
+      2026-08-25 and restated 2026-08-26 as "four steps, one price 219"
     · every EN/TH component name — the fridge label sheet now hanging on the
       salad bar (`~/Desktop/shishka-fridge-labels.html`). Those labels were
       printed and hung, which makes them the only Thai copy in the business that
@@ -61,17 +62,20 @@
       Saturday.
 */
 
-/* The one number the whole concept rests on, and the one I do not have from
-   the CEO yet. "Flat price" is his instruction; the value is mine. It is a
-   constant rather than a literal in the markup so that confirming it is a
-   one-line change, and it is overridable from the URL (/board?p=249) so that
-   whoever is standing in front of the TV can try a number at full size on the
-   actual panel before committing it. Same trick the dish board uses for slide
-   duration.
+/* The one number the whole concept rests on. It was written here as a
+   placeholder — "flat price" was the CEO's instruction and the value was mine.
+   CEO, 2026-08-26: "so four steps, one price 219". It is his number now.
 
-   At 219 the middle build — green oak, mixed veg, chicken, feta, tahini —
-   runs 69.48 in food, or 31.7%. That is a shade over the 21-31% band, which is
-   the argument for 229 rather than 219. His call, not mine. */
+   The margin, logged once and not re-argued: the middle build — green oak,
+   mixed veg, chicken, feta, tahini — is 69.48 THB of food, which is 31.7% at
+   219, a shade over the 21-31% band. The picks allowance above is what holds
+   that in place. If the allowance is ever relaxed, this number has to move with
+   it; on its own it is a decision that has been made.
+
+   Still a constant rather than a literal in the markup, and still overridable
+   from the URL (/board?p=229) so that whoever is standing in front of the TV
+   can try a number at full size on the actual panel before committing it. Same
+   trick the dish board uses for slide duration. */
 export const DEFAULT_FLAT_PRICE = 219;
 
 /* Shrimp is the only component that still needs a surcharge. At 80 g it costs
@@ -83,23 +87,27 @@ export const DEFAULT_PREMIUM_SURCHARGE = 40;
    counter deciding what shape their lunch is. The order is deliberate: salad
    first because it is what we are known for.
 
-   THERE WAS A FOURTH TILE HERE, AND IT WAS A CATEGORY ERROR. All Day Breakfast
-   sat alongside these three for one build. Three of the tiles answer "what
-   shape?" and that one answered "what time?", which I flagged at the time and
-   shipped anyway because it was the CEO's call.
+   THERE WAS A FOURTH TILE HERE, AND THE CEO HAS NOW RULED IT OUT IN WORDS.
+   All Day Breakfast sat alongside these three for one build. Three of the tiles
+   answer "what shape?" and that one answered "what time?", which I flagged at
+   the time and shipped anyway because it was his call.
 
-   It resolved itself rather than being argued. The menu architecture of
-   2026-08-26 makes All-Day Breakfast one of four fixed categories — its own
-   section with its own dishes, sitting beside Salads, Bowls and Wraps rather
-   than inside the build. Breakfast became something you order, not something
-   you assemble, and the three tiles left here are all vessels again. Migration
-   400 in the OS repo made that true in the database; this is the same decision
-   arriving in the catalog.
+   CEO, 2026-08-26: "all-day breakfast not in the built in front of you at the
+   counter. it is a different category ... Salad, bowl, wrap — built in front of
+   you at the counter." So this is settled as a decision rather than as drift.
+   All-Day Breakfast is one of the four fixed menu categories — its own section
+   with its own dishes, beside Salads, Bowls and Wraps — and breakfast is
+   something you order, not something you assemble. The three tiles left here
+   are all vessels again.
 
-   Which also answers the open question that used to sit under this comment —
-   does breakfast get its own components, labneh and granola and sourdough, or
-   is it the same bar with an egg on top? It needs none: those dishes are
-   cooked to order, so they put nothing on this bar. */
+   THE TEST THIS GIVES YOU, worth keeping when the next candidate turns up: a
+   tile belongs here if it names the SHAPE the food arrives in. Anything that
+   names a time of day, an occasion or a diet is a menu category, not a style.
+
+   It also answers the open question that used to sit under this comment — does
+   breakfast get its own components, labneh and granola and sourdough, or is it
+   the same bar with an egg on top? Neither: those dishes are cooked to order,
+   so they put nothing on this bar. */
 export const STYLES = [
   { code: "salad",     en: "Salad",  ru: "Салат",  th: "สลัด",     note: "In the bowl, greens up",  noteRu: "В миске, зелень сверху", noteTh: "จานสลัดผักสด" },
   { code: "bowl",      en: "Bowl",   ru: "Боул",   th: "ข้าวกล่อง", note: "On grains, warm or cold", noteRu: "На крупах, тёплый или холодный", noteTh: "ราดบนธัญพืช" },
