@@ -392,6 +392,35 @@ export function stepColumns(step, sauceCount) {
   return Math.ceil(sauceCount / 3);
 }
 
+/* How many things this step actually offers — counted from the lists, never
+   typed. The topping step is the awkward one: it has no flat `items`, it has
+   six counted groups plus the free strip, so anything reading `step.items`
+   gets undefined. Both the wall board and the website print this number, and
+   they must print the same one; that is why it lives here and not in either
+   component. */
+export function stepCount(step, sauceCount) {
+  if (step.items) return stepItems(step, sauceCount).length;
+  return (
+    step.groups.reduce((n, g) => n + g.items.length, 0) + step.free.items.length
+  );
+}
+
+/* The topping step's tagline is stored without its leading number — the board
+   sets that figure as its own element so it can be a size larger than the
+   sentence around it. Which means the bare string reads "picks included — take
+   them from any row", a sentence missing its subject, and any second consumer
+   that just prints `step.tagline` ships it that way. The website did, briefly.
+   Anything that wants the sentence rather than the parts asks here. */
+export function stepTagline(step, lang = "en") {
+  const key = lang === "ru" ? "taglineRu" : lang === "th" ? "taglineTh" : "tagline";
+  const text = step[key];
+  // Thai is the exception: that line was written as a whole sentence and does
+  // not have a slot at the front for the figure, which is why the board prints
+  // the number over the English and Russian lines only.
+  if (lang === "th" || step.layout !== "groups") return text;
+  return `${PICKS_INCLUDED} ${text}`;
+}
+
 const TOPPING_STEP = STEPS.find((s) => s.code === "topping");
 
 /* The headline number, summed from the allowances rather than typed. Under

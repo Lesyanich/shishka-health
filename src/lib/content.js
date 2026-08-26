@@ -33,6 +33,20 @@ export const DEFAULT_CONTENT = {
     ],
     afterCategory: 2, // render the block after the Nth category (1-based)
   },
+  // Build Your Own. Only the framing lines live here — the four step names and
+  // their counts are read from src/data/byoCatalog.js, the same file the wall
+  // board reads, so the TV and the site cannot disagree about what is on offer.
+  // Set enabled:false to pull the section without a deploy.
+  byo: {
+    enabled: true,
+    eyebrow: "build your own",
+    lead: "four steps, one price",
+    sub: "Salad, bowl, wrap or all-day breakfast — built in front of you at the counter.",
+    // Kept out of the headline because the price is the fact most likely to
+    // change, and a stale price on a menu is the one error guests remember.
+    price: 219,
+    priceNote: "any style, 11 toppings included",
+  },
   cta: {
     eyebrow: "visit us in phuket",
     title: "come hungry.",
@@ -55,6 +69,7 @@ export function mergeContent(rows) {
   const out = {
     hero: { ...DEFAULT_CONTENT.hero },
     rule: { ...DEFAULT_CONTENT.rule },
+    byo: { ...DEFAULT_CONTENT.byo },
     cta: { ...DEFAULT_CONTENT.cta },
     sectionIntros: { ...DEFAULT_CONTENT.sectionIntros },
   };

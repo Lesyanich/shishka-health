@@ -9,6 +9,7 @@ import { Hero } from "./components/menu/Hero.jsx";
 import { ManakishTiers } from "./components/menu/ManakishTiers.jsx";
 import { ManakishSets } from "./components/menu/ManakishSets.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
+import { ByoIntro } from "./components/menu/ByoIntro.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
 import { SiteFooter } from "./components/menu/SiteFooter.jsx";
 import { DEFAULT_CONTENT } from "./lib/content.js";
@@ -554,6 +555,13 @@ export default function App() {
         />
 
         <Hero wide={wide} content={content.hero} />
+
+        {/* Above the category tabs, not inside the menu: Build Your Own is not
+            one more section to browse past, it is the thing the counter now
+            does. The tabs are sticky, so this scrolls away and the menu
+            navigation takes the top of the screen behind it — the concept gets
+            the first screen and costs the menu nothing after that. */}
+        <ByoIntro wide={wide} content={content.byo} />
 
         <CategoryTabs
           categories={byCat.map((c) => ({ id: c.id, label: c.name, count: c.items.length }))}

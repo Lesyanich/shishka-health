@@ -1215,6 +1215,122 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-rule--wide .shk-rule__icon { width: 30px; height: 34px; }
 
+/* ---- Build Your Own: the concept, in the printed-menu idiom ---------------
+   Transparent like .shk-rule, not a band. The site's two washes (mint, warm)
+   belong to menu sections; the editorial blocks sit on the page ground and let
+   type do the separating, and this is an editorial block.
+
+   The board version of this screen is dark green with gold numerals. None of
+   that survives the move: theme-light retires the dark surfaces and says twice
+   that gold is unreadable on white. What does survive is the *structure* — a
+   counted sequence — so the numerals stay, outlined rather than filled so four
+   in a row read as a sequence and not as four heavy blocks. On white they are
+   royal green; on the TV they are gold. Same gesture, each in its own palette.
+   -------------------------------------------------------------------------- */
+.shk-byoi { background: transparent; color: var(--text-strong); }
+.shk-byoi__inner {
+  max-width: var(--content-max); margin: 0 auto;
+  padding: var(--space-10) var(--page-pad-mobile) var(--space-12);
+}
+/* Muted, not honey: gold on white is the one thing this theme rules out. */
+.shk-byoi__eyebrow {
+  margin: 0 0 var(--space-2); font-family: var(--font-body);
+  font-size: var(--text-2xs); font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-wider); text-transform: uppercase;
+  color: var(--text-muted);
+}
+.shk-byoi__lead {
+  margin: 0 0 var(--space-3); max-width: 20ch;
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(1.625rem, 6vw, 2.25rem); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight); color: var(--text-strong); text-wrap: balance;
+}
+.shk-byoi__sub {
+  margin: 0 0 var(--space-5); max-width: 46ch;
+  font-size: var(--text-md); line-height: var(--leading-snug); color: var(--text-muted);
+}
+
+/* The four vessels, as chips. Above the steps because "what am I ordering?"
+   comes before "how do I fill it?". */
+.shk-byoi__styles {
+  list-style: none; margin: 0 0 var(--space-8); padding: 0;
+  display: flex; flex-wrap: wrap; gap: var(--space-2);
+}
+.shk-byoi__style {
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-body); font-weight: var(--fw-bold); font-size: var(--text-sm);
+  color: var(--text-strong); white-space: nowrap;
+}
+
+.shk-byoi__steps {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6) var(--space-5);
+}
+/* The hairline is per-step rather than between steps: at two columns a divider
+   between them lands mid-row and starts to read as a table. */
+.shk-byoi__step { border-top: 1px solid var(--border-subtle); padding-top: var(--space-3); }
+.shk-byoi__n {
+  display: block; margin-bottom: 4px;
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(1.75rem, 7vw, 2.5rem); line-height: 1;
+  letter-spacing: var(--tracking-tight);
+  color: transparent; -webkit-text-stroke: 1.5px var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.shk-byoi__t {
+  margin: 0 0 4px; font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: var(--text-lg); line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight); color: var(--text-strong);
+}
+.shk-byoi__d {
+  margin: 0 0 var(--space-2); font-size: var(--text-sm);
+  line-height: 1.35; color: var(--text-muted);
+}
+/* The count is the promise each step makes — red, because it is the number a
+   guest is deciding on and red is this theme's emphasis. */
+.shk-byoi__c {
+  display: block;
+  font-family: var(--font-body); font-weight: var(--fw-bold);
+  font-size: var(--text-xs); color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.shk-byoi__price {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 var(--space-2);
+  margin: var(--space-8) 0 0;
+}
+.shk-byoi__price-n {
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: clamp(2.25rem, 9vw, 3.25rem); line-height: 1;
+  letter-spacing: var(--tracking-tight); color: var(--menu-price);
+  font-variant-numeric: tabular-nums;
+}
+/* THB, spelled out: Albert Sans has no ฿ glyph and silently substitutes it from
+   an unrelated face. See memory brand_font_baht_glyph — same reason the board
+   says THB. */
+.shk-byoi__price-cur {
+  font-family: var(--font-body); font-weight: var(--fw-bold);
+  font-size: var(--text-sm); letter-spacing: var(--tracking-wider);
+  text-transform: uppercase; color: var(--menu-price);
+}
+.shk-byoi__price-note { font-size: var(--text-sm); color: var(--text-muted); }
+
+.shk-byoi--wide .shk-byoi__inner { padding: var(--space-16) var(--space-8); }
+.shk-byoi--wide .shk-byoi__lead { font-size: clamp(2rem, 3.4vw, 3rem); max-width: 24ch; }
+.shk-byoi--wide .shk-byoi__sub { font-size: var(--text-lg); max-width: 60ch; }
+/* Four across is the Salata reference and the shape of the concept: the whole
+   sequence visible at once, so nobody has to scroll to learn how many steps
+   there are. */
+.shk-byoi--wide .shk-byoi__steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6);
+}
+.shk-byoi--wide .shk-byoi__n { font-size: 3rem; -webkit-text-stroke-width: 2px; }
+.shk-byoi--wide .shk-byoi__t { font-size: 1.75rem; }
+.shk-byoi--wide .shk-byoi__d { font-size: var(--text-md); }
+.shk-byoi--wide .shk-byoi__c { font-size: var(--text-sm); }
+
 /* ---- Brand accent: visit & order CTA (deep-green band, end of menu) ---- */
 .shk-cta { background: transparent; color: var(--text-on-dark); }
 .shk-cta__inner {

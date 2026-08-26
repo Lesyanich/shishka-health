@@ -10,6 +10,7 @@ import {
   SAUCE_COUNT_OPTIONS,
   stepItems,
   stepColumns,
+  stepCount,
 } from "../../data/byoCatalog.js";
 
 /*
@@ -218,16 +219,6 @@ function FreeStrip({ free }) {
   );
 }
 
-/* Counted, never typed: the badge says what is on the bar, and the bar is this
-   list. A board that promises more toppings than the salad bar has is a board
-   the guest catches out from three metres away. */
-function countOf(step, items) {
-  if (items) return items.length;
-  return (
-    step.groups.reduce((n, g) => n + g.items.length, 0) + step.free.items.length
-  );
-}
-
 function StepScreen({ step, on, premium, sauces }) {
   const isGroups = step.layout === "groups";
   /* The sauce list is sliced to the chosen count, so everything downstream —
@@ -266,7 +257,10 @@ function StepScreen({ step, on, premium, sauces }) {
           <p className="shk-byo__title-th" lang="th">{step.th}</p>
         </div>
         <p className="shk-byo__count">
-          <span className="shk-byo__count-n num">{countOf(step, items)}</span>
+          {/* Counted, never typed: the badge says what is on the bar, and the
+              bar is this list. Shared with the website's BYO section so the TV
+              and the site cannot print different numbers for the same step. */}
+          <span className="shk-byo__count-n num">{stepCount(step, sauces)}</span>
           <span className="shk-byo__count-label">to choose from</span>
         </p>
       </header>
