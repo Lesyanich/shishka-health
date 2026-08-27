@@ -92,6 +92,16 @@ Iceberg and cos lettuce, red cabbage, grilled chicken tawook, guacamole, mango s
 
 ---
 
+## 🍢 Meals
+
+### Protein Meal Chicken · Shish Tawook · 299
+
+Two grilled chicken shish tawook skewers, flatbread, parsley, sumac red onion, hummus, tabbouleh, tahini sauce. 64g protein.
+Два шампура курицы шиш-таук на гриле, лепёшка, петрушка, красный лук с сумахом, хумус, табуле, соус тахини. 64 г белка.
+ไก่ย่างชิชทาวุก 2 ไม้ ฮัมมูส ทับบูเลห์ ซอสตาฮินี
+
+---
+
 ## 🌯 Wraps · Tortilla
 
 ### Protein Chicken Tawook · 160
