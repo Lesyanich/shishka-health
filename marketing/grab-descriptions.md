@@ -106,6 +106,12 @@ Two grilled shrimp skewers, flatbread, coleslaw, pickled gherkins, roasted beetr
 Два шампура креветок на гриле, лепёшка, капустный салат, корнишоны, хумус со свёклой, соус тахини. 45 г белка.
 กุ้งย่าง 2 ไม้ สลัดกะหล่ำ ฮัมมูสบีทรูท ซอสตาฮินี
 
+### Protein Meal Beef · Fattoush · 429
+
+Sliced grass-fed beef, flatbread, parsley, sumac onion, smoked eggplant mutabal, fattoush, tahini sauce. 58g protein.
+Говядина травяного откорма, лепёшка, петрушка, лук с сумахом, мутабаль из баклажана, фаттуш, соус тахини. 58 г белка.
+เนื้อวัวสไลซ์ มูตาบัลมะเขือม่วง สลัดฟัตตูช ซอสตาฮินี
+
 ---
 
 ## 🌯 Wraps · Tortilla
