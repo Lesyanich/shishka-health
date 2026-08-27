@@ -100,6 +100,12 @@ Two grilled chicken shish tawook skewers, flatbread, parsley, sumac red onion, h
 Два шампура курицы шиш-таук на гриле, лепёшка, петрушка, красный лук с сумахом, хумус, табуле, соус тахини. 64 г белка.
 ไก่ย่างชิชทาวุก 2 ไม้ ฮัมมูส ทับบูเลห์ ซอสตาฮินี
 
+### Protein Meal Shrimp · Beetroot Hummus · 349
+
+Two grilled shrimp skewers, flatbread, coleslaw, pickled gherkins, roasted beetroot hummus, tahini sauce. 45g protein.
+Два шампура креветок на гриле, лепёшка, капустный салат, корнишоны, хумус со свёклой, соус тахини. 45 г белка.
+กุ้งย่าง 2 ไม้ สลัดกะหล่ำ ฮัมมูสบีทรูท ซอสตาฮินี
+
 ---
 
 ## 🌯 Wraps · Tortilla
