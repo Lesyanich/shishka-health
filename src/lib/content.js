@@ -27,7 +27,6 @@ export const DEFAULT_CONTENT = {
       "seed oils",
       { label: "Gluten FREE options", deny: false, icon: "industrial gluten" },
       "fake food",
-      "fried food",
       "preservatives",
       "monosodium glutamate (MSG)",
     ],

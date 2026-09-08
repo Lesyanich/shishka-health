@@ -81,7 +81,7 @@ const NAP = {
    because it names its own exception.
 */
 const CLAIM_NO_SEED_OILS =
-  "We cook with no seed oils at all — not in the kitchen, not in our sauces, and nothing is deep-fried.";
+  "We cook with no seed oils at all — not in the kitchen, and not in our sauces.";
 const CLAIM_GLUTEN =
   "Everything on our menu is gluten-free except our sourdough bread.";
 const CLAIM_CELIAC =
@@ -384,9 +384,9 @@ function buildPages(dishes) {
     {
       slug: "menu",
       title: `Menu — ${NAP.name}, Rawai Phuket`,
-      description: `The full ${NAP.name} menu: ${count} dishes and drinks with prices, made fresh daily in Rawai, Phuket. No seed oils, no MSG, nothing deep-fried.`,
+      description: `The full ${NAP.name} menu: ${count} dishes and drinks with prices, made fresh daily in Rawai, Phuket. No seed oils, no MSG.`,
       h1: "Our Menu",
-      answer: `${NAP.name} in Rawai, Phuket serves ${count} freshly made dishes and drinks — potato tacos, salads, fresh spring rolls, smoothies, juices, matcha and coffee.${priceLine} We cook with no seed oils, no MSG and no deep-frying.`,
+      answer: `${NAP.name} in Rawai, Phuket serves ${count} freshly made dishes and drinks — potato tacos, salads, fresh spring rolls, smoothies, juices, matcha and coffee.${priceLine} We cook with no seed oils and no MSG.`,
       body: menuBody,
       faqs: sharedFaq,
       extraLd: [menuLd(groups)],
@@ -414,14 +414,13 @@ ${dishList(dishes.filter((d) => /taco|spring roll|salad|smoothie|juice/i.test(d.
       description: `${CLAIM_NO_SEED_OILS} Real food cooked without sunflower, canola, soybean or palm oil, in Rawai, Phuket.`,
       h1: "A Kitchen With No Seed Oils, in Rawai",
       answer: `${CLAIM_NO_SEED_OILS} That covers sunflower, canola, rapeseed, soybean, corn and palm oil — in the cooking, in the dressings and in the sauces we make ourselves.`,
-      body: `<p>Most kitchens in Phuket cook in seed oil because it is the cheapest fat on the shelf. We do not, and we do not deep-fry anything. We also use no MSG and no preservatives.</p>
+      body: `<p>Most kitchens in Phuket cook in seed oil because it is the cheapest fat on the shelf. We do not. We also use no MSG and no preservatives.</p>
 <h2>What we cook instead</h2>
 <p>Olive oil, butter and the fat that is already in the food. Our beef and lamb are grass-fed.</p>
 <h2>On the menu</h2>
 ${dishList(dishes.slice(0, 24), { withDesc: false })}`,
       faqs: [
         { q: "Do you use seed oils?", a: CLAIM_NO_SEED_OILS },
-        { q: "Do you deep-fry anything?", a: "No. Nothing on our menu is deep-fried." },
         { q: "Is your beef grass-fed?", a: "Yes — our beef and lamb are grass-fed." },
         ...sharedFaq.slice(0, 2),
       ],
@@ -431,7 +430,7 @@ ${dishList(dishes.slice(0, 24), { withDesc: false })}`,
       title: `Healthy Food in Rawai, Phuket — ${NAP.name}`,
       description: `Fresh, unprocessed food made daily in Rawai, Phuket: salads, potato tacos, fresh spring rolls, smoothies and specialty coffee. No seed oils, no MSG.`,
       h1: "Healthy Food in Rawai, Phuket",
-      answer: `${NAP.name} is a healthy kitchen in Rawai, Phuket, inside Tops Daily on Soi Naya 2. We make ${count} dishes and drinks fresh every day — salads, potato tacos, fresh spring rolls, smoothies, juices and coffee — with no seed oils, no MSG and nothing deep-fried.`,
+      answer: `${NAP.name} is a healthy kitchen in Rawai, Phuket, inside Tops Daily on Soi Naya 2. We make ${count} dishes and drinks fresh every day — salads, potato tacos, fresh spring rolls, smoothies, juices and coffee — with no seed oils and no MSG.`,
       body: `<h2>What we serve</h2>
 ${menuBody}`,
       faqs: sharedFaq,
@@ -440,11 +439,11 @@ ${menuBody}`,
     {
       slug: "clean-eating-phuket",
       title: `Clean Eating in Phuket — ${NAP.name}, Rawai`,
-      description: `Real, unprocessed food in Phuket: no seed oils, no MSG, no preservatives, nothing deep-fried. Macros on every dish. Rawai, open daily.`,
+      description: `Real, unprocessed food in Phuket: no seed oils, no MSG, no preservatives. Macros on every dish. Rawai, open daily.`,
       h1: "Clean Eating in Phuket",
-      answer: `If clean eating means real ingredients and nothing hidden, that is the whole point of ${NAP.name} in Rawai, Phuket. No seed oils, no MSG, no preservatives, nothing deep-fried — and calories and protein printed on every dish so you can see what you are eating.`,
+      answer: `If clean eating means real ingredients and nothing hidden, that is the whole point of ${NAP.name} in Rawai, Phuket. No seed oils, no MSG, no preservatives — and calories and protein printed on every dish so you can see what you are eating.`,
       body: `<h2>Our rule</h2>
-<p>No seed oils. No fake food. No fried food. No preservatives. No MSG. Gluten-free options.</p>
+<p>No seed oils. No fake food. No preservatives. No MSG. Gluten-free options.</p>
 <p class="claim">${escHtml(CLAIM_NO_SEED_OILS)}</p>
 <h2>Every dish comes with its numbers</h2>
 ${dishList(dishes.filter((d) => d.calories != null).slice(0, 24))}`,
@@ -528,7 +527,7 @@ function patchIndex(faqs) {
 
   const title = `${NAP.name} — Healthy Food in Rawai, Phuket`;
   const desc =
-    "Fresh, unprocessed food made daily in Rawai, Phuket: potato tacos, salads, fresh spring rolls, smoothies, juices and coffee. No seed oils, no MSG, nothing deep-fried.";
+    "Fresh, unprocessed food made daily in Rawai, Phuket: potato tacos, salads, fresh spring rolls, smoothies, juices and coffee. No seed oils, no MSG.";
 
   html = html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
