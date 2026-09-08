@@ -1,7 +1,7 @@
 import { DEFAULT_CONTENT } from "../../lib/content.js";
 
 // Per-item line marks, keyed by the (lower-cased) rule item: a droplet, a wheat
-// stalk, a cube, fries, a flask, a seasoning shaker. Each is struck through.
+// stalk, a cube, a flask, a seasoning shaker. Each is struck through.
 // Unknown items fall back to a plain cross.
 const RULE_ICONS = {
   "seed oils": (
@@ -21,13 +21,6 @@ const RULE_ICONS = {
     <>
       <path d="M24 13l9 5v10l-9 5-9-5V18z" />
       <path d="M24 23v10M24 23l9-5M24 23l-9-5" />
-      <path d="M16 16 32 32" />
-    </>
-  ),
-  "fried food": (
-    <>
-      <path d="M18 22h12l-1.6 11h-8.8z" />
-      <path d="M21 22v-6M24 22v-8M27 22v-6" />
       <path d="M16 16 32 32" />
     </>
   ),

@@ -56,7 +56,6 @@ export const BOARD_RUNNING_ORDER = [
   // "last" is only ever one slide away from "first", so appending costs nothing
   // and keeps his original running order legible as the thing he actually wrote.
   "SALE-TOAST_SALMON_GOAT_CHEESE", //      Smoked Salmon Toast
-  "SALE-SANDWICH_MEATLOAF_MELT", //        Ham Meatloaf Melt
   "SALE-HUMMUS_KEBAB_BEEF", //             Hummus Kebab Grass-Fed Beef
   "SALE-TOAST_SHRIMP_GUACAMOLE", //        Shrimp Guacamole Toast
   "SALE-MATCHA_ORANGE", //                 Orange Matcha
