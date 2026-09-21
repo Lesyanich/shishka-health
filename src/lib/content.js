@@ -16,7 +16,8 @@ export const DEFAULT_CONTENT = {
     banner: "CLEAN FOOD",
     // Optional second line under the banner, in the accent colour.
     title: "Honest. Delicious. No junk",
-    sub: "No seed oils · no MSG · nothing ultra-processed. Only Fresh ingredients",
+    // A "\n" in sub is a real line break (white-space: pre-line).
+    sub: "No seed oils · no MSG · nothing ultra-processed.\nOnly fresh ingredients",
   },
   rule: {
     eyebrow: "the rule",

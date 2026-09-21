@@ -1162,7 +1162,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-hero__sub {
   margin: var(--space-4) auto 0; max-width: 42ch; font-size: var(--text-md);
   line-height: var(--leading-snug); color: var(--cream-100);
-  letter-spacing: normal; word-spacing: normal;
+  letter-spacing: normal; word-spacing: normal; white-space: pre-line;
 }
 .shk-hero--wide .shk-hero__inner { padding: var(--space-16) var(--space-8) var(--space-20); }
 .shk-hero--wide .shk-hero__banner { font-size: clamp(var(--text-5xl), 9vw, 7rem); }
