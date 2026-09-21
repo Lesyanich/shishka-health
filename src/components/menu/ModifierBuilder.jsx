@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { requiredAddOnFloor, selectedNutrition, selectedOptionsList } from "../../lib/modifiers.js";
+import { t, tp } from "../../i18n/index.js";
 
 // Interactive "build your own" panel. Toggle options, see a live total.
 // A group can be REQUIRED (minSelect > 0) and/or CAPPED (maxSelect): e.g.
@@ -110,10 +111,10 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
   return (
     <div className="shk-build">
       <div className="shk-build__head">
-        <span className="shk-build__title">Build your own</span>
+        <span className="shk-build__title">{t("build.title")}</span>
         {count > 0 && (
           <button type="button" className="shk-build__reset" onClick={() => setSelected(initial)}>
-            Reset
+            {t("build.reset")}
           </button>
         )}
       </div>
@@ -127,10 +128,10 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
         const atMax = !isRadio && max != null && groupCount(selected, gi) >= max;
         const selDelta = isRadio ? selectedDelta(gi) : 0;
         const req = isRadio
-          ? "choose one"
-          : min > 0 && max != null ? `pick ${min}–${max}`
-          : min > 0 ? `pick at least ${min}`
-          : max != null ? `pick up to ${max}`
+          ? t("build.chooseOne")
+          : min > 0 && max != null ? t("build.pickRange", { min, max })
+          : min > 0 ? t("build.pickAtLeast", { min })
+          : max != null ? t("build.pickUpTo", { max })
           : null;
         return (
         <div key={gi} className={`shk-build__group ${isRadio ? "shk-build__group--radio" : ""}`}>
@@ -148,7 +149,7 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
               // "Included". Multi options show their flat surcharge.
               const rel = isRadio ? (Number(o.priceDelta) || 0) - selDelta : (Number(o.priceDelta) || 0);
               let priceLabel = null;
-              if (isRadio && on) priceLabel = <span className="shk-build__opt-delta is-included">Included</span>;
+              if (isRadio && on) priceLabel = <span className="shk-build__opt-delta is-included">{t("build.included")}</span>;
               else if (rel > 0) priceLabel = <span className="shk-build__opt-delta num">+{currency}{rel}</span>;
               else if (rel < 0) priceLabel = <span className="shk-build__opt-delta num is-save">−{currency}{Math.abs(rel)}</span>;
               return (
@@ -175,10 +176,10 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
 
       <div className="shk-build__total">
         <span className="shk-build__total-label">
-          Total{count > 0 ? ` · ${count} add-on${count > 1 ? "s" : ""}` : ""}
+          {t("build.total")}{count > 0 ? ` · ${tp("build.addons", count)}` : ""}
         </span>
         <span className="shk-build__total-val num">
-          {!requiredMet && <span className="shk-build__from">from </span>}
+          {!requiredMet && <span className="shk-build__from">{t("card.from")} </span>}
           {currency}{displayTotal}
         </span>
       </div>

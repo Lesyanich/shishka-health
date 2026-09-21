@@ -47,8 +47,10 @@ export function CartProvider({ children }) {
       ]);
 
     // children: [{ dish, qty, role: 'manakish' | 'sauce' }]
-    const addBundle = (label, children, price) =>
-      setLines((prev) => [...prev, { kind: "bundle", id: newId(), label, children, price, qty: 1 }]);
+    // labelEn: the English set name for the counter (Cart.jsx shows it under
+    // a translated label); omitted on the English site.
+    const addBundle = (label, children, price, labelEn) =>
+      setLines((prev) => [...prev, { kind: "bundle", id: newId(), label, labelEn, children, price, qty: 1 }]);
 
     const setQty = (id, qty) =>
       setLines((prev) => prev.flatMap((l) => (l.id !== id ? [l] : qty <= 0 ? [] : [{ ...l, qty }])));

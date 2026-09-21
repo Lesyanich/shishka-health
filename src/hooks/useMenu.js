@@ -5,6 +5,8 @@ import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
 import { deepStripEmoji, titleCaseMenu } from "../lib/text.js";
 import { dishFloor, dishDefaultPrice } from "../lib/modifiers.js";
 import { benefitsForDish } from "../lib/benefits.js";
+import { LANG, DEFAULT_LANG } from "../i18n/index.js";
+import { localizeMenu } from "../i18n/localize.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -77,7 +79,7 @@ function springRollModifiers(productCode) {
 }
 
 async function fetchFromSupabase() {
-  const [dishResult, tagResult, contentResult, modResult, tierResult] = await Promise.all([
+  const [dishResult, tagResult, contentResult, modResult, tierResult, trResult] = await Promise.all([
     supabase
       .from("menu_public")
       .select(`
@@ -114,6 +116,17 @@ async function fetchFromSupabase() {
       .not("bundle_dish_code", "is", null)
       .eq("is_active", true)
       .order("sort_order"),
+
+    // Translations for the page language (shishka-os mig 446). The view only
+    // returns FRESH rows — a translation whose English source has changed since
+    // is withheld, so the guest reads the current English instead of a stale
+    // (possibly wrong-allergen) translation. English needs no request.
+    LANG === DEFAULT_LANG
+      ? Promise.resolve({ data: [], error: null })
+      : supabase
+          .from("menu_translations")
+          .select("entity, entity_key, field, value")
+          .eq("lang", LANG),
   ]);
 
   if (dishResult.error) throw dishResult.error;
@@ -300,7 +313,12 @@ async function fetchFromSupabase() {
   // The customer site shows emoji-free text only. Source data keeps emojis
   // for the admin panel + Loyverse POS, so strip them here — the single
   // boundary where all Supabase menu data is assembled. (See lib/text.js.)
-  return deepStripEmoji({ dishes, categories, content, bundles });
+  // Translations are optional: if they fail to load, the menu still renders in
+  // English rather than not at all.
+  const translations = trResult?.error ? [] : trResult?.data ?? [];
+  if (trResult?.error) console.warn("menu_translations unavailable, showing English:", trResult.error);
+
+  return { menu: deepStripEmoji({ dishes, categories, content, bundles }), translations };
 }
 
 // A hung request is the failure mode this site is most exposed to: Russian ISPs
@@ -337,7 +355,7 @@ export function useMenu() {
     if (!hasSupabase) {
       if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "mock";
       // Single chokepoint: render all display copy in Title Case (hero kept as-is).
-      setData(titleCaseMenu({ ...MOCK_DATA, content: DEFAULT_CONTENT }));
+      setData(localizeMenu(titleCaseMenu({ ...MOCK_DATA, content: DEFAULT_CONTENT }), []));
       setLoading(false);
       return;
     }
@@ -350,7 +368,9 @@ export function useMenu() {
       try {
         const result = await withTimeout(fetchFromSupabase(), FETCH_TIMEOUT_MS);
         if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "live";
-        setData(titleCaseMenu(result));
+        // Title Case is an English rule (lib/text.js) — applied to the English
+        // payload BEFORE translations are laid over it, never to other languages.
+        setData(localizeMenu(titleCaseMenu(result.menu), result.translations));
         setLoading(false);
         return;
       } catch (err) {
