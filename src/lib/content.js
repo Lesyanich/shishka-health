@@ -13,10 +13,10 @@ export const DEFAULT_CONTENT = {
   hero: {
     eyebrow: "SHiSHKA · Healthy Kitchen",
     // The headline. Kept verbatim (not title-cased).
-    banner: "NO SEED OIL",
-    // Optional second line under the banner; ALL-CAPS words auto-accent.
-    title: "",
-    sub: "fresh, unprocessed, real food, made daily.",
+    banner: "CLEAN FOOD",
+    // Optional second line under the banner, in the accent colour.
+    title: "Honest. Delicious. No junk",
+    sub: "No seed oils · no MSG · nothing ultra-processed. Only Fresh ingredients",
   },
   rule: {
     eyebrow: "the rule",

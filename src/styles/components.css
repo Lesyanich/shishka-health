@@ -1156,7 +1156,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-hero__title {
   margin: 0; font-family: var(--font-display); font-weight: var(--fw-display);
   font-size: clamp(2.25rem, 9vw, var(--text-4xl)); line-height: var(--leading-none);
-  letter-spacing: var(--tracking-tight); color: var(--cream-50); text-wrap: balance;
+  letter-spacing: var(--tracking-tight); color: var(--honey-300); text-wrap: balance;
 }
 .shk-hero__title span { color: var(--honey-300); }
 .shk-hero__sub {
