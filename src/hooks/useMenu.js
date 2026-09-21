@@ -185,12 +185,15 @@ async function fetchFromSupabase() {
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
     // Spring rolls get their own section; the original Appetizers section keeps
-    // the dips + sides under a renamed header. Sort 3 is the slot mig 385 left
-    // free for them, between Salads (2) and Sauces & Dressings (4).
+    // the dips + sides under a renamed header. mig 385 left sort 3 free for
+    // them, but Wraps (their DB section) now sits at 3 too. With a tie the tab
+    // order followed whichever row Postgres returned first (two dishes share
+    // display_order 1), so the two tabs swapped between loads. 2.5 pins spring
+    // rolls just ahead of Wraps.
     const isSpringRoll = d.product_code?.startsWith("SALE-SUMMER_ROLLS");
     const sectionId = isSpringRoll ? "sec-spring-rolls" : (d.section_id ?? d.category_id);
     let sectionName = isSpringRoll ? "Fresh Spring Roll" : (d.section_name ?? d.category_name);
-    const sectionSort = isSpringRoll ? 3 : (d.section_sort_order ?? d.category_sort_order ?? 0);
+    const sectionSort = isSpringRoll ? 2.5 : (d.section_sort_order ?? d.category_sort_order ?? 0);
     if (sectionId && !catMap.has(sectionId)) {
       catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }
