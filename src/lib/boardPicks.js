@@ -61,6 +61,17 @@ export const BOARD_RUNNING_ORDER = [
   "SALE-TOAST_SHRIMP_GUACAMOLE", //        Shrimp Guacamole Toast
   "SALE-MATCHA_ORANGE", //                 Orange Matcha
   "SALE-MATCHA_ICED_LATTE", //             Iced Matcha Latte
+
+  // Added 2026-09-27: the 6 new Fold Wraps. Wraps have no auto-fill pool like
+  // salads do (open question logged on MC 743b166f since 2026-08-27, still
+  // unanswered), so — same as every other addition here — they only reach the
+  // wall by being named explicitly.
+  "SALE-WRAP_FOLD_CHICKEN_AVOCADO", //     Chicken Avocado Wrap
+  "SALE-WRAP_FOLD_CHICKEN_FAJITA", //      Chicken Fajita Fold Wrap
+  "SALE-WRAP_FOLD_EGGS_FAJITA", //         Eggs Fajita Fold Wrap
+  "SALE-WRAP_FOLD_FALAFEL", //             Falafel Wrap
+  "SALE-WRAP_FOLD_LAMB_TRUFFLE", //        Lamb Truffle & Cheese Fold Wrap
+  "SALE-WRAP_FOLD_SHRIMP_FAJITA", //       Shrimp Fajita Fold Wrap
 ];
 
 // A slide is nine parts photograph and one part price. Without either there is
