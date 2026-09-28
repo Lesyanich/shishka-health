@@ -49,9 +49,12 @@ const dishes = data.map((d) => ({
 const reel = pickBoardDishes(dishes, []);
 
 const isSalad = (d) => /salad/i.test(d.section_name ?? "");
-console.log(`\n${reel.length} slides · ${(reel.length * 8) / 60} min loop at 8s\n`);
+const isWrap = (d) => /wrap/i.test(d.section_name ?? "");
+const isBowl = (d) => /bowl/i.test(d.section_name ?? "");
+const SLIDE_SECONDS = 5;
+console.log(`\n${reel.length} slides · ${(reel.length * SLIDE_SECONDS) / 60} min loop at ${SLIDE_SECONDS}s\n`);
 reel.forEach((d, i) => {
-  const tag = isSalad(d) ? "SALAD" : "     ";
+  const tag = isWrap(d) ? "WRAP " : isBowl(d) ? "BOWL " : isSalad(d) ? "SALAD" : "     ";
   console.log(
     `${String(i + 1).padStart(2)}  ${tag}  ${d.name}  —  ${d.price} THB  (${d.section_name})`,
   );
