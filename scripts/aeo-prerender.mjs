@@ -372,6 +372,13 @@ function buildPages(dishes) {
     .map((g) => `<h2>${escHtml(g.section)}</h2>\n${dishList(g.dishes)}`)
     .join("\n");
 
+  // Derived, not hand-written, so the protein page cannot quote a dish we have
+  // stopped selling or a figure the kitchen has since revised.
+  const topProtein = dishes
+    .filter((d) => d.protein != null && d.protein > 0)
+    .sort((a, b) => b.protein - a.protein)
+    .slice(0, 10);
+
   const sharedFaq = [
     { q: "Where is SHiSHKA Healthy Kitchen?", a: `Inside Tops Daily on Soi Naya 2 in Rawai, Phuket — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}.` },
     { q: "What are your opening hours?", a: `We are open ${NAP.hoursHuman}.` },
@@ -449,6 +456,53 @@ ${menuBody}`,
 <h2>Every dish comes with its numbers</h2>
 ${dishList(dishes.filter((d) => d.calories != null).slice(0, 24))}`,
       faqs: sharedFaq,
+    },
+    {
+      /*
+        Our differentiated position, and the one query in this set where the
+        competition is thin: clean eating in Phuket is overwhelmingly plant-based,
+        so "clean AND high protein" is close to unclaimed.
+
+        This page is ours to win, so it is written to sell. The numbers do the
+        selling — they come straight from menu_public and every one is checkable
+        at the counter, which is what makes confident copy hold up instead of
+        reading as noise.
+      */
+      slug: "high-protein-healthy-food-phuket",
+      title: `High-Protein Healthy Food in Phuket — ${NAP.name}`,
+      description: `Clean food with real protein in Phuket: grass-fed beef and lamb, chicken, shrimp and tuna, up to ${topProtein[0] ? Math.round(topProtein[0].protein) : 39}g of protein a dish. No seed oils, no MSG, nothing deep-fried. Rawai, open daily.`,
+      h1: "High-Protein Healthy Food in Phuket",
+      answer: `Eating clean in Phuket usually means giving up protein. At ${NAP.name} in Rawai it does not: we cook grass-fed beef and lamb, chicken, shrimp and tuna, with up to ${topProtein[0] ? Math.round(topProtein[0].protein) : 39}g of protein in a single dish — and no seed oils, no MSG and nothing deep-fried anywhere on the menu.`,
+      body: `<h2>Protein you can count</h2>
+<p>Calories and protein are printed on every single dish we sell, because a number you can check is worth more than a word like "healthy". Here is what the counter actually holds:</p>
+${dishList(topProtein)}
+
+<h2>The standard behind the numbers</h2>
+<p>Grass-fed beef and lamb. Chicken and shrimp cooked sous-vide so they stay tender without a drop of frying oil. Fresh spring rolls rolled the same morning. Bread on a real sourdough starter.</p>
+<p class="claim">${escHtml(CLAIM_NO_SEED_OILS)}</p>
+<p>And nothing we refuse to use: no MSG, no preservatives, no fake food, nothing deep-fried. That rule is the whole reason this kitchen exists.</p>
+
+<h2>Built for how you actually eat</h2>
+<p>Training in the morning and want protein without a plate of oil. Working through lunch and want something real in ten minutes. Eating clean for a month and tired of choosing between a salad and a smoothie bowl. All of that is on one counter in Rawai, ${escHtml(NAP.hoursHuman)}.</p>`,
+      faqs: [
+        {
+          q: "Where can I get high-protein healthy food in Phuket?",
+          a: `${NAP.name} in Rawai, inside Tops Daily on Soi Naya 2. Every dish carries its calories and protein, and the highest-protein items reach ${topProtein[0] ? Math.round(topProtein[0].protein) : 39}g in a single serving.`,
+        },
+        {
+          q: "Is your beef grass-fed?",
+          a: "Yes — our beef and lamb are grass-fed.",
+        },
+        {
+          q: "Do you use seed oils?",
+          a: CLAIM_NO_SEED_OILS,
+        },
+        {
+          q: "Do you show calories and protein?",
+          a: "Yes, on every dish we sell — on the menu, on the website and at the counter.",
+        },
+        ...sharedFaq.slice(0, 2),
+      ],
     },
   ];
 }
