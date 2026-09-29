@@ -15,14 +15,23 @@
 //     section (not by naming every dish) so a new wrap, bowl, or salad joins
 //     the wall the day it goes live. This is what finally answers "wraps
 //     have no auto-fill pool", open on MC 743b166f since 2026-08-27.
+//   "add the breakfast also" (2026-09-28) — a fourth block, same treatment,
+//     appended after salads. Section is "🍳 All-Day Breakfast", which is also
+//     where Hummus, Mutabal and the two open toasts live, not just the four
+//     BRK_ dishes — all of it comes in together.
 //     Everything else follows, in the order written below.
 //
 // Dishes are matched on `product_code`, never on name: names get retitled in
 // the admin panel all the time, and a rename should not silently empty the
 // wall screen.
 
-/** Hard ceiling. The curated reel is ~27 slides; this only catches runaway growth. */
-export const BOARD_MAX_SLOTS = 40;
+/**
+ * Hard ceiling; this only catches runaway growth, not meant to trim a healthy
+ * reel. Raised 40 -> 56 on 2026-09-29: adding the breakfast block put the
+ * curated reel at 40 slides on its own, which was silently truncating the
+ * tail (chocolate, coffee, matcha) rather than guarding against anything.
+ */
+export const BOARD_MAX_SLOTS = 56;
 
 /** Slots the automatic fallback aims for, if it is ever needed. See autoPick. */
 export const BOARD_TARGET_SLOTS = 18;
@@ -36,15 +45,10 @@ export const BOARD_TARGET_SLOTS = 18;
  * kept together and in menu order, because that is how he grouped them.
  */
 export const BOARD_RUNNING_ORDER = [
-  "SALE-HUMMUS_PLAIN", //                  Hummus
   "SALE-SMOOTHIE_MIXED_BERRY", //          Mixed Berry Smoothie
   "SALE-MANAISH_LAMB_GF", //               Lamb Grass-Fed
   "SALE-MANAISH_ZAATAR_GF", //             zatar
   "SALE-MANAISH_FALAFEL_GF", //            Falafel
-  "SALE-BRK_EGGS_YOUR_WAY", //         ┐
-  "SALE-BRK_CHEESE_EGG", //            │   All Breakfast Smashe
-  "SALE-BRK_GUACAMOLE_EGG", //         │
-  "SALE-BRK_DOUBLE_PROTEIN", //        ┘
   "SALE-MANAISH_SALAMI_GF", //             salami
   "SALE-SUMMER_ROLLS_CHICKEN", //          2X Chicken Fresh Spring Rolls
   "SALE-CHOC_PREACTIVE_SQ", //             Before Workout Power Square
@@ -61,17 +65,16 @@ export const BOARD_RUNNING_ORDER = [
   // tail rather than being woven into the block above because the reel loops:
   // "last" is only ever one slide away from "first", so appending costs nothing
   // and keeps his original running order legible as the thing he actually wrote.
-  "SALE-TOAST_SALMON_GOAT_CHEESE", //      Smoked Salmon Toast
   "SALE-SANDWICH_MEATLOAF_MELT", //        Ham Meatloaf Melt
   "SALE-HUMMUS_KEBAB_BEEF", //             Hummus Kebab Grass-Fed Beef
-  "SALE-TOAST_SHRIMP_GUACAMOLE", //        Shrimp Guacamole Toast
   "SALE-MATCHA_ORANGE", //                 Orange Matcha
   "SALE-MATCHA_ICED_LATTE", //             Iced Matcha Latte
 
-  // The 6 Fold Wraps added 2026-09-27 used to be named explicitly here, the
-  // same workaround every salad needed before "all salads" existed as a rule.
-  // As of 2026-09-28 wraps are picked up by section (see isWrap below), same
-  // as salads, so they no longer need an entry of their own.
+  // The 6 Fold Wraps added 2026-09-27, and the Breakfast dishes added here on
+  // 2026-08-25 (Hummus, the four BRK_ dishes, the two open toasts), used to be
+  // named explicitly. Both are now picked up by section instead (see isWrap /
+  // isBreakfast below), same treatment as salads, so neither needs an entry
+  // of its own any more.
 ];
 
 // A slide is nine parts photograph and one part price. Without either there is
@@ -101,6 +104,13 @@ function isWrap(dish) {
 // Matched on the section, same reasoning as isSalad/isWrap.
 function isBowl(dish) {
   return /bowl/i.test(dish.section_name ?? "");
+}
+
+// Matched on the section, same reasoning as isSalad/isWrap/isBowl. This is
+// "🍳 All-Day Breakfast", which also holds Hummus, Mutabal, and the two open
+// toasts — not just the four BRK_ dishes — so all of it leads together.
+function isBreakfast(dish) {
+  return /breakfast/i.test(dish.section_name ?? "");
 }
 
 /* ---------------------------------------------------------------------------
@@ -152,8 +162,9 @@ function autoPick(showable, categories, limit) {
 }
 
 /**
- * Build the board reel: all wraps, then all bowls, then all salads — each
- * block pulled by section — followed by the rest of the curated running order.
+ * Build the board reel: all wraps, then all bowls, then all salads, then all
+ * breakfast — each block pulled by section — followed by the rest of the
+ * curated running order.
  *
  * @param {Array} dishes      dishes from useMenu()
  * @param {Array} categories  sections from useMenu(), already in sort order
@@ -175,12 +186,13 @@ export function pickBoardDishes(dishes, categories, limit = BOARD_MAX_SLOTS) {
 
   if (spine.length === 0) return autoPick(showable, categories, BOARD_TARGET_SLOTS);
 
-  // Wraps, then bowls, then salads, in that order. A dish only leads once even
-  // if it somehow matches more than one bucket (checked in this order), and it
-  // is dropped from the historic spine below so it is not shown twice.
+  // Wraps, then bowls, then salads, then breakfast, in that order. A dish only
+  // leads once even if it somehow matches more than one bucket (checked in
+  // this order), and it is dropped from the historic spine below so it is not
+  // shown twice.
   const lead = [];
   const seen = new Set();
-  for (const test of [isWrap, isBowl, isSalad]) {
+  for (const test of [isWrap, isBowl, isSalad, isBreakfast]) {
     for (const dish of showable) {
       if (!test(dish) || seen.has(dish.id)) continue;
       seen.add(dish.id);
