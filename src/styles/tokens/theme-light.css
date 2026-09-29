@@ -101,7 +101,7 @@
 .shk-hero { background: var(--bg-canvas); color: var(--text-strong); }
 .shk-hero__eyebrow { color: var(--text-muted); }
 .shk-hero__banner { color: var(--accent); }
-.shk-hero__title { color: var(--text-strong); }
+.shk-hero__title { color: var(--accent); }
 .shk-hero__title span { color: var(--accent); }
 .shk-hero__sub { color: var(--text-body); }
 .shk-rule { color: var(--text-strong); }
