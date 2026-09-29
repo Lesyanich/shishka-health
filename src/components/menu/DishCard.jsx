@@ -4,6 +4,7 @@ import { Badge } from "../primitives/Badge.jsx";
 import { StarIcon } from "../Icons.jsx";
 import { PriceSeal } from "./PriceSeal.jsx";
 import { optimizedSrc } from "../../lib/img.js";
+import { t, tp, unit } from "../../i18n/index.js";
 
 function Placeholder({ category }) {
   return (
@@ -108,19 +109,19 @@ export function DishCard({
             size={59}
             active={added}
             onClick={!comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(); } : undefined}
-            label={!comingSoon && onQuickAdd ? `Add ${name} to order` : `${name} ${price} thb`}
+            label={!comingSoon && onQuickAdd ? t("card.addToOrder", { name }) : t("card.priceLabel", { name, price })}
           />
         </div>
       ) : priceFrom != null ? (
         <div className="shk-card__corner">
-          <span className="shk-card__pricefrom">from {currency}{priceFrom}</span>
+          <span className="shk-card__pricefrom">{t("card.from")} {currency}{priceFrom}</span>
         </div>
       ) : null}
 
       <div className="shk-card__body">
         {kcal != null && (
           <span className="shk-card__kcal-pill">
-            <b>{kcal}</b> kcal
+            <b>{kcal}</b> {t("card.kcal")}
           </span>
         )}
 
@@ -132,12 +133,12 @@ export function DishCard({
           <div className="shk-card__meta">
             {kcal != null && (
               <span className="shk-card__meta-item shk-card__meta-item--kcal">
-                <b>{kcal}</b> kcal
+                <b>{kcal}</b> {t("card.kcal")}
               </span>
             )}
             {weight != null && (
               <span className="shk-card__meta-item">
-                <b>{weight}</b>{weightUnit}
+                <b>{weight}</b>{unit(weightUnit)}
               </span>
             )}
           </div>

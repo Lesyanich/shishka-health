@@ -950,6 +950,48 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-header__filter-wrap { position: relative; }
 
+/* ---- Language switcher (LangSwitch.jsx) — mirrors the filter button ---- */
+.shk-header__lang {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+}
+.shk-header--wide .shk-header__lang { left: 32px; }
+.shk-lang {
+  display: inline-flex; padding: 3px; gap: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2); border: 1px solid var(--border-subtle);
+}
+.shk-lang__opt {
+  display: inline-grid; place-items: center;
+  min-width: 40px; height: 38px; padding: 0 var(--sp-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 700;
+  letter-spacing: 0.04em; text-decoration: none;
+  color: var(--text-muted);
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.shk-lang__opt:hover { color: var(--text-strong); }
+.shk-lang__opt.is-on { background: var(--surface-3); color: var(--text-strong); cursor: default; }
+/* Phones: the pill would run into the centred logo, so only the OTHER language
+   shows, as one round 44px button — the same footprint as the filter button it
+   mirrors. The page itself says which language you are in. */
+.shk-header--mobile .shk-lang { padding: 0; background: transparent; border: none; }
+.shk-header--mobile .shk-lang__opt.is-on { display: none; }
+.shk-header--mobile .shk-lang__opt {
+  width: var(--hit-min); height: var(--hit-min); min-width: 0; padding: 0;
+  border-radius: var(--radius-circle);
+  background: var(--surface-2); border: 1px solid var(--border-subtle);
+  color: var(--text-body);
+}
+
+/* English original under a translated order line, for the cashier (Cart.jsx) */
+.shk-cart__en {
+  display: block; margin-top: 1px;
+  font-size: 12px; line-height: 1.35; color: var(--text-muted);
+}
+.shk-cart__sub .shk-cart__en { display: inline; margin-left: 6px; }
+.shk-cart__sub .shk-cart__en::before { content: "· "; }
+
 /* ---- Loading / skeleton ---- */
 .shk-skeleton {
   background: linear-gradient(90deg, var(--surface-1) 25%, var(--surface-2) 50%, var(--surface-1) 75%);

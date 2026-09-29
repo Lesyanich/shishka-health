@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index.js";
 /*
   PriceSeal — the price + quick-add rendered as ONE circular "stamp" with a
   sawtooth (sunburst) edge echoing the brand mandala. Inside, stacked: a "+"
@@ -26,7 +27,7 @@ function buildRing() {
 }
 const RING = buildRing();
 
-export function PriceSeal({ price, currency = "thb", size = 58, fill = false, active = false, onClick, label }) {
+export function PriceSeal({ price, currency = t("seal.currency"), size = 58, fill = false, active = false, onClick, label }) {
   const interactive = typeof onClick === "function";
   const Tag = interactive ? "button" : "div";
   // `fill` lets a parent (e.g. the manakish disc) size the seal via CSS so it

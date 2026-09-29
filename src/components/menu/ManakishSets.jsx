@@ -1,3 +1,4 @@
+import { t, tp } from "../../i18n/index.js";
 /*
   Manakish sets — borderless, type-led cards that scroll sideways (swipe).
   Each card: big count, "from ฿X", "manakish", "set of N + M sauce free", and a
@@ -9,7 +10,7 @@ export function ManakishSets({ bundles, onSelect, currency = "฿" }) {
   if (!bundles || bundles.length === 0) return null;
 
   return (
-    <div className="shk-sets" role="list" aria-label="Potato Tacos sets">
+    <div className="shk-sets" role="list" aria-label={t("sets.aria")}>
       {bundles.map((b) => (
         <button
           type="button"
@@ -19,20 +20,20 @@ export function ManakishSets({ bundles, onSelect, currency = "฿" }) {
           onClick={() => onSelect?.(b)}
         >
           <span className="shk-set__pct">
-            <small>save up to</small>{b.discountPct}%
+            <small>{t("sets.saveUpTo")}</small>{b.discountPct}%
           </span>
 
           <span className="shk-set__num">{b.manakishCount}</span>
-          <span className="shk-set__title">Potato Tacos</span>
+          <span className="shk-set__title">{t("tacos.title")}</span>
           <span className="shk-set__sub">
-            set of {b.manakishCount} + {b.sauceCount} sauce free
+            {tp("sets.sub", b.sauceCount, { count: b.manakishCount })}
           </span>
           {b.from != null && (
-            <span className="shk-set__from">from {currency}{b.from}</span>
+            <span className="shk-set__from">{t("sets.from")} {currency}{b.from}</span>
           )}
 
           <span className="shk-set__cta">
-            build your set <span aria-hidden="true">→</span>
+            {t("sets.cta")} <span aria-hidden="true">→</span>
           </span>
         </button>
       ))}

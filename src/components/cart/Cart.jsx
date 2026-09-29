@@ -6,6 +6,16 @@ import { CalorieDonut } from "../nutrition/CalorieDonut.jsx";
 import { MacroBar } from "../nutrition/MacroBar.jsx";
 import { BenefitPills } from "../menu/BenefitPills.jsx";
 import { optimizedSrc } from "../../lib/img.js";
+import { t, LANG, DEFAULT_LANG } from "../../i18n/index.js";
+
+// The guest shows this screen to the cashier, who reads the POS in English. In
+// any other language each name gets its English original underneath, so the
+// order can be rung up without guessing what "Цезарь с курицей" is.
+const SHOW_EN = LANG !== DEFAULT_LANG;
+function EnName({ text, of }) {
+  if (!SHOW_EN || !text || text === of) return null;
+  return <span className="shk-cart__en" lang="en">{text}</span>;
+}
 
 /*
   Order builder UI. An always-visible floating "Order" button (food-app style):
@@ -41,7 +51,7 @@ function orderInfo(lines) {
   }
   const benefits = [...bm.values()];
   const proteinPill = benefits.find((b) => b.slug === "protein");
-  if (proteinPill) proteinPill.value = `${Math.round(protein)} g`;
+  if (proteinPill) proteinPill.value = `${Math.round(protein)} ${t("unit.g")}`;
   return { calories: Math.round(calories), protein: round1(protein), carbs: round1(carbs), fat: round1(fat), benefits };
 }
 
@@ -67,15 +77,15 @@ export function Cart({ currency = "฿" }) {
           type="button"
           className={`shk-orderfab ${empty ? "shk-orderfab--empty" : ""}`}
           onClick={() => setOpen(true)}
-          aria-label={empty ? "Start your order" : `View order, ${cart.count} items, ${currency}${cart.total}`}
+          aria-label={empty ? t("cart.start") : t("cart.viewAria", { n: cart.count, total: `${currency}${cart.total}` })}
         >
           <span className="shk-orderfab__icon"><BagIcon /></span>
           {empty ? (
-            <span className="shk-orderfab__label">Order</span>
+            <span className="shk-orderfab__label">{t("cart.order")}</span>
           ) : (
             <>
               <span className="shk-orderfab__count num">{cart.count}</span>
-              <span className="shk-orderfab__label">View order</span>
+              <span className="shk-orderfab__label">{t("cart.view")}</span>
               <span className="shk-orderfab__total num">{currency}{cart.total}</span>
             </>
           )}
@@ -84,10 +94,10 @@ export function Cart({ currency = "฿" }) {
 
       {open && (
         <div className="shk-cart__scrim" onClick={() => setOpen(false)}>
-          <aside className="shk-cart" role="dialog" aria-modal="true" aria-label="Your order" onClick={(e) => e.stopPropagation()}>
+          <aside className="shk-cart" role="dialog" aria-modal="true" aria-label={t("cart.title")} onClick={(e) => e.stopPropagation()}>
             <header className="shk-cart__head">
-              <h2 className="shk-cart__title">Your order</h2>
-              <IconButton label="Close" variant="solid" onClick={() => setOpen(false)}>
+              <h2 className="shk-cart__title">{t("cart.title")}</h2>
+              <IconButton label={t("cart.close")} variant="solid" onClick={() => setOpen(false)}>
                 <XIcon />
               </IconButton>
             </header>
@@ -95,10 +105,10 @@ export function Cart({ currency = "฿" }) {
             {empty && (
               <div className="shk-cart__empty">
                 <span className="shk-cart__empty-icon"><BagIcon /></span>
-                <p className="shk-cart__empty-title">Your order is empty</p>
-                <p className="shk-cart__empty-sub">Tap any dish to add it — build your order, then show the total at the counter. 🌿</p>
+                <p className="shk-cart__empty-title">{t("cart.emptyTitle")}</p>
+                <p className="shk-cart__empty-sub">{t("cart.emptySub")}</p>
                 <button type="button" className="shk-cart__empty-btn" onClick={() => setOpen(false)}>
-                  Browse the menu
+                  {t("cart.browse")}
                 </button>
               </div>
             )}
@@ -114,11 +124,13 @@ export function Cart({ currency = "฿" }) {
                           <Thumb src={dishThumb(l)} />
                           <div className="shk-cart__line-info">
                             <span className="shk-cart__line-name">{l.label}</span>
+                            <EnName text={l.labelEn} of={l.label} />
                             <ul className="shk-cart__sub">
                               {l.children.map((c, i) => (
                                 <li key={`${c.dish.id}-${i}`}>
                                   {c.qty}× {c.dish.name}
-                                  {c.role === "sauce" ? " (free)" : ""}
+                                  {c.role === "sauce" ? t("cart.free") : ""}
+                                  <EnName text={c.dish.name_en} of={c.dish.name} />
                                 </li>
                               ))}
                             </ul>
@@ -127,7 +139,7 @@ export function Cart({ currency = "฿" }) {
                         <div className="shk-cart__line-right">
                           <span className="shk-cart__line-price num">{currency}{cart.lineTotal(l)}</span>
                           <button type="button" className="shk-cart__rm" onClick={() => cart.remove(l.id)}>
-                            Remove
+                            {t("cart.remove")}
                           </button>
                         </div>
                       </div>
@@ -137,6 +149,7 @@ export function Cart({ currency = "฿" }) {
                           <Thumb src={dishThumb(l)} />
                           <div className="shk-cart__line-info">
                             <span className="shk-cart__line-name">{l.dish.name}</span>
+                            <EnName text={l.dish.name_en} of={l.dish.name} />
                             {l.config?.options?.length > 0 && (
                               <ul className="shk-cart__sub">
                                 {l.config.options.map((o, i) => (
@@ -144,6 +157,7 @@ export function Cart({ currency = "฿" }) {
                                     {o.priceDelta > 0
                                       ? `+ ${o.name} (${currency}${o.priceDelta})`
                                       : o.name}
+                                    <EnName text={o.nameEn} of={o.name} />
                                   </li>
                                 ))}
                               </ul>
@@ -154,9 +168,9 @@ export function Cart({ currency = "฿" }) {
                           </div>
                         </div>
                         <div className="shk-cart__stepper">
-                          <button type="button" aria-label="decrease" onClick={() => cart.setQty(l.id, l.qty - 1)}>–</button>
+                          <button type="button" aria-label={t("cart.decrease")} onClick={() => cart.setQty(l.id, l.qty - 1)}>–</button>
                           <span className="num">{l.qty}</span>
-                          <button type="button" aria-label="increase" onClick={() => cart.setQty(l.id, l.qty + 1)}>+</button>
+                          <button type="button" aria-label={t("cart.increase")} onClick={() => cart.setQty(l.id, l.qty + 1)}>+</button>
                         </div>
                       </div>
                     )}
@@ -166,7 +180,7 @@ export function Cart({ currency = "฿" }) {
 
               {(info.calories > 0 || info.benefits.length > 0) && (
                 <div className="shk-cart__nutri-wrap">
-                  <div className="shk-dlg__section-label">What you'll get</div>
+                  <div className="shk-dlg__section-label">{t("cart.whatYouGet")}</div>
                   {info.calories > 0 && (
                     <div className="shk-cart__nutri">
                       <CalorieDonut kcal={info.calories} protein={info.protein} carbs={info.carbs} fat={info.fat} size={104} thickness={11} />
@@ -182,22 +196,22 @@ export function Cart({ currency = "฿" }) {
 
             <footer className="shk-cart__foot">
               <div className="shk-cart__comment">
-                <label htmlFor="shk-order-note">Add a note for your order</label>
+                <label htmlFor="shk-order-note">{t("cart.noteLabel")}</label>
                 <textarea
                   id="shk-order-note"
                   className="shk-cart__comment-input"
                   rows={2}
-                  placeholder="Allergies, preferences, anything for our team…"
+                  placeholder={t("cart.notePlaceholder")}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                 />
               </div>
               <div className="shk-cart__total-row">
-                <span>Total</span>
+                <span>{t("cart.total")}</span>
                 <span className="shk-cart__total-num num">{currency}{cart.total}</span>
               </div>
-              <p className="shk-cart__note">Pay at the counter — no online payment. Show this total{note.trim() ? " and note" : ""} to our team.</p>
-              <button type="button" className="shk-cart__clear" onClick={cart.clear}>Clear order</button>
+              <p className="shk-cart__note">{note.trim() ? t("cart.payNoteWithNote") : t("cart.payNote")}</p>
+              <button type="button" className="shk-cart__clear" onClick={cart.clear}>{t("cart.clear")}</button>
             </footer>
             </>)}
           </aside>

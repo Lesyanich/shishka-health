@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSlicer } from "../../state/slicer.jsx";
+import { t } from "../../i18n/index.js";
 
 /*
   The calorie counter — bottom-left, mirroring the Order button opposite it.
@@ -55,10 +56,10 @@ export function SliceScore() {
       <span className="shk-slicer__icon"><KnifeIcon /></span>
       <span className="shk-slicer__body">
         <span className="shk-slicer__num num">
-          {fmt(kcal)}<i className="shk-slicer__unit">cal</i>
+          {fmt(kcal)}<i className="shk-slicer__unit">{t("nutri.cal")}</i>
         </span>
         <span className="shk-slicer__hint">
-          burned · {sliced.toLocaleString()} sliced
+          {t("slicer.hint", { n: sliced.toLocaleString() })}
         </span>
       </span>
     </div>

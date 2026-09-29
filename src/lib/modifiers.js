@@ -97,7 +97,7 @@ export function selectedNutrition(groups = [], selected = new Set()) {
 }
 
 /**
- * Flat list of the currently selected options — {group, name, priceDelta} — for
+ * Flat list of the currently selected options — {group, name, nameEn, priceDelta} — for
  * carrying a configured build into the cart / counter ticket. Ordered by group
  * then option, matching the builder layout.
  */
@@ -106,7 +106,13 @@ export function selectedOptionsList(groups = [], selected = new Set()) {
   groups.forEach((g, gi) =>
     g.options.forEach((o, oi) => {
       if (selected.has(`${gi}:${oi}`)) {
-        out.push({ group: g.name, name: o.name, priceDelta: Number(o.priceDelta) || 0 });
+        out.push({
+          group: g.name,
+          name: o.name,
+          // English original for the counter (see Cart.jsx); equals name in EN.
+          nameEn: o.name_en ?? o.name,
+          priceDelta: Number(o.priceDelta) || 0,
+        });
       }
     })
   );

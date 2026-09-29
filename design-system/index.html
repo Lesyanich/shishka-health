@@ -740,15 +740,17 @@ capping the longest edge instead would have starved it to ~310px wide and left i
     <!-- ═══════════ HEADER ═══════════ -->
     <section class="ds-section" id="header">
       <div class="ds-h">Header</div>
-      <p class="ds-lead">Logo-centred bar. Filter icon-button top-right with an active-count badge (energy red).</p>
+      <p class="ds-lead">Logo-centred bar. Language switcher top-left, filter icon-button top-right with an active-count badge (energy red).</p>
       <header class="shk-header shk-header--wide" style="border-radius:var(--radius-lg)">
+        <div class="shk-header__lang"><nav class="shk-lang" aria-label="Language"><a class="shk-lang__opt is-on" href="#header" hreflang="en" aria-current="true">EN</a><a class="shk-lang__opt" href="#header" hreflang="ru" lang="ru">RU</a></nav></div>
         <img src="https://shishka.health/assets/logo-full-white.png" alt="Shishka Healthy Kitchen" style="height:64px;width:auto;display:block;margin-top:6px" />
         <div class="shk-header__filter"><div class="shk-header__filter-wrap">
           <button class="shk-iconbtn" aria-label="Filter menu" title="Filter menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg></button>
           <span class="shk-header__badge">2</span>
         </div></div>
       </header>
-      <div class="ds-recipe">shk-header--wide &gt; img(logo) + __filter &gt; __filter-wrap ( shk-iconbtn + __badge ) · badge bg = --accent</div>
+      <div class="ds-recipe">shk-header--wide &gt; __lang(shk-lang &gt; __opt[.is-on]) + img(logo) + __filter &gt; __filter-wrap ( shk-iconbtn + __badge ) · badge bg = --accent</div>
+      <p class="ds-lead"><code>shk-lang</code> (src/components/menu/LangSwitch.jsx) — each segment is a real <code>&lt;a href&gt;</code> to that language's URL (<code>/</code>, <code>/ru</code>), so crawlers and "open in new tab" get the right page; the active one carries <code>aria-current</code>. Mirrors the filter button: <code>__lang</code> is pinned left as <code>__filter</code> is pinned right.</p>
     </section>
 
     <!-- ═══════════ FOOTER ═══════════ -->
@@ -827,7 +829,7 @@ capping the longest edge instead would have starved it to ~310px wide and left i
         <aside class="shk-cart" role="dialog" aria-label="Your order" style="position:static;max-width:none;height:auto">
           <header class="shk-cart__head"><h2 class="shk-cart__title">Your order</h2><button class="shk-iconbtn shk-iconbtn--solid" aria-label="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></header>
           <div class="shk-cart__scroll">
-            <ul class="shk-cart__lines"><li class="shk-cart__line"><div class="shk-cart__line-main"><div class="shk-cart__line-lead"><span class="shk-cart__thumb"><img loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3f4dc520-a1ba-46dc-91a7-e55ba976c646/menu-1lr0MV9Lz4_sBEXnJJQ6jjzRLsgG_g0ez.webp?v=1782014582495" /></span><div class="shk-cart__line-info"><span class="shk-cart__line-name">Chicken Fresh Spring Rolls</span><span class="shk-cart__line-unit num">฿199</span></div></div><div class="shk-cart__stepper"><button type="button" aria-label="decrease">–</button><span class="num">1</span><button type="button" aria-label="increase">+</button></div></div></li></ul>
+            <ul class="shk-cart__lines"><li class="shk-cart__line"><div class="shk-cart__line-main"><div class="shk-cart__line-lead"><span class="shk-cart__thumb"><img loading="lazy" alt="" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3f4dc520-a1ba-46dc-91a7-e55ba976c646/menu-1lr0MV9Lz4_sBEXnJJQ6jjzRLsgG_g0ez.webp?v=1782014582495" /></span><div class="shk-cart__line-info"><span class="shk-cart__line-name">Роллы в рисовой бумаге с курицей</span><span class="shk-cart__en" lang="en">Chicken Rice Paper Rolls</span><span class="shk-cart__line-unit num">฿199</span></div></div><div class="shk-cart__stepper"><button type="button" aria-label="decrease">–</button><span class="num">1</span><button type="button" aria-label="increase">+</button></div></div></li></ul>
             <div class="shk-cart__nutri-wrap"><div class="shk-dlg__section-label">What you'll get</div><div class="shk-cart__nutri">
               <div class="shk-donut" role="img" aria-label="394 kcal" style="width:104px;height:104px">
                 <svg class="shk-donut__svg" width="104" height="104">
@@ -847,7 +849,8 @@ capping the longest edge instead would have starved it to ~310px wide and left i
           </div>
         </aside>
       </div>
-      <div class="ds-recipe">shk-cart[role=dialog] &gt; __head + __scroll(__lines &gt; __line(__line-lead(__thumb+__line-info)+__stepper) + __nutri-wrap(donut+macro)) + __foot</div>
+      <div class="ds-recipe">shk-cart[role=dialog] &gt; __head + __scroll(__lines &gt; __line(__line-lead(__thumb+__line-info(__line-name + __en?))+__stepper) + __nutri-wrap(donut+macro)) + __foot</div>
+      <p class="ds-lead"><code>shk-cart__en</code> — on a non-English page every order line (and each chosen option) carries its English original in muted small text, because the guest shows this screen to a cashier who reads the POS in English. Not rendered on the English site.</p>
     </section>
 
     <!-- ═══════════ MENU ROWS ═══════════ -->

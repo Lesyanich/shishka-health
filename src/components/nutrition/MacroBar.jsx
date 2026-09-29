@@ -1,7 +1,8 @@
+import { t } from "../../i18n/index.js";
 const MACROS = [
-  { key: "protein", label: "Protein", color: "var(--macro-protein)" },
-  { key: "carbs", label: "Carbs", color: "var(--macro-carbs)" },
-  { key: "fat", label: "Fat", color: "var(--macro-fat)" },
+  { key: "protein", label: t("macro.protein"), color: "var(--macro-protein)" },
+  { key: "carbs", label: t("macro.carbs"), color: "var(--macro-carbs)" },
+  { key: "fat", label: t("macro.fat"), color: "var(--macro-fat)" },
 ];
 
 export function MacroBar({
@@ -38,7 +39,7 @@ export function MacroBar({
             </div>
             <span className="shk-macro__val">
               {grams[m.key]}
-              <small>g</small>
+              <small>{t("unit.g")}</small>
             </span>
           </div>
         ))}

@@ -10,12 +10,17 @@
 import { PriceSeal } from "./PriceSeal.jsx";
 import { optimizedSrc } from "../../lib/img.js";
 import { DietTag } from "../filters/DietTag.jsx";
+import { t, t as tr, LANG, DEFAULT_LANG } from "../../i18n/index.js";
 
-const TAGLINE = "our signature gluten-free crust crafted from potato & rice";
+const TAGLINE = t("tacos.tagline");
 
 // Poster tier wording (DB calls the middle tier "Signature"). Title Case.
+// Keyed on the ENGLISH tier name; other languages show the translated DB name.
 const TIER_LABEL = { signature: "Specialty" };
-const tierLabel = (name) => TIER_LABEL[(name || "").toLowerCase()] ?? (name || "");
+const tierLabel = (tier) =>
+  LANG === DEFAULT_LANG
+    ? TIER_LABEL[(tier.key || "").toLowerCase()] ?? (tier.name || "")
+    : tier.name || "";
 
 // Group a section's dishes into tiers (subcategories), ordered by their sort.
 function tiersOf(items) {
@@ -23,7 +28,13 @@ function tiersOf(items) {
   for (const d of items) {
     const id = d.subcategory_id ?? d.section_id;
     if (!map.has(id)) {
-      map.set(id, { id, name: d.subcategory_name ?? "", sort: d.subcategory_sort ?? 0, items: [] });
+      map.set(id, {
+        id,
+        name: d.subcategory_name ?? "",
+        key: d.subcategory_key ?? d.subcategory_name ?? "",
+        sort: d.subcategory_sort ?? 0,
+        items: [],
+      });
     }
     map.get(id).items.push(d);
   }
@@ -42,14 +53,14 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
   return (
     <div className="shk-mana">
       <header className="shk-mana__head">
-        <h2 className="shk-mana__title">Potato Tacos</h2>
+        <h2 className="shk-mana__title">{t("tacos.title")}</h2>
         <p className="shk-mana__tag">{tagline}</p>
         <DietTag type="gluten-free" />
       </header>
 
       <div className="shk-mana__cols">
         {tiers.map((t) => {
-          const isPremium = (t.name || "").toLowerCase() === "premium";
+          const isPremium = (t.key || "").toLowerCase() === "premium";
           return (
           <div className={`shk-mana__col ${isPremium ? "is-premium" : ""}`} key={t.id}>
             <ul className="shk-mana__list">
@@ -59,7 +70,7 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
                       <span className="shk-mana__disc">
                         <PriceSeal price={t.minPrice} fill />
                       </span>
-                      <span className="shk-mana__price-label">{tierLabel(t.name)}</span>
+                      <span className="shk-mana__price-label">{tierLabel(t)}</span>
                     </div>
                   </li>
                 )}
@@ -90,14 +101,14 @@ export function ManakishTiers({ section, tagline = TAGLINE, onSelect, onQuickAdd
                             className={`shk-mana__dot ${addedIds?.has(d.id) ? "is-on" : ""}`}
                             onClick={(e) => { e.stopPropagation(); onQuickAdd?.(d); }}
                             aria-pressed={addedIds?.has(d.id) || false}
-                            aria-label={`Add ${d.name} to order`}
+                            aria-label={tr("card.addToOrder", { name: d.name })}
                           />
                         )}
                       </span>
                       <span className="shk-mana__item-name">{d.name}</span>
                       {d.calories != null && (
                         <span className="shk-card__kcal-pill shk-mana__kcal">
-                          <b>{Math.round(d.calories)}</b> kcal
+                          <b>{Math.round(d.calories)}</b> {tr("card.kcal")}
                         </span>
                       )}
                     </div>

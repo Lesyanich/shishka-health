@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import MenuBoard from "./components/board/MenuBoard.jsx";
 import { CartProvider } from "./state/cart.jsx";
 import { SlicerProvider } from "./state/slicer.jsx";
+import { applyDocumentLang, redirectToPreferredLang } from "./i18n/index.js";
 
 /* /board is the screen bolted to the wall in the restaurant — a full-screen
    dish slideshow, not a page a guest navigates to. There is no router on this
@@ -19,7 +20,13 @@ function Root() {
   return isBoard ? <MenuBoard /> : <App />;
 }
 
-createRoot(document.getElementById("root")).render(
+/* Language lives in the URL (/ru …). A guest who explicitly chose a language
+   earlier and opens the bare "/" is sent back to it; the board is exempt — it is
+   a wall screen, not a guest. See i18n/index.js. */
+const redirecting = !isBoard && redirectToPreferredLang();
+applyDocumentLang();
+
+if (!redirecting) createRoot(document.getElementById("root")).render(
   <StrictMode>
     <CartProvider>
       {/* The slice counter is self-contained — it feeds nothing but its own

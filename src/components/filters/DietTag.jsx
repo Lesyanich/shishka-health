@@ -2,6 +2,7 @@ import {
   SproutIcon, LeafIcon, WheatIcon, MilkIcon, NutIcon,
   EggIcon, FlameIcon, DropletIcon, BeefIcon, HalalIcon,
 } from "../Icons.jsx";
+import { t } from "../../i18n/index.js";
 
 const PRESETS = {
   vegan:            { label: "Vegan",        Icon: SproutIcon,  tone: "diet" },
@@ -31,7 +32,7 @@ export function DietTag({
   const preset = type ? PRESETS[type] : null;
   const Icon = preset?.Icon;
   const resolvedTone = tone || preset?.tone || "diet";
-  const resolvedLabel = label || preset?.label || type;
+  const resolvedLabel = label || (preset ? t(`diet.${type}`) : null) || type;
   const cls = [
     "shk-diet",
     `shk-diet--${resolvedTone}`,
