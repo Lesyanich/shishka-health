@@ -62,10 +62,10 @@ function springRollModifiers(productCode) {
   const addRaw = [
     { name: "Avocado", priceDelta: 30, calories: 120, protein: 1.5, carbs: 6, fat: 11 },
     ...(proteinExtra ? [proteinExtra] : []),
-    // Price and macros are the real SALE-SAUCE_MANGO cup (50 g, ฿39) rather than
-    // the ฿15 the retired peanut sauce carried — the counter sells that exact cup
-    // at ฿39, and a cheaper number here is an argument at the till.
-    { name: "Extra Mango Sauce", priceDelta: 39, calories: 32, protein: 0.3, carbs: 8.2, fat: 0.1 },
+    // Price and macros are the real SALE-SAUCE_MANGO cup (50 g, ฿30) — the counter
+    // sells that exact cup at ฿30, and a different number here is an argument at
+    // the till.
+    { name: "Extra Mango Sauce", priceDelta: 30, calories: 32, protein: 0.3, carbs: 8.2, fat: 0.1 },
     { name: "Extra Mango", priceDelta: 20, calories: 50, protein: 0.5, carbs: 13, fat: 0 },
   ];
   const addOpts = addRaw.map((o, i) => ({ emoji: null, isDefault: false, sort: i, ...o }));
