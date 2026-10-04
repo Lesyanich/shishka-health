@@ -33,6 +33,7 @@ export function DishCard({
   badges = [],
   rating,
   category,
+  sealClassName = "",
   layout = "tile",
   comingSoon = false,
   added = false,
@@ -105,8 +106,9 @@ export function DishCard({
         <div className="shk-card__corner">
           <PriceSeal
             price={price}
-            size={59}
+            size={66}
             active={added}
+            className={sealClassName}
             onClick={!comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(); } : undefined}
             label={!comingSoon && onQuickAdd ? `Add ${name} to order` : `${name} ${price} thb`}
           />

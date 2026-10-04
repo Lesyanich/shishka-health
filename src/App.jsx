@@ -58,6 +58,25 @@ const SECTION_TINT = {
 };
 
 /*
+  Price-seal fill colour, keyed by section name (see .shk-seal--* in
+  components.css) — gives each food group its own circle instead of one
+  colour sitewide, so the seal doubles as a section cue while scrolling.
+  Unlisted sections fall back to the default royal-green seal. Red is never
+  assigned here — it is reserved for "in your order" (--selected) and must
+  stay the one colour that only ever means that.
+*/
+const SECTION_SEAL = {
+  Salads: "shk-seal--honey",
+  Bowls: "shk-seal--purple",
+  "Protein Meals": "shk-seal--purple",
+  "All-Day Breakfast": "shk-seal--honey",
+  "Sauce, Dressing and Dips": "shk-seal--purple",
+  Smoothies: "shk-seal--purple",
+  Chocolate: "shk-seal--purple",
+  Juices: "shk-seal--honey",
+};
+
+/*
   One oversized dish photograph per listed section, dropped into the empty
   column the centred grid leaves on wide desktops and cropped by the viewport
   edge. Keyed by name and side so the page alternates down the scroll instead
@@ -485,6 +504,7 @@ export default function App() {
       diets={dish.diets ?? []}
       badges={dish.badges ?? []}
       category={catName}
+      sealClassName={SECTION_SEAL[catName] ?? ""}
       comingSoon={dish.comingSoon ?? false}
       added={cart.addedIds.has(dish.id)}
       onClick={() => setSelected(dish)}
@@ -647,7 +667,13 @@ export default function App() {
                         </div>
                       );
                       const rows = (items) => (
-                        <DishRows items={items} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
+                        <DishRows
+                          items={items}
+                          onSelect={setSelected}
+                          onQuickAdd={quickAdd}
+                          addedIds={cart.addedIds}
+                          sealClassName={SECTION_SEAL[cat.name] ?? ""}
+                        />
                       );
                       /*
                         A card is nine parts photograph. Give one to a dish that
