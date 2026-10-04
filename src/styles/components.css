@@ -285,32 +285,39 @@
 /* ---- DishCard — clean cutout tile (image + name + price, no box) ---- */
 /* Quick-add: small red circle echoing the bottom order button (var(--accent)).
    Sits inline right after the price; adds the item straight to the order. */
-/* Price/quick-add as ONE circular "stamp" with a sawtooth edge echoing the
-   brand mandala — "+" / price / thb stacked inside (see PriceSeal.jsx). */
+/* Price/quick-add as ONE solid-filled circle — "+" / price / currency stacked
+   inside (see PriceSeal.jsx). Fill colour is --seal-bg, defaulting to royal
+   green; a section passes a modifier class (.shk-seal--purple / --honey) so
+   the circle also reads as a food-group cue while scrolling. Red is reserved
+   for "in your order" (--selected) and never used as a resting section colour. */
 .shk-seal {
-  position: relative; flex: 0 0 auto; padding: 0; border: none; background: none;
+  position: relative; flex: 0 0 auto; padding: 0; border: none;
+  border-radius: var(--radius-circle);
+  background: var(--seal-bg, var(--royal-green));
   display: inline-grid; place-items: center;
   -webkit-tap-highlight-color: transparent;
-  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.3));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.32);
 }
 button.shk-seal { cursor: pointer; transition: transform 0.2s var(--ease-out); }
-button.shk-seal:hover { transform: scale(1.07) rotate(8deg); }
+button.shk-seal:hover { transform: scale(1.07); }
 button.shk-seal:active { transform: scale(0.93); }
-.shk-seal__ring { grid-area: 1 / 1; width: 100%; height: 100%; }
-.shk-seal__edge { fill: var(--seal-ink, var(--cream-50)); }
 .shk-seal__stack {
-  grid-area: 1 / 1; z-index: 1;
+  z-index: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  line-height: 0.9; color: var(--seal-ink, var(--cream-50));
+  line-height: 0.9; color: var(--cream-50);
   font-family: var(--font-sans); font-weight: var(--fw-bold);
 }
 .shk-seal__plus { font-size: 0.74em; font-weight: var(--fw-display); line-height: 0.6; }
 .shk-seal__num { font-size: 1em; font-weight: var(--fw-display); letter-spacing: -0.02em; }
 .shk-seal__cur { font-size: 0.48em; font-weight: var(--fw-semibold); text-transform: lowercase; letter-spacing: 0.03em; }
 @media (prefers-reduced-motion: reduce) { button.shk-seal:hover { transform: scale(1.07); } }
-/* In the order → the price stamp fills with the selection colour (same token
-   as the Order button and the quick-add dots) so selected items are obvious. */
-.shk-seal--active { border-radius: var(--radius-circle); background: var(--selected); --seal-ink: var(--cream-50); }
+/* Per-section fill colours — keep to the brand's non-red hues only. */
+.shk-seal--purple { --seal-bg: var(--brand-purple); }
+.shk-seal--honey  { --seal-bg: var(--honey-600); }
+/* In the order → the circle always fills with the selection colour (same
+   token as the Order button and the quick-add dots), overriding any section
+   colour, so "this is in your cart" reads the same everywhere on the menu. */
+.shk-seal--active { background: var(--selected); }
 
 .shk-card {
   position: relative; display: flex; flex-direction: column; align-items: center;
@@ -406,15 +413,21 @@ button.shk-seal:active { transform: scale(0.93); }
    reading numbers instead of looking at food. Macros belong to the dish dialog,
    where someone has already chosen the dish and is asking about it. The pill
    carries the size that line was using: it is the only nutrition on the tile now,
-   so it can be read at a glance instead of squinted at. */
+   so it can be read at a glance instead of squinted at.
+
+   Sized a notch below the price seal on purpose: the seal used to be a thin
+   green outline that lost to this pill's bold 22px number, so guests read
+   calories as "the price". Now that the seal is a solid filled circle, the
+   pill steps back to a quieter secondary chip — price is the first number
+   seen, kcal is the second. */
 .shk-card__kcal-pill {
   display: inline-flex; align-items: baseline; gap: 5px;
-  padding: 4px 16px; border-radius: var(--radius-pill);
-  background: var(--menu-kcal-bg, var(--surface-3)); color: var(--menu-kcal);
-  font-family: var(--font-sans); font-size: var(--text-base); font-weight: var(--fw-semibold);
+  padding: 3px 14px; border-radius: var(--radius-pill);
+  background: var(--menu-kcal-bg, var(--surface-3)); color: var(--text-muted);
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: var(--fw-semibold);
   font-variant-numeric: tabular-nums; line-height: 1.25; white-space: nowrap;
 }
-.shk-card__kcal-pill b { font-size: var(--text-lg); font-weight: var(--fw-bold); }
+.shk-card__kcal-pill b { font-size: var(--text-md); font-weight: var(--fw-bold); color: var(--menu-kcal); }
 
 /* Same kcal pill, tightened for the Potato Tacos tier grid — it sits under a
    small tier name in a dense 4-up row, so it stays one step below the card

@@ -35,9 +35,6 @@
   --menu-kcal-bg: var(--green-100);
   --menu-macro:  var(--red-700);
 
-  /* ---- The price seal: green sunburst stamp ------------------------------ */
-  --seal-ink:    var(--royal-green);
-
   /* ---- Borders / hairlines ------------------------------------------------ */
   --border:         rgba(30, 57, 3, 0.14);
   --border-strong:  rgba(30, 57, 3, 0.26);

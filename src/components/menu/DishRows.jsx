@@ -7,7 +7,7 @@
 
 import { PriceSeal } from "./PriceSeal.jsx";
 
-export function DishRows({ items, currency = "฿", addedIds, onSelect, onQuickAdd }) {
+export function DishRows({ items, currency = "฿", addedIds, onSelect, onQuickAdd, sealClassName = "" }) {
   return (
     <ul className="shk-rows">
       {items.map((d) => (
@@ -40,6 +40,7 @@ export function DishRows({ items, currency = "฿", addedIds, onSelect, onQuickA
               price={d.price}
               size={51}
               active={addedIds?.has(d.id)}
+              className={sealClassName}
               onClick={!d.comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(d); } : undefined}
               label={!d.comingSoon && onQuickAdd ? `Add ${d.name} to order` : `${d.name} ${d.price} thb`}
             />
