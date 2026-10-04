@@ -19,6 +19,9 @@
 //     appended after salads. Section is "🍳 All-Day Breakfast", which is also
 //     where Hummus, Mutabal and the two open toasts live, not just the four
 //     BRK_ dishes — all of it comes in together.
+//   "start with All-Day Breakfast then wraps" (2026-10-04) — reorders the four
+//     lead blocks to breakfast, wraps, bowls, salads. Same four blocks, same
+//     section-match rule; only which one opens the reel changes.
 //     Everything else follows, in the order written below.
 //
 // Dishes are matched on `product_code`, never on name: names get retitled in
@@ -162,8 +165,8 @@ function autoPick(showable, categories, limit) {
 }
 
 /**
- * Build the board reel: all wraps, then all bowls, then all salads, then all
- * breakfast — each block pulled by section — followed by the rest of the
+ * Build the board reel: all breakfast, then all wraps, then all bowls, then
+ * all salads — each block pulled by section — followed by the rest of the
  * curated running order.
  *
  * @param {Array} dishes      dishes from useMenu()
@@ -186,13 +189,13 @@ export function pickBoardDishes(dishes, categories, limit = BOARD_MAX_SLOTS) {
 
   if (spine.length === 0) return autoPick(showable, categories, BOARD_TARGET_SLOTS);
 
-  // Wraps, then bowls, then salads, then breakfast, in that order. A dish only
-  // leads once even if it somehow matches more than one bucket (checked in
-  // this order), and it is dropped from the historic spine below so it is not
-  // shown twice.
+  // Breakfast, then wraps, then bowls, then salads, in that order. A dish
+  // only leads once even if it somehow matches more than one bucket (checked
+  // in this order), and it is dropped from the historic spine below so it is
+  // not shown twice.
   const lead = [];
   const seen = new Set();
-  for (const test of [isWrap, isBowl, isSalad, isBreakfast]) {
+  for (const test of [isBreakfast, isWrap, isBowl, isSalad]) {
     for (const dish of showable) {
       if (!test(dish) || seen.has(dish.id)) continue;
       seen.add(dish.id);
