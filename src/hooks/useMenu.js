@@ -221,6 +221,19 @@ async function fetchFromSupabase() {
     } else if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
       // The grilled potato becomes the Sides subgroup (more to come).
       subId = "grp-sides"; subName = "🥔 Sides"; subSort = 99;
+    } else if (d.category_code === "KP-FIN-SDR") {
+      // Mig 410 merged Sauces/Dressings/Dips into one category so they share a
+      // page, but a 30g condiment cup and a 150g dip plate don't read the same
+      // size. Split back into labelled subgroups by the display_order bands
+      // mig 413 established (Sauces 1-19, Dressings 20-39, Dips 40+).
+      const order = d.display_order ?? 0;
+      if (order < 20) {
+        subId = "grp-sauce"; subName = "🧂 Sauce"; subSort = 0;
+      } else if (order < 40) {
+        subId = "grp-dressing"; subName = "🫙 Dressing"; subSort = 1;
+      } else {
+        subId = "grp-dips"; subName = "🥣 Dips"; subSort = 2;
+      }
     } else if (/coffee/i.test(d.category_name || "")) {
       const cold = /🧊|\biced\b|\bcold\b|tonic/i.test(d.name || "")
         || d.product_code === "SALE-COFFEE_ORANGE"

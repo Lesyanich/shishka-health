@@ -572,6 +572,19 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-app__sub-price { margin-left: auto; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); font-feature-settings: var(--num-feature); }
 .shk-app__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-cards); align-items: start; }
 
+/* Sauce subgroup (mig 410/413 split): condiment cups, not full dishes — one
+   compact row instead of the same card size as the Dips plates below it. */
+.shk-app__tier--compact .shk-app__grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  --card-media: clamp(80px, 20vw, 110px);
+}
+.shk-app--wide .shk-app__tier--compact { --cols-wide: 6; }
+.shk-app--wide .shk-app__tier--compact .shk-app__grid {
+  --card-media: clamp(90px, 9vw, 120px);
+  gap: 16px;
+}
+
 /* ---- Section art (large decorative cut-out in the desktop gutter) ----------
    Above 1200px the grid stops growing and the page opens two empty white
    columns either side of it. This drops one oversized dish photograph into
