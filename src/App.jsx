@@ -676,7 +676,10 @@ export default function App() {
                       };
                       return hasSubcategories(subs, cat.id) ? (
                         subs.map((sub) => (
-                          <div key={sub.id} className="shk-app__tier">
+                          <div
+                            key={sub.id}
+                            className={`shk-app__tier${sub.id === "grp-sauce" ? " shk-app__tier--compact" : ""}`}
+                          >
                             <div className="shk-app__subhead">
                               <h3 className="shk-app__sub-title">{sub.name}</h3>
                               <span className="shk-app__sub-price num">{priceHint(sub.items)}</span>
