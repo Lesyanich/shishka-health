@@ -1,4 +1,5 @@
 import { DEFAULT_CONTENT } from "../../lib/content.js";
+import { t } from "../../i18n/index.js";
 
 // Per-item line marks, keyed by the (lower-cased) rule item: a droplet, a wheat
 // stalk, a cube, fries, a flask, a seasoning shaker. Each is struck through.
@@ -79,7 +80,7 @@ export function BrandRule({ wide = false, content }) {
   const items = raw.map(normalizeItem).filter((i) => i.label);
 
   return (
-    <section className={`shk-rule ${wide ? "shk-rule--wide" : ""}`} aria-label="The Rule">
+    <section className={`shk-rule ${wide ? "shk-rule--wide" : ""}`} aria-label={t("rule.aria")}>
       <div className="shk-rule__inner">
         {c.eyebrow && <p className="shk-rule__eyebrow">{c.eyebrow}</p>}
         {c.lead && <h2 className="shk-rule__lead">{c.lead}</h2>}
@@ -96,7 +97,7 @@ export function BrandRule({ wide = false, content }) {
                 </svg>
               </span>
               <span className="shk-rule__label">
-                {it.deny && <><span className="shk-rule__no">no</span>{" "}</>}
+                {it.deny && <><span className="shk-rule__no">{t("rule.no")}</span>{" "}</>}
                 <span className="shk-rule__what">{it.label}</span>
               </span>
             </li>

@@ -1,6 +1,7 @@
 import { DEFAULT_CONTENT } from "../../lib/content.js";
 import { optimizedSrc } from "../../lib/img.js";
 import { FruitConfetti } from "./FruitConfetti.jsx";
+import { t } from "../../i18n/index.js";
 
 const HERO_BASE = "https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/landing";
 const HERO_PORTRAIT = `${HERO_BASE}/salad-bar-portrait.webp?v=20260612`;
@@ -20,7 +21,7 @@ export function Hero({ wide = false, content }) {
   const c = { ...DEFAULT_CONTENT.hero, ...(content || {}) };
   // The banner carries the page's only h1; the title is an optional second line.
   return (
-    <section className={`shk-hero ${wide ? "shk-hero--wide" : ""}`} aria-label="Shishka Healthy Kitchen">
+    <section className={`shk-hero ${wide ? "shk-hero--wide" : ""}`} aria-label={t("hero.aria")}>
       <div className="shk-hero__inner">
         <FruitConfetti />
         {c.banner && <h1 className="shk-hero__banner">{c.banner}</h1>}

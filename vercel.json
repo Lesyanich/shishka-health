@@ -21,6 +21,8 @@
       "source": "/:slug(menu|gluten-free-restaurant-phuket|no-seed-oil-restaurant-phuket|healthy-food-rawai|clean-eating-phuket)",
       "destination": "/:slug/index.html"
     },
+    { "source": "/ru/menu", "destination": "/ru/menu/index.html" },
+    { "source": "/ru", "destination": "/ru/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

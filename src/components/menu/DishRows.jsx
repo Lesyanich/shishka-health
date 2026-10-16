@@ -6,6 +6,7 @@
 */
 
 import { PriceSeal } from "./PriceSeal.jsx";
+import { t, unit } from "../../i18n/index.js";
 
 export function DishRows({ items, currency = "฿", addedIds, onSelect, onQuickAdd }) {
   return (
@@ -21,13 +22,13 @@ export function DishRows({ items, currency = "฿", addedIds, onSelect, onQuickA
             <span className="shk-row__main">
               <span className="shk-row__name">
                 {d.name}
-                {d.comingSoon && <span className="shk-row__soon">coming soon</span>}
+                {d.comingSoon && <span className="shk-row__soon">{t("rows.comingSoon")}</span>}
               </span>
               {(d.calories != null || d.portion_size != null) && (
                 <span className="shk-row__meta num">
-                  {d.calories != null && `${d.calories} kcal`}
+                  {d.calories != null && `${d.calories} ${t("card.kcal")}`}
                   {d.calories != null && d.portion_size != null && " · "}
-                  {d.portion_size != null && `${d.portion_size}${d.portion_unit ?? ""}`}
+                  {d.portion_size != null && `${d.portion_size}${unit(d.portion_unit)}`}
                 </span>
               )}
               {d.description && <span className="shk-row__desc">{d.description}</span>}
@@ -41,10 +42,10 @@ export function DishRows({ items, currency = "฿", addedIds, onSelect, onQuickA
               size={51}
               active={addedIds?.has(d.id)}
               onClick={!d.comingSoon && onQuickAdd ? (e) => { e.stopPropagation(); onQuickAdd(d); } : undefined}
-              label={!d.comingSoon && onQuickAdd ? `Add ${d.name} to order` : `${d.name} ${d.price} thb`}
+              label={!d.comingSoon && onQuickAdd ? t("card.addToOrder", { name: d.name }) : t("card.priceLabel", { name: d.name, price: d.price })}
             />
           ) : d.priceFrom != null ? (
-            <span className="shk-row__pricefrom">from {currency}{d.priceFrom}</span>
+            <span className="shk-row__pricefrom">{t("card.from")} {currency}{d.priceFrom}</span>
           ) : null}
         </li>
       ))}

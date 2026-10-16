@@ -21,6 +21,10 @@ import { SliceScore } from "./components/menu/SliceScore.jsx";
 import { FruitSymbols } from "./lib/fruitArt.jsx";
 import { optimizedSrc } from "./lib/img.js";
 import { useCart } from "./state/cart.jsx";
+import { t } from "./i18n/index.js";
+import { initialContent } from "./i18n/localize.js";
+
+const INITIAL_CONTENT = initialContent(DEFAULT_CONTENT);
 import { manakishPool as getManakishPool, saucePool as getSaucePool, bundleFloor } from "./lib/bundles.js";
 import {
   SproutIcon, LeafIcon, WheatIcon, MilkIcon, NutIcon,
@@ -395,7 +399,7 @@ export default function App() {
 
   const categories = data?.categories ?? [];
   const dishes = data?.dishes ?? [];
-  const content = data?.content ?? DEFAULT_CONTENT;
+  const content = data?.content ?? INITIAL_CONTENT;
   const bundles = data?.bundles ?? [];
 
   // Bundle pools (manakish + free sauces) + the "from ฿X" floor per size.
@@ -445,7 +449,7 @@ export default function App() {
       // end HERE ONLY; every other section keeps display_order untouched. This
       // undoes itself as the photos land, and is a display rule only — nothing
       // is written back to the database.
-      return { ...c, items: SECTION_SPLIT.has(c.name) ? photosFirst(items) : items };
+      return { ...c, items: SECTION_SPLIT.has(c.key) ? photosFirst(items) : items };
     })
     .filter((c) => c.items.length > 0);
 
@@ -568,17 +572,17 @@ export default function App() {
               to hardcoded prices — a wrong price is worse than a missing menu. */}
           {!loading && error && (
             <div className="shk-app__empty">
-              <p>The menu is temporarily unavailable.</p>
+              <p>{t("menu.unavailable")}</p>
               <button className="shk-app__clear" onClick={() => window.location.reload()}>
-                Reload
+                {t("menu.reload")}
               </button>
               {content.cta?.instagramUrl && (
                 <p>
-                  Today&rsquo;s menu is always on{" "}
+                  {t("menu.instagramBefore")}
                   <a href={content.cta.instagramUrl} target="_blank" rel="noreferrer">
                     Instagram
                   </a>
-                  .
+                  {t("menu.instagramAfter")}
                 </p>
               )}
             </div>
@@ -586,12 +590,12 @@ export default function App() {
 
           {!loading && !error && byCat.length === 0 && (
             <div className="shk-app__empty">
-              <p>No dishes match these filters.</p>
+              <p>{t("menu.noMatch")}</p>
               <button
                 className="shk-app__clear"
                 onClick={() => { setDiets([]); setExcl([]); }}
               >
-                Clear filters
+                {t("menu.clearFilters")}
               </button>
             </div>
           )}
@@ -600,14 +604,14 @@ export default function App() {
             <Fragment key={cat.id}>
               <section
                 ref={(el) => (sectionRefs.current[cat.id] = el)}
-                className={`shk-app__section ${SECTION_TINT[cat.name] ?? ""} ${
-                  SECTION_SHOWCASE.has(cat.name) ? "shk-app__section--showcase" : ""
-                } ${SECTION_SPLIT.has(cat.name) ? "shk-app__section--split" : ""} ${
-                  SECTION_ORBIT.has(cat.name) ? "shk-app__section--orbit" : ""
+                className={`shk-app__section ${SECTION_TINT[cat.key] ?? ""} ${
+                  SECTION_SHOWCASE.has(cat.key) ? "shk-app__section--showcase" : ""
+                } ${SECTION_SPLIT.has(cat.key) ? "shk-app__section--split" : ""} ${
+                  SECTION_ORBIT.has(cat.key) ? "shk-app__section--orbit" : ""
                 }`}
               >
-                <SectionArt cfg={SECTION_ART[cat.name]} />
-                {cat.name === "Potato Tacos" ? (
+                <SectionArt cfg={SECTION_ART[cat.key]} />
+                {cat.key === "Potato Tacos" ? (
                   <ManakishTiers section={cat} onSelect={setSelected} onQuickAdd={quickAdd} addedIds={cart.addedIds} />
                 ) : (
                   <>
@@ -616,15 +620,15 @@ export default function App() {
                       <span className="shk-app__sec-count num">{cat.items.length}</span>
                     </div>
 
-                    {content.sectionIntros?.[cat.name] && (
+                    {content.sectionIntros?.[cat.key] && (
                       <p className="shk-app__sec-intro">
-                        {content.sectionIntros[cat.name]}
+                        {content.sectionIntros[cat.key]}
                       </p>
                     )}
 
                     {(() => {
                       const subs = subcategoriesOf(cat.items, cat.id);
-                      const orbit = SECTION_ORBIT.has(cat.name);
+                      const orbit = SECTION_ORBIT.has(cat.key);
                       /*
                         The ring needs to know how many cards it is placing
                         (--n) so the CSS can space them evenly around the

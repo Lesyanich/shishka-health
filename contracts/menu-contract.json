@@ -54,6 +54,14 @@
       "query": "bundle_dish_code=not.is.null&is_active=eq.true",
       "minRows": 1,
       "note": "bundle_dish_code is filtered on but never selected — it must keep existing."
+    },
+    {
+      "name": "menu_translations",
+      "kind": "view",
+      "select": "entity,entity_key,field,lang,value",
+      "query": "lang=eq.ru",
+      "minRows": 1,
+      "note": "Guest-facing translations (shishka-os mig 446), read by useMenu.js and scripts/aeo-prerender.mjs for /ru. The view returns FRESH rows only — a row whose English source changed after translation is withheld and the site falls back to English. security_invoker=false on purpose: it reads nomenclature, which anon cannot. A missing view only degrades /ru to English (useMenu treats it as optional); the /ru prerender fails the build."
     }
   ],
   "assertions": [
