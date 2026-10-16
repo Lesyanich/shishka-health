@@ -19,7 +19,14 @@
     "would have failed on correct data. The taco UI in App.jsx / ManakishTiers / ManakishSets /",
     "BundleDialog / lib/bundles.js is left in place but unreachable — it is the starting point for",
     "the next bundle offer. If a bundle line is ever revived, re-add an assertion for ITS prefix",
-    "rather than reinstating this one."
+    "rather than reinstating this one.",
+    "",
+    "2026-10-16 — the spring-rolls-section assertion was REMOVED for the same reason. It",
+    "required at least one menu_public row with product_code LIKE 'SALE-SUMMER_ROLLS*',",
+    "because useMenu.js lifted those dishes into an invented 'Fresh Spring Roll' section.",
+    "The CEO retired the rice-paper rolls that day (shishka-os migration 480) and the",
+    "invented section was deleted from useMenu.js with them, so there is nothing left for",
+    "the assertion to protect."
   ],
   "projectRef": "qcqgtcsjoacuktcewpvo",
   "consumer": "shishka-health/src/hooks/useMenu.js",
@@ -88,13 +95,6 @@
       "query": "price=is.null",
       "max": 0,
       "why": "The view is supposed to expose only sellable dishes; a NULL price reaches the guest as a blank."
-    },
-    {
-      "id": "spring-rolls-section",
-      "resource": "menu_public",
-      "query": "product_code=like.SALE-SUMMER_ROLLS*",
-      "min": 1,
-      "why": "useMenu.js promotes these into their own section by product_code prefix. Renaming the prefix silently empties the section."
     },
     {
       "id": "free-sauce-pool",
