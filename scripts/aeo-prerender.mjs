@@ -87,6 +87,17 @@ const CLAIM_GLUTEN =
 const CLAIM_CELIAC =
   "No. We bake wheat sourdough in the same kitchen, so we cannot promise a celiac-safe environment. Every other dish is made without gluten-containing ingredients.";
 
+/*
+  Russian (/ru) — MC f91194f7. Only the seed-oil and deep-frying claims are
+  carried over. The two gluten claims above are deliberately NOT translated:
+  the menu has since gained 19-grain toast, whole-grain wraps and croutons, and
+  several dish descriptions now say "Contains gluten", so "everything except the
+  sourdough" is no longer literally true. Re-signing that claim is a CEO call;
+  until then the Russian pages say nothing about gluten rather than repeat it.
+*/
+const CLAIM_NO_SEED_OILS_RU =
+  "Мы вообще не используем масла из семян — ни на кухне, ни в соусах, и ничего не жарим во фритюре.";
+
 /* --------------------------------------------------------------- utilities */
 
 const escHtml = (s) =>
@@ -97,6 +108,51 @@ const escHtml = (s) =>
     .replace(/"/g, "&quot;");
 
 const baht = (n) => `฿${Number(n).toLocaleString("en-US")}`;
+
+// Russian plural: ruPlural(5, ["позиция", "позиции", "позиций"]) → "позиций".
+const ruPlural = (n, [one, few, many]) =>
+  ({ one, few, many, other: few })[new Intl.PluralRules("ru").select(n)];
+
+// Page chrome per language. Dish copy comes from the DB (menu_translations).
+const TEXT = {
+  en: {
+    faqTitle: "Common questions",
+    visit: "Visit us",
+    country: "Thailand",
+    open: `Open ${NAP.hoursHuman}`,
+    fullMenu: "See the full interactive menu",
+    home: "/",
+    tagline: "— Rawai, Phuket. From the SOIL to the SOUL.",
+    pricesNote: "Prices in Thai baht and may change. Menu updated automatically from our kitchen system.",
+    kcal: "kcal",
+    protein: "g protein",
+    logoAlt: "SHiSHKA Healthy Kitchen",
+  },
+  ru: {
+    faqTitle: "Частые вопросы",
+    visit: "Как нас найти",
+    country: "Thailand",
+    open: "Открыто ежедневно, 9:30 – 18:30",
+    fullMenu: "Интерактивное меню с фото",
+    home: "/ru",
+    tagline: "— Раваи, Пхукет. From the SOIL to the SOUL.",
+    pricesNote: "Цены в тайских батах и могут меняться. Меню обновляется автоматически из нашей кухонной системы.",
+    kcal: "ккал",
+    protein: "г белка",
+    logoAlt: "SHiSHKA Healthy Kitchen",
+  },
+};
+
+// <link rel="alternate" hreflang> set for a page that exists in several
+// languages. x-default points at English, the language "/" serves to crawlers.
+function hreflangLinks(alternates) {
+  if (!alternates?.length) return "";
+  const en = alternates.find((a) => a.lang === "en");
+  return [
+    ...alternates.map((a) => `<link rel="alternate" hreflang="${a.lang}" href="${a.href}">`),
+    ...(en ? [`<link rel="alternate" hreflang="x-default" href="${en.href}">`] : []),
+  ].join("\n");
+}
 
 /* ------------------------------------------------------------------- fetch */
 
@@ -115,6 +171,7 @@ async function fetchMenu() {
     coupling. The SPA keeps using the client; it runs in a browser.
   */
   const select = [
+    "id", "section_id", "category_id",
     "name", "customer_short_name", "customer_description", "price", "stock_state",
     "calories", "protein", "image_url", "customer_photo_url",
     "section_name", "section_sort_order", "category_name", "display_order",
@@ -139,6 +196,8 @@ async function fetchMenu() {
   // never disagree on how a dish is spelled: emoji stripped, display copy in
   // Title Case (see src/lib/text.js).
   return deepStripEmoji(sellable).map((d) => ({
+    id: d.id,
+    sectionId: d.section_id ?? d.category_id ?? null,
     name: titleCase(d.customer_short_name || d.name),
     description: titleCase(d.customer_description),
     price: d.price != null ? Number(d.price) : null,
@@ -146,6 +205,43 @@ async function fetchMenu() {
     protein: d.protein != null ? Number(d.protein) : null,
     image: d.image_url || d.customer_photo_url || null,
     section: titleCase(d.section_name || d.category_name || "Menu"),
+  }));
+}
+
+/*
+  Fresh translations for one language (shishka-os mig 446). The view withholds a
+  translation whose English source changed after it was written, so a stale one
+  can never reach a static page — the English is used for that field instead.
+*/
+async function fetchTranslations(lang) {
+  const url = process.env.VITE_SUPABASE_URL || "https://qcqgtcsjoacuktcewpvo.supabase.co";
+  const key =
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjcWd0Y3Nqb2FjdWt0Y2V3cHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MTYwMjUsImV4cCI6MjA4ODE5MjAyNX0.XI08SHEUG6_DQHyrZIUOtgCtEPW8E7tRTtH2Sc0dqzA";
+  const res = await fetch(
+    `${url}/rest/v1/menu_translations?select=entity,entity_key,field,value&lang=eq.${lang}`,
+    { headers: { apikey: key, Authorization: `Bearer ${key}` } }
+  );
+  if (!res.ok) {
+    throw new Error(`menu_translations fetch failed: HTTP ${res.status} ${await res.text()}`);
+  }
+  const map = new Map();
+  for (const r of await res.json()) map.set(`${r.entity}|${r.entity_key}|${r.field}`, r.value);
+  return map;
+}
+
+// The English dish list with names, descriptions and sections swapped for
+// their translations where one exists. No Title Case: that is an English rule.
+function localizeDishes(dishes, tr) {
+  const text = (entity, key, field) => {
+    const v = tr.get(`${entity}|${key}|${field}`);
+    return typeof v === "string" && v ? deepStripEmoji(v) : null;
+  };
+  return dishes.map((d) => ({
+    ...d,
+    name: text("dish", d.id, "name") ?? d.name,
+    description: text("dish", d.id, "description") ?? d.description,
+    section: (d.sectionId && text("category", d.sectionId, "name")) ?? d.section,
   }));
 }
 
@@ -211,12 +307,13 @@ function faqLd(faqs) {
   };
 }
 
-function menuLd(groups) {
+function menuLd(groups, { lang = "en" } = {}) {
   return {
     "@context": "https://schema.org",
     "@type": "Menu",
-    name: `${NAP.name} Menu`,
-    url: `${SITE}/menu`,
+    name: lang === "ru" ? `Меню ${NAP.name}` : `${NAP.name} Menu`,
+    url: lang === "ru" ? `${SITE}/ru/menu` : `${SITE}/menu`,
+    ...(lang === "en" ? {} : { inLanguage: lang }),
     hasMenuSection: groups.map((g) => ({
       "@type": "MenuSection",
       name: g.section,
@@ -289,26 +386,28 @@ color:var(--muted);font-size:14px}
 
 /* ---------------------------------------------------------------- template */
 
-function page({ slug, title, description, h1, answer, body, faqs = [], extraLd = [] }) {
+function page({ slug, title, description, h1, answer, body, faqs = [], extraLd = [], lang = "en", alternates = [] }) {
+  const T = TEXT[lang];
   const canonical = `${SITE}/${slug}`.replace(/\/$/, "") || SITE;
   const lds = [restaurantLd(), ...extraLd];
   if (faqs.length) lds.push(faqLd(faqs));
 
   const faqHtml = faqs.length
-    ? `<h2>Common questions</h2>
+    ? `<h2>${escHtml(T.faqTitle)}</h2>
     <dl class="faq">
 ${faqs.map((f) => `      <dt>${escHtml(f.q)}</dt>\n      <dd>${escHtml(f.a)}</dd>`).join("\n")}
     </dl>`
     : "";
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${escHtml(title)}</title>
 <meta name="description" content="${escHtml(description)}">
 <link rel="canonical" href="${canonical}">
+${hreflangLinks(alternates)}
 <meta name="theme-color" content="#1E3903">
 <link rel="icon" type="image/png" href="/assets/logo-mark-color.png">
 <meta property="og:type" content="website">
@@ -323,22 +422,22 @@ ${lds.map((ld) => `<script type="application/ld+json">${JSON.stringify(ld)}</scr
 <body>
 <div class="wrap">
 <header class="top">
-  <img src="/assets/logo-full-white.png" alt="SHiSHKA Healthy Kitchen">
+  <img src="/assets/logo-full-white.png" alt="${escHtml(T.logoAlt)}">
 </header>
 <h1>${escHtml(h1)}</h1>
 <p class="lede">${escHtml(answer)}</p>
 ${body}
 ${faqHtml}
-<h2>Visit us</h2>
-<p>${escHtml(NAP.street)}, ${escHtml(NAP.locality)}, ${escHtml(NAP.region)} ${escHtml(NAP.postal)}, Thailand<br>
-Open ${escHtml(NAP.hoursHuman)} · <a href="tel:${NAP.phone}">${escHtml(NAP.phoneDisplay)}</a></p>
+<h2>${escHtml(T.visit)}</h2>
+<p>${escHtml(NAP.street)}, ${escHtml(NAP.locality)}, ${escHtml(NAP.region)} ${escHtml(NAP.postal)}, ${escHtml(T.country)}<br>
+${escHtml(T.open)} · <a href="tel:${NAP.phone}">${escHtml(NAP.phoneDisplay)}</a></p>
 <p>
-  <a class="cta" href="/">See the full interactive menu</a>
+  <a class="cta" href="${T.home}">${escHtml(T.fullMenu)}</a>
   <a class="cta" href="${NAP.instagram}" rel="noopener">Instagram</a>
 </p>
 <footer>
-  <p>${escHtml(NAP.name)} — Rawai, Phuket. From the SOIL to the SOUL.</p>
-  <p class="meta">Prices in Thai baht and may change. Menu updated automatically from our kitchen system.</p>
+  <p>${escHtml(NAP.name)} ${escHtml(T.tagline)}</p>
+  <p class="meta">${escHtml(T.pricesNote)}</p>
 </footer>
 </div>
 </body>
@@ -348,18 +447,65 @@ Open ${escHtml(NAP.hoursHuman)} · <a href="tel:${NAP.phone}">${escHtml(NAP.phon
 
 /* ------------------------------------------------------------------- pages */
 
-function dishList(dishes, { withDesc = true } = {}) {
+function dishList(dishes, { withDesc = true, lang = "en" } = {}) {
+  const T = TEXT[lang];
   return `<ul class="dishes">
 ${dishes
   .map(
     (d) => `  <li><span class="dish-name">${escHtml(d.name)}${
       withDesc && d.description ? `<span class="dish-desc">${escHtml(d.description)}</span>` : ""
-    }${d.calories != null ? `<span class="kcal">${d.calories} kcal${d.protein != null ? ` · ${d.protein}g protein` : ""}</span>` : ""}</span>${
+    }${d.calories != null ? `<span class="kcal">${d.calories} ${T.kcal}${d.protein != null ? ` · ${d.protein}${lang === "en" ? "" : " "}${T.protein}` : ""}</span>` : ""}</span>${
       d.price != null ? `<span class="price">${escHtml(baht(d.price))}</span>` : ""
     }</li>`
   )
   .join("\n")}
 </ul>`;
+}
+
+const MENU_ALTERNATES = [
+  { lang: "en", href: `${SITE}/menu` },
+  { lang: "ru", href: `${SITE}/ru/menu` },
+];
+const HOME_ALTERNATES = [
+  { lang: "en", href: `${SITE}/` },
+  { lang: "ru", href: `${SITE}/ru` },
+];
+
+function ruFaq() {
+  return [
+    { q: "Где находится SHiSHKA Healthy Kitchen?", a: `Внутри Tops Daily на Soi Naya 2 в Раваи, Пхукет — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}.` },
+    { q: "Когда вы открыты?", a: "Мы открыты ежедневно, 9:30 – 18:30." },
+    { q: "Вы используете масла из семян?", a: CLAIM_NO_SEED_OILS_RU },
+    { q: "Вы что-нибудь жарите во фритюре?", a: "Нет. В нашем меню нет ничего, приготовленного во фритюре." },
+    { q: "Как сделать заказ?", a: `Подойдите к кассе или позвоните нам: ${NAP.phoneDisplay}. Полное меню с фото — на shishka.health/ru.` },
+  ];
+}
+
+// /ru/menu — the Russian counterpart of /menu. The four English search-intent
+// landing pages have no Russian twins yet (their gluten copy needs re-signing
+// first, see CLAIM_NO_SEED_OILS_RU).
+function buildRuPages(dishes) {
+  const groups = groupBySection(dishes);
+  const count = dishes.length;
+  const items = `${count} ${ruPlural(count, ["позиция", "позиции", "позиций"])}`;
+  const cheapest = dishes.filter((d) => d.price != null).sort((a, b) => a.price - b.price)[0];
+  const priceLine = cheapest ? ` Цены от ${baht(cheapest.price)}.` : "";
+  return [
+    {
+      slug: "ru/menu",
+      lang: "ru",
+      alternates: MENU_ALTERNATES,
+      title: `Меню — ${NAP.name}, Раваи, Пхукет`,
+      description: `Полное меню ${NAP.name}: ${items} с ценами — готовим каждый день в Раваи, Пхукет. Без масел из семян, без глутамата натрия и без фритюра.`,
+      h1: "Наше меню",
+      answer: `${NAP.name} в Раваи (Пхукет): ${items} — картофельные тако, салаты, свежие роллы, смузи, соки, матча и кофе, всё готовим каждый день.${priceLine} Без масел из семян, без глутамата натрия и без фритюра.`,
+      body: groups
+        .map((g) => `<h2>${escHtml(g.section)}</h2>\n${dishList(g.dishes, { lang: "ru" })}`)
+        .join("\n"),
+      faqs: ruFaq(),
+      extraLd: [menuLd(groups, { lang: "ru" })],
+    },
+  ];
 }
 
 function buildPages(dishes) {
@@ -390,6 +536,7 @@ function buildPages(dishes) {
       body: menuBody,
       faqs: sharedFaq,
       extraLd: [menuLd(groups)],
+      alternates: MENU_ALTERNATES,
     },
     {
       slug: "gluten-free-restaurant-phuket",
@@ -502,13 +649,28 @@ function writeRobots(slugs) {
   return slugs;
 }
 
+// Language pairs are listed on both members (Google requires the set to be
+// reciprocal) as xhtml:link alternates.
 function writeSitemap(slugs) {
-  const urls = ["", ...slugs]
-    .map((s) => `  <url><loc>${SITE}${s ? `/${s}` : "/"}</loc></url>`)
+  const altFor = (loc) =>
+    [HOME_ALTERNATES, MENU_ALTERNATES].find((set) => set.some((a) => a.href === loc));
+  const urls = ["", "ru", ...slugs]
+    .map((s) => {
+      const loc = s === "" ? `${SITE}/` : `${SITE}/${s}`;
+      const alts = altFor(loc);
+      const links = alts
+        ? "\n" +
+          [...alts, { lang: "x-default", href: alts[0].href }]
+            .map((a) => `    <xhtml:link rel="alternate" hreflang="${a.lang}" href="${a.href}"/>`)
+            .join("\n") +
+          "\n  "
+        : "";
+      return `  <url><loc>${loc}</loc>${links}</url>`;
+    })
     .join("\n");
   writeFileSync(
     join(DIST, "sitemap.xml"),
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`,
     "utf8"
   );
 }
@@ -521,7 +683,7 @@ function writeSitemap(slugs) {
   FAQPage records. That is zero visual risk and turns "/" from 677 empty bytes
   into an identifiable business.
 */
-function patchIndex(faqs) {
+function patchIndex(faqs, ruFaqs) {
   const file = join(DIST, "index.html");
   if (!existsSync(file)) throw new Error("dist/index.html missing — did vite build run?");
   let html = readFileSync(file, "utf8");
@@ -537,8 +699,10 @@ function patchIndex(faqs) {
       `<meta name="description" content="${escHtml(desc)}">`
     );
 
+  const shell = html;
   const head = [
     `<link rel="canonical" href="${SITE}/">`,
+    hreflangLinks(HOME_ALTERNATES),
     `<meta property="og:type" content="restaurant">`,
     `<meta property="og:title" content="${escHtml(title)}">`,
     `<meta property="og:description" content="${escHtml(desc)}">`,
@@ -552,6 +716,43 @@ function patchIndex(faqs) {
   ].join("\n    ");
 
   writeFileSync(file, html.replace("</head>", `    ${head}\n  </head>`), "utf8");
+
+  /*
+    /ru is the same SPA shell (the app reads the language from the URL) with
+    Russian head metadata, so a crawler that only reads <head> still gets a
+    Russian page with the right canonical and hreflang.
+  */
+  const ruTitle = `${NAP.name} — здоровая еда в Раваи, Пхукет`;
+  const ruDesc =
+    "Свежая, необработанная еда каждый день в Раваи, Пхукет: картофельные тако, салаты, свежие роллы, смузи, соки и кофе. Без масел из семян, без глутамата натрия, без фритюра.";
+  const ruHtml = shell
+    .replace(/<html lang="[^"]*">/, '<html lang="ru">')
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(ruTitle)}</title>`)
+    .replace(
+      /<meta name="description"[^>]*>/,
+      `<meta name="description" content="${escHtml(ruDesc)}">`
+    );
+  const ruHead = [
+    `<link rel="canonical" href="${SITE}/ru">`,
+    hreflangLinks(HOME_ALTERNATES),
+    `<meta property="og:type" content="restaurant">`,
+    `<meta property="og:locale" content="ru_RU">`,
+    `<meta property="og:title" content="${escHtml(ruTitle)}">`,
+    `<meta property="og:description" content="${escHtml(ruDesc)}">`,
+    `<meta property="og:url" content="${SITE}/ru">`,
+    `<meta property="og:image" content="${SITE}/assets/logo-full-color.png">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<script type="application/ld+json">${JSON.stringify(
+      restaurantLd({ hasMenu: `${SITE}/ru/menu` })
+    )}</script>`,
+    `<script type="application/ld+json">${JSON.stringify(faqLd(ruFaqs))}</script>`,
+  ].join("\n    ");
+  mkdirSync(join(DIST, "ru"), { recursive: true });
+  writeFileSync(
+    join(DIST, "ru", "index.html"),
+    ruHtml.replace("</head>", `    ${ruHead}\n  </head>`),
+    "utf8"
+  );
 }
 
 /* -------------------------------------------------------------------- main */
@@ -592,14 +793,31 @@ async function main() {
     process.exit(1);
   }
 
-  const pages = buildPages(dishes);
+  // Russian translations. Same hard-failure policy as the menu: a /ru page built
+  // from no translations would be an English page wearing a Russian label.
+  let ruTr;
+  for (let attempt = 1; attempt <= 3 && !ruTr; attempt++) {
+    try {
+      ruTr = await fetchTranslations("ru");
+    } catch (err) {
+      lastErr = err;
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 800 * attempt));
+    }
+  }
+  if (!ruTr || ruTr.size === 0) {
+    console.error(`[aeo] Russian translations unavailable: ${lastErr?.message ?? "0 rows"}`);
+    console.error("[aeo] refusing to emit /ru pages from no data. Set AEO_SKIP=1 to ship without them.");
+    process.exit(1);
+  }
+
+  const pages = [...buildPages(dishes), ...buildRuPages(localizeDishes(dishes, ruTr))];
   const slugs = pages.map((p) => p.slug);
-  assertRoutesPinned(slugs);
+  assertRoutesPinned([...slugs, "ru"]);
 
   for (const p of pages) writePage(p.slug, page(p));
   writeRobots(slugs);
   writeSitemap(slugs);
-  patchIndex(pages[0].faqs);
+  patchIndex(pages[0].faqs, ruFaq());
 
   console.log(
     `[aeo] ${dishes.length} sellable dishes -> ${slugs.length} pages (${slugs.join(", ")}), ` +

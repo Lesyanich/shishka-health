@@ -64,6 +64,14 @@
       "query": "bundle_dish_code=not.is.null&is_active=eq.true",
       "minRows": 0,
       "note": "bundle_dish_code is filtered on but never selected — it must keep existing. minRows is 0, not 1, since the Potato Tacos line was retired on 2026-10-16 (shishka-os migration 466) and bundle4/bundle8/bundle12 are all is_active=false: there is no bundle offer today. The resource stays because useMenu.js still selects these columns, so dropping or renaming one must still fail the check — and because the next bundle offer is expected to reuse this table. App.jsx guards the empty case (bundleCards is [] when the pool is empty, and ManakishSets returns null), so zero rows renders nothing rather than an empty block."
+    },
+    {
+      "name": "menu_translations",
+      "kind": "view",
+      "select": "entity,entity_key,field,lang,value",
+      "query": "lang=eq.ru",
+      "minRows": 1,
+      "note": "Guest-facing translations (shishka-os mig 446), read by useMenu.js and scripts/aeo-prerender.mjs for /ru. The view returns FRESH rows only — a row whose English source changed after translation is withheld and the site falls back to English. security_invoker=false on purpose: it reads nomenclature, which anon cannot. A missing view only degrades /ru to English (useMenu treats it as optional); the /ru prerender fails the build."
     }
   ],
   "assertions": [

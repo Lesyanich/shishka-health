@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { t } from "../../i18n/index.js";
 
 export function CalorieDonut({
   kcal,
@@ -43,8 +44,8 @@ export function CalorieDonut({
       role="img"
       aria-label={
         kcal != null
-          ? `${kcal} kilocalories. Protein ${protein}g, carbs ${carbs}g, fat ${fat}g.`
-          : "Nutrition not available"
+          ? t("nutri.aria", { kcal, protein, carbs, fat })
+          : t("nutri.ariaNone")
       }
     >
       <svg className="shk-donut__svg" width={size} height={size}>
@@ -84,10 +85,10 @@ export function CalorieDonut({
             <span className="shk-donut__kcal" style={{ fontSize: size * 0.27 }}>
               {kcal}
             </span>
-            <span className="shk-donut__unit">kcal</span>
+            <span className="shk-donut__unit">{t("nutri.kcal")}</span>
           </>
         ) : (
-          <span className="shk-donut__empty">No data</span>
+          <span className="shk-donut__empty">{t("nutri.noData")}</span>
         )}
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { Button } from "../primitives/Button.jsx";
 import { FilterChip } from "./FilterChip.jsx";
 import { XIcon, CheckIcon } from "../Icons.jsx";
+import { t } from "../../i18n/index.js";
 
 export function FilterPanel({
   open,
@@ -26,15 +27,15 @@ export function FilterPanel({
         className="shk-fp"
         role="dialog"
         aria-modal="true"
-        aria-label="Filter the menu"
+        aria-label={t("filter.aria")}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="shk-fp__grab" />
         <div className="shk-fp__head">
-          <span className="shk-fp__title">Filters</span>
+          <span className="shk-fp__title">{t("filter.title")}</span>
           <button
             className="shk-iconbtn"
-            aria-label="Close filters"
+            aria-label={t("filter.close")}
             onClick={onClose}
             style={{ background: "var(--surface-3)", border: "none" }}
           >
@@ -44,7 +45,7 @@ export function FilterPanel({
 
         <div className="shk-fp__body">
           <div className="shk-fp__section">
-            <div className="shk-fp__legend">Suitable for</div>
+            <div className="shk-fp__legend">{t("filter.suitableFor")}</div>
             <div className="shk-fp__chips">
               {dietOptions.map((d) => (
                 <FilterChip
@@ -60,7 +61,7 @@ export function FilterPanel({
           </div>
 
           <div className="shk-fp__section">
-            <div className="shk-fp__legend">Exclude allergens</div>
+            <div className="shk-fp__legend">{t("filter.exclude")}</div>
             <div className="shk-fp__chips">
               {allergenOptions.map((a) => (
                 <FilterChip
@@ -79,10 +80,10 @@ export function FilterPanel({
 
         <div className="shk-fp__foot">
           <Button variant="secondary" onClick={onClear} disabled={count === 0}>
-            Clear{count ? ` (${count})` : ""}
+            {t("filter.clear")}{count ? ` (${count})` : ""}
           </Button>
           <Button variant="primary" icon={<CheckIcon size={18} />} onClick={onApply}>
-            {resultCount != null ? `Show ${resultCount}` : "Apply"}
+            {resultCount != null ? t("filter.show", { n: resultCount }) : t("filter.apply")}
           </Button>
         </div>
       </div>

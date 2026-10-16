@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index.js";
 export function SiteFooter({ wide = false }) {
   const year = new Date().getFullYear();
   return (
@@ -11,9 +12,9 @@ export function SiteFooter({ wide = false }) {
 
         <div className="shk-foot__rule" aria-hidden="true" />
 
-        <p className="shk-foot__fine">Nutrition &amp; prices update live</p>
+        <p className="shk-foot__fine">{t("footer.live")}</p>
         <p className="shk-foot__fine shk-foot__copy">
-          © {year} Shishka Healthy Kitchen · Phuket
+          {t("footer.copy", { year })}
         </p>
       </div>
     </footer>

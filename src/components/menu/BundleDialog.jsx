@@ -3,6 +3,7 @@ import { IconButton } from "../primitives/IconButton.jsx";
 import { XIcon } from "../Icons.jsx";
 import { tierPrice, bundleTotal, alaCarteTotal, totalQty } from "../../lib/bundles.js";
 import { optimizedSrc } from "../../lib/img.js";
+import { t, tp } from "../../i18n/index.js";
 
 /*
   Build-your-own manakish set. Strict counts: exactly `manakishCount` manakish
@@ -54,7 +55,7 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
       ...Object.entries(mana).map(([id, qty]) => ({ dish: mById.get(id), qty, role: "manakish" })),
       ...Object.entries(sauce).map(([id, qty]) => ({ dish: sById.get(id), qty, role: "sauce" })),
     ].filter((c) => c.dish);
-    onAdd?.(bundle.label, children, total);
+    onAdd?.(bundle.label, children, total, bundle.label_en);
     onClose?.();
   };
 
@@ -75,15 +76,15 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
       <div className="shk-bundle__row-info">
         <span className="shk-bundle__row-name">{dish.name}</span>
         <span className="shk-bundle__row-price num">
-          {price === 0 ? "free" : `${currency}${price}`}
+          {price === 0 ? t("bundle.free") : `${currency}${price}`}
         </span>
       </div>
       <div className="shk-bundle__stepper">
-        <button type="button" aria-label={`Remove one ${dish.name}`} onClick={onDec} disabled={qty <= 0}>
+        <button type="button" aria-label={t("bundle.removeOne", { name: dish.name })} onClick={onDec} disabled={qty <= 0}>
           –
         </button>
         <span className="num">{qty}</span>
-        <button type="button" aria-label={`Add one ${dish.name}`} onClick={onInc} disabled={!canAdd}>
+        <button type="button" aria-label={t("bundle.addOne", { name: dish.name })} onClick={onInc} disabled={!canAdd}>
           +
         </button>
       </div>
@@ -97,11 +98,10 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
           <div>
             <h2 className="shk-dlg__title">{bundle.label}</h2>
             <p className="shk-bundle__sub">
-              Pick {bundle.manakishCount} potato tacos + {bundle.sauceCount} free sauce
-              {bundle.sauceCount > 1 ? "s" : ""} · save up to {bundle.discountPct}%
+              {tp("bundle.sub", bundle.sauceCount, { count: bundle.manakishCount, pct: bundle.discountPct })}
             </p>
           </div>
-          <IconButton label="Close" variant="solid" onClick={onClose}>
+          <IconButton label={t("dlg.close")} variant="solid" onClick={onClose}>
             <XIcon />
           </IconButton>
         </div>
@@ -109,7 +109,7 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
         <div className="shk-bundle__body">
           <section className="shk-bundle__group">
             <div className="shk-bundle__group-head">
-              <h3 className="shk-bundle__group-title">Potato Tacos</h3>
+              <h3 className="shk-bundle__group-title">{t("bundle.tacos")}</h3>
               <span className={`shk-bundle__counter num ${complete || !manaFull ? "" : "is-full"}`}>
                 {manaChosen} / {bundle.manakishCount}
               </span>
@@ -131,7 +131,7 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
 
           <section className="shk-bundle__group">
             <div className="shk-bundle__group-head">
-              <h3 className="shk-bundle__group-title">Sauce · free</h3>
+              <h3 className="shk-bundle__group-title">{t("bundle.sauceFree")}</h3>
               <span className="shk-bundle__counter num">
                 {sauceChosen} / {bundle.sauceCount}
               </span>
@@ -155,13 +155,13 @@ export function BundleDialog({ open, bundle, manakishPool, saucePool, onClose, o
         <div className="shk-bundle__foot">
           <div className="shk-bundle__totals">
             <span className="shk-bundle__total num">{total > 0 ? `${currency}${total}` : "—"}</span>
-            {savings > 0 && <span className="shk-bundle__save num">save {currency}{savings}</span>}
+            {savings > 0 && <span className="shk-bundle__save num">{t("bundle.save")} {currency}{savings}</span>}
           </div>
           <button type="button" className="shk-bundle__add" onClick={confirm} disabled={!complete}>
             {complete
-              ? `Add to order · ${currency}${total}`
-              : `Pick ${bundle.manakishCount - manaChosen} more potato tacos${
-                  sauceChosen < bundle.sauceCount ? ` + ${bundle.sauceCount - sauceChosen} sauce` : ""
+              ? `${t("dlg.addToOrder")} · ${currency}${total}`
+              : `${t("bundle.pickMore", { n: bundle.manakishCount - manaChosen })}${
+                  sauceChosen < bundle.sauceCount ? t("bundle.pickMoreSauce", { n: bundle.sauceCount - sauceChosen }) : ""
                 }`}
           </button>
         </div>

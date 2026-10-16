@@ -1,10 +1,11 @@
 import { DEFAULT_CONTENT } from "../../lib/content.js";
+import { t } from "../../i18n/index.js";
 
 export function MenuCTA({ wide = false, content }) {
   const c = { ...DEFAULT_CONTENT.cta, ...(content || {}) };
 
   return (
-    <section className={`shk-cta ${wide ? "shk-cta--wide" : ""}`} aria-label="Visit & order">
+    <section className={`shk-cta ${wide ? "shk-cta--wide" : ""}`} aria-label={t("cta.aria")}>
       <div className="shk-cta__inner">
         {c.eyebrow && <p className="shk-cta__eyebrow">{c.eyebrow}</p>}
         <h2 className="shk-cta__title">{c.title}</h2>
@@ -18,7 +19,7 @@ export function MenuCTA({ wide = false, content }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              order on WhatsApp <span aria-hidden="true">→</span>
+              {t("cta.whatsapp")} <span aria-hidden="true">→</span>
             </a>
           )}
           {c.instagramUrl && (

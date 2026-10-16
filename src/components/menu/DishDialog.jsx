@@ -8,6 +8,20 @@ import { ModifierBuilder } from "./ModifierBuilder.jsx";
 import { BenefitPills } from "./BenefitPills.jsx";
 import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
 import { optimizedSrc } from "../../lib/img.js";
+import { t, unit } from "../../i18n/index.js";
+
+/*
+  Allergen chips sit under a "Contains" heading, so the tag's own "Contains …"
+  prefix is dropped ("Contains Dairy" → "Dairy", «Содержит молочные продукты» →
+  «Молочные продукты»). Without a label the chip used to print the raw slug
+  ("allergen-dairy"), because DietTag has no preset for the DB's allergen slugs.
+*/
+function allergenLabel(tags, slug) {
+  const name = tags.find((tg) => tg.slug === slug)?.name;
+  if (!name) return undefined;
+  const bare = name.replace(/^(contains|содержит)\s+/i, "");
+  return bare.charAt(0).toUpperCase() + bare.slice(1);
+}
 
 export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const dialogRef = useRef(null);
@@ -104,11 +118,11 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
           </div>
           <div style={{ display: "flex", gap: "8px" }}>
             {onShare && (
-              <IconButton label="Share dish" variant="solid" onClick={onShare}>
+              <IconButton label={t("dlg.share")} variant="solid" onClick={onShare}>
                 <ShareIcon />
               </IconButton>
             )}
-            <IconButton label="Close" variant="solid" onClick={onClose}>
+            <IconButton label={t("dlg.close")} variant="solid" onClick={onClose}>
               <XIcon />
             </IconButton>
           </div>
@@ -137,7 +151,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
             <h2 className="shk-dlg__title">{name}</h2>
             {buildYourOwn ? (
               <span className="shk-dlg__price">
-                <span className="shk-dlg__from">from </span>{currency}{priceFrom}
+                <span className="shk-dlg__from">{t("card.from")} </span>{currency}{priceFrom}
               </span>
             ) : (
               headlinePrice != null && (
@@ -149,7 +163,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
           {portion_size != null && (
             <div className="shk-dlg__meta">
               <ClockIcon />
-              {portion_size}{portion_unit ?? ""}
+              {portion_size}{unit(portion_unit)}
             </div>
           )}
 
@@ -174,9 +188,9 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
             >
               {configurable
                 ? canAdd
-                  ? `Add to order · ${currency}${build?.total ?? priceDefault ?? priceFrom ?? price}`
-                  : "Pick the required options"
-                : `Add to order${price != null ? ` · ${currency}${price}` : ""}`}
+                  ? `${t("dlg.addToOrder")} · ${currency}${build?.total ?? priceDefault ?? priceFrom ?? price}`
+                  : t("dlg.pickRequired")
+                : `${t("dlg.addToOrder")}${price != null ? ` · ${currency}${price}` : ""}`}
             </button>
           )}
 
@@ -189,14 +203,14 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
           {benefits.length > 0 && (
             <div>
-              <div className="shk-dlg__section-label">Benefits</div>
+              <div className="shk-dlg__section-label">{t("dlg.benefits")}</div>
               <BenefitPills benefits={benefits} />
             </div>
           )}
 
           {diets.length > 0 && (
             <div>
-              <div className="shk-dlg__section-label">Suitable for</div>
+              <div className="shk-dlg__section-label">{t("dlg.suitableFor")}</div>
               <div className="shk-dlg__tags">
                 {diets.map((d) => <DietTag key={d} type={d} />)}
               </div>
@@ -205,9 +219,11 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
           {allergens.length > 0 && (
             <div>
-              <div className="shk-dlg__section-label">Contains</div>
+              <div className="shk-dlg__section-label">{t("dlg.contains")}</div>
               <div className="shk-dlg__tags">
-                {allergens.map((a) => <DietTag key={a} type={a} tone="allergen" />)}
+                {allergens.map((a) => (
+                  <DietTag key={a} type={a} tone="allergen" label={allergenLabel(tags, a)} />
+                ))}
               </div>
             </div>
           )}
@@ -215,13 +231,13 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
 
           {ingredients && (
             <div>
-              <div className="shk-dlg__section-label">Ingredients</div>
+              <div className="shk-dlg__section-label">{t("dlg.ingredients")}</div>
               <p className="shk-dlg__ingredients">{ingredients}</p>
             </div>
           )}
 
           <p className="shk-dlg__disclaimer">
-            Nutrition is calculated per serving and may vary. Tell our team about any allergies — dishes are prepared in a shared kitchen.
+            {t("dlg.disclaimer")}
           </p>
         </div>
       </div>
