@@ -23,6 +23,8 @@
     },
     { "source": "/ru/menu", "destination": "/ru/menu/index.html" },
     { "source": "/ru", "destination": "/ru/index.html" },
+    { "source": "/th/menu", "destination": "/th/menu/index.html" },
+    { "source": "/th", "destination": "/th/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

@@ -16,16 +16,17 @@
 */
 import en from "./dict/en.js";
 import ru from "./dict/ru.js";
+import th from "./dict/th.js";
 
-export const LANGS = ["en", "ru"];
+export const LANGS = ["en", "ru", "th"];
 export const DEFAULT_LANG = "en";
-const DICTS = { en, ru };
+const DICTS = { en, ru, th };
 const STORE_KEY = "shk-lang";
 
 // Human names for the switcher, each in its own language.
-export const LANG_NAMES = { en: "English", ru: "Русский" };
+export const LANG_NAMES = { en: "English", ru: "Русский", th: "ไทย" };
 
-const PREFIX_RE = /^\/(ru)(?=\/|$)/;
+const PREFIX_RE = /^\/(ru|th)(?=\/|$)/;
 
 export function langFromPath(pathname) {
   const m = PREFIX_RE.exec(pathname || "");

@@ -16,15 +16,18 @@
    Arabic lockup (صنوبر) uses Noto Kufi Arabic (CDN) as a web-safe stand-in.
    =========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,300..800;1,400..600&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,300..800;1,400..600&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap');
 
 :root {
   /* Native SF Pro on Apple; Albert Sans (CDN) metrics-compatible fallback */
-  --font-sans: -apple-system, "SF Pro Text", "Albert Sans", system-ui,
+  /* "Noto Sans Thai" sits after the Latin faces: the browser only reaches it
+     for Thai glyphs, which Albert Sans does not carry (Cyrillic falls through
+     to system-ui the same way). Latin text is unaffected. */
+  --font-sans: -apple-system, "SF Pro Text", "Albert Sans", "Noto Sans Thai", system-ui,
                "Segoe UI", sans-serif;
 
   /* Display = same family, leaned on heavier weights & tight tracking */
-  --font-display: -apple-system, "SF Pro Display", "Albert Sans", system-ui,
+  --font-display: -apple-system, "SF Pro Display", "Albert Sans", "Noto Sans Thai", system-ui,
                   sans-serif;
 
   /* Data / nutrition figures — the brand "speaks in data" */

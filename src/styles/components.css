@@ -955,8 +955,9 @@ button.shk-seal:active { transform: scale(0.93); }
   position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
 }
 .shk-header--wide .shk-header__lang { left: 32px; }
-.shk-lang {
-  display: inline-flex; padding: 3px; gap: 2px;
+.shk-lang { position: relative; display: inline-flex; }
+.shk-lang__list {
+  display: inline-flex; list-style: none; margin: 0; padding: 3px; gap: 2px;
   border-radius: var(--radius-pill);
   background: var(--surface-2); border: 1px solid var(--border-subtle);
 }
@@ -972,17 +973,33 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-lang__opt:hover { color: var(--text-strong); }
 .shk-lang__opt.is-on { background: var(--surface-3); color: var(--text-strong); cursor: default; }
-/* Phones: the pill would run into the centred logo, so only the OTHER language
-   shows, as one round 44px button — the same footprint as the filter button it
-   mirrors. The page itself says which language you are in. */
-.shk-header--mobile .shk-lang { padding: 0; background: transparent; border: none; }
-.shk-header--mobile .shk-lang__opt.is-on { display: none; }
-.shk-header--mobile .shk-lang__opt {
-  width: var(--hit-min); height: var(--hit-min); min-width: 0; padding: 0;
+
+/* The trigger exists for phones only (see below). */
+.shk-lang__current { display: none; }
+
+/* Phones: three segments would run into the centred logo, so the list hides
+   behind one round button carrying the current language — the same 44px
+   footprint as the filter button it mirrors. Opens on tap, closes on Escape,
+   outside tap, or choosing a language. */
+.shk-header--mobile .shk-lang__current {
+  display: grid; place-items: center;
+  width: var(--hit-min); height: var(--hit-min);
   border-radius: var(--radius-circle);
   background: var(--surface-2); border: 1px solid var(--border-subtle);
   color: var(--text-body);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
+.shk-header--mobile .shk-lang__list {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-dropdown, 40);
+  flex-direction: column; gap: 2px;
+  box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.18));
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out),
+    visibility var(--dur-fast) var(--ease-out);
+}
+.shk-header--mobile .shk-lang__list.is-open { opacity: 1; visibility: visible; transform: none; }
+.shk-header--mobile .shk-lang__opt { height: var(--hit-min); min-width: var(--hit-min); }
 
 /* English original under a translated order line, for the cashier (Cart.jsx) */
 .shk-cart__en {

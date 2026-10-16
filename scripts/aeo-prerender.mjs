@@ -157,6 +157,19 @@ const TEXT = {
     protein: "г белка",
     logoAlt: "SHiSHKA Healthy Kitchen",
   },
+  th: {
+    faqTitle: "คำถามที่พบบ่อย",
+    visit: "แวะมาหาเรา",
+    country: "Thailand",
+    open: "เปิดทุกวัน 9:30 – 18:30 น.",
+    fullMenu: "ดูเมนูเต็มพร้อมรูป",
+    home: "/th",
+    tagline: "— ราไวย์ ภูเก็ต From the SOIL to the SOUL.",
+    pricesNote: "ราคาเป็นเงินบาทและอาจเปลี่ยนแปลงได้ เมนูอัปเดตอัตโนมัติจากระบบครัวของเรา",
+    kcal: "แคล",
+    protein: "ก. โปรตีน",
+    logoAlt: "SHiSHKA Healthy Kitchen",
+  },
 };
 
 // <link rel="alternate" hreflang> set for a page that exists in several
@@ -478,13 +491,17 @@ ${dishes
 </ul>`;
 }
 
+// Every language that gets its own URL. Adding Arabic is one entry here plus a
+// TEXT block, a dictionary in src/i18n and two rewrites in vercel.json.
+const TRANSLATED_LANGS = ["ru", "th"];
+
 const MENU_ALTERNATES = [
   { lang: "en", href: `${SITE}/menu` },
-  { lang: "ru", href: `${SITE}/ru/menu` },
+  ...TRANSLATED_LANGS.map((l) => ({ lang: l, href: `${SITE}/${l}/menu` })),
 ];
 const HOME_ALTERNATES = [
   { lang: "en", href: `${SITE}/` },
-  { lang: "ru", href: `${SITE}/ru` },
+  ...TRANSLATED_LANGS.map((l) => ({ lang: l, href: `${SITE}/${l}` })),
 ];
 
 function ruFaq() {
@@ -497,29 +514,66 @@ function ruFaq() {
   ];
 }
 
-// /ru/menu — the Russian counterpart of /menu. The four English search-intent
-// landing pages have no Russian twins yet (their gluten copy needs re-signing
-// first, see CLAIM_NO_SEED_OILS_RU).
-function buildRuPages(dishes) {
-  const groups = groupBySection(dishes);
-  const count = dishes.length;
-  const items = `${count} ${ruPlural(count, ["позиция", "позиции", "позиций"])}`;
-  const cheapest = dishes.filter((d) => d.price != null).sort((a, b) => a.price - b.price)[0];
-  const priceLine = cheapest ? ` Цены от ${baht(cheapest.price)}.` : "";
+const THAI_CLAIM_NO_SEED_OILS =
+  "เราไม่ใช้น้ำมันจากเมล็ดพืชเลย ทั้งในการปรุงและในซอสของเรา และไม่มีเมนูใดทอดน้ำมันท่วม";
+
+function thFaq() {
   return [
-    {
-      slug: "ru/menu",
-      lang: "ru",
-      alternates: MENU_ALTERNATES,
+    { q: "SHiSHKA Healthy Kitchen อยู่ที่ไหน", a: `อยู่ในท็อปส์ เดลี่ ซอยนาใน 2 ราไวย์ ภูเก็ต — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}` },
+    { q: "เปิดกี่โมง", a: "เปิดทุกวัน 9:30 – 18:30 น." },
+    { q: "ใช้น้ำมันจากเมล็ดพืชหรือไม่", a: THAI_CLAIM_NO_SEED_OILS },
+    { q: "มีเมนูทอดน้ำมันท่วมไหม", a: "ไม่มี ไม่มีเมนูใดในร้านที่ทอดน้ำมันท่วม" },
+    { q: "สั่งอาหารอย่างไร", a: `สั่งที่เคาน์เตอร์ได้เลย หรือโทร ${NAP.phoneDisplay} เมนูเต็มพร้อมรูปอยู่ที่ shishka.health/th` },
+  ];
+}
+
+/*
+  The per-language counterpart of /menu. The four English search-intent landing
+  pages have no translated twins yet.
+
+  Dish NAMES are not translated in any language (shishka-os mig 466) — a guest
+  orders by the name the till shows — so these pages carry English names with
+  translated section headings, descriptions and prices.
+*/
+const LANG_PAGES = {
+  ru: (dishes, groups, cheapest) => {
+    const items = `${dishes.length} ${ruPlural(dishes.length, ["позиция", "позиции", "позиций"])}`;
+    const priceLine = cheapest ? ` Цены от ${baht(cheapest.price)}.` : "";
+    return {
       title: `Меню — ${NAP.name}, Раваи, Пхукет`,
       description: `Полное меню ${NAP.name}: ${items} с ценами — готовим каждый день в Раваи, Пхукет. Без масел из семян, без глутамата натрия и без фритюра.`,
       h1: "Наше меню",
       answer: `${NAP.name} в Раваи (Пхукет): ${items} — салаты, боулы, врапы, свежие роллы, смузи, соки, матча и кофе, всё готовим каждый день.${priceLine} Без масел из семян, без глутамата натрия и без фритюра.`,
-      body: groups
-        .map((g) => `<h2>${escHtml(g.section)}</h2>\n${dishList(g.dishes, { lang: "ru" })}`)
-        .join("\n"),
       faqs: ruFaq(),
-      extraLd: [menuLd(groups, { lang: "ru" })],
+    };
+  },
+  th: (dishes, groups, cheapest) => {
+    const items = `${dishes.length} รายการ`;
+    const priceLine = cheapest ? ` เริ่มต้น ${baht(cheapest.price)}` : "";
+    return {
+      title: `เมนู — ${NAP.name} ราไวย์ ภูเก็ต`,
+      description: `เมนูทั้งหมดของ ${NAP.name}: ${items} พร้อมราคา ทำสดใหม่ทุกวันที่ราไวย์ ภูเก็ต ไม่ใช้น้ำมันจากเมล็ดพืช ไม่ใส่ผงชูรส และไม่ทอดน้ำมันท่วม`,
+      h1: "เมนูของเรา",
+      answer: `${NAP.name} ที่ราไวย์ ภูเก็ต มี ${items} — สลัด โบว์ล แรป ปอเปี๊ยะสด สมูทตี้ น้ำผลไม้ มัทฉะ และกาแฟ ทำสดใหม่ทุกวัน${priceLine} ไม่ใช้น้ำมันจากเมล็ดพืช ไม่ใส่ผงชูรส และไม่ทอดน้ำมันท่วม`,
+      faqs: thFaq(),
+    };
+  },
+};
+
+function buildTranslatedPages(lang, dishes) {
+  const groups = groupBySection(dishes);
+  const cheapest = dishes.filter((d) => d.price != null).sort((a, b) => a.price - b.price)[0];
+  const copy = LANG_PAGES[lang](dishes, groups, cheapest);
+  return [
+    {
+      slug: `${lang}/menu`,
+      lang,
+      alternates: MENU_ALTERNATES,
+      ...copy,
+      body: groups
+        .map((g) => `<h2>${escHtml(g.section)}</h2>\n${dishList(g.dishes, { lang })}`)
+        .join("\n"),
+      extraLd: [menuLd(groups, { lang })],
     },
   ];
 }
@@ -698,7 +752,7 @@ function writeSitemap(slugs) {
   FAQPage records. That is zero visual risk and turns "/" from 677 empty bytes
   into an identifiable business.
 */
-function patchIndex(faqs, ruFaqs) {
+function patchIndex(faqs, shells) {
   const file = join(DIST, "index.html");
   if (!existsSync(file)) throw new Error("dist/index.html missing — did vite build run?");
   let html = readFileSync(file, "utf8");
@@ -733,41 +787,40 @@ function patchIndex(faqs, ruFaqs) {
   writeFileSync(file, html.replace("</head>", `    ${head}\n  </head>`), "utf8");
 
   /*
-    /ru is the same SPA shell (the app reads the language from the URL) with
-    Russian head metadata, so a crawler that only reads <head> still gets a
-    Russian page with the right canonical and hreflang.
+    Each translated language gets the same SPA shell (the app reads the language
+    from the URL) with its own head metadata, so a crawler that only reads
+    <head> still gets a page in that language with the right canonical+hreflang.
   */
-  const ruTitle = `${NAP.name} — здоровая еда в Раваи, Пхукет`;
-  const ruDesc =
-    "Свежая, необработанная еда каждый день в Раваи, Пхукет: салаты, боулы, врапы, свежие роллы, смузи, соки и кофе. Без масел из семян, без глутамата натрия, без фритюра.";
-  const ruHtml = shell
-    .replace(/<html lang="[^"]*">/, '<html lang="ru">')
-    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(ruTitle)}</title>`)
-    .replace(
-      /<meta name="description"[^>]*>/,
-      `<meta name="description" content="${escHtml(ruDesc)}">`
+  for (const { lang, title, desc, locale, faqs: langFaqs } of shells) {
+    const html = shell
+      .replace(/<html lang="[^"]*">/, `<html lang="${lang}">`)
+      .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
+      .replace(
+        /<meta name="description"[^>]*>/,
+        `<meta name="description" content="${escHtml(desc)}">`
+      );
+    const langHead = [
+      `<link rel="canonical" href="${SITE}/${lang}">`,
+      hreflangLinks(HOME_ALTERNATES),
+      `<meta property="og:type" content="restaurant">`,
+      `<meta property="og:locale" content="${locale}">`,
+      `<meta property="og:title" content="${escHtml(title)}">`,
+      `<meta property="og:description" content="${escHtml(desc)}">`,
+      `<meta property="og:url" content="${SITE}/${lang}">`,
+      `<meta property="og:image" content="${SITE}/assets/logo-full-color.png">`,
+      `<meta name="twitter:card" content="summary_large_image">`,
+      `<script type="application/ld+json">${JSON.stringify(
+        restaurantLd({ hasMenu: `${SITE}/${lang}/menu` })
+      )}</script>`,
+      `<script type="application/ld+json">${JSON.stringify(faqLd(langFaqs))}</script>`,
+    ].join("\n    ");
+    mkdirSync(join(DIST, lang), { recursive: true });
+    writeFileSync(
+      join(DIST, lang, "index.html"),
+      html.replace("</head>", `    ${langHead}\n  </head>`),
+      "utf8"
     );
-  const ruHead = [
-    `<link rel="canonical" href="${SITE}/ru">`,
-    hreflangLinks(HOME_ALTERNATES),
-    `<meta property="og:type" content="restaurant">`,
-    `<meta property="og:locale" content="ru_RU">`,
-    `<meta property="og:title" content="${escHtml(ruTitle)}">`,
-    `<meta property="og:description" content="${escHtml(ruDesc)}">`,
-    `<meta property="og:url" content="${SITE}/ru">`,
-    `<meta property="og:image" content="${SITE}/assets/logo-full-color.png">`,
-    `<meta name="twitter:card" content="summary_large_image">`,
-    `<script type="application/ld+json">${JSON.stringify(
-      restaurantLd({ hasMenu: `${SITE}/ru/menu` })
-    )}</script>`,
-    `<script type="application/ld+json">${JSON.stringify(faqLd(ruFaqs))}</script>`,
-  ].join("\n    ");
-  mkdirSync(join(DIST, "ru"), { recursive: true });
-  writeFileSync(
-    join(DIST, "ru", "index.html"),
-    ruHtml.replace("</head>", `    ${ruHead}\n  </head>`),
-    "utf8"
-  );
+  }
 }
 
 /* -------------------------------------------------------------------- main */
@@ -808,31 +861,54 @@ async function main() {
     process.exit(1);
   }
 
-  // Russian translations. Same hard-failure policy as the menu: a /ru page built
-  // from no translations would be an English page wearing a Russian label.
-  let ruTr;
-  for (let attempt = 1; attempt <= 3 && !ruTr; attempt++) {
-    try {
-      ruTr = await fetchTranslations("ru");
-    } catch (err) {
-      lastErr = err;
-      if (attempt < 3) await new Promise((r) => setTimeout(r, 800 * attempt));
+  // Translations, one language at a time. Same hard-failure policy as the menu:
+  // a /ru or /th page built from no translations would be an English page
+  // wearing a foreign label.
+  const translated = [];
+  for (const lang of TRANSLATED_LANGS) {
+    let tr;
+    for (let attempt = 1; attempt <= 3 && !tr; attempt++) {
+      try {
+        tr = await fetchTranslations(lang);
+      } catch (err) {
+        lastErr = err;
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 800 * attempt));
+      }
     }
-  }
-  if (!ruTr || ruTr.size === 0) {
-    console.error(`[aeo] Russian translations unavailable: ${lastErr?.message ?? "0 rows"}`);
-    console.error("[aeo] refusing to emit /ru pages from no data. Set AEO_SKIP=1 to ship without them.");
-    process.exit(1);
+    if (!tr || tr.size === 0) {
+      console.error(`[aeo] ${lang} translations unavailable: ${lastErr?.message ?? "0 rows"}`);
+      console.error(`[aeo] refusing to emit /${lang} pages from no data. Set AEO_SKIP=1 to ship without them.`);
+      process.exit(1);
+    }
+    translated.push({ lang, dishes: localizeDishes(dishes, tr) });
   }
 
-  const pages = [...buildPages(dishes), ...buildRuPages(localizeDishes(dishes, ruTr))];
+  const pages = [
+    ...buildPages(dishes),
+    ...translated.flatMap(({ lang, dishes: d }) => buildTranslatedPages(lang, d)),
+  ];
   const slugs = pages.map((p) => p.slug);
-  assertRoutesPinned([...slugs, "ru"]);
+  assertRoutesPinned([...slugs, ...TRANSLATED_LANGS]);
 
   for (const p of pages) writePage(p.slug, page(p));
   writeRobots(slugs);
   writeSitemap(slugs);
-  patchIndex(pages[0].faqs, ruFaq());
+  patchIndex(pages[0].faqs, [
+    {
+      lang: "ru",
+      locale: "ru_RU",
+      title: `${NAP.name} — здоровая еда в Раваи, Пхукет`,
+      desc: "Свежая, необработанная еда каждый день в Раваи, Пхукет: салаты, боулы, врапы, свежие роллы, смузи, соки и кофе. Без масел из семян, без глутамата натрия, без фритюра.",
+      faqs: ruFaq(),
+    },
+    {
+      lang: "th",
+      locale: "th_TH",
+      title: `${NAP.name} — อาหารสุขภาพที่ราไวย์ ภูเก็ต`,
+      desc: "อาหารสดใหม่ ไม่ผ่านการแปรรูป ทำทุกวันที่ราไวย์ ภูเก็ต: สลัด โบว์ล แรป ปอเปี๊ยะสด สมูทตี้ น้ำผลไม้ และกาแฟ ไม่ใช้น้ำมันจากเมล็ดพืช ไม่ใส่ผงชูรส ไม่ทอดน้ำมันท่วม",
+      faqs: thFaq(),
+    },
+  ]);
 
   console.log(
     `[aeo] ${dishes.length} sellable dishes -> ${slugs.length} pages (${slugs.join(", ")}), ` +
