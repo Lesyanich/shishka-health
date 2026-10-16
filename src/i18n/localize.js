@@ -56,7 +56,15 @@ const BADGE_KEYS = {
 // early; without this a Russian page flashes the English banner first.
 export function initialContent(defaults) {
   if (EN) return defaults;
-  return { ...defaults, hero: { ...defaults.hero, banner: t("hero.banner"), sub: t("hero.sub") } };
+  return {
+    ...defaults,
+    hero: {
+      ...defaults.hero,
+      banner: t("hero.banner"),
+      title: t("hero.title"),
+      sub: t("hero.sub"),
+    },
+  };
 }
 
 export function localizeMenu(data, rows) {

@@ -8,10 +8,11 @@ export default {
   // header / hero / page chrome
   "header.filter": "Filter menu",
   "hero.aria": "Shishka Healthy Kitchen",
-  "hero.banner": "NO SEED OIL",
-  // Pre-load placeholder only (i18n/localize.js initialContent); the live
-  // subline comes from site_content.
-  "hero.sub": "fresh, unprocessed, real food, made daily.",
+  // Pre-load placeholders only (i18n/localize.js initialContent); the live
+  // copy comes from site_content and must match these, or the hero swaps.
+  "hero.banner": "CLEAN FOOD",
+  "hero.title": "Honest. Delicious. No junk",
+  "hero.sub": "No seed oils · no MSG · nothing ultra-processed.\nOnly fresh ingredients",
   "rule.aria": "The Rule",
   "rule.no": "no",
   "cta.aria": "Visit & order",
