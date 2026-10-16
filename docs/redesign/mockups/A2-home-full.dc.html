@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shishka — A2 home, all categories</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1E3903}a:hover{color:#B62A23}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 1440px; position: relative; overflow: hidden; background: #FFFFFF; font-family: 'Albert Sans', system-ui, sans-serif; color: #1E3903; display: flex; flex-direction: column">
+
+  <header style="height: 64px; padding: 0 12px 0 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0">
+    <img src="/_blob/e92770eff34407256d3e30ffe6525166" alt="Shishka Healthy Kitchen" style="height: 36px; width: auto; display: block">
+    <div style="display: flex; align-items: center; gap: 4px">
+      <a href="#hours" style="display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 10px; font-size: 13px; font-weight: 600; color: #1E3903; text-decoration: none">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #3F8A2A; display: block"></span>
+        Open till 18:30
+      </a>
+      <button type="button" aria-label="Language: English" style="height: 44px; min-width: 44px; padding: 0 8px; border: 0; background: transparent; font-size: 13px; font-weight: 700; color: #1E3903">EN</button>
+    </div>
+  </header>
+
+  <div style="padding: 10px 16px 6px">
+    <h1 style="margin: 0; font-size: 28px; line-height: 1.08; font-weight: 800; letter-spacing: -0.025em">What are you <span style="color: #B62A23">craving?</span></h1>
+    <p style="margin: 6px 0 0; font-size: 13.5px; color: rgba(30,57,3,.75)">No seed oils · No MSG · Nothing ultra-processed</p>
+  </div>
+
+  <h2 style="margin: 18px 16px 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.16em; color: rgba(30,57,3,.72)">EAT</h2>
+  <div style="padding: 0 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+    <a href="A2-salads-bowls.dc.html" style="grid-column: span 2; height: 156px; border-radius: 24px; background: #E7EFD6; text-decoration: none; color: #1E3903; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 18px">
+      <img src="/_blob/e62e48c7e023a7ff5f6221fbf6701220" alt="" style="position: absolute; right: 70px; top: -14px; width: 130px; height: 130px; object-fit: contain">
+      <img src="/_blob/8144b52c066b832879874c5a2272da22" alt="" style="position: absolute; right: -16px; top: 10px; width: 130px; height: 130px; object-fit: contain">
+      <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #B62A23; position: relative">FROM OUR SALAD BAR</span>
+      <span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; position: relative">Salads &amp; Bowls</span>
+      <span style="font-size: 13.5px; font-weight: 600; opacity: .8; position: relative">13 dishes · from ฿149</span>
+    </a>
+    <sc-for list="{{eat}}" as="c" hint-placeholder-count="4">
+      <a href="#{{c.id}}" style="height: 132px; border-radius: 22px; background: #F4F8EC; text-decoration: none; color: #1E3903; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px">
+        <img src="{{c.img}}" alt="" style="position: absolute; right: -8px; top: -4px; width: 96px; height: 96px; object-fit: contain">
+        <span style="font-size: 17px; font-weight: 800; line-height: 1.15; position: relative">{{c.name}}</span>
+        <span style="font-size: 12.5px; font-weight: 600; opacity: .78; position: relative">{{c.n}} · from ฿{{c.from}}</span>
+      </a>
+    </sc-for>
+    <a href="#dips" style="grid-column: span 2; height: 84px; border-radius: 22px; background: #F4F8EC; text-decoration: none; color: #1E3903; display: flex; align-items: center; gap: 14px; padding: 0 16px 0 10px">
+      <img src="/_blob/04a7dfb45ec49d9b09fab93b6c547771" alt="" style="width: 68px; height: 68px; object-fit: contain">
+      <span style="display: flex; flex-direction: column; flex: 1">
+        <span style="font-size: 17px; font-weight: 800">Hummus, dips &amp; sides</span>
+        <span style="font-size: 12.5px; font-weight: 600; opacity: .78">8 · sauces, hummus, toast, extra wrap</span>
+      </span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+
+  <h2 style="margin: 26px 16px 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.16em; color: rgba(30,57,3,.72)">DRINK</h2>
+  <div style="padding: 0 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+    <sc-for list="{{drink}}" as="c" hint-placeholder-count="3">
+      <a href="#{{c.id}}" style="height: 120px; border-radius: 22px; background: #FBF4E6; text-decoration: none; color: #1E3903; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px">
+        <img src="{{c.img}}" alt="" style="position: absolute; right: -4px; top: -2px; width: 84px; height: 84px; object-fit: contain">
+        <span style="font-size: 17px; font-weight: 800; position: relative">{{c.name}}</span>
+        <span style="font-size: 12.5px; font-weight: 600; opacity: .78; position: relative">{{c.n}} · from ฿{{c.from}}</span>
+      </a>
+    </sc-for>
+    <div style="height: 120px; border-radius: 22px; border: 1.5px dashed rgba(30,57,3,.22); color: #1E3903; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; box-sizing: border-box">
+      <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: #B62A23">COMING SOON</span>
+      <span style="font-size: 17px; font-weight: 800">Fresh juices</span>
+      <span style="font-size: 12.5px; font-weight: 600; opacity: .78">Orange, guava, pineapple…</span>
+    </div>
+  </div>
+
+  <h2 style="margin: 26px 16px 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.16em; color: rgba(30,57,3,.72)">SWEET</h2>
+  <div style="padding: 0 16px">
+    <a href="#chocolate" style="height: 96px; border-radius: 22px; background: #F5EEDF; text-decoration: none; color: #1E3903; display: flex; align-items: center; gap: 14px; padding: 0 16px 0 10px">
+      <img src="/_blob/e80a992293692f19f43a335401a349fc" alt="" style="width: 76px; height: 76px; object-fit: contain">
+      <span style="display: flex; flex-direction: column; flex: 1">
+        <span style="font-size: 17px; font-weight: 800">Chocolate</span>
+        <span style="font-size: 12.5px; font-weight: 600; opacity: .78">6 · Barada, made in Phuket · from ฿140</span>
+      </span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+    </a>
+  </div>
+
+  <footer id="hours" style="margin: 28px 16px 0; padding: 20px; border-radius: 22px; background: #1E3903; color: #FBF8F0; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px">
+    <span style="font-size: 12px; font-weight: 800; letter-spacing: 0.16em; opacity: .8">VISIT US</span>
+    <span style="font-weight: 700; font-size: 17px">Open daily 9:30–18:30</span>
+    <span>Rawai, Phuket</span>
+    <div style="display: flex; gap: 10px; margin-top: 6px">
+      <a href="#directions" style="height: 44px; padding: 0 18px; border-radius: 999px; background: #FBF8F0; color: #1E3903; font-weight: 700; text-decoration: none; display: flex; align-items: center">Directions</a>
+      <a href="#instagram" style="height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid rgba(251,248,240,.5); color: #FBF8F0; font-weight: 700; text-decoration: none; display: flex; align-items: center">Instagram</a>
+    </div>
+  </footer>
+
+  <a href="#order" style="position: absolute; left: 16px; right: 16px; top: 766px; height: 58px; border-radius: 999px; background: #1E3903; color: #FBF8F0; text-decoration: none; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; box-shadow: 0 12px 34px rgba(20,22,13,.22)">
+    <span style="display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"></path><path d="M9 8V6a3 3 0 016 0v2"></path></svg>
+      Your order
+    </span>
+    <span style="font-size: 14px; font-weight: 600; opacity: .8">Empty</span>
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1440}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const mk = ([name, n, from, img]) => ({ name, n, from, img, id: name.toLowerCase().replace(/[^a-z]+/g, '-') });
+    const eat = [
+      ['Wraps', 11, 99, '/_blob/de467d06d123bebb43b8da68e00ae407'],
+      ['Protein meals', 3, 299, '/_blob/c9d0bdeb9cbe2932eb104d891eb4348e'],
+      ['All-day breakfast', 6, 149, '/_blob/04efcd5bab3d92ec9d4bd4a3d075eddc'],
+      ['Spring rolls', 4, 149, '/_blob/ab0b5c7b5e3e0f7d5c25137c61914105']
+    ].map(mk);
+    const drink = [
+      ['Coffee', 12, 60, '/_blob/750bdff89ba9a0bfeffda960f19350ff'],
+      ['Matcha', 6, 90, '/_blob/bc41074e0b0295fd5ea066425a1a9e4e'],
+      ['Smoothies', 9, 89, '/_blob/9b75131246d5e402b02db0a25b59376c']
+    ].map(mk);
+    return { eat, drink };
+  }
+}
+</script>
+</body>
+</html>

@@ -47,6 +47,18 @@ export default {
   "rows.comingSoon": "coming soon",
   "seal.currency": "thb",
 
+  // menu redesign — DishCard variants, KcalSeal, CategoryTile (spec §5).
+  // Not mounted in the app yet: PR 3 (mobile) and PR 4 (desktop) render these.
+  "seal.kcalAria": "{kcal} kcal",
+  "dish.inOrder": "{name} is in your order",
+  "dish.highProtein": "High protein",
+  "dish.soldOut": "Sold out today",
+  "dish.add": "Add",
+  "dish.added": "Added",
+  "dish.macroProtein": "PROTEIN",
+  "dish.macroCarbs": "CARBS",
+  "dish.macroFat": "FAT",
+
   // dish dialog
   "dlg.share": "Share dish",
   "dlg.close": "Close",
