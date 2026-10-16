@@ -44,10 +44,10 @@ export const DEFAULT_CONTENT = {
   },
   // Short intro paragraph rendered under a section title. Keyed by section
   // (umbrella) name as it appears in the menu. Omit a key → no intro.
-  sectionIntros: {
-    "Potato Tacos":
-      "Our healthy take on tacos — a gluten-free potato dough instead of a tortilla, piled high with fresh veggies and bold flavors. Protein options like shish tawook and shrimp coming soon.",
-  },
+  // The "Potato Tacos" intro was removed on 2026-10-16 when the line was retired
+  // (shishka-os migration 466). Left empty rather than deleted: the shape is the
+  // contract, and the next section that wants an intro adds its key here.
+  sectionIntros: {},
 };
 
 // Merge fetched rows ([{ key, data }]) over the defaults, per field.
