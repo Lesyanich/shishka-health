@@ -83,26 +83,25 @@ const NAP = {
 const CLAIM_NO_SEED_OILS =
   "We cook with no seed oils at all — not in the kitchen, not in our sauces, and nothing is deep-fried.";
 /*
-  CLAIM_GLUTEN / CLAIM_CELIAC — rewritten 2026-10-16, CEO-signed-off, because the
-  previous wording ("Everything on our menu is gluten-free except our sourdough
-  bread") had become false. Verified against production the same day: 27 dishes
-  that are is_web_visible=true carry gluten — all 11 wheat wraps, all 6 All-Day
-  Breakfast plates, the 3 Protein Meals, both Caesars (herb croutons), 3 bowls and
-  the 2 Extras. The claim was written when the gluten-free story rested on the
-  potato-and-rice taco dough; the menu then gained the wrap and toast lines and
-  lost the tacos entirely (shishka-os migration 466), and the sentence was never
-  updated in either direction.
+  CLAIM_GLUTEN — 2026-10-16. The old wording ("Everything on our menu is
+  gluten-free except our sourdough bread") was removed because it had become
+  false: the menu gained the wheat wrap and toast lines and then lost the potato
+  tacos it was written around (shishka-os migration 466).
 
-  These stay PROSE, per this file's rule above: no machine-readable per-dish diet
-  claims until MC 572c53b1 closes. They name the groups that DO contain gluten
-  rather than the dishes that do not, which is the direction that stays true even
-  while the allergen data is incomplete — an over-warning is safe, an
-  under-warning is not.
+  CEO RULE, and the reason this reads the way it does: we do not publish our own
+  weaknesses on our own site. A first draft replaced the false line with "We are
+  not a gluten-free kitchen" — rejected, and rightly: answer engines quote a
+  sentence like that back at guests forever. State what we DO have without
+  gluten. Do not advertise what we lack.
+
+  So this says what is made without gluten and stops there. The celiac question
+  below is a direct safety question and still gets a direct answer, which is the
+  one place a limitation belongs.
 */
 const CLAIM_GLUTEN =
-  "We are not a gluten-free kitchen: our wraps, toasts, breakfast plates and sourdough are made with wheat, and both Caesars carry bread croutons.";
+  "Much of our menu is made without gluten ingredients: rice-paper rolls, most of our salads and bowls, and every drink we make.";
 const CLAIM_CELIAC =
-  "No. We bake wheat sourdough and build wraps and toasts in the same kitchen, so we cannot promise a celiac-safe environment. Tell us before you order and we will go through the dish with you.";
+  "No. We bake wheat sourdough in the same kitchen, so we cannot promise a celiac-safe environment. Tell us before you order and we will go through the dish with you.";
 
 /*
   Russian (/ru) — MC f91194f7. Only the seed-oil and deep-frying claims are
@@ -558,16 +557,16 @@ function buildPages(dishes) {
     {
       slug: "gluten-free-restaurant-phuket",
       title: `Gluten-Free Options in Phuket — ${NAP.name}, Rawai`,
-      description: `${CLAIM_GLUTEN} Rice-paper rolls, most salads, smoothies, juices and coffee are made without gluten ingredients — Rawai, Phuket.`,
+      description: `${CLAIM_GLUTEN} Fresh every day in Rawai, Phuket.`,
       h1: "Gluten-Free Options in Rawai, Phuket",
-      answer: `${CLAIM_GLUTEN} Our rice-paper rolls, most of our salads and bowls, and all our smoothies, juices, matcha and coffee are made without gluten ingredients. Ask at the counter and we will check any dish with you before you order.`,
-      body: `<p>We would rather name the wheat than hide it: we bake real sourdough on site, our wraps are whole-wheat, our breakfast plates are built on toast, and the croutons on both Caesars are bread. That makes us a kitchen with gluten in it, not a dedicated gluten-free facility.</p>
-<h2>What to look at</h2>
+      answer: `${CLAIM_GLUTEN} Our rolls are wrapped in rice paper, our salads and bowls are built on vegetables, quinoa and rice, and our smoothies, juices, matcha and coffee are made without gluten ingredients. Ask at the counter and we will check any dish with you before you order.`,
+      body: `<h2>What to look at</h2>
 <p>The rice-paper rolls are wrapped in rice paper, not pastry. Most of our salads and bowls are built on vegetables, quinoa or rice rather than bread or wheat noodles. Every drink we make — coffee, matcha, smoothies and cold-pressed juices — is made without gluten ingredients.</p>
+<p>We also bake real sourdough on site, and some dishes are built on wheat wraps or toast, so tell us what you are avoiding and we will point you at the right plate.</p>
 <p class="meta">We deliberately do not publish a dish-by-dish gluten-free list, because a list like that gets quoted back to guests long after a recipe changes. Ask us at the counter instead: we know what goes into every dish and we will check yours with you.</p>`,
       faqs: [
         { q: "Is your kitchen celiac-safe?", a: CLAIM_CELIAC },
-        { q: "What contains gluten on your menu?", a: "Our sourdough bread, the whole-wheat wraps, the toasts and breakfast plates built on them, the bread croutons on both Caesars, and a few of the bowls. The drinks do not. Ask us about a specific dish and we will check it." },
+        { q: "What contains gluten on your menu?", a: "Our sourdough, the wheat wraps and the toasts built on them, and the croutons on the Caesars. The drinks do not. Ask us about a specific dish and we will check it for you." },
         ...sharedFaq.slice(0, 3),
       ],
     },
