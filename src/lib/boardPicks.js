@@ -44,13 +44,13 @@ export const BOARD_TARGET_SLOTS = 18;
  * "All Breakfast Smashe" in his list is expanded to the four live breakfasts,
  * kept together and in menu order, because that is how he grouped them.
  */
+// Removed 2026-10-16: the four Potato Tacos and the Chicken rice-paper roll.
+// Both lines were retired (shishka-os migrations 466a and 480), so their codes
+// matched nothing and the reel silently lost those slides. Entries are dropped
+// here rather than left to rot, because a code in this list reads as a dish we
+// still put on the wall.
 export const BOARD_RUNNING_ORDER = [
   "SALE-SMOOTHIE_MIXED_BERRY", //          Mixed Berry Smoothie
-  "SALE-MANAISH_LAMB_GF", //               Lamb Grass-Fed
-  "SALE-MANAISH_ZAATAR_GF", //             zatar
-  "SALE-MANAISH_FALAFEL_GF", //            Falafel
-  "SALE-MANAISH_SALAMI_GF", //             salami
-  "SALE-SUMMER_ROLLS_CHICKEN", //          2X Chicken Fresh Spring Rolls
   "SALE-CHOC_PREACTIVE_SQ", //             Before Workout Power Square
   "SALE-CHOC_DARK_70_ALMOND", //           70% Dark Chocolate with Roasted Almond
   "SALE-COFFEE_LATTE", //                  Latte

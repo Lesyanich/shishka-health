@@ -85,30 +85,10 @@ const SECTION_ART = {
   // lives in the middle of the ring rather than off in the margin. See
   // SECTION_ORBIT / OrbitHero below.
   //
-  // inset: how far the art may reach back inside the content column. The tiers
-  // layout stops ~190px short of the right edge, so the big taco can move into
-  // that dead space and sit beside the small ones — showing ~70% of itself
-  // instead of half. Safe only because nothing is rendered there; see the
-  // --art-inset note in components.css before copying this to another section.
-  "Potato Tacos": { src: "/assets/section/tacos-lamb.webp", side: "right", inset: 200 },
-  // A spring roll is a column (0.26 wide-to-tall), so it gets the whole-and-tall
-  // treatment rather than the viewport crop — see --art-w in components.css.
-  // Width is gutter + inset, capped, and the height follows from the ratio.
-  "Fresh Spring Roll": {
-    src: "/assets/section/springroll-shrimp.webp",
-    side: "right",
-    inset: 200,
-    ratio: 0.26,
-    align: "top",
-    // rise: how far above its own section the roll starts. At the default 140
-    // it began in the empty gap between the RULE block and this section, which
-    // read as a picture parked beside a heading. Lifted so the top of the roll
-    // breaks into the green Salads band above and the whole thing reads as one
-    // column running down the page. The RULE block's own gutter is empty, so
-    // there is nothing up there to collide with.
-    rise: 350,
-    width: "min(calc(50vw - var(--content-max) / 2 + 200px), 470px)",
-  },
+  // Potato Tacos and Fresh Spring Roll both had gutter art here. Both lines
+  // were retired on 2026-10-16 (shishka-os migrations 466a and 480) and their
+  // entries went with them; a key here that matches no live section is dead
+  // weight that reads as a section we still serve.
 };
 
 /*

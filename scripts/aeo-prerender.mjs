@@ -99,7 +99,7 @@ const CLAIM_NO_SEED_OILS =
   one place a limitation belongs.
 */
 const CLAIM_GLUTEN =
-  "Much of our menu is made without gluten ingredients: rice-paper rolls, most of our salads and bowls, and every drink we make.";
+  "Much of our menu is made without gluten ingredients: most of our salads and bowls, our dips, and every drink we make.";
 const CLAIM_CELIAC =
   "No. We bake wheat sourdough in the same kitchen, so we cannot promise a celiac-safe environment. Tell us before you order and we will go through the dish with you.";
 
@@ -602,7 +602,7 @@ const LANG_PAGES = {
       title: `Меню — ${NAP.name}, Раваи, Пхукет`,
       description: `Полное меню ${NAP.name}: ${items} с ценами — готовим каждый день в Раваи, Пхукет. Без масел из семян, без глутамата натрия и без фритюра.`,
       h1: "Наше меню",
-      answer: `${NAP.name} в Раваи (Пхукет): ${items} — салаты, боулы, врапы, свежие роллы, смузи, соки, матча и кофе, всё готовим каждый день.${priceLine} Без масел из семян, без глутамата натрия и без фритюра.`,
+      answer: `${NAP.name} в Раваи (Пхукет): ${items} — салаты, боулы, врапы, завтраки, смузи, соки, матча и кофе, всё готовим каждый день.${priceLine} Без масел из семян, без глутамата натрия и без фритюра.`,
       faqs: ruFaq(),
     };
   },
@@ -672,7 +672,7 @@ function buildPages(dishes) {
       title: `Menu — ${NAP.name}, Rawai Phuket`,
       description: `The full ${NAP.name} menu: ${count} dishes and drinks with prices, made fresh daily in Rawai, Phuket. No seed oils, no MSG, nothing deep-fried.`,
       h1: "Our Menu",
-      answer: `${NAP.name} in Rawai, Phuket serves ${count} freshly made dishes and drinks — salads, bowls, wraps, fresh spring rolls, smoothies, juices, matcha and coffee.${priceLine} We cook with no seed oils, no MSG and no deep-frying.`,
+      answer: `${NAP.name} in Rawai, Phuket serves ${count} freshly made dishes and drinks — salads, bowls, wraps, breakfast, smoothies, juices, matcha and coffee.${priceLine} We cook with no seed oils, no MSG and no deep-frying.`,
       body: menuBody,
       faqs: sharedFaq,
       extraLd: [menuLd(groups)],
@@ -685,7 +685,7 @@ function buildPages(dishes) {
       h1: "Gluten-Free Options in Rawai, Phuket",
       answer: `${CLAIM_GLUTEN} Our rolls are wrapped in rice paper, our salads and bowls are built on vegetables, quinoa and rice, and our smoothies, juices, matcha and coffee are made without gluten ingredients. Ask at the counter and we will check any dish with you before you order.`,
       body: `<h2>What to look at</h2>
-<p>The rice-paper rolls are wrapped in rice paper, not pastry. Most of our salads and bowls are built on vegetables, quinoa or rice rather than bread or wheat noodles. Every drink we make — coffee, matcha, smoothies and cold-pressed juices — is made without gluten ingredients.</p>
+<p>Most of our salads and bowls are built on vegetables, quinoa or rice rather than bread or wheat noodles, and our hummus and dips are naturally gluten-free. Every drink we make — coffee, matcha, smoothies and cold-pressed juices — is made without gluten ingredients.</p>
 <p>We also bake real sourdough on site, and some dishes are built on wheat wraps or toast, so tell us what you are avoiding and we will point you at the right plate.</p>
 <p class="meta">We deliberately do not publish a dish-by-dish gluten-free list, because a list like that gets quoted back to guests long after a recipe changes. Ask us at the counter instead: we know what goes into every dish and we will check yours with you.</p>`,
       faqs: [
@@ -715,9 +715,9 @@ ${dishList(dishes.slice(0, 24), { withDesc: false })}`,
     {
       slug: "healthy-food-rawai",
       title: `Healthy Food in Rawai, Phuket — ${NAP.name}`,
-      description: `Fresh, unprocessed food made daily in Rawai, Phuket: salads, bowls, fresh spring rolls, smoothies and specialty coffee. No seed oils, no MSG.`,
+      description: `Fresh, unprocessed food made daily in Rawai, Phuket: salads, bowls, wraps, smoothies and specialty coffee. No seed oils, no MSG.`,
       h1: "Healthy Food in Rawai, Phuket",
-      answer: `${NAP.name} is a healthy kitchen in Rawai, Phuket, inside Tops Daily on Soi Naya 2. We make ${count} dishes and drinks fresh every day — salads, bowls, wraps, fresh spring rolls, smoothies, juices and coffee — with no seed oils, no MSG and nothing deep-fried.`,
+      answer: `${NAP.name} is a healthy kitchen in Rawai, Phuket, inside Tops Daily on Soi Naya 2. We make ${count} dishes and drinks fresh every day — salads, bowls, wraps, breakfast, smoothies, juices and coffee — with no seed oils, no MSG and nothing deep-fried.`,
       body: `<h2>What we serve</h2>
 ${menuBody}`,
       faqs: sharedFaq,
@@ -829,7 +829,7 @@ function patchIndex(faqs, shells) {
 
   const title = `${NAP.name} — Healthy Food in Rawai, Phuket`;
   const desc =
-    "Fresh, unprocessed food made daily in Rawai, Phuket: salads, bowls, wraps, fresh spring rolls, smoothies, juices and coffee. No seed oils, no MSG, nothing deep-fried.";
+    "Fresh, unprocessed food made daily in Rawai, Phuket: salads, bowls, wraps, breakfast, smoothies, juices and coffee. No seed oils, no MSG, nothing deep-fried.";
 
   html = html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
@@ -971,7 +971,7 @@ async function main() {
       lang: "ru",
       locale: "ru_RU",
       title: `${NAP.name} — здоровая еда в Раваи, Пхукет`,
-      desc: "Свежая, необработанная еда каждый день в Раваи, Пхукет: салаты, боулы, врапы, свежие роллы, смузи, соки и кофе. Без масел из семян, без глутамата натрия, без фритюра.",
+      desc: "Свежая, необработанная еда каждый день в Раваи, Пхукет: салаты, боулы, врапы, завтраки, смузи, соки и кофе. Без масел из семян, без глутамата натрия, без фритюра.",
       faqs: ruFaq(),
     },
     {
