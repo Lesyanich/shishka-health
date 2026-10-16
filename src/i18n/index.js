@@ -98,10 +98,11 @@ export function redirectToPreferredLang() {
   return true;
 }
 
-// `document.documentElement.lang` drives hyphenation, screen-reader voice and
-// the browser's own translate prompt, so it must match the rendered language.
 export const IS_RTL = RTL_LANGS.includes(LANG);
 
+// `document.documentElement.lang` drives hyphenation, screen-reader voice and
+// the browser's own translate prompt, so it must match the rendered language.
+// `dir` is what the whole RTL layout keys off — see RTL_LANGS above.
 export function applyDocumentLang() {
   if (typeof document === "undefined") return;
   document.documentElement.lang = LANG;
