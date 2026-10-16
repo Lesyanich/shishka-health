@@ -6,39 +6,49 @@
 // running order below was chosen by hand on 2026-08-25 and should be treated
 // as an editorial decision — change it when he asks, not to make it tidier.
 //
-// Two rules he gave, in his words:
-//   "all salads between the dishs"  — every salad we can photograph goes in,
-//                                     spread through the reel rather than
-//                                     clumped in one salad block
-//   everything else                 — in the order written below
+// Rules he has given, in order given:
+//   "all salads between the dishs" (2026-08-25) — every salad we can
+//     photograph goes in. Originally spread evenly through the reel;
+//     superseded by the rule below, which groups them instead.
+//   "all wraps then bowls then salads" (2026-09-28) — those three sections
+//     now lead the reel as three blocks, in that order, each pulled by
+//     section (not by naming every dish) so a new wrap, bowl, or salad joins
+//     the wall the day it goes live. This is what finally answers "wraps
+//     have no auto-fill pool", open on MC 743b166f since 2026-08-27.
+//   "add the breakfast also" (2026-09-28) — a fourth block, same treatment,
+//     appended after salads. Section is "🍳 All-Day Breakfast", which is also
+//     where Hummus, Mutabal and the two open toasts live, not just the four
+//     BRK_ dishes — all of it comes in together.
+//     Everything else follows, in the order written below.
 //
 // Dishes are matched on `product_code`, never on name: names get retitled in
 // the admin panel all the time, and a rename should not silently empty the
 // wall screen.
 
-/** Hard ceiling. The curated reel is ~27 slides; this only catches runaway growth. */
-export const BOARD_MAX_SLOTS = 40;
+/**
+ * Hard ceiling; this only catches runaway growth, not meant to trim a healthy
+ * reel. Raised 40 -> 56 on 2026-09-29: adding the breakfast block put the
+ * curated reel at 40 slides on its own, which was silently truncating the
+ * tail (chocolate, coffee, matcha) rather than guarding against anything.
+ */
+export const BOARD_MAX_SLOTS = 56;
 
 /** Slots the automatic fallback aims for, if it is ever needed. See autoPick. */
 export const BOARD_TARGET_SLOTS = 18;
 
 /**
- * The spine of the reel, in the CEO's stated order. Salads are NOT in here —
- * they are interleaved between these by `interleave()` below.
+ * The tail of the reel, in the CEO's stated order — everything that isn't a
+ * wrap, bowl, or salad. Those three sections are pulled separately and lead
+ * the reel; see `pickBoardDishes` below.
  *
  * "All Breakfast Smashe" in his list is expanded to the four live breakfasts,
  * kept together and in menu order, because that is how he grouped them.
  */
 export const BOARD_RUNNING_ORDER = [
-  "SALE-HUMMUS_PLAIN", //                  Hummus
   "SALE-SMOOTHIE_MIXED_BERRY", //          Mixed Berry Smoothie
   "SALE-MANAISH_LAMB_GF", //               Lamb Grass-Fed
   "SALE-MANAISH_ZAATAR_GF", //             zatar
   "SALE-MANAISH_FALAFEL_GF", //            Falafel
-  "SALE-BRK_EGGS_YOUR_WAY", //         ┐
-  "SALE-BRK_CHEESE_EGG", //            │   All Breakfast Smashe
-  "SALE-BRK_GUACAMOLE_EGG", //         │
-  "SALE-BRK_DOUBLE_PROTEIN", //        ┘
   "SALE-MANAISH_SALAMI_GF", //             salami
   "SALE-SUMMER_ROLLS_CHICKEN", //          2X Chicken Fresh Spring Rolls
   "SALE-CHOC_PREACTIVE_SQ", //             Before Workout Power Square
@@ -55,12 +65,16 @@ export const BOARD_RUNNING_ORDER = [
   // tail rather than being woven into the block above because the reel loops:
   // "last" is only ever one slide away from "first", so appending costs nothing
   // and keeps his original running order legible as the thing he actually wrote.
-  "SALE-TOAST_SALMON_GOAT_CHEESE", //      Smoked Salmon Toast
   "SALE-SANDWICH_MEATLOAF_MELT", //        Ham Meatloaf Melt
   "SALE-HUMMUS_KEBAB_BEEF", //             Hummus Kebab Grass-Fed Beef
-  "SALE-TOAST_SHRIMP_GUACAMOLE", //        Shrimp Guacamole Toast
   "SALE-MATCHA_ORANGE", //                 Orange Matcha
   "SALE-MATCHA_ICED_LATTE", //             Iced Matcha Latte
+
+  // The 6 Fold Wraps added 2026-09-27, and the Breakfast dishes added here on
+  // 2026-08-25 (Hummus, the four BRK_ dishes, the two open toasts), used to be
+  // named explicitly. Both are now picked up by section instead (see isWrap /
+  // isBreakfast below), same treatment as salads, so neither needs an entry
+  // of its own any more.
 ];
 
 // A slide is nine parts photograph and one part price. Without either there is
@@ -78,35 +92,25 @@ function isSalad(dish) {
   return /salad/i.test(dish.section_name ?? "");
 }
 
-/**
- * Spread `fill` evenly through `spine` without disturbing the spine's order.
- *
- * With 20 spine dishes and 7 salads the salads land roughly every third slide,
- * which is the point — a guest watching for a minute should see salads keep
- * coming back rather than pass once in a block and never return.
- */
-function interleave(spine, fill) {
-  if (fill.length === 0) return spine;
-  if (spine.length === 0) return fill;
+// Matched on the section, same reasoning as isSalad. This also catches the
+// rice-paper rolls and tortilla-wrap toasts: their finer category label reads
+// "Rice Paper Wraps" / "Tortilla Wraps", but the website groups all of them
+// under one customer-facing section, "🌯 Wraps" — which is the level "all
+// wraps" means at.
+function isWrap(dish) {
+  return /wrap/i.test(dish.section_name ?? "");
+}
 
-  const out = [];
-  const gap = spine.length / (fill.length + 1);
-  let next = 0;
+// Matched on the section, same reasoning as isSalad/isWrap.
+function isBowl(dish) {
+  return /bowl/i.test(dish.section_name ?? "");
+}
 
-  for (let i = 0; i < spine.length; i++) {
-    out.push(spine[i]);
-    // Emit the next filler once we have passed its ideal position. Comparing
-    // against a running float keeps the spacing even when the two lengths do
-    // not divide cleanly.
-    while (next < fill.length && i + 1 >= Math.round((next + 1) * gap)) {
-      out.push(fill[next]);
-      next += 1;
-    }
-  }
-  // Anything that did not fit (short spine) goes on the end rather than vanishing.
-  for (; next < fill.length; next++) out.push(fill[next]);
-
-  return out;
+// Matched on the section, same reasoning as isSalad/isWrap/isBowl. This is
+// "🍳 All-Day Breakfast", which also holds Hummus, Mutabal, and the two open
+// toasts — not just the four BRK_ dishes — so all of it leads together.
+function isBreakfast(dish) {
+  return /breakfast/i.test(dish.section_name ?? "");
 }
 
 /* ---------------------------------------------------------------------------
@@ -158,8 +162,9 @@ function autoPick(showable, categories, limit) {
 }
 
 /**
- * Build the board reel: the curated running order, with every showable salad
- * spread between them.
+ * Build the board reel: all wraps, then all bowls, then all salads, then all
+ * breakfast — each block pulled by section — followed by the rest of the
+ * curated running order.
  *
  * @param {Array} dishes      dishes from useMenu()
  * @param {Array} categories  sections from useMenu(), already in sort order
@@ -181,10 +186,21 @@ export function pickBoardDishes(dishes, categories, limit = BOARD_MAX_SLOTS) {
 
   if (spine.length === 0) return autoPick(showable, categories, BOARD_TARGET_SLOTS);
 
-  // A salad named explicitly in the running order stays where he put it rather
-  // than being interleaved a second time.
-  const inSpine = new Set(spine.map((d) => d.id));
-  const salads = showable.filter((d) => isSalad(d) && !inSpine.has(d.id));
+  // Wraps, then bowls, then salads, then breakfast, in that order. A dish only
+  // leads once even if it somehow matches more than one bucket (checked in
+  // this order), and it is dropped from the historic spine below so it is not
+  // shown twice.
+  const lead = [];
+  const seen = new Set();
+  for (const test of [isWrap, isBowl, isSalad, isBreakfast]) {
+    for (const dish of showable) {
+      if (!test(dish) || seen.has(dish.id)) continue;
+      seen.add(dish.id);
+      lead.push(dish);
+    }
+  }
 
-  return interleave(spine, salads).slice(0, limit);
+  const rest = spine.filter((d) => !seen.has(d.id));
+
+  return [...lead, ...rest].slice(0, limit);
 }

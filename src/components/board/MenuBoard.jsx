@@ -11,7 +11,7 @@ import { pickBoardDishes } from "../../lib/boardPicks.js";
   cleverness. No interaction, no scroll, no router, no state that grows.
 */
 
-const DEFAULT_SLIDE_SECONDS = 8;
+const DEFAULT_SLIDE_SECONDS = 5;
 const MIN_SLIDE_SECONDS = 3;
 const MAX_SLIDE_SECONDS = 60;
 
