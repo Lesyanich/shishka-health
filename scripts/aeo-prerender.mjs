@@ -114,6 +114,16 @@ const CLAIM_CELIAC =
 const CLAIM_NO_SEED_OILS_RU =
   "Мы вообще не используем масла из семян — ни на кухне, ни в соусах, и ничего не жарим во фритюре.";
 
+/*
+  Arabic (/ar) — MC f91194f7. Same rule as Russian and Thai above: only the
+  seed-oil and deep-frying claims cross over. CLAIM_GLUTEN and CLAIM_CELIAC are
+  NOT translated — the menu has 19-grain toast, whole-grain wraps and croutons,
+  so re-signing a gluten claim is a CEO call (MC 98e1ef8d). Until it is made the
+  Arabic pages say nothing about gluten rather than repeat something untrue.
+*/
+const CLAIM_NO_SEED_OILS_AR =
+  "نحن لا نستخدم زيوت البذور على الإطلاق — لا في المطبخ ولا في صوصاتنا، ولا نقلي أي شيء بالزيت الغزير.";
+
 /* --------------------------------------------------------------- utilities */
 
 const escHtml = (s) =>
@@ -128,6 +138,26 @@ const baht = (n) => `฿${Number(n).toLocaleString("en-US")}`;
 // Russian plural: ruPlural(5, ["позиция", "позиции", "позиций"]) → "позиций".
 const ruPlural = (n, [one, few, many]) =>
   ({ one, few, many, other: few })[new Intl.PluralRules("ru").select(n)];
+
+/*
+  Arabic has six CLDR plural categories and the noun case changes with the
+  count: 3–10 takes the plural ("5 أطباق"), 11–99 the accusative singular
+  ("77 طبقًا"). Getting this wrong is the single most obvious tell that a page
+  was machine-translated, so the counted noun goes through here.
+*/
+const arPlural = (n, forms) => forms[new Intl.PluralRules("ar").select(n)] ?? forms.other;
+const arDishes = (n) =>
+  `${n} ${arPlural(n, {
+    zero: "طبق",
+    one: "طبق واحد",
+    two: "طبقان",
+    few: "أطباق",
+    many: "طبقًا",
+    other: "طبق",
+  })}`;
+
+// Languages written right-to-left: drives dir="rtl" on the prerendered <html>.
+const RTL = new Set(["ar"]);
 
 // Page chrome per language. Dish copy comes from the DB (menu_translations).
 const TEXT = {
@@ -155,6 +185,19 @@ const TEXT = {
     pricesNote: "Цены в тайских батах и могут меняться. Меню обновляется автоматически из нашей кухонной системы.",
     kcal: "ккал",
     protein: "г белка",
+    logoAlt: "SHiSHKA Healthy Kitchen",
+  },
+  ar: {
+    faqTitle: "أسئلة شائعة",
+    visit: "زورونا",
+    country: "Thailand",
+    open: "مفتوح يوميًا 9:30 – 18:30",
+    fullMenu: "شاهد القائمة الكاملة بالصور",
+    home: "/ar",
+    tagline: "— راواي، فوكيت. From the SOIL to the SOUL.",
+    pricesNote: "الأسعار بالبات التايلندي وقابلة للتغيير. القائمة تُحدَّث تلقائيًا من نظام مطبخنا.",
+    kcal: "سعرة",
+    protein: "غ بروتين",
     logoAlt: "SHiSHKA Healthy Kitchen",
   },
   th: {
@@ -395,7 +438,7 @@ h1{font-size:36px;line-height:1.15;color:var(--cream);margin:0 0 16px;letter-spa
 h2{font-size:24px;color:var(--cream);margin:40px 0 12px;letter-spacing:-.01em}
 h3{font-size:18px;color:var(--cream);margin:28px 0 8px}
 .lede{font-size:18px;color:var(--cream);margin:0 0 24px}
-.claim{border-left:3px solid var(--gold);padding:8px 0 8px 16px;margin:24px 0;color:var(--cream)}
+.claim{border-inline-start:3px solid var(--gold);padding-block:8px;padding-inline:16px 0;margin:24px 0;color:var(--cream)}
 .meta{color:var(--muted);font-size:14px}
 ul.dishes{list-style:none;padding:0;margin:0}
 ul.dishes li{display:flex;justify-content:space-between;gap:16px;align-items:baseline;
@@ -405,12 +448,18 @@ padding:10px 0;border-bottom:1px solid var(--line)}
 .price{color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
 .kcal{color:var(--mint);font-size:13px;font-variant-numeric:tabular-nums}
 .cta{display:inline-block;background:var(--red);color:#fff;text-decoration:none;
-padding:12px 22px;border-radius:999px;margin:8px 12px 8px 0}
+padding:12px 22px;border-radius:999px;margin-block:8px;margin-inline:0 12px}
 .faq dt{color:var(--cream);margin-top:20px;font-weight:600}
 .faq dd{margin:6px 0 0}
 footer{margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
 color:var(--muted);font-size:14px}
 @media(max-width:600px){h1{font-size:28px}.wrap{padding:24px 16px 48px}}
+/* RTL (/ar): the layout mirrors off <html dir>, but baht prices, kcal/protein
+figures and the never-translated Latin dish names must each stay an LTR island
+or the bidi algorithm moves the ฿ and the trailing punctuation to the wrong
+end. Mirrors the rule in src/styles/components.css. */
+[dir=rtl] .price,[dir=rtl] .kcal,[dir=rtl] .dish-name{direction:ltr;unicode-bidi:isolate}
+[dir=rtl] .dish-name{text-align:start}
 `.trim();
 
 /* ---------------------------------------------------------------- template */
@@ -429,7 +478,7 @@ ${faqs.map((f) => `      <dt>${escHtml(f.q)}</dt>\n      <dd>${escHtml(f.a)}</dd
     : "";
 
   return `<!DOCTYPE html>
-<html lang="${lang}">
+<html lang="${lang}"${RTL.has(lang) ? ' dir="rtl"' : ""}>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -491,9 +540,9 @@ ${dishes
 </ul>`;
 }
 
-// Every language that gets its own URL. Adding Arabic is one entry here plus a
-// TEXT block, a dictionary in src/i18n and two rewrites in vercel.json.
-const TRANSLATED_LANGS = ["ru", "th"];
+// Every language that gets its own URL. Adding one is an entry here plus a TEXT
+// block, a dictionary in src/i18n and two rewrites in vercel.json.
+const TRANSLATED_LANGS = ["ru", "th", "ar"];
 
 const MENU_ALTERNATES = [
   { lang: "en", href: `${SITE}/menu` },
@@ -527,6 +576,16 @@ function thFaq() {
   ];
 }
 
+function arFaq() {
+  return [
+    { q: "أين يقع SHiSHKA Healthy Kitchen؟", a: `داخل Tops Daily في سوي نايا 2، راواي، فوكيت — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}` },
+    { q: "ما هي ساعات العمل؟", a: "مفتوح يوميًا من 9:30 حتى 18:30." },
+    { q: "هل تستخدمون زيوت البذور؟", a: CLAIM_NO_SEED_OILS_AR },
+    { q: "هل تقدّمون أي طعام مقلي بالزيت الغزير؟", a: "لا. لا يوجد في قائمتنا أي طبق مقلي بالزيت الغزير." },
+    { q: "كيف أطلب؟", a: `اطلب عند الكاشير أو اتصل بنا: ${NAP.phoneDisplay}. القائمة الكاملة بالصور على shishka.health/ar` },
+  ];
+}
+
 /*
   The per-language counterpart of /menu. The four English search-intent landing
   pages have no translated twins yet.
@@ -556,6 +615,17 @@ const LANG_PAGES = {
       h1: "เมนูของเรา",
       answer: `${NAP.name} ที่ราไวย์ ภูเก็ต มี ${items} — สลัด โบว์ล แรป ปอเปี๊ยะสด สมูทตี้ น้ำผลไม้ มัทฉะ และกาแฟ ทำสดใหม่ทุกวัน${priceLine} ไม่ใช้น้ำมันจากเมล็ดพืช ไม่ใส่ผงชูรส และไม่ทอดน้ำมันท่วม`,
       faqs: thFaq(),
+    };
+  },
+  ar: (dishes, groups, cheapest) => {
+    const items = arDishes(dishes.length);
+    const priceLine = cheapest ? ` الأسعار تبدأ من ${baht(cheapest.price)}.` : "";
+    return {
+      title: `القائمة — ${NAP.name}، راواي، فوكيت`,
+      description: `قائمة ${NAP.name} الكاملة: ${items} مع الأسعار — تُحضَّر طازجة كل يوم في راواي، فوكيت. بلا زيوت بذور، بلا غلوتامات أحادية الصوديوم، وبلا قلي بالزيت الغزير.`,
+      h1: "قائمتنا",
+      answer: `${NAP.name} في راواي، فوكيت: ${items} — سلطات، سلطانيات، راب، لفائف طازجة، سموذي، عصائر، ماتشا وقهوة، تُحضَّر طازجة كل يوم.${priceLine} بلا زيوت بذور، بلا غلوتامات أحادية الصوديوم، وبلا قلي بالزيت الغزير.`,
+      faqs: arFaq(),
     };
   },
 };
@@ -793,7 +863,10 @@ function patchIndex(faqs, shells) {
   */
   for (const { lang, title, desc, locale, faqs: langFaqs } of shells) {
     const html = shell
-      .replace(/<html lang="[^"]*">/, `<html lang="${lang}">`)
+      .replace(
+        /<html lang="[^"]*">/,
+        `<html lang="${lang}"${RTL.has(lang) ? ' dir="rtl"' : ""}>`
+      )
       .replace(/<title>[\s\S]*?<\/title>/, `<title>${escHtml(title)}</title>`)
       .replace(
         /<meta name="description"[^>]*>/,
@@ -907,6 +980,15 @@ async function main() {
       title: `${NAP.name} — อาหารสุขภาพที่ราไวย์ ภูเก็ต`,
       desc: "อาหารสดใหม่ ไม่ผ่านการแปรรูป ทำทุกวันที่ราไวย์ ภูเก็ต: สลัด โบว์ล แรป ปอเปี๊ยะสด สมูทตี้ น้ำผลไม้ และกาแฟ ไม่ใช้น้ำมันจากเมล็ดพืช ไม่ใส่ผงชูรส ไม่ทอดน้ำมันท่วม",
       faqs: thFaq(),
+    },
+    {
+      // ar_AE rather than ar_SA: the Gulf tourist market this is aimed at, and
+      // the neutral MSA register the copy is written in.
+      lang: "ar",
+      locale: "ar_AE",
+      title: `${NAP.name} — طعام صحي في راواي، فوكيت`,
+      desc: "طعام طازج غير مُصنَّع يُحضَّر كل يوم في راواي، فوكيت: سلطات، سلطانيات، راب، لفائف طازجة، سموذي، عصائر وقهوة. بلا زيوت بذور، بلا غلوتامات أحادية الصوديوم، وبلا قلي بالزيت الغزير.",
+      faqs: arFaq(),
     },
   ]);
 

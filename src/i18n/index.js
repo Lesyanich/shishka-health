@@ -17,16 +17,27 @@
 import en from "./dict/en.js";
 import ru from "./dict/ru.js";
 import th from "./dict/th.js";
+import ar from "./dict/ar.js";
 
-export const LANGS = ["en", "ru", "th"];
+export const LANGS = ["en", "ru", "th", "ar"];
 export const DEFAULT_LANG = "en";
-const DICTS = { en, ru, th };
+const DICTS = { en, ru, th, ar };
 const STORE_KEY = "shk-lang";
 
 // Human names for the switcher, each in its own language.
-export const LANG_NAMES = { en: "English", ru: "Русский", th: "ไทย" };
+export const LANG_NAMES = { en: "English", ru: "Русский", th: "ไทย", ar: "العربية" };
 
-const PREFIX_RE = /^\/(ru|th)(?=\/|$)/;
+/*
+  Right-to-left languages. This drives <html dir> in applyDocumentLang() and
+  nothing else: the layout is written in logical properties
+  (inset-inline-start, margin-inline, padding-inline …), so it mirrors off that
+  one attribute instead of needing a per-language stylesheet. The few things
+  that must NOT mirror — baht prices, kcal figures, Latin dish names — are
+  pinned back to LTR in components.css under :root[dir="rtl"].
+*/
+export const RTL_LANGS = ["ar"];
+
+const PREFIX_RE = /^\/(ru|th|ar)(?=\/|$)/;
 
 export function langFromPath(pathname) {
   const m = PREFIX_RE.exec(pathname || "");
@@ -89,10 +100,12 @@ export function redirectToPreferredLang() {
 
 // `document.documentElement.lang` drives hyphenation, screen-reader voice and
 // the browser's own translate prompt, so it must match the rendered language.
+export const IS_RTL = RTL_LANGS.includes(LANG);
+
 export function applyDocumentLang() {
   if (typeof document === "undefined") return;
   document.documentElement.lang = LANG;
-  document.documentElement.dir = "ltr"; // Arabic will set "rtl" here.
+  document.documentElement.dir = IS_RTL ? "rtl" : "ltr";
 }
 
 const dict = DICTS[LANG] ?? en;
