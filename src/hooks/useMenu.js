@@ -32,52 +32,6 @@ import { localizeMenu } from "../i18n/localize.js";
        (menu_public is security_invoker, so the nomenclature row RLS still applies.)
 */
 
-// Fresh Spring Roll customisation. The modifier system (menu_modifiers) is a
-// Loyverse-backed view, so these add/remove options are defined website-side and
-// injected as a modifier group — the cart carries the build to the counter.
-// "Remove" chips are free (price 0); "Add extras" carry a price + rough per-
-// portion nutrition for the live counter. Per-roll protein extra is matched to
-// the roll (none for Veggie). Removing a chip doesn't recompute base macros.
-function springRollModifiers(productCode) {
-  const code = productCode || "";
-  // The rolls are served with mango sauce. They were listed with a peanut-lime
-  // sauce that the kitchen no longer makes — peanut is an anaphylaxis-grade
-  // allergen, so a stale sauce here is not a copy bug. Do not reintroduce a
-  // sauce name without confirming it against the kitchen (MC 3a11032b).
-  const remove = [
-    "Mango", "Carrot", "Cucumber", "Lettuce", "Mint", "Coriander", "Mango Sauce",
-  ];
-  if (code.includes("TUNA")) remove.splice(1, 0, "Sweet Corn"); // tuna roll has corn
-  const removeOpts = remove.map((name, i) => ({
-    name: `No ${name}`, emoji: null, priceDelta: 0, isDefault: false, sort: i,
-    calories: 0, protein: 0, carbs: 0, fat: 0,
-  }));
-
-  const proteinExtra = code.includes("CHICKEN")
-    ? { name: "Extra Chicken", priceDelta: 50, calories: 100, protein: 18, carbs: 0, fat: 2 }
-    : code.includes("SHRIMP")
-    ? { name: "Extra Shrimp", priceDelta: 50, calories: 55, protein: 12, carbs: 1, fat: 0.5 }
-    : code.includes("TUNA")
-    ? { name: "Extra Tuna & Corn", priceDelta: 50, calories: 100, protein: 14, carbs: 8, fat: 1 }
-    : null; // Veggie roll: no protein extra
-
-  const addRaw = [
-    { name: "Avocado", priceDelta: 30, calories: 120, protein: 1.5, carbs: 6, fat: 11 },
-    ...(proteinExtra ? [proteinExtra] : []),
-    // Price and macros are the real SALE-SAUCE_MANGO cup (50 g, ฿39) rather than
-    // the ฿15 the retired peanut sauce carried — the counter sells that exact cup
-    // at ฿39, and a cheaper number here is an argument at the till.
-    { name: "Extra Mango Sauce", priceDelta: 39, calories: 32, protein: 0.3, carbs: 8.2, fat: 0.1 },
-    { name: "Extra Mango", priceDelta: 20, calories: 50, protein: 0.5, carbs: 13, fat: 0 },
-  ];
-  const addOpts = addRaw.map((o, i) => ({ emoji: null, isDefault: false, sort: i, ...o }));
-
-  return [
-    { name: "Remove", sort: 1, minSelect: 0, maxSelect: null, options: removeOpts },
-    { name: "Add Extras", sort: 2, minSelect: 0, maxSelect: null, options: addOpts },
-  ];
-}
-
 async function fetchFromSupabase() {
   const [dishResult, tagResult, contentResult, modResult, tierResult, trResult] = await Promise.all([
     supabase
@@ -184,16 +138,16 @@ async function fetchFromSupabase() {
   // Falls back to the leaf category when a dish has no section ancestor.
   const catMap = new Map();
   const dishes = (dishResult.data ?? []).map((d) => {
-    // Spring rolls get their own section; the original Appetizers section keeps
-    // the dips + sides under a renamed header. mig 385 left sort 3 free for
-    // them, but Wraps (their DB section) now sits at 3 too. With a tie the tab
-    // order followed whichever row Postgres returned first (two dishes share
-    // display_order 1), so the two tabs swapped between loads. 2.5 pins spring
-    // rolls just ahead of Wraps.
-    const isSpringRoll = d.product_code?.startsWith("SALE-SUMMER_ROLLS");
-    const sectionId = isSpringRoll ? "sec-spring-rolls" : (d.section_id ?? d.category_id);
-    let sectionName = isSpringRoll ? "Fresh Spring Roll" : (d.section_name ?? d.category_name);
-    const sectionSort = isSpringRoll ? 2.5 : (d.section_sort_order ?? d.category_sort_order ?? 0);
+    // Sections come straight from the data. The rice-paper rolls used to be
+    // lifted out here into an invented "Fresh Spring Roll" section at sort 2.5;
+    // that name existed nowhere in the database, which is why searching the
+    // admin panel for "spring" found nothing while the site plainly showed it.
+    // The rolls were retired on 2026-10-16 (shishka-os migration 480) and the
+    // special case went with them. Do not reintroduce a section name the data
+    // does not carry — name it in the DB instead.
+    const sectionId = d.section_id ?? d.category_id;
+    let sectionName = d.section_name ?? d.category_name;
+    const sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
     if (sectionId && !catMap.has(sectionId)) {
       catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
     }
@@ -217,9 +171,7 @@ async function fetchFromSupabase() {
         ? [{ label: "Featured", tone: "gold" }]
         : [];
 
-    const modifierGroups = isSpringRoll
-      ? springRollModifiers(d.product_code)
-      : modifiersFor(d.id);
+    const modifierGroups = modifiersFor(d.id);
     const price = d.price != null ? Number(d.price) : null;
     // A dish with a DEFAULT-selected add-on (e.g. a dip served with a bun by
     // default) opens "as configured": its headline price is base + default
@@ -231,10 +183,7 @@ async function fetchFromSupabase() {
     let subId = d.category_id ?? sectionId;
     let subName = d.category_name ?? sectionName;
     let subSort = d.category_sort_order ?? 0;
-    if (isSpringRoll) {
-      // Own flat section — no subheader.
-      subId = "sec-spring-rolls"; subName = "Fresh Spring Roll"; subSort = 0;
-    } else if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
+    if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
       // The grilled potato becomes the Sides subgroup (more to come).
       subId = "grp-sides"; subName = "🥔 Sides"; subSort = 99;
     } else if (/coffee/i.test(d.category_name || "")) {
