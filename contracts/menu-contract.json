@@ -9,7 +9,17 @@
     "or renamed column with HTTP 400 naming it, and broken RLS with 401 or an empty result.",
     "",
     "Changing this file is the signal that the contract moved. scripts/migration-canary.sh in",
-    "shishka-os blocks any migration touching these objects unless this file changed too."
+    "shishka-os blocks any migration touching these objects unless this file changed too.",
+    "",
+    "2026-10-16 — the taco-bundle-pool assertion was REMOVED, not relaxed. It required at least",
+    "one menu_public row under category_code LIKE 'KP-FIN-MAN*' because lib/bundles.js builds the",
+    "bundle from that prefix and an empty pool blanked the constructor. The CEO retired the Potato",
+    "Tacos line that day (shishka-os migration 466: 8 dishes + the Set x4 archived, price_tiers",
+    "bundle4/bundle8 deactivated), so an empty pool is now the intended state and the assertion",
+    "would have failed on correct data. The taco UI in App.jsx / ManakishTiers / ManakishSets /",
+    "BundleDialog / lib/bundles.js is left in place but unreachable — it is the starting point for",
+    "the next bundle offer. If a bundle line is ever revived, re-add an assertion for ITS prefix",
+    "rather than reinstating this one."
   ],
   "projectRef": "qcqgtcsjoacuktcewpvo",
   "consumer": "shishka-health/src/hooks/useMenu.js",
@@ -52,8 +62,8 @@
       "kind": "table",
       "select": "tier_code,label,discount_pct,bundle_manakish_count,bundle_sauce_count,sort_order",
       "query": "bundle_dish_code=not.is.null&is_active=eq.true",
-      "minRows": 1,
-      "note": "bundle_dish_code is filtered on but never selected — it must keep existing."
+      "minRows": 0,
+      "note": "bundle_dish_code is filtered on but never selected — it must keep existing. minRows is 0, not 1, since the Potato Tacos line was retired on 2026-10-16 (shishka-os migration 466) and bundle4/bundle8/bundle12 are all is_active=false: there is no bundle offer today. The resource stays because useMenu.js still selects these columns, so dropping or renaming one must still fail the check — and because the next bundle offer is expected to reuse this table. App.jsx guards the empty case (bundleCards is [] when the pool is empty, and ManakishSets returns null), so zero rows renders nothing rather than an empty block."
     }
   ],
   "assertions": [
@@ -77,13 +87,6 @@
       "query": "product_code=like.SALE-SUMMER_ROLLS*",
       "min": 1,
       "why": "useMenu.js promotes these into their own section by product_code prefix. Renaming the prefix silently empties the section."
-    },
-    {
-      "id": "taco-bundle-pool",
-      "resource": "menu_public",
-      "query": "category_code=like.KP-FIN-MAN*",
-      "min": 1,
-      "why": "lib/bundles.js builds the taco bundle from this category_code prefix. No matches = the bundle constructor goes blank."
     },
     {
       "id": "free-sauce-pool",
