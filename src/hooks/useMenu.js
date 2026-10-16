@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase, hasSupabase, canRealtime } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
-import { DEFAULT_CONTENT, mergeContent } from "../lib/content.js";
+import { DEFAULT_CONTENT, mergeContent, writeCachedContent } from "../lib/content.js";
 import { deepStripEmoji, titleCaseMenu } from "../lib/text.js";
 import { dishFloor, dishDefaultPrice } from "../lib/modifiers.js";
 import { benefitsForDish } from "../lib/benefits.js";
@@ -373,7 +373,10 @@ export function useMenu() {
         if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "live";
         // Title Case is an English rule (lib/text.js) — applied to the English
         // payload BEFORE translations are laid over it, never to other languages.
-        setData(localizeMenu(titleCaseMenu(result.menu), result.translations));
+        const localized = localizeMenu(titleCaseMenu(result.menu), result.translations);
+        // Next load paints this instead of the shipped defaults (see App.jsx).
+        writeCachedContent(LANG, localized.content);
+        setData(localized);
         setLoading(false);
         return;
       } catch (err) {

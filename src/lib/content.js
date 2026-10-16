@@ -6,17 +6,22 @@
   Supabase dashboard and the site updates live.
 
   The values below are the defaults used as a fallback when a row or a
-  field is missing, and when running without Supabase (mock mode).
-  Keep them in sync with the seeded rows.
+  field is missing, and when running without Supabase (mock mode). They are
+  ALSO what the hero paints in the moment before the fetch returns, so when
+  they drift from the DB the guest watches the headline change under them —
+  which is exactly what happened after the copy was rewritten in the DB on
+  2026-09-21 and these were left behind ("NO SEED OIL" → "CLEAN FOOD").
+  Keep them in sync with the seeded rows. `lastContent` below removes most of
+  the risk for returning guests, but the first visit still renders these.
 */
 export const DEFAULT_CONTENT = {
   hero: {
     eyebrow: "SHiSHKA · Healthy Kitchen",
     // The headline. Kept verbatim (not title-cased).
-    banner: "NO SEED OIL",
+    banner: "CLEAN FOOD",
     // Optional second line under the banner; ALL-CAPS words auto-accent.
-    title: "",
-    sub: "fresh, unprocessed, real food, made daily.",
+    title: "Honest. Delicious. No junk",
+    sub: "No seed oils · no MSG · nothing ultra-processed.\nOnly fresh ingredients",
   },
   rule: {
     eyebrow: "the rule",
@@ -27,11 +32,10 @@ export const DEFAULT_CONTENT = {
       "seed oils",
       { label: "Gluten FREE options", deny: false, icon: "industrial gluten" },
       "fake food",
-      "fried food",
       "preservatives",
       "monosodium glutamate (MSG)",
     ],
-    afterCategory: 2, // render the block after the Nth category (1-based)
+    afterCategory: 999, // render the block after the Nth category (1-based)
   },
   cta: {
     eyebrow: "visit us in phuket",
@@ -49,6 +53,38 @@ export const DEFAULT_CONTENT = {
   // contract, and the next section that wants an intro adds its key here.
   sectionIntros: {},
 };
+
+/*
+  Last content the site actually received, per language, kept in localStorage.
+
+  The hero has to paint before the network answers. Painting DEFAULT_CONTENT
+  means painting whatever the code shipped with; painting the copy this browser
+  saw last time means painting the live copy in all but the first visit and the
+  visit right after an edit. Per-viewer, disposable, and safe to lose: every
+  accessor is wrapped, and a miss simply falls back to the defaults.
+*/
+const CONTENT_CACHE_KEY = "shk-content";
+
+export function readCachedContent(lang) {
+  try {
+    const raw = localStorage.getItem(`${CONTENT_CACHE_KEY}:${lang}`);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeCachedContent(lang, content) {
+  try {
+    if (content && typeof content === "object") {
+      localStorage.setItem(`${CONTENT_CACHE_KEY}:${lang}`, JSON.stringify(content));
+    }
+  } catch {
+    /* private mode / quota — the site just falls back to DEFAULT_CONTENT */
+  }
+}
 
 // Merge fetched rows ([{ key, data }]) over the defaults, per field.
 export function mergeContent(rows) {

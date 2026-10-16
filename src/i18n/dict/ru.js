@@ -7,10 +7,13 @@ export default {
 
   "header.filter": "Фильтр меню",
   "hero.aria": "Shishka Healthy Kitchen",
-  // "Seed oil" = oils pressed from seeds (sunflower, rapeseed …). NOT
-  // "растительное масло" — olive oil is a plant oil too, and we cook with it.
-  "hero.banner": "БЕЗ МАСЕЛ ИЗ СЕМЯН",
-  "hero.sub": "свежая, необработанная, настоящая еда — готовим каждый день.",
+  // Pre-load placeholders only (i18n/localize.js initialContent): they must
+  // match the Russian site_content row, or the hero visibly swaps once the
+  // fetch lands. "Seed oil" = oils pressed from seeds, NOT "растительное
+  // масло" — olive oil is a plant oil too, and we cook with it.
+  "hero.banner": "ЧЕСТНАЯ ЕДА",
+  "hero.title": "Вкусно. Чисто.",
+  "hero.sub": "Без вреда: без рафинированных масел, глутамата и ультрапереработанных продуктов.\nТолько свежие ингредиенты",
   "rule.aria": "Наше правило",
   // Rule items are stored in the genitive, so "без" reads naturally.
   "rule.no": "без",

@@ -11,7 +11,7 @@ import { ManakishSets } from "./components/menu/ManakishSets.jsx";
 import { BrandRule } from "./components/menu/BrandRule.jsx";
 import { MenuCTA } from "./components/menu/MenuCTA.jsx";
 import { SiteFooter } from "./components/menu/SiteFooter.jsx";
-import { DEFAULT_CONTENT } from "./lib/content.js";
+import { DEFAULT_CONTENT, readCachedContent } from "./lib/content.js";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
 import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import { BundleDialog } from "./components/menu/BundleDialog.jsx";
@@ -21,10 +21,15 @@ import { SliceScore } from "./components/menu/SliceScore.jsx";
 import { FruitSymbols } from "./lib/fruitArt.jsx";
 import { optimizedSrc } from "./lib/img.js";
 import { useCart } from "./state/cart.jsx";
-import { t } from "./i18n/index.js";
+import { t, LANG } from "./i18n/index.js";
 import { initialContent } from "./i18n/localize.js";
 
-const INITIAL_CONTENT = initialContent(DEFAULT_CONTENT);
+/*
+  What the hero paints before the fetch lands. The copy this browser received
+  last time beats the code defaults: site_content is edited in the DB, so the
+  shipped defaults go stale and the guest sees the headline change under them.
+*/
+const INITIAL_CONTENT = readCachedContent(LANG) ?? initialContent(DEFAULT_CONTENT);
 import { manakishPool as getManakishPool, saucePool as getSaucePool, bundleFloor } from "./lib/bundles.js";
 import {
   SproutIcon, LeafIcon, WheatIcon, MilkIcon, NutIcon,
