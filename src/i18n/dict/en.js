@@ -28,10 +28,6 @@ export default {
   "menu.noMatch": "No dishes match these filters.",
   "menu.clearFilters": "Clear filters",
 
-  // synthetic sections / subgroups (not DB categories)
-  "sub.coldCoffee": "Cold Coffee",
-  "sub.hotCoffee": "Hot Coffee",
-
   // badges
   "badge.comingSoon": "Coming soon",
   "badge.outOfStock": "Out of stock",

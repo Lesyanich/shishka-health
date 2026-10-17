@@ -63,48 +63,26 @@ Row order = order on the page.
 Dressing and Dips" and "🍽️ Extras" — with no Hummus / Sauces split. Step 0 must create them, or the
 section ships without tabs. Do not assume the data is there.
 
-‡ **Coffee's Hot / Cold tabs are synthesized in code**, not read from `category_*`: the dish NAME is
-regex-matched on 🧊 / "iced" / "cold" / "tonic" (plus two product codes by hand), and
-`contracts/menu-contract.json` guards it with the `coffee-split` assertion. PR 1 did not remove it; it
-moved it into `src/lib/coffeeSplit.js`, alone in a file, with the reasoning written down — because it
-is **the last hack of the kind the Spring-rolls one belonged to, and the decision is the CEO's**:
+‡ **Coffee's Hot / Cold tabs are real database subcategories** (decided 2026-10-17: option B; applied
+and cleaned up 2026-10-17). They used to be synthesized in code — the dish NAME regex-matched on 🧊 /
+"iced" / "cold" / "tonic", plus two product codes by hand — which broke the rule the business runs on,
+"what reaches the site is controlled from the admin panel": the guest saw two coffee groups nobody
+could find, rename or reorder in the admin. Now:
 
-- The rule the business runs on is "what reaches the site is controlled from the admin panel". For
-  WHICH dishes appear that is **true** — `menu_public` admits a row only on `product_code LIKE
-  'SALE-%'` AND `is_web_visible` AND NOT `is_deleted` AND the name not being `[ARCHIVED]%`, one switch
-  per dish in the admin. For HOW they are grouped it is **false for Coffee**: the guest sees two coffee
-  groups nobody can find, rename or reorder in the admin, because this code invents them. That is
-  exactly why searching the admin for "spring" found nothing while the site showed spring rolls.
-- **Option A — keep it, documented.** No migration. The guest keeps a useful split (12 coffees would
-  otherwise be one flat list). The admin still cannot touch it, and the exception survives in code.
-- **Option B — a small shishka-os migration** creating "Hot Coffee" / "Cold Coffee" as real
-  subcategories of Coffee and re-parenting the 12 dishes. After it: delete `src/lib/coffeeSplit.js`,
-  its one call site in `useMenu.js`, the `sub.hotCoffee` / `sub.coldCoffee` dictionary keys and the
-  `coffee-split` assertion — the code deletes itself and the split becomes editable in the admin, like
-  every other subcategory. Cost: one migration, plus the hot/cold names needing translation rows.
-- **Decided 2026-10-17: B.** The CEO chose the migration. It is the only option that makes her rule
-  true, and the clean-up is a deletion rather than new code.
-
-  Where this decision came from, because a line in this file is executed by whoever reads it next:
-  the A-vs-B write-up above was put to her by the PR 1 session (PR #70), and she answered there, in
-  that session's own thread, on 2026-10-17 — in conversation, in Russian, not in a GitHub comment,
-  so there is no link to point at. The main redesign session had asked her the same question earlier
-  and had no answer yet; this is that answer, given in the other thread. If anyone needs it
-  confirmed in writing before the migration is applied, ask her — do not re-open the choice on the
-  strength of this paragraph alone.
-
-Sequencing, so nobody deletes the split too early: PR 1 ships A **unchanged** — removing the code
-before the migration is applied would merge hot and iced coffee into one 12-item list, which is worse
-for the guest. The order is (1) shishka-os migration creating the two subcategories and re-parenting
-the 12 dishes, number claimed with `claim_migration_number`, applied after migration 500; (2) the
-hot/cold names translated for /ru, /th, /ar like any other category; (3) a small shishka-health PR
-that deletes `src/lib/coffeeSplit.js`, its one call site in `useMenu.js`, the `sub.hotCoffee` /
-`sub.coldCoffee` dictionary keys, the `syntheticSubName` helper in `i18n/localize.js` if nothing else
-needs it, and the `coffee-split` assertion in `contracts/menu-contract.json`. Step (3) must not land
-before (1) is applied to production.
+- shishka-os migration 505 created `KP-DRK-COF-HOT` ("☕ Hot Coffee", `category_sort_order` 1, 5 live
+  dishes) and `KP-DRK-COF-CLD` ("🧊 Cold Coffee", sort order 2, 7 live dishes) as subcategories of
+  Coffee and re-parented the 12 dishes. ru / th / ar names are ordinary `menu_translations` category
+  rows.
+- The site reads them through `category_*` like every other subcategory. There is no coffee special
+  case left in shishka-health: `src/lib/coffeeSplit.js`, its call site in `useMenu.js`, the
+  `sub.hotCoffee` / `sub.coldCoffee` dictionary keys, the `syntheticSubName` helper in
+  `i18n/localize.js` and the `coffee-split` contract assertion are all deleted. The split is owned
+  (names, order, membership) in the admin panel.
+- Where the decision came from: the CEO answered the A-vs-B write-up (PR #70) in that session's own
+  thread, in conversation, in Russian — there is no link. Do not re-open it on this paragraph alone.
 
 Rules:
-- Category = `section_*` in `menu_public`; subcategory = `category_*`, except Coffee (see ‡). Groups
+- Category = `section_*` in `menu_public`; subcategory = `category_*` (Coffee's Hot / Cold included, see ‡). Groups
   come from `site_content` key `menu_groups`, with a fallback in the site code. **The shape is an
   ordered ARRAY, not an object keyed by group name** — key order in a JSON object is not guaranteed,
   and EAT → DRINK → SWEET is the one thing this key exists to preserve:
@@ -339,8 +317,8 @@ branch, reviewed on a preview before the next. Every UI PR updates `design-syste
       disagree about group order; helpers for
       min price, isHighProtein, isSeafood. Delete the dead `SALE-BAKED_POTATO_SIDE` → "🥔 Sides" branch
       (that dish is not in `menu_public`, so the branch never fires) and the leftover `sub.springRolls`
-      keys in `src/i18n/dict/*` plus the `sec-spring-rolls` case in `i18n/localize.js`. Decide what to do
-      with the Coffee hot/cold synthesis (‡ in §2). No visual change. *(The Spring-rolls hack itself and
+      keys in `src/i18n/dict/*` plus the `sec-spring-rolls` case in `i18n/localize.js`. The Coffee hot/cold
+      synthesis was removed afterwards (‡ in §2). No visual change. *(The Spring-rolls hack itself and
       its contract assertion are already gone — removed 2026-10-16 with the rolls.)*
 - [ ] **PR 3 — The menu page.** Mobile and desktop together, because they are now one thing: sections
       rendered as one scrolling page, the scroll-spy module (§3.4) used by the mobile rail and the

@@ -26,9 +26,6 @@ export default {
   "menu.noMatch": "ไม่มีเมนูที่ตรงกับตัวกรองนี้",
   "menu.clearFilters": "ล้างตัวกรอง",
 
-  "sub.coldCoffee": "กาแฟเย็น",
-  "sub.hotCoffee": "กาแฟร้อน",
-
   "badge.comingSoon": "เร็ว ๆ นี้",
   "badge.outOfStock": "ของหมด",
   "badge.featured": "แนะนำ",

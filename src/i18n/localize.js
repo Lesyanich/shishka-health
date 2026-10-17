@@ -35,18 +35,6 @@ function dict(key, vars) {
   return s === key ? null : s;
 }
 
-// The one subgroup pair that is synthesized in code rather than read from the
-// DB: Coffee's Hot / Cold leaves (lib/coffeeSplit.js). The "sec-spring-rolls"
-// and "grp-sides" cases that used to live here are gone with the code that made
-// those ids — the invented spring-roll section (retired 2026-10-16) and the
-// SALE-BAKED_POTATO_SIDE branch, which never fired because that dish is not in
-// menu_public. Migration 500 gives the dips section a real "Sides" subcategory.
-function syntheticSubName(id) {
-  if (typeof id === "string" && id.endsWith(":cold")) return dict("sub.coldCoffee");
-  if (typeof id === "string" && id.endsWith(":hot")) return dict("sub.hotCoffee");
-  return null;
-}
-
 const BADGE_KEYS = {
   "Coming Soon": "badge.comingSoon",
   "Coming soon": "badge.comingSoon",
@@ -79,7 +67,7 @@ export function localizeMenu(data, rows) {
   };
 
   const categoryName = (id, fallback) =>
-    EN ? fallback : (text("category", id, "name") ?? syntheticSubName(id) ?? fallback);
+    EN ? fallback : (text("category", id, "name") ?? fallback);
 
   const modName = (name) => {
     if (EN || !name) return name;
