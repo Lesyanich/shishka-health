@@ -70,8 +70,19 @@ deliberately — it is the last hack of the kind the Spring-rolls one belonged t
 
 Rules:
 - Category = `section_*` in `menu_public`; subcategory = `category_*`, except Coffee (see ‡). Groups
-  come from `site_content` key `menu_groups` (group → ordered list of section ids), with a fallback in
-  the site code.
+  come from `site_content` key `menu_groups`, with a fallback in the site code. **The shape is an
+  ordered ARRAY, not an object keyed by group name** — key order in a JSON object is not guaranteed,
+  and EAT → DRINK → SWEET is the one thing this key exists to preserve:
+
+  ```json
+  { "groups": [ { "key": "EAT",   "sections": ["<section_id>", "…"] },
+                { "key": "DRINK", "sections": ["…"] },
+                { "key": "SWEET", "sections": ["…"] } ] }
+  ```
+
+  Read it in that order and render it in that order; do not sort it, and do not fall back to
+  `section_sort_order` for the GROUP order (it orders sections within the page, not the groups).
+  Written by shishka-os migration 500.
 - **Item counts are not shown** anywhere: not in the rail, not in a section header. They are volatile
   (a dish going `coming_soon` changes them) and a small number undersells a category. `from ฿…` stays —
   price is a real decision input. Counts remain available to code for ordering and empty checks.
@@ -200,7 +211,7 @@ Everything is already in `menu_public`, read by `src/hooks/useMenu.js`
 
 | Shown | Field / source | Rule |
 |---|---|---|
-| Group EAT / DRINK / SWEET | `site_content.menu_groups` | data in DB, fallback in site code |
+| Group EAT / DRINK / SWEET | `site_content.menu_groups` | ordered array `{groups:[{key,sections[]}]}` — see §2; data in DB, fallback in site code |
 | Category | `section_id`, `section_name`, `section_sort_order` | Salads + Bowls under one section (Step 0) |
 | Subcategory (tabs) | `category_name`, `category_sort_order` | tabs when ≥ 2 categories in a section |
 | Photo | `customer_photo_url`, else `image_url` | `contain` on `--surface-2`; 81/81 dishes have one |
@@ -255,7 +266,9 @@ branch, reviewed on a preview before the next. Every UI PR updates `design-syste
     new section "Salads & Bowls" with 🥗 Salads (`f8fc367e`) and 🍜 Bowls (`e187f37e`) re-parented under
     it as subcategories; 🍽️ Extras (`1675790d`, 2 dishes) re-parented under 🥫 Sauce, Dressing and Dips
     (`ce2f9959`) and renamed "Sides"; the `menu_groups` row in `site_content`. Claim the migration number
-    with the allocator (MC `c520decf`) — never by eye.
+    with the allocator (`claim_migration_number`, MC `c520decf`) — never by eye. **This is shishka-os
+    migration 500**, which also renumbers `section_sort_order` (live EAT 1–5, DRINK 24–27) so the data
+    agrees with §2 — that reorders the section list in the admin panel too, which the CEO accepted.
   - *By hand in admin / `/chef`*: the §8 copy fixes; a new `plant-based` tag (group `dietary`) — it does
     not exist, and `vegan` (57) / `vegetarian` (62) are not the same set; the two sauce descriptions.
   - *Deferred by the CEO*: cleaning up the `high-protein` tag, after every dish's real macros are checked.
@@ -263,7 +276,9 @@ branch, reviewed on a preview before the next. Every UI PR updates `design-syste
 - [x] **PR 2 — Components.** `KcalSeal`, `DishCard` variants, `CategoryTile`, `CategoryTabs` focus fix +
       segmented variant, `FilterChip` states, `--band-drink`, guide sections, MASTER theme correction.
       Open as #68.
-- [ ] **PR 1 — Data in site code.** `useMenu.js`: groups from `menu_groups` with fallback; helpers for
+- [ ] **PR 1 — Data in site code.** `useMenu.js`: groups from `menu_groups` with fallback — read the
+      **ordered array** shape in §2, and keep the fallback in the same shape so the two paths cannot
+      disagree about group order; helpers for
       min price, isHighProtein, isSeafood. Delete the dead `SALE-BAKED_POTATO_SIDE` → "🥔 Sides" branch
       (that dish is not in `menu_public`, so the branch never fires) and the leftover `sub.springRolls`
       keys in `src/i18n/dict/*` plus the `sec-spring-rolls` case in `i18n/localize.js`. Decide what to do
