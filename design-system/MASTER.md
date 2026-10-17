@@ -45,6 +45,7 @@ Source: `src/styles/tokens/colors.css`; the active surface/text/border aliases c
 | Price seal ink | `--seal-ink` | `#1E3903` |
 | Bands (washes) | `--band-mint` · `--band-warm` · `--band-drink` | `#E9F3EC` · `#FBF8F0` · `#FBF4E6` |
 | Hairlines | `--border` / `--border-strong` | `rgba(30,57,3,.14 / .26)` |
+| Open status dot | `--status-open` / `--status-closed` | `#3F8A2A` · `--ink-400` |
 
 Gold (`--honey-300`) and brand-purple are **not** in play on the light theme: gold is unreadable on white, so prices carry royal-green, and purple's "selected" job went to royal-green too (see the overrides at the foot of `theme-light.css`). They remain brand colours for print and signage.
 
@@ -56,6 +57,7 @@ Gold (`--honey-300`) and brand-purple are **not** in play on the light theme: go
 - cream-50 on royal-green (buttons, selected tab, order bar) → **12.05:1** ✓ AAA
 - `--menu-kcal` royal on `--green-100` pill → **10.79:1** ✓ AAA
 - ⚠️ `--text-faint` (royal α.55) → **3.32:1** — **large text only** (≥24px / ≥18.6px bold); never small captions.
+- `--status-open` `#3F8A2A` → **4.33:1** on white. **Added 2026-10-17 (PR 3)** for the menu header's "● Open till 18:30" dot. It is an 8px dot, not text, so the 4.5:1 floor does not bind — but it may only ever be used that way: the status WORDS beside it carry the meaning in `--text-strong`, per the no-colour-only rule below. Never set type in it.
 - **On raised surfaces** the drop is small, unlike the old dark theme: on `--surface-2` `#F4F8EC` (card photo box, tab track) `--text-body` → **7.84:1** ✓, `--text-muted` → **4.90:1** ✓ AA, `--text-faint` → **3.23:1** large-only. On `--surface-3` `#E7EFD6` `--text-muted` → **4.62:1** ✓ AA — the tightest pair in the system, so do not darken that panel further.
 
 ## Typography
@@ -95,10 +97,17 @@ DO NOT switch to Playfair/Karla (the skill's restaurant default) — off-brand h
 
 ### Modal (`DishDialog`)
 - `role="dialog"` + `aria-modal` + `aria-label` (✓), Escape closes (✓), scrim click closes (✓).
-- **REQUIRED additions (currently missing):**
-  - Move focus into the dialog on open; restore focus to trigger on close.
-  - Trap Tab focus inside the dialog.
-  - Lock body scroll (`overflow:hidden`) while open.
+- Focus moved in on open and restored to the trigger on close (✓), Tab trapped
+  inside (✓), body scroll locked while open (✓). **Corrected 2026-10-17:** this
+  block listed all three as "REQUIRED additions (currently missing)". They were
+  implemented before that; the note had gone stale. Keep them.
+- `sheet` (menu redesign PR 3) is the **mobile** shape: `100dvh − 56px`, its own
+  scroller so the pinned Add bar stays put, and it closes by swipe-down and
+  browser Back as well — it carries its own `?dish=<slug>` URL. The swipe only
+  arms at `scrollTop === 0`, so reading the sheet never dismisses it.
+- **Desktop (≥1024px) opens no dish dialog at all** (SPEC §4.5). The `grid-full`
+  card is a document, not a control: description, macros, weight and allergens
+  are inline, and only Add is interactive. Do not add an opener back to it.
 
 ### Tabs (`CategoryTabs`)
 - `role="tablist"/tab"` + `aria-selected` (✓).

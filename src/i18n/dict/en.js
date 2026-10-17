@@ -81,14 +81,17 @@ export default {
   "filter.highProtein": "High protein",
   "filter.noneHere": "No dishes in this section match these filters.",
 
-  // open / closed status in the header (§3.1, §4.1)
-  "status.openTill": "Open till {time}",
-  "status.openNow": "Open now · daily {from}–{to}",
-  "status.closed": "Closed · opens {time}",
+  // Open / closed status in the header (§3.1, §4.1). The LABEL and the CLOCK
+  // FIGURE are separate keys on purpose: the figure renders in its own `.num`
+  // span, which components.css pins to LTR under /ar — interpolated into the
+  // sentence it would come out as "18:30 till Open" in Arabic.
+  "status.openTill": "Open till",
+  "status.openNow": "Open now · daily",
+  "status.closed": "Closed · opens",
 
   // visit us (§3.8, §4.6)
   "visit.title": "Visit us",
-  "visit.hours": "Open daily {from}–{to}",
+  "visit.hours": "Open daily",
   "visit.directions": "Get directions",
 
   // order bar + desktop order panel (§5, §8)

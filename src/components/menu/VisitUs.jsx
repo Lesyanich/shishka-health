@@ -28,7 +28,10 @@ export function VisitUs({ cta, wide = false }) {
       {hours && (
         <p className="shk-menu__visit-row">
           <ClockIcon size={18} />
-          <span>{t("visit.hours", { from: hours.open.label, to: hours.close.label })}</span>
+          <span>
+            {t("visit.hours")}{" "}
+            <span className="num">{hours.open.label}&ndash;{hours.close.label}</span>
+          </span>
         </p>
       )}
 

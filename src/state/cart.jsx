@@ -21,26 +21,30 @@ export function CartProvider({ children }) {
 
   const api = useMemo(() => {
     // Plain dishes stack by id (but never merge into a configured line).
-    const addDish = (dish) =>
+    // `qty` is for the dish sheet's stepper (SPEC §3). Calling this three times
+    // would also work — a functional updater sees the previous result — but it
+    // costs three renders and reads as a loop where the intent is a quantity.
+    const addDish = (dish, qty = 1) =>
       setLines((prev) => {
+        const n = Math.max(1, Math.round(Number(qty) || 1));
         const existing = prev.find((l) => l.kind === "dish" && !l.config && l.dish.id === dish.id);
         if (existing) {
-          return prev.map((l) => (l.id === existing.id ? { ...l, qty: l.qty + 1 } : l));
+          return prev.map((l) => (l.id === existing.id ? { ...l, qty: l.qty + n } : l));
         }
-        return [...prev, { kind: "dish", id: newId(), dish, qty: 1 }];
+        return [...prev, { kind: "dish", id: newId(), dish, qty: n }];
       });
 
     // A build-your-own dish: carries its chosen options + the configured unit
     // price so the line bills the real total, not the bare base. Never stacks.
     // build = { options: [{group, name, priceDelta}], total }
-    const addConfiguredDish = (dish, build) =>
+    const addConfiguredDish = (dish, build, qty = 1) =>
       setLines((prev) => [
         ...prev,
         {
           kind: "dish",
           id: newId(),
           dish,
-          qty: 1,
+          qty: Math.max(1, Math.round(Number(qty) || 1)),
           config: { options: build?.options ?? [] },
           price: build?.total ?? (Number(dish.price) || 0),
         },

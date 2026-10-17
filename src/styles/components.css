@@ -141,6 +141,10 @@
   display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2);
 }
 .shk-macro__item {
+  /* A grid item will not shrink below its own min-content width unless told to.
+     Without this the three tiles demand 261px, which overflowed the 375px dish
+     sheet and pushed the FAT figure off the edge. */
+  min-width: 0;
   display: flex; flex-direction: column; gap: 3px;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
@@ -979,11 +983,15 @@ button.shk-seal:active { transform: scale(0.93); }
 /* The trigger exists for phones only (see below). */
 .shk-lang__current { display: none; }
 
-/* Phones: three segments would run into the centred logo, so the list hides
-   behind one round button carrying the current language — the same 44px
-   footprint as the filter button it mirrors. Opens on tap, closes on Escape,
-   outside tap, or choosing a language. */
-.shk-header--mobile .shk-lang__current {
+/* Phones: four segments would run into the logo, so the list hides behind one
+   round button carrying the current language — a 44px footprint either way.
+   Opens on tap, closes on Escape, outside tap, or choosing a language.
+
+   `.shk-menu__bar` (the redesign header, PR 3) is in the same boat and joins
+   each rule below. Its --wide variant is excluded: SPEC §4.1 wants the
+   segmented control spelled out on desktop, which is the default shape. */
+.shk-header--mobile .shk-lang__current,
+.shk-menu__bar:not(.shk-menu__bar--wide) .shk-lang__current {
   display: grid; place-items: center;
   width: var(--hit-min); height: var(--hit-min);
   border-radius: var(--radius-circle);
@@ -992,7 +1000,8 @@ button.shk-seal:active { transform: scale(0.93); }
   font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
-.shk-header--mobile .shk-lang__list {
+.shk-header--mobile .shk-lang__list,
+.shk-menu__bar:not(.shk-menu__bar--wide) .shk-lang__list {
   position: absolute; top: calc(100% + 6px); inset-inline-start: 0; z-index: var(--z-dropdown, 40);
   flex-direction: column; gap: 2px;
   box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.18));
@@ -1000,8 +1009,16 @@ button.shk-seal:active { transform: scale(0.93); }
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out),
     visibility var(--dur-fast) var(--ease-out);
 }
-.shk-header--mobile .shk-lang__list.is-open { opacity: 1; visibility: visible; transform: none; }
-.shk-header--mobile .shk-lang__opt { height: var(--hit-min); min-width: var(--hit-min); }
+.shk-header--mobile .shk-lang__list.is-open,
+.shk-menu__bar:not(.shk-menu__bar--wide) .shk-lang__list.is-open { opacity: 1; visibility: visible; transform: none; }
+/* The list drops out of a 64px header onto the sticky rail below it, so it has
+   to outrank the rail's stacking order or it opens behind the pills. */
+.shk-menu__bar .shk-lang__list { z-index: 31; }
+/* It hangs off the right edge of the bar — anchored inline-start would push it
+   off the screen. */
+.shk-menu__bar:not(.shk-menu__bar--wide) .shk-lang__list { inset-inline-start: auto; inset-inline-end: 0; }
+.shk-header--mobile .shk-lang__opt,
+.shk-menu__bar:not(.shk-menu__bar--wide) .shk-lang__opt { height: var(--hit-min); min-width: var(--hit-min); }
 
 /* English original under a translated order line, for the cashier (Cart.jsx) */
 .shk-cart__en {
@@ -1925,6 +1942,10 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-dish__name {
   margin: 0; font-size: 15px; font-weight: var(--fw-bold);
   line-height: 1.2; letter-spacing: -0.01em;
+  /* A flex item will not shrink below its min-content width by default, so a
+     long name pushed the price out of the row and the two overlapped on a
+     narrow card. Let the name wrap instead; the price never shrinks. */
+  min-width: 0; overflow-wrap: anywhere;
 }
 .shk-dish__price {
   flex-shrink: 0; font-size: 18px; font-weight: var(--fw-display);
@@ -2154,6 +2175,358 @@ a.shk-ctile:active { transform: scale(0.98); }
   a.shk-ctile:active { transform: none; }
 }
 
+
+/* ===========================================================================
+   MENU REDESIGN — PR 3: the menu page
+   ---------------------------------------------------------------------------
+   One family, `.shk-menu`, for the page the redesign is actually about: the
+   header, the lede, the sticky nav in BOTH of its placements, the group
+   eyebrows, the sections and the Visit-us block. The cards, seals, tabs and
+   chips inside it are the PR 2 primitives above, unchanged.
+
+   Everything a guest sees here is the answer to one measurement: on the live
+   site at 375px the first dish photograph sat at 910px, 1.1 screens down, past
+   a logo, a slogan and a stock photo of the salad bar. The header is 64px and
+   not sticky, the lede is three lines, and the menu starts.
+
+   The page scrolls the DOCUMENT. The old app shell was a full-height
+   `overflow:auto` box; the scroll-spy's IntersectionObserver measures against
+   the viewport, and `scroll-margin-top` and `#wraps` anchors only behave on the
+   document.
+
+   One breakpoint: 1024px. Mobile first, desktop in the min-width block.
+   =========================================================================== */
+
+.shk-menu {
+  /* The floating order bar is 58px + its 20px inset; the last section must be
+     able to clear it, plus the home-bar inset on a notched phone. */
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg-canvas);
+}
+
+/* ---- Header (§3.1 / §4.1) — 64px, and deliberately NOT sticky: the rail is
+   the thing that has to stay, and two stacked sticky bars eat a quarter of a
+   phone screen. ---- */
+.shk-menu__bar {
+  height: 64px; display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-3); padding-inline: var(--sp-4);
+}
+.shk-menu__logo { display: flex; align-items: center; }
+.shk-menu__logo img { height: 36px; width: auto; }
+.shk-menu__bar-right { display: flex; align-items: center; gap: var(--sp-2); }
+
+.shk-menu__status {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; /* a tap target, not just a label (MASTER) */
+  font-size: 13px; font-weight: var(--fw-semibold);
+  color: var(--text-strong); text-decoration: none; white-space: nowrap;
+}
+.shk-menu__status:hover { text-decoration: underline; }
+.shk-menu__dot {
+  width: 8px; height: 8px; flex: none; border-radius: var(--radius-circle);
+  background: var(--status-open);
+}
+.shk-menu__dot.is-closed { background: var(--status-closed); }
+.shk-menu__where {
+  min-height: 44px; display: inline-flex; align-items: center;
+  font-size: 13px; font-weight: var(--fw-semibold); color: var(--text-muted);
+}
+
+/* ---- Lede (§3.2) ---- */
+.shk-menu__lede { padding: 2px var(--sp-4) 10px; }
+.shk-menu__title {
+  font-size: 28px; line-height: 1.08; font-weight: var(--fw-display);
+  letter-spacing: -0.025em; color: var(--text-strong);
+}
+/* The accented word. Red is the brand's emphasis colour and the only thing on
+   the page louder than the food. */
+.shk-menu__title span { color: var(--accent); }
+.shk-menu__sub { margin-top: 6px; font-size: 13.5px; color: var(--text-muted); }
+
+/* ---- Sticky category rail (§3.3) ---------------------------------------- */
+.shk-menu__rail {
+  /* Above the page, below the dish sheet. `--z-sticky` (100) outranks the
+     dialog scrim's 70, which painted the pills straight across the open sheet;
+     30 is the layer the pill rail has always used. */
+  position: sticky; top: 0; z-index: 30;
+  background: var(--bg-canvas);
+  border-bottom: 1px solid var(--border-subtle);
+}
+/* .shk-tabs is itself `position: sticky` for the old page. Nested inside a
+   sticky wrapper that is doing the pinning, a second sticky context only
+   confuses the offset — the wrapper owns it here. */
+.shk-menu__rail .shk-tabs { position: static; }
+
+/* ---- Group eyebrows (§3.5): quiet labels BETWEEN sections, never navigation.
+   Nothing here is clickable, and they are not in the tab order. ---- */
+.shk-menu__group {
+  margin: 26px var(--sp-4) 2px;
+  font-size: 12px; font-weight: var(--fw-display); letter-spacing: 0.16em;
+  color: var(--text-muted);
+}
+.shk-menu__group:first-of-type { margin-top: 18px; }
+
+/* ---- Section (§3.6) ------------------------------------------------------ */
+.shk-menu__sec {
+  padding: 14px var(--sp-4) 0;
+  /* Clears the sticky rail when a pill, a #hash or the keyboard lands here —
+     without it the title sits under the rail it was reached from. */
+  scroll-margin-top: 58px;
+}
+.shk-menu__sec-title {
+  font-size: 24px; font-weight: var(--fw-display); letter-spacing: -0.02em;
+  color: var(--text-strong);
+}
+/* "from ฿149" — or "Coming soon" where no dish can be bought yet. NO item
+   count accompanies it (§2): counts are volatile and a small one undersells a
+   category. */
+.shk-menu__from {
+  margin-top: 2px; font-size: 13px; font-weight: var(--fw-semibold);
+  color: var(--text-muted); font-variant-numeric: tabular-nums;
+}
+.shk-menu__controls {
+  display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-3);
+}
+.shk-menu__chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+/* Two chips today, not three: Plant-based would match zero dishes and Seafood
+   would imply an allergen guarantee the data cannot support. See
+   lib/quickFilters.js for the evidence. */
+.shk-menu__grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 12px; margin-top: var(--sp-3);
+}
+.shk-menu__list {
+  display: flex; flex-direction: column; gap: var(--sp-3); margin-top: var(--sp-3);
+}
+.shk-menu__empty {
+  padding: var(--sp-6) 0; text-align: center; color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.shk-menu__empty p { margin-bottom: var(--sp-2); }
+
+/* ---- Visit us (§3.8 / §4.6) --------------------------------------------- */
+.shk-menu__visit {
+  margin-top: var(--sp-10); padding: var(--sp-6) var(--sp-4);
+  border-top: 1px solid var(--border-subtle); background: var(--band-warm);
+  scroll-margin-top: 58px;
+}
+.shk-menu__visit-title {
+  font-size: 20px; font-weight: var(--fw-display); margin-bottom: var(--sp-3);
+}
+.shk-menu__visit-row {
+  display: flex; align-items: flex-start; gap: var(--sp-2);
+  font-size: var(--text-sm); color: var(--text-body); margin-bottom: var(--sp-2);
+}
+.shk-menu__visit-row svg { flex: none; margin-top: 2px; color: var(--text-muted); }
+.shk-menu__visit-addr { line-height: 1.45; }
+.shk-menu__visit-acts {
+  display: flex; align-items: center; gap: var(--sp-3); margin-top: var(--sp-4);
+}
+.shk-menu__visit-btn {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--sp-5);
+  border-radius: var(--radius-pill); background: var(--royal-green);
+  color: var(--cream-50); font-size: var(--text-sm); font-weight: var(--fw-bold);
+  text-decoration: none;
+}
+.shk-menu__visit-btn:hover { background: var(--royal-green-soft); text-decoration: none; }
+.shk-menu__visit-link {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--accent);
+}
+
+/* ---- Desktop left nav (§4.2) — the same nav as the rail, stood on its end.
+   Hidden under 1024px, where the rail has the job. ---- */
+.shk-menu__nav { display: none; }
+.shk-menu__nav-group + .shk-menu__nav-group { margin-top: var(--sp-5); }
+.shk-menu__nav-label {
+  font-size: 12px; font-weight: var(--fw-display); letter-spacing: 0.16em;
+  color: var(--text-muted); margin-bottom: var(--sp-2);
+}
+.shk-menu__nav-list { list-style: none; margin: 0; padding: 0; }
+.shk-menu__nav-link {
+  display: block; padding: 8px 10px; border-radius: var(--radius-pill);
+  font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  color: var(--text-muted); text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+.shk-menu__nav-link:hover { color: var(--text-strong); background: var(--surface-2); text-decoration: none; }
+/* "You are here" reads red, exactly as the rail's selected pill does — one
+   answer to one question, in both placements. */
+.shk-menu__nav-link.is-on { color: var(--accent); background: var(--green-100); }
+
+/* ===================== Desktop (≥1024px) — SPEC §4 ======================= */
+@media (min-width: 1024px) {
+  .shk-menu { padding-bottom: var(--sp-10); }
+
+  .shk-menu__bar--wide { height: 84px; padding-inline: var(--sp-10); }
+  .shk-menu__bar--wide .shk-menu__logo img { height: 48px; }
+  .shk-menu__bar-right { gap: var(--sp-5); }
+
+  /* 220px nav | content | 320px order. Content is capped and centred; the two
+     columns are sticky, so the middle is the only thing that scrolls. */
+  .shk-menu__layout {
+    display: grid; grid-template-columns: 220px minmax(0, 1fr) 320px;
+    gap: 36px; padding-inline: var(--sp-10);
+    max-width: 1440px; margin-inline: auto; align-items: start;
+  }
+  .shk-menu__aside {
+    position: sticky; top: 24px;
+    /* Its own scrollbar rather than a column that runs off the screen: the nav
+       is 12 entries and the order can be any length. */
+    max-height: calc(100vh - 48px); overflow-y: auto; scrollbar-width: thin;
+  }
+  .shk-menu__aside--right { display: flex; flex-direction: column; gap: var(--sp-5); }
+  .shk-menu__nav { display: block; }
+
+  .shk-menu__lede { padding: var(--sp-6) 0 var(--sp-8); }
+  .shk-menu__title { font-size: clamp(40px, 4vw, 56px); letter-spacing: -0.03em; line-height: 1.02; }
+  .shk-menu__sub { font-size: var(--text-md); margin-top: var(--sp-3); }
+
+  /* The first section starts right under the header (§4.4). */
+  .shk-menu__sec { padding: 0; margin-bottom: var(--sp-16); scroll-margin-top: var(--sp-6); }
+  .shk-menu__sec-title { font-size: 40px; }
+  .shk-menu__from { font-size: var(--text-md); }
+  /* Tabs and filters share one row (§4.4). */
+  .shk-menu__controls {
+    flex-direction: row; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-4);
+  }
+  .shk-menu__subtabs { max-width: 420px; }
+
+  /* §4.4 asks for three columns. At exactly 1024 the fixed 220 + 320 columns,
+     the 36px gaps and the 40px gutters leave 332px of content — three cards of
+     97px, which is narrower than a dish name. So three columns start at 1280,
+     where a card is ~210px, and 1024–1279 gets two. The structure is §4's; only
+     the count bends to the arithmetic. */
+  .shk-menu__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 20px; margin-top: var(--sp-5);
+  }
+  /* Drinks and dips keep the list ROW on desktop but use the width: as many
+     columns as fit at a readable row length. (§4.7 sketched a 4-up grid with a
+     one-line description and left it as an open question; a wide list-row is
+     the same information without inventing a fourth card variant.) */
+  .shk-menu__list {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--sp-4) var(--sp-5); margin-top: var(--sp-5);
+  }
+
+  .shk-menu__group { margin: 0 0 var(--sp-3); font-size: 13px; }
+  .shk-menu__group:first-of-type { margin-top: 0; }
+
+  /* In the right column Visit us is a panel, not a page-wide band. */
+  .shk-menu__visit--wide {
+    margin-top: 0; padding: var(--sp-5); border: 1px solid var(--border-subtle);
+    border-top: 1px solid var(--border-subtle); border-radius: 26px;
+    background: var(--band-warm);
+  }
+}
+
+@media (min-width: 1280px) {
+  .shk-menu__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .shk-menu__list { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+}
+
+/* ---- DishDialog as a bottom sheet (§3) ----------------------------------
+   The centred dialog above is unchanged; `--sheet` is the mobile shape. The
+   sheet is its OWN scroller (the centred dialog lets the scrim scroll), because
+   the pinned Add bar has to stay put while the guest reads past it. ---- */
+.shk-dlg__scrim--sheet {
+  overflow: hidden; /* the sheet scrolls, not the scrim */
+  justify-content: flex-end;
+}
+.shk-dlg--sheet {
+  /* §3: viewport height − 56px, so the menu stays visible behind the sheet and
+     it is obvious there is a page to come back to. */
+  height: calc(100dvh - 56px); max-height: calc(100dvh - 56px);
+  margin: auto auto 0; max-width: 560px;
+  border-radius: 26px 26px 0 0;
+  overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  /* Swipe-down: the inline transform follows the finger, and releasing below
+     the dismiss threshold animates back. */
+  transition: transform var(--dur-base) var(--ease-out);
+}
+/* The nutrition row is a 104px donut beside MacroBar. At 375px the macro
+   legend demanded 261px of the ~170px it was given, so the FAT figure sat off
+   the edge of the sheet, reachable only by scrolling sideways. Fixed at the
+   source with `min-width: 0` on `.shk-macro__item` (see above) rather than
+   papered over here — the same row is in the cart, where it had the same
+   problem. Wrapping stays as the fallback for a legend that still cannot fit. */
+.shk-dlg--sheet .shk-dlg__nutri { flex-wrap: wrap; }
+
+.shk-dlg__bar {
+  position: sticky; bottom: 0; z-index: 5;
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
+  background: var(--surface-2); border-top: 1px solid var(--border-subtle);
+}
+.shk-dlg__step {
+  display: flex; align-items: center; flex: none;
+  border: 1px solid var(--border-strong); border-radius: var(--radius-pill);
+  background: var(--surface-1);
+}
+.shk-dlg__step-btn {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border: 0; background: none; cursor: pointer; color: var(--text-strong);
+  border-radius: var(--radius-circle);
+}
+.shk-dlg__step-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.shk-dlg__step-num {
+  min-width: 24px; text-align: center;
+  font-weight: var(--fw-display); font-variant-numeric: tabular-nums;
+}
+.shk-dlg__bar-add {
+  flex: 1; min-height: 52px; border: 0; border-radius: var(--radius-pill);
+  background: var(--royal-green); color: var(--cream-50); cursor: pointer;
+  font-family: var(--font-body); font-size: var(--text-md); font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+.shk-dlg__bar-add:hover:not(:disabled) { background: var(--royal-green-soft); }
+.shk-dlg__bar-add:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---- Order bar + desktop order panel (§5) ------------------------------- */
+/* §3.9: 16px side inset, 20px + safe area off the bottom, 58px pill. */
+.shk-orderfab {
+  inset-inline-end: var(--sp-4);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  min-height: 58px; padding-inline: var(--sp-5);
+}
+/* One pulse when a dish lands. On a 13-screen menu the bar is often the only
+   part of the page that changed, and the guest is looking at the card they just
+   tapped, not at the bottom of the screen. */
+.shk-orderfab.is-pulse { animation: shk-orderfab-pulse 520ms var(--ease-out); }
+@keyframes shk-orderfab-pulse {
+  0% { transform: scale(1); }
+  38% { transform: scale(1.09); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shk-orderfab.is-pulse { animation: none; }
+  .shk-dlg--sheet { transition: none; }
+}
+
+/* The desktop order panel: the same `.shk-cart` markup, un-drawered. */
+.shk-cart--panel {
+  max-width: none; max-height: none;
+  border: 1px solid var(--border-subtle); border-radius: 26px;
+  box-shadow: var(--shadow-card);
+}
+.shk-cart--panel .shk-cart__head { padding: var(--sp-5) var(--sp-5) var(--sp-3); }
+.shk-cart--panel .shk-cart__scroll { max-height: 42vh; }
+.shk-cart--panel .shk-cart__empty { padding: var(--sp-5); gap: var(--sp-3); }
+.shk-cart__head-total {
+  font-family: var(--font-display); font-weight: var(--fw-display);
+  font-size: var(--text-lg); color: var(--menu-price);
+  font-variant-numeric: tabular-nums;
+}
+.shk-cart__total-row--kcal {
+  font-size: var(--text-sm); font-family: var(--font-body);
+  color: var(--text-muted); font-weight: var(--fw-semibold);
+}
+.shk-cart__counter {
+  font-size: var(--text-sm); font-weight: var(--fw-bold); color: var(--text-strong);
+}
+
 /* ===========================================================================
    RTL (Arabic, /ar) — MC f91194f7
    ---------------------------------------------------------------------------
@@ -2200,12 +2573,22 @@ a.shk-ctile:active { transform: scale(0.98); }
 :root[dir="rtl"] .shk-dish__macro-val,
 :root[dir="rtl"] .shk-kseal__stack,
 :root[dir="rtl"] .shk-ctile__meta,
-/* Latin dish names — never translated, so never reordered either. */
+/* Menu redesign (PR 3): the page's own numeric runs. "from ฿149" in a section
+   header and "Add to order · ฿447" in the sheet's pinned bar each glue a ฿ to
+   a figure, which is exactly the pair the bidi algorithm puts the wrong way
+   round. The clock figures in the header and in Visit us carry `.num` and are
+   already covered by the first selector above. */
+:root[dir="rtl"] .shk-menu__from,
+:root[dir="rtl"] .shk-dlg__bar-add,
+/* Latin dish names — never translated, so never reordered either. The street
+   address joins them: it is the same Latin string in every language, because it
+   is what a driver types into a map (lib/venue.js). */
 :root[dir="rtl"] .shk-card__name,
 :root[dir="rtl"] .shk-row__name,
 :root[dir="rtl"] .shk-dish__name,
 :root[dir="rtl"] .shk-dlg__title,
 :root[dir="rtl"] .shk-cart__line-name,
+:root[dir="rtl"] .shk-menu__visit-addr,
 :root[dir="rtl"] .shk-cart__en {
   direction: ltr;
   unicode-bidi: isolate;
@@ -2217,6 +2600,7 @@ a.shk-ctile:active { transform: scale(0.98); }
 :root[dir="rtl"] .shk-row__name,
 :root[dir="rtl"] .shk-dish__name,
 :root[dir="rtl"] .shk-dlg__title,
+:root[dir="rtl"] .shk-menu__visit-addr,
 :root[dir="rtl"] .shk-cart__line-name {
   text-align: start;
 }

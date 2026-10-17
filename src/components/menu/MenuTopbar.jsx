@@ -34,13 +34,18 @@ export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit" }) {
               className={`shk-menu__dot${status.open ? "" : " is-closed"}`}
               aria-hidden="true"
             />
-            {wide
-              ? status.open
-                ? t("status.openNow", { from: status.hours.open.label, to: status.hours.close.label })
-                : t("status.closed", { time: status.hours.open.label })
-              : status.open
-                ? t("status.openTill", { time: status.hours.close.label })
-                : t("status.closed", { time: status.hours.open.label })}
+            {status.open
+              ? wide
+                ? t("status.openNow")
+                : t("status.openTill")
+              : t("status.closed")}{" "}
+            <span className="num">
+              {status.open
+                ? wide
+                  ? `${status.hours.open.label}\u2013${status.hours.close.label}`
+                  : status.hours.close.label
+                : status.hours.open.label}
+            </span>
           </a>
         )}
 

@@ -1,3 +1,5 @@
+import { allComingSoon } from "./dishFacts.js";
+
 /*
   Turning the menu payload into the page's sections (SPEC.md §2).
 
@@ -128,8 +130,42 @@ export function buildSections(groups, categories, dishes) {
         group: g.key,
         items,
         layout: sectionLayout(g.key, items),
+        // §2: a category whose items are ALL coming soon reads "<name> · soon"
+        // in the rail and "Coming soon" in place of "from ฿…". Its dishes still
+        // render — the guest is being shown what is next, not an empty hole.
+        allSoon: allComingSoon(items),
       });
     }
+  }
+  return out;
+}
+
+/*
+  The handle a dish answers to in the URL — `?dish=<slug>` (SPEC §3, the dish
+  sheet "has its own URL so a dish can be shared").
+
+  Slugged from the ENGLISH name for the same reason sections are: a shared link
+  must mean the same dish whatever language the sender was reading. `name_en` is
+  set for every language by i18n/localize.js.
+
+  Collisions are real, not theoretical: §8 records "Chicken ShishTawook Wrap"
+  sitting on TWO product codes today, and a link that silently opens the other
+  dish is worse than an ugly link. A second claimant therefore carries its
+  product code, and a dish whose name strips to nothing (an all-emoji name) is
+  identified by its code alone.
+*/
+export function assignDishSlugs(dishes) {
+  const taken = new Set();
+  const out = new Map();
+  for (const d of dishes ?? []) {
+    const base = sectionSlug(d.name_en ?? d.name);
+    const code = sectionSlug(d.product_code ?? "");
+    let slug = base === "section" ? code || String(d.id) : base;
+    if (taken.has(slug)) slug = code ? `${slug}-${code}` : String(d.id);
+    // Still taken (two rows, one code — impossible today, cheap to survive).
+    if (taken.has(slug)) slug = String(d.id);
+    taken.add(slug);
+    out.set(d.id, slug);
   }
   return out;
 }
