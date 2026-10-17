@@ -137,24 +137,40 @@
   overflow: hidden; background: var(--surface-3); gap: 2px;
 }
 .shk-macro__fill { height: 100%; transition: width var(--dur-slow) var(--ease-out); }
+/* A macro tile needs ~91px: the uppercase label is ~67px wide with its dot, and
+   the tile adds 24px of padding. Three of them plus gaps want ~289px.
+
+   `repeat(3, 1fr)` demanded that width unconditionally, so in a narrower box the
+   legend simply ran off the right-hand edge — true on production long before the
+   redesign. `auto-fit` asks for three tracks only when three fit and drops to two
+   or one when they do not, so the legend reflows instead of overflowing. The
+   containers below are also sized so that three normally DO fit; this is the
+   floor, not the plan. */
 .shk-macro__legend {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: var(--space-2);
 }
 .shk-macro__item {
-  /* A grid item will not shrink below its own min-content width unless told to.
-     Without this the three tiles demand 261px, which overflowed the 375px dish
-     sheet and pushed the FAT figure off the edge. */
+  /* Lets the tile occupy a 1fr track narrower than its own content. On its own
+     that turns an overflow into an OVERPRINT — the label and the figure stacked
+     on each other, which is what the CEO saw in the cart — so it only works
+     alongside the ellipsis on .shk-macro__label below, which is what actually
+     guarantees the two never collide. */
   min-width: 0;
   display: flex; flex-direction: column; gap: 3px;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   background: var(--surface-inset);
 }
-.shk-macro__top { display: flex; align-items: center; gap: var(--space-2); }
+.shk-macro__top { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 .shk-macro__dot { width: 9px; height: 9px; border-radius: var(--radius-circle); flex: none; }
 .shk-macro__label {
   font-family: var(--font-body); font-size: var(--text-2xs); font-weight: var(--fw-semibold);
   letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-muted);
+  /* The last line of defence. If a container is still too tight for the label,
+     it clips to "PROTE…" instead of printing over the figure underneath it. A
+     truncated word is readable; two words on top of each other are not. The
+     colour dot beside it carries the same meaning anyway. */
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .shk-macro__val {
   font-family: var(--font-mono); font-size: var(--text-md); font-weight: var(--fw-semibold);
@@ -1493,9 +1509,14 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-cart__thumb-ph { width: 58%; height: 58%; border-radius: 50%; background: rgba(30, 57, 3, 0.10); }
 /* Order roll-up: nutrition donut + macros + combined benefit pills. */
 .shk-cart__nutri-wrap { display: flex; flex-direction: column; gap: var(--space-3); }
-.shk-cart__nutri { display: flex; align-items: center; gap: var(--space-5); padding: var(--space-4); background: var(--surface-inset); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
+/* The donut and the macro legend sit side by side while there is room for both.
+   At 390px the row is 350px wide, which left the legend 192px of the ~289px it
+   needs — the tiles came out 59px each and the labels printed over the figures.
+   A 240px flex-basis is just over the legend's requirement, so the bars drop to
+   their own full-width line the moment they cannot sit beside the donut. */
+.shk-cart__nutri { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-5); padding: var(--space-4); background: var(--surface-inset); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
 .shk-cart__nutri .shk-donut { flex: none; }
-.shk-cart__nutri-bars { flex: 1; min-width: 0; }
+.shk-cart__nutri-bars { flex: 1 1 240px; min-width: 0; }
 .shk-cart__total-num { font-family: var(--font-display); font-weight: var(--fw-display); font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1; color: var(--royal-green); }
 .shk-cart__line-info { display: flex; flex-direction: column; min-width: 0; }
 .shk-cart__line-name { font-size: var(--text-base); color: var(--text-strong); }
@@ -2376,6 +2397,13 @@ a.shk-ctile:active { transform: scale(0.98); }
     max-height: calc(100vh - 48px); overflow-y: auto; scrollbar-width: thin;
   }
   .shk-menu__aside--right { display: flex; flex-direction: column; gap: var(--sp-5); }
+  /* The column has a max-height and its own scrollbar, so by default a flex
+     column SHRINKS its children to fit — and the order panel, being the one with
+     an inner scroller, gave up its height first: the order list's window came out
+     210px tall instead of the 42vh it asks for, burying the nutrition macros
+     under the footer. `flex: none` keeps each block its natural height and lets
+     the column scroll as a whole, which is what the max-height is for. */
+  .shk-menu__aside--right > * { flex: none; }
   .shk-menu__nav { display: block; }
 
   .shk-menu__lede { padding: var(--sp-6) 0 var(--sp-8); }
@@ -2446,13 +2474,18 @@ a.shk-ctile:active { transform: scale(0.98); }
      the dismiss threshold animates back. */
   transition: transform var(--dur-base) var(--ease-out);
 }
-/* The nutrition row is a 104px donut beside MacroBar. At 375px the macro
-   legend demanded 261px of the ~170px it was given, so the FAT figure sat off
-   the edge of the sheet, reachable only by scrolling sideways. Fixed at the
-   source with `min-width: 0` on `.shk-macro__item` (see above) rather than
-   papered over here — the same row is in the cart, where it had the same
-   problem. Wrapping stays as the fallback for a legend that still cannot fit. */
-.shk-dlg--sheet .shk-dlg__nutri { flex-wrap: wrap; }
+/* The nutrition row is a 104px donut beside MacroBar, and at 375px the legend
+   was given ~170px of the ~289px it needs. `flex-wrap: wrap` alone did nothing
+   here: `.shk-dlg__nutri-bars` is `flex: 1`, i.e. a zero basis, so it always
+   fitted on the line and squeezed instead of wrapping. The basis is what makes
+   the wrap real — same fix as the cart's row. */
+.shk-dlg--sheet .shk-dlg__nutri { flex-wrap: wrap; justify-content: center; }
+.shk-dlg--sheet .shk-dlg__nutri-bars { flex: 1 1 240px; }
+/* Once the bars drop to their own line the donut is alone on its row. Left to
+   `flex-start` it sat in the corner with dead space beside it, which read as an
+   accident; centred over a full-width legend it reads as a layout. When the two
+   DO share a line, `flex: 1` on the bars absorbs the free space and this does
+   nothing, so the side-by-side case is unchanged. */
 
 .shk-dlg__bar {
   position: sticky; bottom: 0; z-index: 5;
@@ -2514,6 +2547,15 @@ a.shk-ctile:active { transform: scale(0.98); }
 .shk-cart--panel .shk-cart__head { padding: var(--sp-5) var(--sp-5) var(--sp-3); }
 .shk-cart--panel .shk-cart__scroll { max-height: 42vh; }
 .shk-cart--panel .shk-cart__empty { padding: var(--sp-5); gap: var(--sp-3); }
+/* The right column is 320px, so even a full-width legend only gets ~248px —
+   under the ~289px three tiles need. Two-across-then-one reads as an accident,
+   so here the legend becomes three full-width rows, label left and figure
+   right. That is a layout, not a squeeze, and it cannot overflow at any
+   content length. */
+.shk-cart--panel .shk-macro__legend { grid-template-columns: 1fr; }
+.shk-cart--panel .shk-macro__item {
+  flex-direction: row; align-items: center; justify-content: space-between; gap: var(--sp-3);
+}
 .shk-cart__head-total {
   font-family: var(--font-display); font-weight: var(--fw-display);
   font-size: var(--text-lg); color: var(--menu-price);
