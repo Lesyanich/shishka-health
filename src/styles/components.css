@@ -236,7 +236,7 @@
    panel stay on --highlight, because those are choices you are making, not a
    place you are standing. */
 .shk-tab[aria-selected="true"] { color: var(--nav-active-ink); background: var(--nav-active); }
-.shk-tab__count { font-family: var(--font-mono); font-size: 0.8em; opacity: 0.7; margin-left: 5px; }
+.shk-tab__count { font-family: var(--font-mono); font-size: 0.8em; opacity: 0.7; margin-inline-start: 5px; }
 
 /* ---- FilterPanel ---- */
 .shk-fp__scrim {
@@ -381,7 +381,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-card__priceblock { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; }
 /* Price seal floats in the top-right corner of the tile. */
 .shk-card__corner {
-  position: absolute; top: 6px; right: 6px; z-index: 3;
+  position: absolute; top: 6px; inset-inline-end: 6px; z-index: 3;
   display: inline-flex; align-items: center;
 }
 .shk-card__name { font-family: var(--font-sans); font-weight: var(--fw-semibold); font-size: var(--text-md); line-height: 1.18; color: var(--text-strong); }
@@ -423,7 +423,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-mana__kcal b { font-size: var(--text-base); }
 
 /* Compact row variant (used in dense lists): small inline cutout + text. */
-.shk-card--row { flex-direction: row; align-items: center; gap: 12px; text-align: left; }
+.shk-card--row { flex-direction: row; align-items: center; gap: 12px; text-align: start; }
 .shk-card--row .shk-card__media { width: 72px; }
 .shk-card--row .shk-card__body { align-items: flex-start; }
 .shk-card--row .shk-card__topline { flex-direction: row; gap: 8px; align-items: baseline; }
@@ -569,7 +569,7 @@ button.shk-seal:active { transform: scale(0.93); }
   font-size: var(--text-md); color: var(--text-strong);
   text-transform: uppercase; letter-spacing: var(--tracking-wide);
 }
-.shk-app__sub-price { margin-left: auto; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); font-feature-settings: var(--num-feature); }
+.shk-app__sub-price { margin-inline-start: auto; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--menu-price); font-feature-settings: var(--num-feature); }
 .shk-app__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-cards); align-items: start; }
 
 /* ---- Section art (large decorative cut-out in the desktop gutter) ----------
@@ -633,8 +633,10 @@ button.shk-seal:active { transform: scale(0.93); }
      small ones). Never raise it for a section whose grid is full — the cards are
      transparent cut-outs, so the art would show through the gaps between them
      instead of behind a tile. Set per section in App.jsx (SECTION_ART.inset). */
-  .shk-sec-art--right { left: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
-  .shk-sec-art--left { right: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
+  /* --right / --left name the side in LTR; both use logical insets, so the
+     whole composition mirrors in Arabic rather than colliding with the text. */
+  .shk-sec-art--right { inset-inline-start: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
+  .shk-sec-art--left { inset-inline-end: calc(50% + var(--content-max) / 2 - var(--art-inset, 20px)); }
 
   /* Column-shaped art is several times taller than its section, so centring it
      shows the middle of the dish and hides both ends — a spring roll becomes an
@@ -923,7 +925,7 @@ button.shk-seal:active { transform: scale(0.93); }
   .shk-orbit__hero-img { transition: none; }
 }
 
-.shk-app--wide .shk-tabs { padding-left: 32px; padding-right: 32px; }
+.shk-app--wide .shk-tabs { padding-inline: 32px; }
 .shk-app--wide .shk-app__sec-title { font-size: clamp(2.6rem, 4vw, 4rem); }
 
 /* ---- App header ---- */
@@ -937,11 +939,11 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-header--mobile { padding: 16px 16px 14px; }
 .shk-header--wide   { padding: 22px 32px; }
 .shk-header__filter {
-  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  position: absolute; inset-inline-end: 16px; top: 50%; transform: translateY(-50%);
 }
-.shk-header--wide .shk-header__filter { right: 32px; }
+.shk-header--wide .shk-header__filter { inset-inline-end: 32px; }
 .shk-header__badge {
-  position: absolute; top: -4px; right: -4px;
+  position: absolute; top: -4px; inset-inline-end: -4px;
   min-width: 18px; height: 18px; padding: 0 5px;
   border-radius: 999px; background: var(--accent); color: var(--text-on-gold);
   font-family: var(--font-mono); font-weight: 700; font-size: 11px;
@@ -952,9 +954,9 @@ button.shk-seal:active { transform: scale(0.93); }
 
 /* ---- Language switcher (LangSwitch.jsx) — mirrors the filter button ---- */
 .shk-header__lang {
-  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  position: absolute; inset-inline-start: 16px; top: 50%; transform: translateY(-50%);
 }
-.shk-header--wide .shk-header__lang { left: 32px; }
+.shk-header--wide .shk-header__lang { inset-inline-start: 32px; }
 .shk-lang { position: relative; display: inline-flex; }
 .shk-lang__list {
   display: inline-flex; list-style: none; margin: 0; padding: 3px; gap: 2px;
@@ -991,7 +993,7 @@ button.shk-seal:active { transform: scale(0.93); }
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .shk-header--mobile .shk-lang__list {
-  position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-dropdown, 40);
+  position: absolute; top: calc(100% + 6px); inset-inline-start: 0; z-index: var(--z-dropdown, 40);
   flex-direction: column; gap: 2px;
   box-shadow: var(--shadow-md, 0 8px 24px rgba(0, 0, 0, 0.18));
   opacity: 0; visibility: hidden; transform: translateY(-4px);
@@ -1006,7 +1008,7 @@ button.shk-seal:active { transform: scale(0.93); }
   display: block; margin-top: 1px;
   font-size: 12px; line-height: 1.35; color: var(--text-muted);
 }
-.shk-cart__sub .shk-cart__en { display: inline; margin-left: 6px; }
+.shk-cart__sub .shk-cart__en { display: inline; margin-inline-start: 6px; }
 .shk-cart__sub .shk-cart__en::before { content: "· "; }
 
 /* ---- Loading / skeleton ---- */
@@ -1158,9 +1160,9 @@ button.shk-seal:active { transform: scale(0.93); }
    onto red — purple no longer claims a state, so the toy can have it. Do not
    reuse it for anything transactional. */
 .shk-slicer {
-  position: fixed; left: var(--space-4); bottom: var(--space-4); z-index: 50;
+  position: fixed; inset-inline-start: var(--space-4); bottom: var(--space-4); z-index: 50;
   display: inline-flex; align-items: center; gap: var(--space-3);
-  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
+  padding-block: var(--space-2); padding-inline: var(--space-3) var(--space-4);
   border-radius: var(--radius-pill);
   background: var(--brand-purple); color: var(--cream-50);
   box-shadow: var(--shadow-lg);
@@ -1179,7 +1181,7 @@ button.shk-seal:active { transform: scale(0.93); }
    a label rather than another digit. */
 .shk-slicer__unit {
   font-style: normal; font-weight: var(--fw-regular);
-  margin-left: 3px; opacity: 0.72;
+  margin-inline-start: 3px; opacity: 0.72;
 }
 .shk-slicer__hint {
   font-size: 10px; letter-spacing: var(--tracking-wide);
@@ -1192,7 +1194,7 @@ button.shk-seal:active { transform: scale(0.93); }
      phones are most of this menu's traffic. */
   .shk-slicer__hint { font-size: 10px; }
 }
-@media (min-width: 960px) { .shk-slicer { left: var(--space-6); bottom: var(--space-6); } }
+@media (min-width: 960px) { .shk-slicer { inset-inline-start: var(--space-6); bottom: var(--space-6); } }
 @media (prefers-reduced-motion: reduce) {
   /* No falling fruit means no way to score, so there is nothing to show. */
   .shk-slicer { display: none; }
@@ -1406,7 +1408,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-bundle__row-img--ph { display: block; }
 /* A picked row needs to read as picked even once the eye is on the photos. */
 .shk-bundle__row.is-picked { background: var(--highlight-soft); }
-.shk-bundle__row-info { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
+.shk-bundle__row-info { display: flex; flex-direction: column; min-width: 0; margin-inline-end: auto; }
 .shk-bundle__row-name { font-size: var(--text-sm); color: var(--text-strong); }
 .shk-bundle__row-price { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--menu-price); font-feature-settings: var(--num-feature); }
 .shk-bundle__stepper, .shk-cart__stepper { display: flex; align-items: center; gap: var(--space-3); }
@@ -1424,7 +1426,7 @@ button.shk-seal:active { transform: scale(0.93); }
 /* Floating order bar */
 /* Always-visible floating Order button (food-app style). */
 .shk-orderfab {
-  position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: 55;
+  position: fixed; inset-inline-end: var(--space-4); bottom: var(--space-4); z-index: 55;
   display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer;
   padding: var(--space-3) var(--space-5); border: none; border-radius: var(--radius-pill);
   background: var(--selected); color: var(--cream-50); box-shadow: var(--shadow-lg);
@@ -1441,7 +1443,7 @@ button.shk-seal:active { transform: scale(0.93); }
 /* Empty state: friendly red CTA to start an order. */
 .shk-orderfab--empty { background: var(--royal-green); color: var(--cream-50); }
 .shk-orderfab--empty:hover { background: var(--royal-green-soft); }
-@media (min-width: 960px) { .shk-orderfab { right: var(--space-6); bottom: var(--space-6); } }
+@media (min-width: 960px) { .shk-orderfab { inset-inline-end: var(--space-6); bottom: var(--space-6); } }
 
 /* Order drawer — empty state */
 .shk-cart__empty {
@@ -1551,7 +1553,7 @@ button.shk-seal:active { transform: scale(0.93); }
   letter-spacing: var(--tracking-tight); text-transform: none;
 }
 .shk-mana__tag {
-  margin: 0; max-width: 48ch; text-align: left;
+  margin: 0; max-width: 48ch; text-align: start;
   font-size: clamp(var(--text-md), 1.4vw, var(--text-xl));
   font-weight: var(--fw-semibold); color: var(--text-strong); line-height: 1.18;
 }
@@ -1647,7 +1649,7 @@ button.shk-seal:active { transform: scale(0.93); }
    while the dish is in the order, so the dot and the Order button always read
    as the same state. */
 .shk-mana__dot {
-  position: absolute; top: 5px; right: 5px; z-index: 3; cursor: pointer;
+  position: absolute; top: 5px; inset-inline-end: 5px; z-index: 3; cursor: pointer;
   width: 19px; height: 19px; border-radius: 50%; box-sizing: border-box;
   background: rgba(255, 255, 255, 0.14); border: 2px solid rgba(255, 255, 255, 0.7);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
@@ -1687,7 +1689,7 @@ button.shk-seal:active { transform: scale(0.93); }
 
 @media (max-width: 760px) {
   .shk-mana__head { flex-direction: column; }
-  .shk-mana__tag { text-align: left; }
+  .shk-mana__tag { text-align: start; }
 }
 
 /* ===========================================================================
@@ -1718,7 +1720,7 @@ button.shk-seal:active { transform: scale(0.93); }
   border: 1.5px solid var(--royal-green-line);
   border-radius: clamp(16px, 2.4vw, 24px);
   padding: clamp(16px, 2.4vw, 22px);
-  text-align: left; cursor: pointer; color: inherit;
+  text-align: start; cursor: pointer; color: inherit;
   transition: transform 0.18s var(--ease-out), border-color 0.18s var(--ease-out), background 0.18s var(--ease-out);
 }
 .shk-set:hover { transform: translateY(-4px); border-color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.07); }
@@ -1737,7 +1739,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-set__sub { font-size: var(--text-sm); color: var(--text-body); font-weight: var(--fw-medium); margin-top: 5px; }
 .shk-set__from { font-size: var(--text-sm); color: var(--menu-price); font-family: var(--font-mono); margin-top: 7px; }
 .shk-set__pct {
-  position: absolute; top: clamp(16px, 2.4vw, 22px); right: clamp(16px, 2.4vw, 22px);
+  position: absolute; top: clamp(16px, 2.4vw, 22px); inset-inline-end: clamp(16px, 2.4vw, 22px);
   display: flex; flex-direction: column; align-items: flex-end; line-height: 1;
   font-family: var(--font-display); font-weight: var(--fw-bold);
   font-size: clamp(1rem, 3.2vw, 1.5rem); color: var(--menu-price); font-feature-settings: var(--num-feature);
@@ -1761,7 +1763,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-row {
   display: flex; align-items: baseline; gap: 10px; width: 100%;
   background: none; border: none; padding: 10px 6px; cursor: pointer;
-  color: var(--text-strong); font-family: var(--font-sans); text-align: left;
+  color: var(--text-strong); font-family: var(--font-sans); text-align: start;
   border-radius: var(--radius-sm, 8px);
   transition: background var(--dur-base) var(--ease-out);
   -webkit-tap-highlight-color: transparent;
@@ -1774,7 +1776,7 @@ button.shk-seal:active { transform: scale(0.93); }
 .shk-row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .shk-row__name { font-weight: var(--fw-semibold); font-size: var(--text-base); line-height: 1.25; }
 .shk-row__soon {
-  margin-left: 8px; font-size: var(--text-2xs); font-weight: var(--fw-semibold);
+  margin-inline-start: 8px; font-size: var(--text-2xs); font-weight: var(--fw-semibold);
   letter-spacing: 0.08em; text-transform: uppercase; color: var(--menu-price);
 }
 .shk-row__meta { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--menu-muted); font-feature-settings: var(--num-feature); }
@@ -1834,3 +1836,72 @@ button.shk-seal:active { transform: scale(0.93); }
 @keyframes shk-dlg-in {
   from { opacity: 0; transform: translateY(16px) scale(0.97); }
 }
+
+/* ===========================================================================
+   RTL (Arabic, /ar) — MC f91194f7
+   ---------------------------------------------------------------------------
+   The mirroring itself is NOT here. The layout is written in logical
+   properties (inset-inline-start/end, margin-inline, padding-inline), so the
+   page flips off `<html dir="rtl">` alone — set by applyDocumentLang() in
+   i18n/index.js. The header switcher and filter button swap sides, the price
+   seal moves to the tile's other corner, the order FAB goes bottom-left, the
+   cart drawer and section art mirror with them.
+
+   What IS here is the opposite problem: the handful of runs that must stay
+   left-to-right inside a right-to-left page.
+
+   - Prices, counts, kcal and macro figures are Latin digits, often glued to a
+     ฿ sign or a +/− delta. Left to the bidi algorithm, "+฿40" and "฿149" come
+     out with the sign on the wrong end. `direction: ltr` + `unicode-bidi:
+     isolate` pins each one as its own LTR island.
+   - Dish NAMES are never translated (shishka-os mig 473a) — the guest reads the
+     Latin name off the phone and the cashier reads the same name in the POS. A
+     Latin name sitting in an Arabic paragraph needs the same isolation, or
+     trailing punctuation jumps to the wrong side of it.
+
+   `.num` already marks most numeric spans across the components; the extra
+   selectors are the few numeric/Latin spots that carry no `.num`.
+   =========================================================================== */
+
+:root[dir="rtl"] .num,
+:root[dir="rtl"] .shk-seal__stack,
+:root[dir="rtl"] .shk-card__kcal-pill,
+:root[dir="rtl"] .shk-card__meta,
+:root[dir="rtl"] .shk-card__pricefrom,
+:root[dir="rtl"] .shk-donut__kcal,
+:root[dir="rtl"] .shk-donut__unit,
+:root[dir="rtl"] .shk-app__sub-price,
+:root[dir="rtl"] .shk-set__from,
+:root[dir="rtl"] .shk-set__pct,
+:root[dir="rtl"] .shk-row__meta,
+/* Latin dish names — never translated, so never reordered either. */
+:root[dir="rtl"] .shk-card__name,
+:root[dir="rtl"] .shk-row__name,
+:root[dir="rtl"] .shk-dlg__title,
+:root[dir="rtl"] .shk-cart__line-name,
+:root[dir="rtl"] .shk-cart__en {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* The name spans above are isolated, not re-aligned: inside an RTL column they
+   still start at the inline-start (right) edge like every other line. */
+:root[dir="rtl"] .shk-card__name,
+:root[dir="rtl"] .shk-row__name,
+:root[dir="rtl"] .shk-dlg__title,
+:root[dir="rtl"] .shk-cart__line-name {
+  text-align: start;
+}
+
+/* Noto Kufi Arabic runs a little smaller than Albert Sans at the same size and
+   its ascenders are taller, so Arabic headings need a touch more leading to
+   stop the diacritics clipping into the line above. */
+:root[lang="ar"] .shk-hero__title,
+:root[lang="ar"] .shk-mana__title,
+:root[lang="ar"] .shk-dlg__title {
+  line-height: 1.22;
+}
+
+/* The slicer toy's dotted leader and the sawtooth price seal are drawn, not
+   laid out, so they are already direction-agnostic. The in-store /board screen
+   is exempt from language entirely (main.jsx) and keeps its LTR styling. */
