@@ -21,6 +21,11 @@
     "the next bundle offer. If a bundle line is ever revived, re-add an assertion for ITS prefix",
     "rather than reinstating this one.",
     "",
+    "2026-10-17 — PR 1 removed the SALE-BAKED_POTATO_SIDE -> \"Sides\" branch from useMenu.js. It needed",
+    "no assertion and never had one: that dish is not in menu_public, so the branch could not fire.",
+    "The Coffee hot/cold split is now the ONLY synthesized grouping left (src/lib/coffeeSplit.js),",
+    "and coffee-split below is the assertion that protects it.",
+    "",
     "2026-10-16 — the spring-rolls-section assertion was REMOVED for the same reason. It",
     "required at least one menu_public row with product_code LIKE 'SALE-SUMMER_ROLLS*',",
     "because useMenu.js lifted those dishes into an invented 'Fresh Spring Roll' section.",
@@ -108,7 +113,7 @@
       "resource": "menu_public",
       "query": "category_name=ilike.*coffee*",
       "min": 1,
-      "why": "The hot/cold coffee split keys off a case-insensitive match on category_name."
+      "why": "The hot/cold coffee split keys off a case-insensitive match on category_name. The split itself now lives in src/lib/coffeeSplit.js; if the CEO takes option B in SPEC §2 (real Hot/Cold subcategories via a shishka-os migration), delete that file and this assertion together."
     }
   ]
 }

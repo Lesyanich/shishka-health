@@ -29,8 +29,6 @@ export default {
   "menu.clearFilters": "Clear filters",
 
   // synthetic sections / subgroups (not DB categories)
-  "sub.springRolls": "Fresh Spring Roll",
-  "sub.sides": "Sides",
   "sub.coldCoffee": "Cold Coffee",
   "sub.hotCoffee": "Hot Coffee",
 

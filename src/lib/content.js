@@ -14,6 +14,8 @@
   Keep them in sync with the seeded rows. `lastContent` below removes most of
   the risk for returning guests, but the first visit still renders these.
 */
+import { MENU_GROUPS_FALLBACK } from "./menuGroups.js";
+
 export const DEFAULT_CONTENT = {
   hero: {
     eyebrow: "SHiSHKA · Healthy Kitchen",
@@ -52,6 +54,12 @@ export const DEFAULT_CONTENT = {
   // (shishka-os migration 466). Left empty rather than deleted: the shape is the
   // contract, and the next section that wants an intro adds its key here.
   sectionIntros: {},
+  // EAT / DRINK / SWEET, keyed by section id. The database row (site_content key
+  // `menu_groups`, shishka-os migration 500) replaces this wholesale; the shape
+  // is identical on purpose, so DB and code cannot disagree about group order.
+  // Structure, not copy — unlike the keys above it is never title-cased or
+  // translated. See lib/menuGroups.js.
+  menu_groups: MENU_GROUPS_FALLBACK,
 };
 
 /*
@@ -93,6 +101,7 @@ export function mergeContent(rows) {
     rule: { ...DEFAULT_CONTENT.rule },
     cta: { ...DEFAULT_CONTENT.cta },
     sectionIntros: { ...DEFAULT_CONTENT.sectionIntros },
+    menu_groups: { ...DEFAULT_CONTENT.menu_groups },
   };
   for (const row of rows ?? []) {
     if (out[row?.key] && row.data && typeof row.data === "object") {

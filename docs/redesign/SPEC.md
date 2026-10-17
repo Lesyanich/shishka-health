@@ -63,10 +63,45 @@ Row order = order on the page.
 Dressing and Dips" and "🍽️ Extras" — with no Hummus / Sauces split. Step 0 must create them, or the
 section ships without tabs. Do not assume the data is there.
 
-‡ **Coffee's Hot / Cold tabs are synthesized in code**, not read from `category_*`: `useMenu.js`
-regex-matches 🧊 / "iced" / "cold" / "tonic" on the dish name (plus two product codes by hand), and
-`contracts/menu-contract.json` guards it with the `coffee-split` assertion. Keep or replace that
-deliberately — it is the last hack of the kind the Spring-rolls one belonged to.
+‡ **Coffee's Hot / Cold tabs are synthesized in code**, not read from `category_*`: the dish NAME is
+regex-matched on 🧊 / "iced" / "cold" / "tonic" (plus two product codes by hand), and
+`contracts/menu-contract.json` guards it with the `coffee-split` assertion. PR 1 did not remove it; it
+moved it into `src/lib/coffeeSplit.js`, alone in a file, with the reasoning written down — because it
+is **the last hack of the kind the Spring-rolls one belonged to, and the decision is the CEO's**:
+
+- The rule the business runs on is "what reaches the site is controlled from the admin panel". For
+  WHICH dishes appear that is **true** — `menu_public` admits a row only on `product_code LIKE
+  'SALE-%'` AND `is_web_visible` AND NOT `is_deleted` AND the name not being `[ARCHIVED]%`, one switch
+  per dish in the admin. For HOW they are grouped it is **false for Coffee**: the guest sees two coffee
+  groups nobody can find, rename or reorder in the admin, because this code invents them. That is
+  exactly why searching the admin for "spring" found nothing while the site showed spring rolls.
+- **Option A — keep it, documented.** No migration. The guest keeps a useful split (12 coffees would
+  otherwise be one flat list). The admin still cannot touch it, and the exception survives in code.
+- **Option B — a small shishka-os migration** creating "Hot Coffee" / "Cold Coffee" as real
+  subcategories of Coffee and re-parenting the 12 dishes. After it: delete `src/lib/coffeeSplit.js`,
+  its one call site in `useMenu.js`, the `sub.hotCoffee` / `sub.coldCoffee` dictionary keys and the
+  `coffee-split` assertion — the code deletes itself and the split becomes editable in the admin, like
+  every other subcategory. Cost: one migration, plus the hot/cold names needing translation rows.
+- **Decided 2026-10-17: B.** The CEO chose the migration. It is the only option that makes her rule
+  true, and the clean-up is a deletion rather than new code.
+
+  Where this decision came from, because a line in this file is executed by whoever reads it next:
+  the A-vs-B write-up above was put to her by the PR 1 session (PR #70), and she answered there, in
+  that session's own thread, on 2026-10-17 — in conversation, in Russian, not in a GitHub comment,
+  so there is no link to point at. The main redesign session had asked her the same question earlier
+  and had no answer yet; this is that answer, given in the other thread. If anyone needs it
+  confirmed in writing before the migration is applied, ask her — do not re-open the choice on the
+  strength of this paragraph alone.
+
+Sequencing, so nobody deletes the split too early: PR 1 ships A **unchanged** — removing the code
+before the migration is applied would merge hot and iced coffee into one 12-item list, which is worse
+for the guest. The order is (1) shishka-os migration creating the two subcategories and re-parenting
+the 12 dishes, number claimed with `claim_migration_number`, applied after migration 500; (2) the
+hot/cold names translated for /ru, /th, /ar like any other category; (3) a small shishka-health PR
+that deletes `src/lib/coffeeSplit.js`, its one call site in `useMenu.js`, the `sub.hotCoffee` /
+`sub.coldCoffee` dictionary keys, the `syntheticSubName` helper in `i18n/localize.js` if nothing else
+needs it, and the `coffee-split` assertion in `contracts/menu-contract.json`. Step (3) must not land
+before (1) is applied to production.
 
 Rules:
 - Category = `section_*` in `menu_public`; subcategory = `category_*`, except Coffee (see ‡). Groups
@@ -220,12 +255,35 @@ Everything is already in `menu_public`, read by `src/hooks/useMenu.js`
 | kcal, macros | `calories`, `protein`, `carbs`, `fat` | tabular-nums |
 | Weight | `portion_size` + `portion_unit` | missing → hidden |
 | Allergens | tags with `tag_group = 'allergen'` | lower case, comma-separated |
-| Plant-based | tag `plant-based` | **to be created** — see Step 0 |
-| High protein | `protein >= 30`, computed | one rule for badge and benefits; the `high-protein` **tag is not used** |
-| Seafood filter | allergens fish / crustacean / shellfish | automatic |
+| Plant-based | tag `plant-based` | **cannot ship yet** — no dietary tag exists on the live menu, see below |
+| High protein | `protein >= 30`, computed | `isHighProtein` in `src/lib/dishFacts.js` — ONE rule, imported by `lib/benefits.js` for the dialog chip too; the `high-protein` **tag is not used** |
+| Seafood filter | allergens fish / shellfish | **label only, not an exclusion filter** — see below |
 | Under 400 kcal | `calories` | automatic |
 | Featured | `is_featured`, `display_order` | ordering only, no "FEATURED" label |
 | Sold out / coming soon | `stock_state` | `DishCard` states |
+
+### 7a. The three quick filters — what the data supports (checked 2026-10-17)
+
+§3 lists Plant-based · Under 400 kcal · Seafood. Two of those three are not a coding job, and PR 1
+did not quietly implement either of them. They are the CEO's calls.
+
+- **Under 400 kcal — ships.** Macros are complete: 0 of 81 live dishes is missing `calories` or
+  `protein`, so this and the High-protein badge need no data work at all.
+- **Plant-based — cannot ship.** All **121** tag links on the 81 live dishes are `tag_group =
+  'allergen'`. There is not one dietary tag on the live menu. `vegan` (57 links) and `vegetarian`
+  (62) sit entirely on non-menu nomenclature — preps, RAW, archived dishes. Creating the
+  `plant-based` tag is harmless but leaves the filter **matching zero dishes**: a control that
+  returns an empty menu is worse than no control. It ships when someone tags the menu in the admin,
+  not before.
+- **Seafood — not as an allergen-exclusion control.** 8 of 81 dishes carry `allergen-fish` or
+  `allergen-shellfish` (8, not 9: one dish carries both); there is no crustacean tag in the data at
+  all; and `fn_dish_allergen_status` reports **40 of 81** dishes as `confident: false`, with BOM
+  lines nobody has reviewed. A toggle that hides 8 dishes tells the guest the other 73 are
+  seafood-free, and the data cannot support that promise — for a guest with an allergy that is the
+  one kind of wrong answer that matters. Either show it as a label on the dishes that do carry the
+  tag, or source it from `fn_dish_allergen_status` and show its confidence alongside. `isSeafood`
+  in `src/lib/dishFacts.js` is therefore a positive label helper, documented as not safe for
+  exclusion.
 
 ## 8. Copy and content
 

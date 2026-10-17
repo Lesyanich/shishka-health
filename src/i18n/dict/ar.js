@@ -35,8 +35,6 @@ export default {
   "menu.noMatch": "لا توجد أطباق تطابق هذه الفلاتر.",
   "menu.clearFilters": "مسح الفلاتر",
 
-  "sub.springRolls": "لفائف طازجة",
-  "sub.sides": "أطباق جانبية",
   "sub.coldCoffee": "قهوة مثلجة",
   "sub.hotCoffee": "قهوة ساخنة",
 
