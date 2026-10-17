@@ -57,7 +57,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
       if (e.key === "Escape") return onClose?.();
       if (e.key !== "Tab" || !node) return;
       const f = node.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
       );
       if (!f.length) return;
       const first = f[0];

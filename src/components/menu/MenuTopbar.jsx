@@ -1,4 +1,5 @@
 import { LangSwitch } from "./LangSwitch.jsx";
+import { FilterButton } from "./FilterButton.jsx";
 import { openStatus } from "../../lib/hours.js";
 import { VENUE } from "../../lib/venue.js";
 import { t } from "../../i18n/index.js";
@@ -16,7 +17,7 @@ import { t } from "../../i18n/index.js";
 
   Everything below the header is the menu.
 */
-export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit" }) {
+export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit", filterCount = 0, onOpenFilters }) {
   const status = openStatus(hoursTime);
 
   return (
@@ -58,6 +59,12 @@ export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit" }) {
           >
             {VENUE.locality}
           </a>
+        )}
+
+        {/* Desktop only. On a phone the button rides on the sticky rail instead
+            (CategoryRail) — see FilterButton.jsx for why. */}
+        {wide && onOpenFilters && (
+          <FilterButton labelled count={filterCount} onOpen={onOpenFilters} />
         )}
 
         <LangSwitch />

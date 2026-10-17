@@ -2277,6 +2277,11 @@ a.shk-ctile:active { transform: scale(0.98); }
    sticky wrapper that is doing the pinning, a second sticky context only
    confuses the offset — the wrapper owns it here. */
 .shk-menu__rail .shk-tabs { position: static; }
+/* The Filters button rides at the END of the rail and does not scroll with the
+   pills: reachable from any of the ~13 screens of menu (see FilterButton.jsx). */
+.shk-menu__rail { display: flex; align-items: center; }
+.shk-menu__rail .shk-tabs { flex: 1; min-width: 0; }
+.shk-menu__rail .shk-menu__filter { margin-inline: 0 var(--sp-3); }
 
 /* ---- Group eyebrows (§3.5): quiet labels BETWEEN sections, never navigation.
    Nothing here is clickable, and they are not in the tab order. ---- */
@@ -2324,6 +2329,58 @@ a.shk-ctile:active { transform: scale(0.98); }
   font-size: var(--text-sm);
 }
 .shk-menu__empty p { margin-bottom: var(--sp-2); }
+
+/* ---- Filters button (FilterButton.jsx) ---------------------------------- */
+.shk-menu__filter {
+  position: relative; flex: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  width: 44px; height: 44px; /* a tap target, not just an icon (MASTER) */
+  border: 1px solid var(--border-default); border-radius: var(--radius-circle);
+  background: var(--surface-2); color: var(--text-strong); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.shk-menu__filter:hover { border-color: var(--border-strong); }
+/* On = a filter is actually hiding dishes. Same on-state the chips use, so the
+   two read as one idea: green fill, royal-green edge. */
+.shk-menu__filter.is-on { background: var(--green-100); border-color: var(--royal-green); }
+.shk-menu__filter--labelled {
+  width: auto; padding-inline: var(--sp-4); border-radius: var(--radius-pill);
+  font-size: var(--text-sm); font-weight: var(--fw-semibold);
+}
+.shk-menu__filter-text { white-space: nowrap; }
+.shk-menu__filter-badge {
+  position: absolute; top: -4px; inset-inline-end: -4px;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--radius-pill);
+  background: var(--accent); color: var(--cream-50); /* cream on red: 5.92:1 */
+  font-size: 11px; font-weight: var(--fw-bold); line-height: 1;
+  display: grid; place-items: center; border: 2px solid var(--bg-canvas);
+  font-variant-numeric: tabular-nums;
+}
+
+/* "Dishes shown 74 / 81 · Clear filters". Page-wide allergen filtering that a
+   guest can forget about — scrolled eight screens down, the badge off screen —
+   is how someone ends up ordering from a menu they believe is complete. So a
+   filtered menu has to look filtered, at the top of the list, in words. */
+.shk-menu__filtered {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  margin: var(--sp-3) var(--sp-4) 0; padding: var(--sp-1) var(--sp-4);
+  border-radius: var(--radius-md); background: var(--green-100);
+  font-size: var(--text-sm); font-weight: var(--fw-semibold);
+  /* --text-muted is the tightest pair on this surface (4.62:1); the strip is
+     the thing that must not be missed, so it takes full ink. */
+  color: var(--text-strong);
+}
+.shk-menu__filtered-clear {
+  min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
+  font-size: var(--text-sm); font-weight: var(--fw-bold); color: var(--text-strong);
+  text-decoration: underline; white-space: nowrap;
+}
+
+/* The allergen note inside the sheet — the honest half of an exclusion filter. */
+.shk-fp__note {
+  margin-top: var(--sp-3); font-size: 13px; line-height: 1.45; color: var(--text-muted);
+}
 
 /* ---- Visit us (§3.8 / §4.6) --------------------------------------------- */
 .shk-menu__visit {
@@ -2407,6 +2464,7 @@ a.shk-ctile:active { transform: scale(0.98); }
   .shk-menu__nav { display: block; }
 
   .shk-menu__lede { padding: var(--sp-6) 0 var(--sp-8); }
+  .shk-menu__filtered { margin: 0 0 var(--sp-6); }
   .shk-menu__title { font-size: clamp(40px, 4vw, 56px); letter-spacing: -0.03em; line-height: 1.02; }
   .shk-menu__sub { font-size: var(--text-md); margin-top: var(--sp-3); }
 

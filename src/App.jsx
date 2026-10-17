@@ -3,10 +3,12 @@ import { useMenu } from "./hooks/useMenu.js";
 import { useWide } from "./hooks/useWide.js";
 import { MenuPage } from "./components/menu/MenuPage.jsx";
 import { DishDialog } from "./components/menu/DishDialog.jsx";
+import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import { FruitFall } from "./components/menu/FruitFall.jsx";
 import { SliceScore } from "./components/menu/SliceScore.jsx";
 import { FruitSymbols } from "./lib/fruitArt.jsx";
 import { assignDishSlugs } from "./lib/menuSections.js";
+import { buildFilterOptions, dishPasses } from "./lib/dishFilters.js";
 import { useCart } from "./state/cart.jsx";
 
 /*
@@ -30,8 +32,32 @@ export default function App() {
 
   const [selected, setSelected] = useState(null);
 
+  // The page-wide diet / allergen sheet. Separate from the per-section quick
+  // filters (lib/quickFilters.js): those only make claims the data can fully
+  // support; this one EXCLUDES, which is why the sheet carries a note.
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [diets, setDiets] = useState([]);
+  const [excluded, setExcluded] = useState([]);
+
   const dishes = data?.dishes ?? [];
+  // Slugs and the `?dish=` lookup deliberately use the UNFILTERED list: a shared
+  // link to a dish must keep opening it whatever the recipient's filters are.
   const slugs = useMemo(() => assignDishSlugs(dishes), [dishes]);
+
+  // Options come from what the menu's own dishes carry, never a fixed list.
+  const { dietOptions, allergenOptions } = useMemo(() => buildFilterOptions(dishes), [dishes]);
+  const filtered = useMemo(
+    () => dishes.filter((d) => dishPasses(d, diets, excluded)),
+    [dishes, diets, excluded],
+  );
+  const pageData = useMemo(() => (data ? { ...data, dishes: filtered } : data), [data, filtered]);
+
+  const toggle = (list, set, id) =>
+    set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
+  const clearFilters = () => {
+    setDiets([]);
+    setExcluded([]);
+  };
   const bySlug = useMemo(() => {
     const m = new Map();
     for (const d of dishes) m.set(slugs.get(d.id), d);
@@ -145,12 +171,33 @@ export default function App() {
       <SliceScore />
 
       <MenuPage
-        data={data}
+        data={pageData}
         loading={loading}
         error={error}
         addedIds={cart.addedIds}
         onOpenDish={openDish}
         onQuickAdd={quickAdd}
+        filter={{
+          count: diets.length + excluded.length,
+          onOpen: () => setFilterOpen(true),
+          onClear: clearFilters,
+          shown: filtered.length,
+          total: dishes.length,
+        }}
+      />
+
+      <FilterPanel
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        dietOptions={dietOptions}
+        allergenOptions={allergenOptions}
+        selectedDiets={diets}
+        excludedAllergens={excluded}
+        onToggleDiet={(id) => toggle(diets, setDiets, id)}
+        onToggleAllergen={(id) => toggle(excluded, setExcluded, id)}
+        onClear={clearFilters}
+        onApply={() => setFilterOpen(false)}
+        resultCount={filtered.length}
       />
 
       <DishDialog
