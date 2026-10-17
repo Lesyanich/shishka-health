@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { CategoryTabs } from "../filters/CategoryTabs.jsx";
+import { FilterButton } from "./FilterButton.jsx";
 import { t } from "../../i18n/index.js";
 
 /*
@@ -23,7 +24,7 @@ import { t } from "../../i18n/index.js";
 // reads as "there is more this way" rather than ending at the selection.
 const PEEK = 16;
 
-export function CategoryRail({ sections, idFor, active, onPick }) {
+export function CategoryRail({ sections, idFor, active, onPick, filterCount = 0, onOpenFilters }) {
   const wrapRef = useRef(null);
 
   useEffect(() => {
@@ -43,7 +44,10 @@ export function CategoryRail({ sections, idFor, active, onPick }) {
     }
   }, [active]);
 
-  if (sections.length === 0) return null;
+  // Not early-returned on an empty rail: with every dish filtered out there are
+  // no sections, and the Filters button is the one way back — losing it would
+  // strand the guest on an empty page.
+  if (sections.length === 0 && !onOpenFilters) return null;
 
   return (
     <div className="shk-menu__rail" ref={wrapRef}>
@@ -61,6 +65,7 @@ export function CategoryRail({ sections, idFor, active, onPick }) {
           label: s.allSoon ? t("menu.railSoon", { name: s.name }) : s.name,
         }))}
       />
+      {onOpenFilters && <FilterButton count={filterCount} onOpen={onOpenFilters} />}
     </div>
   );
 }

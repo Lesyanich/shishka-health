@@ -74,12 +74,21 @@ export default {
   "menu.comingSoonSection": "Coming soon",
   // The rail label for a category whose every dish is coming soon (§2).
   "menu.railSoon": "{name} · soon",
-  "menu.clearFilters": "Clear filters",
 
   // quick filters — only the two the data honestly supports (§7a, lib/quickFilters.js)
   "filter.under400": "Under 400 kcal",
   "filter.highProtein": "High protein",
   "filter.noneHere": "No dishes in this section match these filters.",
+
+  // the page-wide diet / allergen sheet, brought back behind the Filters button
+  "filter.button": "Filters",
+  "filter.buttonActive": "Filters, {n} active",
+  // Label only; the figures ("74 / 81") render in their own .num span so they
+  // stay left-to-right in Arabic.
+  "filter.shown": "Dishes shown",
+  // The honest half of an exclusion filter — see lib/dishFilters.js.
+  "filter.allergenNote":
+    "Dishes with no allergen listed are not guaranteed to be free of it. Tell our team about any allergy.",
 
   // Open / closed status in the header (§3.1, §4.1). The LABEL and the CLOCK
   // FIGURE are separate keys on purpose: the figure renders in its own `.num`

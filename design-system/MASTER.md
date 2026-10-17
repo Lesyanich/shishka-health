@@ -101,6 +101,15 @@ DO NOT switch to Playfair/Karla (the skill's restaurant default) — off-brand h
   inside (✓), body scroll locked while open (✓). **Corrected 2026-10-17:** this
   block listed all three as "REQUIRED additions (currently missing)". They were
   implemented before that; the note had gone stale. Keep them.
+- `FilterPanel` (the page-wide diet / allergen sheet) uses the shared
+  `hooks/useModal.js` for the same contract. It had **none** of it before PR 3 —
+  no Escape, no trap, no focus restore, no scroll lock. `DishDialog` still carries
+  its own inline copy; migrating it is a follow-up with no visible effect.
+- **Trap on enabled controls only.** The focusable query must be `:not(:disabled)`.
+  A disabled button can never be `document.activeElement`, so if the LAST control
+  in a dialog is disabled the "wrap to first" branch never fires and Tab walks out
+  into the page behind. `DishDialog` had this bug (its pinned Add button is
+  disabled until a build-your-own dish has its required options) and is fixed.
 - `sheet` (menu redesign PR 3) is the **mobile** shape: `100dvh − 56px`, its own
   scroller so the pinned Add bar stays put, and it closes by swipe-down and
   browser Back as well — it carries its own `?dish=<slug>` URL. The swipe only
