@@ -25,6 +25,8 @@
     { "source": "/ru", "destination": "/ru/index.html" },
     { "source": "/th/menu", "destination": "/th/menu/index.html" },
     { "source": "/th", "destination": "/th/index.html" },
+    { "source": "/ar/menu", "destination": "/ar/menu/index.html" },
+    { "source": "/ar", "destination": "/ar/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
