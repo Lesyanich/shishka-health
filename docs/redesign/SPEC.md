@@ -85,6 +85,14 @@ is **the last hack of the kind the Spring-rolls one belonged to, and the decisio
 - **Decided 2026-10-17: B.** The CEO chose the migration. It is the only option that makes her rule
   true, and the clean-up is a deletion rather than new code.
 
+  Where this decision came from, because a line in this file is executed by whoever reads it next:
+  the A-vs-B write-up above was put to her by the PR 1 session (PR #70), and she answered there, in
+  that session's own thread, on 2026-10-17 — in conversation, in Russian, not in a GitHub comment,
+  so there is no link to point at. The main redesign session had asked her the same question earlier
+  and had no answer yet; this is that answer, given in the other thread. If anyone needs it
+  confirmed in writing before the migration is applied, ask her — do not re-open the choice on the
+  strength of this paragraph alone.
+
 Sequencing, so nobody deletes the split too early: PR 1 ships A **unchanged** — removing the code
 before the migration is applied would merge hot and iced coffee into one 12-item list, which is worse
 for the guest. The order is (1) shishka-os migration creating the two subcategories and re-parenting
