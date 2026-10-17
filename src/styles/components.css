@@ -1838,6 +1838,323 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 
 /* ===========================================================================
+   MENU REDESIGN — PR 2 components
+   ---------------------------------------------------------------------------
+   Sizes, radii and type below are read off docs/redesign/mockups/*.dc.html
+   (A2-home-full, A2-cat-grid, D-category); the spec table is docs/redesign/
+   SPEC.md §5–6. Nothing here is mounted by the app yet — PR 3 (mobile) and
+   PR 4 (desktop) wire these in. Until then they live only in the guide.
+
+   One breakpoint: 1024px. Mobile-first, desktop in a min-width block.
+   =========================================================================== */
+
+/* ---- KcalSeal -------------------------------------------------------------
+   The calorie sunburst stamp. Sibling of .shk-seal (price), not a variant:
+   different tooth count and a solid face instead of an evenodd hole, and it
+   is never a button. See KcalSeal.jsx for why both exist. */
+.shk-kseal {
+  position: relative; flex: 0 0 auto;
+  display: inline-grid; place-items: center;
+  line-height: 1; pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(30, 57, 3, 0.18));
+}
+.shk-kseal__ring { grid-area: 1 / 1; width: 100%; height: 100%; }
+.shk-kseal__edge { fill: var(--seal-ink); }
+.shk-kseal__face { fill: var(--surface-1); }
+.shk-kseal__stack {
+  grid-area: 1 / 1; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--font-sans); color: var(--seal-ink);
+  /* Numbers only: tabular so a 99 → 100 swap does not shift the stack.
+     Deliberately NOT .shk-data — the brand renders prices and the seal in the
+     sans display face (see .shk-seal__num), mono would be off-brand here. */
+  font-variant-numeric: tabular-nums;
+}
+.shk-kseal__num { font-size: 1em; font-weight: var(--fw-display); letter-spacing: -0.02em; }
+.shk-kseal__unit {
+  font-size: 0.56em; font-weight: var(--fw-bold);
+  letter-spacing: 0.04em; margin-top: 1px;
+}
+
+/* ---- DishCard (redesign) --------------------------------------------------
+   --dish-media-h drives both the photo box and where the round "+" sits, so a
+   variant changes one number instead of three. */
+.shk-dish {
+  --dish-media-h: 150px;
+  position: relative;
+  display: flex; flex-direction: column; gap: var(--sp-1);
+  color: var(--text-strong); font-family: var(--font-body);
+}
+.shk-dish__media {
+  position: relative;
+  height: var(--dish-media-h);
+  border-radius: 22px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.shk-dish__img {
+  width: 100%; height: 100%;
+  /* contain, never cover: these are plated dishes shot square — cropping them
+     to fill cuts the plate. The tinted box is the frame. */
+  object-fit: contain; display: block;
+}
+.shk-dish__seal { position: absolute; right: 6px; top: 6px; }
+
+/* High-protein flag: ≥30g, one rule shared with lib/benefits.js (spec §7). */
+.shk-dish__hp {
+  position: absolute; left: 12px; top: 12px;
+  padding: 4px 10px; border-radius: var(--radius-pill);
+  background: var(--accent); color: var(--cream-50);
+  font-size: var(--text-xs); font-weight: var(--fw-display); line-height: 1.3;
+}
+.shk-dish__soldout {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: var(--sp-2); text-align: center;
+  background: var(--royal-green); color: var(--cream-50);
+  font-size: var(--text-xs); font-weight: var(--fw-bold);
+}
+/* Sold out dims the FOOD, not the text — the name and price must stay
+   readable, so the opacity lands on the photo only (spec §5). */
+.shk-dish.is-soldout .shk-dish__img { opacity: 0.5; }
+.shk-dish.is-coming-soon { opacity: 0.78; }
+
+.shk-dish__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--sp-3); margin-top: 6px;
+}
+.shk-dish__name {
+  margin: 0; font-size: 15px; font-weight: var(--fw-bold);
+  line-height: 1.2; letter-spacing: -0.01em;
+}
+.shk-dish__price {
+  flex-shrink: 0; font-size: 18px; font-weight: var(--fw-display);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The name is the open control. Its ::after is stretched over the whole card
+   so the photo is part of the hit area without nesting anything inside a
+   button — and the "+" above it keeps its own target (see DishCard.jsx). */
+.shk-dish__open {
+  all: unset;
+  cursor: pointer; display: inline; color: inherit;
+  font: inherit; letter-spacing: inherit;
+}
+.shk-dish__open::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.shk-dish__open:focus-visible { border-radius: var(--radius-xs); box-shadow: var(--shadow-focus); }
+
+.shk-dish__add {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px; border: 0; cursor: pointer;
+  background: var(--royal-green); color: var(--cream-50);
+  transition: transform var(--dur-fast) var(--ease-out),
+              background var(--dur-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.shk-dish__add:active { transform: scale(0.94); }
+.shk-dish__add.is-added,
+.shk-dish__add[aria-pressed="true"] { background: var(--royal-green-soft); }
+.shk-dish__add svg { width: 20px; height: 20px; flex: none; }
+
+/* Round quick-add on the photo. z-index clears the stretched ::after. */
+.shk-dish__add--fab {
+  position: absolute; right: 8px; bottom: 8px; z-index: 2;
+  width: 44px; height: 44px; border-radius: var(--radius-circle);
+  box-shadow: 0 4px 12px rgba(20, 22, 13, 0.2);
+}
+/* The elevation shadow above is on the same property as the global focus ring
+   and outranks it, so a keyboard user got NO ring on this button. Restate both
+   together — ring first so it reads as the outer edge. */
+.shk-dish__add--fab:focus-visible {
+  box-shadow: var(--shadow-focus), 0 4px 12px rgba(20, 22, 13, 0.2);
+}
+/* Labelled Add on the desktop card. */
+.shk-dish__add--pill {
+  height: 44px; padding: 0 18px; border-radius: var(--radius-pill);
+  font-family: var(--font-body); font-size: var(--text-sm); font-weight: var(--fw-bold);
+  flex-shrink: 0;
+}
+.shk-dish__add--pill svg { width: 16px; height: 16px; }
+
+/* list-row — drinks and dips: people pick those by name and price, so the
+   photo shrinks to a 76px thumbnail and the row reads as a list (spec §3.5). */
+.shk-dish--list-row {
+  flex-direction: row; align-items: center; gap: var(--sp-3);
+}
+.shk-dish--list-row .shk-dish__media {
+  width: 76px; height: 76px; flex: none; border-radius: var(--radius-md);
+}
+.shk-dish--list-row .shk-dish__seal { display: none; }
+.shk-dish--list-row .shk-dish__head { flex: 1; margin-top: 0; }
+/* Stays 44px: the row is tighter than the grid card, but the tap target is a
+   floor, not a style choice (MASTER, spec §5). Only the shadow goes. */
+.shk-dish--list-row .shk-dish__add--fab {
+  position: static; width: 44px; height: 44px; box-shadow: none;
+}
+
+/* grid-full — the desktop card. Everything inline, no dialog. */
+.shk-dish--grid-full { --dish-media-h: 210px; gap: 6px; }
+.shk-dish--grid-full .shk-dish__media { border-radius: 26px; }
+.shk-dish--grid-full .shk-dish__seal { right: 10px; top: 10px; }
+.shk-dish--grid-full .shk-dish__head { margin-top: var(--sp-2); }
+.shk-dish--grid-full .shk-dish__name { font-size: 18px; font-weight: var(--fw-display); }
+.shk-dish--grid-full .shk-dish__price { font-size: 20px; }
+.shk-dish__desc {
+  margin: 0; font-size: var(--text-sm); line-height: 1.45; color: var(--text-body);
+  /* Three lines keeps every card in a row the same height without a grid hack. */
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.shk-dish__macros {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px; margin-top: var(--sp-1);
+}
+.shk-dish__macro {
+  background: var(--surface-2); border-radius: var(--radius-sm);
+  padding: 7px 4px; text-align: center;
+}
+.shk-dish__macro-val {
+  display: block; font-size: 15px; font-weight: var(--fw-display);
+  font-variant-numeric: tabular-nums;
+}
+.shk-dish__macro-val small { font-size: 11px; font-weight: var(--fw-bold); }
+.shk-dish__macro-key {
+  display: block; font-size: 10.5px; font-weight: var(--fw-bold);
+  letter-spacing: 0.08em; color: var(--text-muted);
+}
+/* Protein is the one macro the brand actually sells on, so it carries the
+   accent. Never colour ALONE: the word PROTEIN is right there (MASTER). */
+.shk-dish__macro--protein .shk-dish__macro-key { color: var(--accent); }
+.shk-dish__foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-2); margin-top: var(--sp-1);
+}
+.shk-dish__meta {
+  font-size: 12.5px; font-weight: var(--fw-semibold); color: var(--text-muted);
+}
+
+/* ---- CategoryTile ---------------------------------------------------------
+   The mobile home grid. Tiles are navigation, so they are <a> — except
+   `soon`, which has nowhere to go and is a <div> (out of the tab order
+   entirely, rather than a target that does nothing). */
+.shk-ctile {
+  --ctile-h: 132px;
+  position: relative; overflow: hidden;
+  height: var(--ctile-h); border-radius: 22px; padding: 14px;
+  box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  background: var(--surface-2); color: var(--text-strong);
+  text-decoration: none; font-family: var(--font-body);
+  transition: transform var(--dur-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+a.shk-ctile:active { transform: scale(0.98); }
+.shk-ctile__img {
+  position: absolute; right: -8px; top: -4px;
+  width: 96px; height: 96px; object-fit: contain;
+}
+.shk-ctile__text { position: relative; display: flex; flex-direction: column; }
+.shk-ctile__eyebrow {
+  font-size: var(--text-xs); font-weight: var(--fw-bold);
+  letter-spacing: 0.12em; color: var(--accent);
+}
+.shk-ctile__name {
+  font-size: 17px; font-weight: var(--fw-display); line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+/* The tile height is fixed and the box clips, so long copy would silently
+   disappear — and this copy comes from the DB (category name, item count,
+   "from ฿…"), not from here. Clamp instead: two lines for the name, one for
+   the meta, both ellipsised. Measured at 375px the `soon` tile had 1px of
+   slack before clamping; one more word would have cut the line in half. */
+.shk-ctile__name,
+.shk-ctile__meta {
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+}
+.shk-ctile__name { -webkit-line-clamp: 2; }
+.shk-ctile__meta {
+  -webkit-line-clamp: 1;
+  font-size: 12.5px; font-weight: var(--fw-semibold); color: var(--text-muted);
+}
+.shk-ctile__chevron { flex: none; width: 18px; height: 18px; color: var(--text-muted); }
+
+/* featured — full width, two overlapping cut-outs (Salads & Bowls). */
+.shk-ctile--featured {
+  --ctile-h: 156px;
+  grid-column: span 2; border-radius: var(--radius-lg); padding: 18px;
+  background: var(--green-100);
+}
+.shk-ctile--featured .shk-ctile__name { font-size: 26px; letter-spacing: -0.02em; }
+.shk-ctile--featured .shk-ctile__meta { font-size: 13.5px; }
+.shk-ctile--featured .shk-ctile__img { width: 130px; height: 130px; }
+.shk-ctile--featured .shk-ctile__img--1 { right: 70px; top: -14px; }
+.shk-ctile--featured .shk-ctile__img--2 { right: -16px; top: 10px; }
+
+/* row — full width, short, photo left and a chevron right. */
+.shk-ctile--row {
+  --ctile-h: 84px;
+  grid-column: span 2;
+  flex-direction: row; align-items: center; gap: 14px;
+  padding: 0 16px 0 10px;
+}
+.shk-ctile--row .shk-ctile__img { position: static; width: 68px; height: 68px; }
+.shk-ctile--row .shk-ctile__text { flex: 1; }
+
+/* soon — a category with nothing orderable in it yet (today: Fresh juices). */
+.shk-ctile--soon {
+  --ctile-h: 120px;
+  background: none; border: 1.5px dashed var(--border-strong);
+}
+.shk-ctile--soon .shk-ctile__eyebrow { font-size: 11px; }
+
+/* Bands. Colour only — except that the mockup also gives DRINK and SWEET
+   their own heights, so those ride along here. */
+.shk-ctile--drink { --ctile-h: 120px; background: var(--band-drink); }
+.shk-ctile--drink .shk-ctile__img { width: 84px; height: 84px; right: -4px; top: -2px; }
+.shk-ctile--sweet { --ctile-h: 96px; background: var(--cream-100); }
+.shk-ctile--sweet .shk-ctile__img { width: 76px; height: 76px; }
+
+/* ---- CategoryTabs: segmented ---------------------------------------------
+   Equal columns on a tinted track, for the mobile category screen. The
+   default .shk-tabs rail (scrolling pills) is unchanged. */
+.shk-tabs--segmented {
+  position: static;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  gap: 4px; padding: 4px; min-height: 0;
+  background: var(--surface-2); border-radius: var(--radius-pill);
+  overflow: visible;
+}
+.shk-tabs--segmented .shk-tab {
+  flex: initial; min-height: 40px; padding: 0 var(--sp-2);
+  border-radius: var(--radius-pill); color: var(--text-strong);
+  text-align: center; white-space: nowrap;
+}
+.shk-tabs--segmented .shk-tab[aria-selected="true"] {
+  background: var(--royal-green); color: var(--cream-50); font-weight: var(--fw-bold);
+}
+.shk-tabs--segmented .shk-tab__count { font-weight: var(--fw-medium); opacity: 0.75; }
+
+/* ---- FilterChip: on state -------------------------------------------------
+   Spec §5 wants the pressed chip to read as a green-tinted pill with a
+   royal-green edge, not the solid --highlight fill the rail used before. */
+.shk-chip[aria-pressed="true"] {
+  background: var(--green-100);
+  border-color: var(--royal-green);
+  color: var(--royal-green);
+  font-weight: var(--fw-semibold);
+}
+.shk-chip[aria-pressed="true"] svg { color: var(--royal-green); }
+
+/* ---- Desktop ------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .shk-dish--grid-compact { --dish-media-h: 210px; }
+}
+
+/* Honour reduced motion across the new families (MASTER checklist). */
+@media (prefers-reduced-motion: reduce) {
+  .shk-dish__add:active,
+  a.shk-ctile:active { transform: none; }
+}
+
+/* ===========================================================================
    RTL (Arabic, /ar) — MC f91194f7
    ---------------------------------------------------------------------------
    The mirroring itself is NOT here. The layout is written in logical
@@ -1874,9 +2191,19 @@ button.shk-seal:active { transform: scale(0.93); }
 :root[dir="rtl"] .shk-set__from,
 :root[dir="rtl"] .shk-set__pct,
 :root[dir="rtl"] .shk-row__meta,
+/* Menu redesign (PR 2): the new families carry the same numeric runs as the
+   old ones — ฿ price, kcal in the seal, P/C/F grams, the weight + allergen
+   line — and none of them uses `.num`. Added here when the redesign branch met
+   the RTL branch, so /ar never ships a reversed "฿149". */
+:root[dir="rtl"] .shk-dish__price,
+:root[dir="rtl"] .shk-dish__meta,
+:root[dir="rtl"] .shk-dish__macro-val,
+:root[dir="rtl"] .shk-kseal__stack,
+:root[dir="rtl"] .shk-ctile__meta,
 /* Latin dish names — never translated, so never reordered either. */
 :root[dir="rtl"] .shk-card__name,
 :root[dir="rtl"] .shk-row__name,
+:root[dir="rtl"] .shk-dish__name,
 :root[dir="rtl"] .shk-dlg__title,
 :root[dir="rtl"] .shk-cart__line-name,
 :root[dir="rtl"] .shk-cart__en {
@@ -1888,6 +2215,7 @@ button.shk-seal:active { transform: scale(0.93); }
    still start at the inline-start (right) edge like every other line. */
 :root[dir="rtl"] .shk-card__name,
 :root[dir="rtl"] .shk-row__name,
+:root[dir="rtl"] .shk-dish__name,
 :root[dir="rtl"] .shk-dlg__title,
 :root[dir="rtl"] .shk-cart__line-name {
   text-align: start;

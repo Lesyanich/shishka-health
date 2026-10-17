@@ -66,6 +66,14 @@
   --band-mint:      #E9F3EC;
   --band-warm:      var(--cream-50);
   --produce-shadow: rgba(139, 151, 219, 0.55);
+
+  /* `--band-drink` is the DRINK wash on the menu-home tiles (SPEC.md §6, the
+     one colour the redesign adds). Warmer and a shade deeper than --band-warm,
+     which is plain cream-50: against white tiles at --surface-2 #F4F8EC the
+     drinks group has to read as a different key, and cream-50 is too close to
+     the page to do that. Measured: royal-green ink 11.69:1, muted α.70 4.86:1,
+     accent red 5.74:1 — all AA. */
+  --band-drink:     #FBF4E6;
 }
 
 /* ---------------------------------------------------------------------------

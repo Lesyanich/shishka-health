@@ -81,6 +81,13 @@
     <symbol id="shk-seal-edge" viewBox="0 0 100 100">
       <path class="shk-seal__edge" fill-rule="evenodd" d="M 50.00 1.00 L 54.87 6.77 L 60.90 2.23 L 64.37 8.94 L 71.26 5.85 L 73.14 13.17 L 80.55 11.69 L 80.76 19.24 L 88.31 19.45 L 86.83 26.86 L 94.15 28.74 L 91.06 35.63 L 97.77 39.10 L 93.23 45.13 L 99.00 50.00 L 93.23 54.87 L 97.77 60.90 L 91.06 64.37 L 94.15 71.26 L 86.83 73.14 L 88.31 80.55 L 80.76 80.76 L 80.55 88.31 L 73.14 86.83 L 71.26 94.15 L 64.37 91.06 L 60.90 97.77 L 54.87 93.23 L 50.00 99.00 L 45.13 93.23 L 39.10 97.77 L 35.63 91.06 L 28.74 94.15 L 26.86 86.83 L 19.45 88.31 L 19.24 80.76 L 11.69 80.55 L 13.17 73.14 L 5.85 71.26 L 8.94 64.37 L 2.23 60.90 L 6.77 54.87 L 1.00 50.00 L 6.77 45.13 L 2.23 39.10 L 8.94 35.63 L 5.85 28.74 L 13.17 26.86 L 11.69 19.45 L 19.24 19.24 L 19.45 11.69 L 26.86 13.17 L 28.74 5.85 L 35.63 8.94 L 39.10 2.23 L 45.13 6.77 L 50.00 1.00 Z M 91 50 A 41 41 0 1 1 9 50 A 41 41 0 1 1 91 50 Z" />
     </symbol>
+    <!-- Kcal seal edge — 24 teeth on a 64 box, radii 31.5/26.5, solid face.
+         A different stamp from the price seal above, not a scaled copy;
+         KcalSeal.jsx generates these same points at runtime. -->
+    <symbol id="shk-kseal-edge" viewBox="0 0 64 64">
+      <polygon class="shk-kseal__edge" points="32.00,0.50 35.46,5.73 40.15,1.57 42.14,7.52 47.75,4.72 48.13,10.98 54.27,9.73 53.02,15.87 59.28,16.25 56.48,21.86 62.43,23.85 58.27,28.54 63.50,32.00 58.27,35.46 62.43,40.15 56.48,42.14 59.28,47.75 53.02,48.13 54.27,54.27 48.13,53.02 47.75,59.28 42.14,56.48 40.15,62.43 35.46,58.27 32.00,63.50 28.54,58.27 23.85,62.43 21.86,56.48 16.25,59.28 15.87,53.02 9.73,54.27 10.98,48.13 4.72,47.75 7.52,42.14 1.57,40.15 5.73,35.46 0.50,32.00 5.73,28.54 1.57,23.85 7.52,21.86 4.72,16.25 10.98,15.87 9.73,9.73 15.87,10.98 16.25,4.72 21.86,7.52 23.85,1.57 28.54,5.73" />
+      <circle class="shk-kseal__face" cx="32" cy="32" r="24.5" />
+    </symbol>
   </svg>
 
 
@@ -122,7 +129,7 @@
     <nav class="ds-nav" style="margin-top:var(--sp-8)">
       <a href="#color">Color</a><a href="#type">Type</a><a href="#buttons">Buttons</a>
       <a href="#badges">Badges</a><a href="#icons">Icon btns</a><a href="#chips">Chips</a><a href="#tabs">Tabs</a>
-      <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
+      <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#kseal">Kcal seal</a><a href="#dish">Dish card ✦</a><a href="#ctile">Category tiles ✦</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
       <a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
       <a href="#hero">Hero</a><a href="#secart">Section art</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
       <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#orbit">Orbit</a><a href="#manakish">Potato Tacos</a><a href="#board">TV board</a><a href="#states">States</a>
@@ -146,17 +153,18 @@
         <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--cream-50)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--cream-50 · text</div><div class="ds-swatch__hex">#FBF8F0</div></div></div>
       </div>
 
-      <div class="ds-sub">Surfaces (royal theme — stepped greens for elevation)</div>
+      <div class="ds-sub">Surfaces (light theme — white card, faintly green panels)</div>
       <div class="ds-swatches">
-        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-1)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-1</div><div class="ds-swatch__hex">#46521D</div></div></div>
-        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-2)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-2</div><div class="ds-swatch__hex">#3C481A</div></div></div>
-        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-3)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-3</div><div class="ds-swatch__hex">#56641F</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-1)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-1 · card face</div><div class="ds-swatch__hex">#FFFFFF</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-2)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-2 · photo box, tracks</div><div class="ds-swatch__hex">#F4F8EC</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--surface-3)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--surface-3 (= --green-100)</div><div class="ds-swatch__hex">#E7EFD6</div></div></div>
       </div>
 
       <div class="ds-sub">Fresh bands (light theme — the printed-menu look)</div>
       <div class="ds-swatches">
         <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--band-mint)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--band-mint · Salads band</div><div class="ds-swatch__hex">#E9F3EC</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--band-warm)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--band-warm · Coffee band (= --cream-50)</div><div class="ds-swatch__hex">#FBF8F0</div></div></div>
+        <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--band-drink)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--band-drink · DRINK tiles · royal 11.69:1</div><div class="ds-swatch__hex">#FBF4E6</div></div></div>
         <div class="ds-swatch"><div class="ds-swatch__chip" style="background:var(--produce-shadow)"></div><div class="ds-swatch__meta"><div class="ds-swatch__name">--produce-shadow · falling-fruit cast</div><div class="ds-swatch__hex">rgba(139,151,219,.55)</div></div></div>
       </div>
       <div class="ds-recipe">The page is white; exactly two sections carry a wash, chosen by name in App.jsx (SECTION_TINT), never
@@ -300,6 +308,15 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
           <button class="shk-tab">Drinks</button>
         </div>
       </div>
+
+      <div class="ds-sub">segmented — equal columns on a tinted track (menu redesign)</div>
+      <div role="tablist" class="shk-tabs shk-tabs--segmented" style="max-width:358px">
+        <button type="button" role="tab" class="shk-tab" aria-selected="false">All <span class="shk-tab__count">13</span></button>
+        <button type="button" role="tab" class="shk-tab" aria-selected="true">Salads <span class="shk-tab__count">7</span></button>
+        <button type="button" role="tab" class="shk-tab" aria-selected="false">Bowls <span class="shk-tab__count">6</span></button>
+      </div>
+      <div class="ds-recipe">&lt;CategoryTabs variant="segmented" … /&gt; — the mobile category screen. Track --surface-2, selected fills --royal-green.
+Tabs appear only when a section has ≥2 categories; "All" is first and selected by default.</div>
       <div class="ds-recipe">&lt;div class="shk-tabs"&gt;&lt;button class="shk-tab" aria-selected="true"&gt;…&lt;/button&gt;…&lt;/div&gt;  ·  arrow-key nav required (see MASTER.md)
 
 "YOU ARE HERE" IS RED. THE CHOICES YOU MAKE ARE STILL GREEN.
@@ -404,6 +421,159 @@ scan alpha) and compare rendered ink heights; the file's own dimensions tell you
 size scales via inline width/height/font-size · added state → shk-seal--active fills var(--selected) · components.css:283</div>
     </section>
 
+    <!-- ═══════════ KCAL SEAL ═══════════ -->
+    <section class="ds-section" id="kseal">
+      <div class="ds-h">Kcal Seal <span style="font-size:var(--text-sm);color:var(--accent)">menu redesign</span></div>
+      <p class="ds-lead">The same mandala stamp as the price seal, carrying the <strong>calorie figure</strong> instead. In the redesign the price moves to plain text under the photo and the "+" becomes its own button, which frees the stamp for kcal. A sibling family, not a variant: 24 teeth on a 64 box with a solid face (the price seal is 28 on 100 with an evenodd hole), and it is <strong>never interactive</strong> — <code>pointer-events:none</code>, <code>role="img"</code>, read as "559 kcal".</p>
+      <div class="ds-row" style="gap:var(--sp-6);align-items:center">
+        <div class="ds-stack" style="align-items:center;gap:var(--sp-2)">
+          <span class="shk-kseal" style="width:62px;height:62px;font-size:16.99px" role="img" aria-label="559 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">559</span><span class="shk-kseal__unit">kcal</span></span></span>
+          <span class="ds-src">md 62 · mobile grid</span>
+        </div>
+        <div class="ds-stack" style="align-items:center;gap:var(--sp-2)">
+          <span class="shk-kseal" style="width:70px;height:70px;font-size:19.18px" role="img" aria-label="308 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">308</span><span class="shk-kseal__unit">kcal</span></span></span>
+          <span class="ds-src">lg 70 · desktop card</span>
+        </div>
+        <div class="ds-stack" style="align-items:center;gap:var(--sp-2)">
+          <span class="shk-kseal" style="width:84px;height:84px;font-size:23.02px" role="img" aria-label="292 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">292</span><span class="shk-kseal__unit">kcal</span></span></span>
+          <span class="ds-src">xl 84 · dish sheet</span>
+        </div>
+      </div>
+      <div class="ds-recipe">&lt;KcalSeal kcal={559} size="md|lg|xl" /&gt; → &lt;span class="shk-kseal" role="img" aria-label="559 kcal"&gt;
+one font-size drives the stack (0.274 × px), so md/lg/xl stay proportional · edge var(--seal-ink), face var(--surface-1)
+tabular-nums but NOT .shk-data: the brand sets the seal in the sans display face, mono would be off-brand · KcalSeal.jsx</div>
+    </section>
+
+    <!-- ═══════════ DISH CARDS (REDESIGN) ═══════════ -->
+    <section class="ds-section" id="dish">
+      <div class="ds-h">Dish Card — redesign variants <span style="font-size:var(--text-sm);color:var(--accent)">menu redesign</span></div>
+      <p class="ds-lead">Three variants replacing the cut-out tile above. Photo sits <code>contain</code> on a <code>--surface-2</code> box (plated dishes shot square — <code>cover</code> would crop the plate). <strong>Not mounted yet:</strong> PR 3 and PR 4 switch App.jsx over, and the legacy tile is deleted then.</p>
+      <p class="ds-lead"><strong>A11y — what changed.</strong> The legacy tile is a <code>&lt;div role="button"&gt;</code> with the price-seal <code>&lt;button&gt;</code> nested inside it: a control inside a control. These split them. The dish name is a real <code>&lt;button&gt;</code> whose <code>::after</code> is stretched across the card, so the photo is in the hit area without nesting, and "+" is a sibling layered above it. Two tab stops, no nesting. Desktop has no dish dialog at all, so <code>grid-full</code> has no open target — only Add is interactive.</p>
+
+      <div class="ds-sub">grid-compact — mobile 2-column grid</div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;max-width:390px">
+        <article class="shk-dish shk-dish--grid-compact">
+          <div class="shk-dish__media">
+            <img class="shk-dish__img" loading="lazy" alt="Chicken Caesar" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3f4dc520-a1ba-46dc-91a7-e55ba976c646/menu-1lr0MV9Lz4_sBEXnJJQ6jjzRLsgG_g0ez.webp?v=1782014582495" />
+            <span class="shk-kseal shk-dish__seal" style="width:62px;height:62px;font-size:16.99px" role="img" aria-label="559 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">559</span><span class="shk-kseal__unit">kcal</span></span></span>
+            <button type="button" class="shk-dish__add shk-dish__add--fab" aria-label="Add Chicken Caesar" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name"><button type="button" class="shk-dish__open">Chicken Caesar</button></h3><span class="shk-dish__price">฿190</span></div>
+        </article>
+        <article class="shk-dish shk-dish--grid-compact is-added">
+          <div class="shk-dish__media">
+            <img class="shk-dish__img" loading="lazy" alt="Smoked Salmon Rose" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/1573295f-c5a4-44fb-b9fd-d2659f99a104/menu-1iPht1o9g9YhKTKL1BPmIVLtVmEgyWjV0.webp?v=1782014581759" />
+            <span class="shk-kseal shk-dish__seal" style="width:62px;height:62px;font-size:16.99px" role="img" aria-label="260 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">260</span><span class="shk-kseal__unit">kcal</span></span></span>
+            <span class="shk-dish__hp">High protein</span>
+            <button type="button" class="shk-dish__add shk-dish__add--fab" aria-label="Smoked Salmon Rose is in your order" aria-pressed="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></button>
+          </div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name"><button type="button" class="shk-dish__open">Smoked Salmon Rose</button></h3><span class="shk-dish__price">฿299</span></div>
+        </article>
+        <article class="shk-dish shk-dish--grid-compact is-soldout">
+          <div class="shk-dish__media">
+            <img class="shk-dish__img" loading="lazy" alt="Tofu Chickpea Plant Power" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/d691b4fb-c0d4-4bea-8a86-5363f32dd5a4/menu-1hukAmkAdLUyFLAa3B2hN9B_Luk_O3ZA7.webp?v=1782014581744" />
+            <span class="shk-kseal shk-dish__seal" style="width:62px;height:62px;font-size:16.99px" role="img" aria-label="292 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">292</span><span class="shk-kseal__unit">kcal</span></span></span>
+            <span class="shk-dish__soldout">Sold out today</span>
+          </div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name"><button type="button" class="shk-dish__open">Tofu Chickpea Plant Power</button></h3><span class="shk-dish__price">฿150</span></div>
+        </article>
+        <article class="shk-dish shk-dish--grid-compact is-coming-soon">
+          <div class="shk-dish__media">
+            <img class="shk-dish__img" loading="lazy" alt="Real Mexican Bowl" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3dc7416d-6a99-451e-aa78-2738b1cb7ee2/menu-1UwCUxSbS0jAf00vTo5mgetKAz6r0qhCV.webp?v=1782014581638" />
+            <span class="shk-kseal shk-dish__seal" style="width:62px;height:62px;font-size:16.99px" role="img" aria-label="295 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">295</span><span class="shk-kseal__unit">kcal</span></span></span>
+          </div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name"><button type="button" class="shk-dish__open">Real Mexican Bowl</button></h3><span class="shk-dish__price">฿190</span></div>
+        </article>
+      </div>
+      <div class="ds-recipe">default · in-cart (is-added, "+" → check, aria-pressed) · unavailable (is-soldout, photo 50%, name stays readable) · coming-soon (is-coming-soon, 0.78)</div>
+
+      <div class="ds-sub">grid-full — desktop, everything inline, no dialog</div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:620px">
+        <article class="shk-dish shk-dish--grid-full">
+          <div class="shk-dish__media">
+            <img class="shk-dish__img" loading="lazy" alt="Chicken Caesar" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3f4dc520-a1ba-46dc-91a7-e55ba976c646/menu-1lr0MV9Lz4_sBEXnJJQ6jjzRLsgG_g0ez.webp?v=1782014582495" />
+            <span class="shk-kseal shk-dish__seal" style="width:70px;height:70px;font-size:19.18px" role="img" aria-label="559 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">559</span><span class="shk-kseal__unit">kcal</span></span></span>
+            <span class="shk-dish__hp">High protein</span>
+          </div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name">Chicken Caesar</h3><span class="shk-dish__price">฿190</span></div>
+          <p class="shk-dish__desc">Sous-vide chicken breast, cos lettuce, parmesan and a yogurt caesar dressing — no seed oils, no anchovy paste.</p>
+          <div class="shk-dish__macros">
+            <div class="shk-dish__macro shk-dish__macro--protein"><span class="shk-dish__macro-val">42<small>g</small></span><span class="shk-dish__macro-key">PROTEIN</span></div>
+            <div class="shk-dish__macro shk-dish__macro--carbs"><span class="shk-dish__macro-val">18<small>g</small></span><span class="shk-dish__macro-key">CARBS</span></div>
+            <div class="shk-dish__macro shk-dish__macro--fat"><span class="shk-dish__macro-val">31<small>g</small></span><span class="shk-dish__macro-key">FAT</span></div>
+          </div>
+          <div class="shk-dish__foot"><span class="shk-dish__meta">320g · milk, egg</span><button type="button" class="shk-dish__add shk-dish__add--pill" aria-label="Add Chicken Caesar" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Add</span></button></div>
+        </article>
+        <article class="shk-dish shk-dish--grid-full is-added">
+          <div class="shk-dish__media">
+            <img class="shk-dish__img" loading="lazy" alt="Tabbouleh Herb Energy" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/d691b4fb-c0d4-4bea-8a86-5363f32dd5a4/menu-1hukAmkAdLUyFLAa3B2hN9B_Luk_O3ZA7.webp?v=1782014581744" />
+            <span class="shk-kseal shk-dish__seal" style="width:70px;height:70px;font-size:19.18px" role="img" aria-label="308 kcal"><svg class="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="#shk-kseal-edge" /></svg><span class="shk-kseal__stack" aria-hidden="true"><span class="shk-kseal__num">308</span><span class="shk-kseal__unit">kcal</span></span></span>
+          </div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name">Tabbouleh Herb Energy</h3><span class="shk-dish__price">฿149</span></div>
+          <p class="shk-dish__desc">Parsley, mint and bulgur with tomato and lemon — the herb salad, cut fresh to order.</p>
+          <div class="shk-dish__macros">
+            <div class="shk-dish__macro shk-dish__macro--protein"><span class="shk-dish__macro-val">7<small>g</small></span><span class="shk-dish__macro-key">PROTEIN</span></div>
+            <div class="shk-dish__macro shk-dish__macro--carbs"><span class="shk-dish__macro-val">24<small>g</small></span><span class="shk-dish__macro-key">CARBS</span></div>
+            <div class="shk-dish__macro shk-dish__macro--fat"><span class="shk-dish__macro-val">19<small>g</small></span><span class="shk-dish__macro-key">FAT</span></div>
+          </div>
+          <div class="shk-dish__foot"><span class="shk-dish__meta">280g</span><button type="button" class="shk-dish__add shk-dish__add--pill" aria-label="Tabbouleh Herb Energy is in your order" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Added</span></button></div>
+        </article>
+      </div>
+      <div class="ds-recipe">Protein tile alone carries --accent — the macro the brand sells on. Never colour alone: the word PROTEIN is right there.
+Description is line-clamped to 3 so every card in a row matches height without a grid hack.</div>
+
+      <div class="ds-sub">list-row — drinks and dips (chosen by name and price, not by photo)</div>
+      <div class="ds-stack" style="gap:var(--sp-3);max-width:390px">
+        <article class="shk-dish shk-dish--list-row">
+          <div class="shk-dish__media"><img class="shk-dish__img" loading="lazy" alt="Iced Latte" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/1573295f-c5a4-44fb-b9fd-d2659f99a104/menu-1iPht1o9g9YhKTKL1BPmIVLtVmEgyWjV0.webp?v=1782014581759" /></div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name"><button type="button" class="shk-dish__open">Iced Latte</button></h3><span class="shk-dish__price">฿90</span></div>
+          <button type="button" class="shk-dish__add shk-dish__add--fab" aria-label="Add Iced Latte" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+        </article>
+        <article class="shk-dish shk-dish--list-row">
+          <div class="shk-dish__media"><img class="shk-dish__img" loading="lazy" alt="Classic Hummus" src="https://qcqgtcsjoacuktcewpvo.supabase.co/storage/v1/object/public/nomenclature-photos/3dc7416d-6a99-451e-aa78-2738b1cb7ee2/menu-1UwCUxSbS0jAf00vTo5mgetKAz6r0qhCV.webp?v=1782014581638" /></div>
+          <div class="shk-dish__head"><h3 class="shk-dish__name"><button type="button" class="shk-dish__open">Classic Hummus</button></h3><span class="shk-dish__price">฿69</span></div>
+          <button type="button" class="shk-dish__add shk-dish__add--fab" aria-label="Add Classic Hummus" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+        </article>
+      </div>
+      <div class="ds-recipe">&lt;DishCard variant="grid-compact|grid-full|list-row" … /&gt; · variant="legacy" (default) = the cut-out tile above, removed in PR 4
+--dish-media-h drives the photo box AND where the round "+" sits · DishCard.jsx · components.css</div>
+    </section>
+
+    <!-- ═══════════ CATEGORY TILES ═══════════ -->
+    <section class="ds-section" id="ctile">
+      <div class="ds-h">Category Tile <span style="font-size:var(--text-sm);color:var(--accent)">new · menu redesign</span></div>
+      <p class="ds-lead">The mobile home screen: one tile per category, grouped EAT / DRINK / SWEET. Tiles are navigation, so they render as <code>&lt;a&gt;</code> — except <code>soon</code>, which has nowhere to go and renders as a <code>&lt;div&gt;</code>, out of the tab order entirely rather than a target that does nothing. Bands change the wash; DRINK and SWEET also carry their own height, which is the mockup's rhythm.</p>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:390px">
+        <a class="shk-ctile shk-ctile--featured" href="#ctile">
+          <span class="shk-ctile__text"><span class="shk-ctile__eyebrow">FROM OUR SALAD BAR</span><span class="shk-ctile__name">Salads &amp; Bowls</span><span class="shk-ctile__meta">13 dishes · from ฿149</span></span>
+        </a>
+        <a class="shk-ctile" href="#ctile">
+          <span class="shk-ctile__text"><span class="shk-ctile__name">Wraps</span><span class="shk-ctile__meta">11 · from ฿99</span></span>
+        </a>
+        <a class="shk-ctile" href="#ctile">
+          <span class="shk-ctile__text"><span class="shk-ctile__name">Protein meals</span><span class="shk-ctile__meta">3 · from ฿299</span></span>
+        </a>
+        <a class="shk-ctile shk-ctile--row" href="#ctile">
+          <span class="shk-ctile__text"><span class="shk-ctile__name">Hummus, dips &amp; sides</span><span class="shk-ctile__meta">8 · sauces, hummus, toast, extra wrap</span></span>
+          <svg class="shk-ctile__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+        <a class="shk-ctile shk-ctile--drink" href="#ctile">
+          <span class="shk-ctile__text"><span class="shk-ctile__name">Coffee</span><span class="shk-ctile__meta">12 · from ฿60</span></span>
+        </a>
+        <div class="shk-ctile shk-ctile--soon">
+          <span class="shk-ctile__text"><span class="shk-ctile__eyebrow">COMING SOON</span><span class="shk-ctile__name">Fresh juices</span><span class="shk-ctile__meta">Orange, guava, pineapple…</span></span>
+        </div>
+        <a class="shk-ctile shk-ctile--row shk-ctile--sweet" href="#ctile">
+          <span class="shk-ctile__text"><span class="shk-ctile__name">Chocolate</span><span class="shk-ctile__meta">6 · Barada, made in Phuket · from ฿140</span></span>
+          <svg class="shk-ctile__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <div class="ds-recipe">&lt;CategoryTile variant="featured|regular|row|soon" band="default|drink|sweet" name meta eyebrow images href /&gt;
+heights: featured 156 · regular 132 · row 84 · soon 120 · drink 120 · sweet row 96 (--ctile-h)
+backgrounds: featured --green-100 · regular --surface-2 · drink --band-drink · sweet --cream-100 · soon dashed --border-strong
+Demos above omit the food cut-outs (those come from Supabase per category); the real tile positions one, or two for featured. · CategoryTile.jsx</div>
+    </section>
+
     <!-- ═══════════ NUTRITION ═══════════ -->
     <section class="ds-section" id="nutrition">
       <div class="ds-h">Nutrition</div>
@@ -459,7 +629,7 @@ size scales via inline width/height/font-size · added state → shk-seal--activ
     <!-- ═══════════ CHIPS ═══════════ -->
     <section class="ds-section" id="chips">
       <div class="ds-h">Filter Chips</div>
-      <p class="ds-lead">Selectable filter chips (<code>aria-pressed</code>). Include = green when active; allergen exclude = spice.</p>
+      <p class="ds-lead">Selectable filter chips (<code>aria-pressed</code>). Include = green when active; allergen exclude = spice. The pressed state is a <code>--green-100</code> fill with a royal-green edge and ink (menu redesign, spec §5) — it used to be a solid <code>--highlight</code> fill, which fought the quiet-page look the light theme is built on. The redesign's quick filters (Plant-based · Under 400 kcal · Seafood) are these same chips.</p>
       <div class="ds-row">
         <button type="button" class="shk-chip" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegan</span></button>
         <button type="button" class="shk-chip" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegetarian</span></button>
@@ -1160,20 +1330,21 @@ containers --container-sm/md/lg/xl = 640/920/1200/1400 · --content-max = lg · 
 
     <!-- ═══════════ THEME ═══════════ -->
     <section class="ds-section" id="theme">
-      <div class="ds-h">Theme — light base, royal override</div>
-      <p class="ds-lead">The system ships a <strong>light</strong> base (cream page, white cards, ink text). <code>tokens/theme-royal.css</code> is imported <em>last</em> and flips the semantic surface/text aliases to the <strong>royal-green dark</strong> theme — which is what the whole site renders. Author against semantic tokens (<code>--bg-canvas</code>, <code>--text-body</code>) and royal comes for free.</p>
+      <div class="ds-h">Theme — white page, royal-green ink</div>
+      <p class="ds-lead"><code>tokens/theme-light.css</code> is imported <em>last</em> and wins: a <strong>white page in royal-green ink</strong>, the printed-menu look. Author against semantic tokens (<code>--bg-canvas</code>, <code>--text-body</code>) and the theme comes for free. <strong>Verify contrast against <code>#FFFFFF</code>, not against <code>#1E3903</code>.</strong></p>
+      <p class="ds-lead" style="color:var(--accent)"><strong>Corrected 2026-10-17.</strong> This section previously said <code>theme-royal.css</code> was imported last and that the site rendered royal-green dark. It is not imported at all — <code>grep -rn theme-royal src/</code> returns only the comment at the top of <code>theme-light.css</code>. The dark theme is kept on disk but is dead code, and MASTER's contrast table was computed against the wrong canvas.</p>
       <div class="ds-row" style="gap:var(--sp-5)">
         <div class="ds-stack" style="align-items:flex-start;gap:6px">
-          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)"><div style="background:#FBF8F0;color:#3B3F31;padding:14px;font-weight:600">Light base — ink on cream</div></div>
-          <span class="ds-src">colors.css base · NOT what renders</span>
+          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)"><div style="background:#FFFFFF;color:#1E3903;padding:14px;font-weight:600">Light — green on white ✓ live</div></div>
+          <span class="ds-src">theme-light.css · wins (active)</span>
         </div>
         <div class="ds-stack" style="align-items:flex-start;gap:6px">
-          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)"><div style="background:#1E3903;color:#FBF8F0;padding:14px;font-weight:600">Royal — cream on green ✓ live</div></div>
-          <span class="ds-src">theme-royal.css · wins (active)</span>
+          <div style="width:240px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);opacity:.5"><div style="background:#1E3903;color:#FBF8F0;padding:14px;font-weight:600">Royal — cream on green</div></div>
+          <span class="ds-src">theme-royal.css · on disk, NOT imported</span>
         </div>
       </div>
-      <div class="ds-recipe">index.css import order: fonts → colors → typography → spacing → base → compat → components → theme-royal.css (LAST, wins)
-royal overrides: --bg-canvas/page · --surface-1/2/3 · --text-strong/body/muted/faint · --menu-price/kcal · --border* · --selection</div>
+      <div class="ds-recipe">index.css import order: fonts → colors → typography → spacing → base → compat → components → theme-light.css (LAST, wins)
+light overrides: --bg-canvas/page · --surface-1/2/3 · --text-strong/body/muted/faint · --menu-price/kcal · --seal-ink · --border* · --selection · --band-mint/warm/drink</div>
     </section>
 
     <!-- ═══════════ RADIUS ═══════════ -->

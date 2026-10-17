@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shishka — category as grid</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1E3903}a:hover{color:#B62A23}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; font-family: 'Albert Sans', system-ui, sans-serif; color: #1E3903; display: flex; flex-direction: column">
+
+  <header style="height: 60px; padding: 0 12px 0 6px; display: flex; align-items: center; gap: 4px; flex-shrink: 0">
+    <a href="A2-home-full.dc.html" aria-label="Back to all categories" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #1E3903">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; flex: 1">Salads &amp; Bowls</h1>
+  </header>
+
+  <div role="tablist" aria-label="Subcategory" style="margin: 4px 16px 0; background: #F4F8EC; border-radius: 999px; padding: 4px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; flex-shrink: 0">
+    <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 999px; background: transparent; color: #1E3903; font-size: 14px; font-weight: 600">All <span style="font-weight: 500; opacity: .75">13</span></button>
+    <button type="button" role="tab" aria-selected="true" style="height: 40px; border: 0; border-radius: 999px; background: #1E3903; color: #FBF8F0; font-size: 14px; font-weight: 700">Salads <span style="font-weight: 500; opacity: .75">7</span></button>
+    <button type="button" role="tab" aria-selected="false" style="height: 40px; border: 0; border-radius: 999px; background: transparent; color: #1E3903; font-size: 14px; font-weight: 600">Bowls <span style="font-weight: 500; opacity: .75">6</span></button>
+  </div>
+
+  <div style="padding: 16px 16px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px">
+    <sc-for list="{{dishes}}" as="d" hint-placeholder-count="6">
+      <article style="display: flex; flex-direction: column; gap: 4px">
+        <span style="position: relative; display: block; height: 150px; border-radius: 22px; background: #F4F8EC">
+          <img src="{{d.img}}" alt="{{d.name}}" style="width: 100%; height: 150px; object-fit: contain; display: block">
+          <span style="position: absolute; right: 6px; top: 6px; width: 62px; height: 62px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1">
+            <svg width="62" height="62" viewBox="0 0 64 64" aria-hidden="true" style="position: absolute; inset: 0"><polygon points="{{seal}}" fill="#1E3903"></polygon><circle cx="32" cy="32" r="24.5" fill="#FFFFFF"></circle></svg>
+            <span style="position: relative; font-size: 17px; font-weight: 800; letter-spacing: -0.02em">{{d.kcal}}</span>
+            <span style="position: relative; font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; margin-top: 1px">kcal</span>
+          </span>
+          <button type="button" aria-label="Add {{d.name}}" style="position: absolute; right: 8px; bottom: 8px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: #1E3903; color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(20,22,13,.2)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+          </button>
+        </span>
+        <span style="font-size: 15px; font-weight: 700; line-height: 1.2; margin-top: 6px">{{d.name}}</span>
+        <span style="font-size: 18px; font-weight: 800">฿{{d.price}}</span>
+      </article>
+    </sc-for>
+  </div>
+
+  <a href="#order" style="position: absolute; left: 16px; right: 16px; bottom: 20px; height: 58px; border-radius: 999px; background: #1E3903; color: #FBF8F0; text-decoration: none; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; box-shadow: 0 12px 34px rgba(20,22,13,.22)">
+    <span style="display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"></path><path d="M9 8V6a3 3 0 016 0v2"></path></svg>
+      Your order
+    </span>
+    <span style="font-size: 14px; font-weight: 600; opacity: .8">Empty</span>
+  </a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dishes = [
+      { name: 'Tabbouleh Herb Energy', price: 149, kcal: 308, img: '/_blob/5d0e994d17a4764b7f12d8936779005d' },
+      { name: 'Fattoush Green Crunch', price: 149, kcal: 333, img: '/_blob/e62e48c7e023a7ff5f6221fbf6701220' },
+      { name: 'Chicken Caesar', price: 190, kcal: 559, img: '/_blob/131601027ee971be25e60da97f9d6e3e' },
+      { name: 'Smoked Salmon Rose', price: 299, kcal: 260, img: '/_blob/765408ed996faa2cd80490b40fb8a11d' },
+      { name: 'Real Mexican Bowl', price: 190, kcal: 295, img: '/_blob/8144b52c066b832879874c5a2272da22' },
+      { name: 'Tofu Chickpea Plant Power', price: 150, kcal: 292, img: '/_blob/323e77bb14f46bb1feaa8659df47f392' }
+    ];
+    const n = 24, pts = [];
+    for (let i = 0; i < n * 2; i++) {
+      const r = i % 2 === 0 ? 31.5 : 26.5, a = (Math.PI * i) / n - Math.PI / 2;
+      pts.push((32 + r * Math.cos(a)).toFixed(2) + ',' + (32 + r * Math.sin(a)).toFixed(2));
+    }
+    return { dishes, seal: pts.join(' ') };
+  }
+}
+</script>
+</body>
+</html>
