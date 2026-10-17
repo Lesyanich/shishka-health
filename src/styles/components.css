@@ -1983,8 +1983,10 @@ button.shk-seal:active { transform: scale(0.93); }
 }
 .shk-dish--list-row .shk-dish__seal { display: none; }
 .shk-dish--list-row .shk-dish__head { flex: 1; margin-top: 0; }
+/* Stays 44px: the row is tighter than the grid card, but the tap target is a
+   floor, not a style choice (MASTER, spec §5). Only the shadow goes. */
 .shk-dish--list-row .shk-dish__add--fab {
-  position: static; width: 40px; height: 40px; box-shadow: none;
+  position: static; width: 44px; height: 44px; box-shadow: none;
 }
 
 /* grid-full — the desktop card. Everything inline, no dialog. */
