@@ -14,6 +14,8 @@
   field is a slug resolved to an SVG in the dialog (see BENEFIT_ICONS).
 */
 
+import { isHighProtein } from "./dishFacts.js";
+
 // Ingredient-keyword → benefit knowledge base. Keywords match on a leading
 // word boundary (so "oat" never fires on "goat", but plurals like "seeds"
 // and "almonds" still match). Order here is the display priority; we keep
@@ -102,10 +104,16 @@ const matches = (text, keyword) =>
   new RegExp(`\\b${escapeRe(keyword)}`, "i").test(text);
 
 // Protein gets its own chip, sized to the actual grams in the dish.
+//
+// "High Protein" uses the ONE high-protein rule the site has — protein >=
+// HIGH_PROTEIN_G (30 g), shared with the menu badge (lib/dishFacts.js, SPEC §7).
+// It used to read >= 20 g here while the spec said 30, which would have put a
+// "High Protein" chip in the dialog on dishes the card called ordinary. Five
+// live dishes sit in 20–29 g: they keep the plain "Protein" chip, grams and all.
 function proteinBenefit(protein) {
   if (protein == null) return null;
   const g = Math.round(protein);
-  if (protein >= 20)
+  if (isHighProtein(protein))
     return { slug: "protein", label: "High Protein", icon: "droplet",
       tone: "red", value: `${g} g`, note: `${g}g of protein to rebuild and recover.` };
   if (protein >= 10)

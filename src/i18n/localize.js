@@ -35,10 +35,13 @@ function dict(key, vars) {
   return s === key ? null : s;
 }
 
-// Subgroups that are built in useMenu.js rather than read from the DB.
+// The one subgroup pair that is synthesized in code rather than read from the
+// DB: Coffee's Hot / Cold leaves (lib/coffeeSplit.js). The "sec-spring-rolls"
+// and "grp-sides" cases that used to live here are gone with the code that made
+// those ids — the invented spring-roll section (retired 2026-10-16) and the
+// SALE-BAKED_POTATO_SIDE branch, which never fired because that dish is not in
+// menu_public. Migration 500 gives the dips section a real "Sides" subcategory.
 function syntheticSubName(id) {
-  if (id === "sec-spring-rolls") return dict("sub.springRolls");
-  if (id === "grp-sides") return dict("sub.sides");
   if (typeof id === "string" && id.endsWith(":cold")) return dict("sub.coldCoffee");
   if (typeof id === "string" && id.endsWith(":hot")) return dict("sub.hotCoffee");
   return null;

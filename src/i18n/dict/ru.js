@@ -29,8 +29,6 @@ export default {
   "menu.noMatch": "Нет блюд под эти фильтры.",
   "menu.clearFilters": "Сбросить фильтры",
 
-  "sub.springRolls": "Спринг-роллы",
-  "sub.sides": "Гарниры",
   "sub.coldCoffee": "Холодный кофе",
   "sub.hotCoffee": "Горячий кофе",
 

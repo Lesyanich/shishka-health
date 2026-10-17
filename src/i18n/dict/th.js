@@ -26,8 +26,6 @@ export default {
   "menu.noMatch": "ไม่มีเมนูที่ตรงกับตัวกรองนี้",
   "menu.clearFilters": "ล้างตัวกรอง",
 
-  "sub.springRolls": "ปอเปี๊ยะสด",
-  "sub.sides": "เครื่องเคียง",
   "sub.coldCoffee": "กาแฟเย็น",
   "sub.hotCoffee": "กาแฟร้อน",
 

@@ -5,6 +5,8 @@ import { DEFAULT_CONTENT, mergeContent, writeCachedContent } from "../lib/conten
 import { deepStripEmoji, titleCaseMenu } from "../lib/text.js";
 import { dishFloor, dishDefaultPrice } from "../lib/modifiers.js";
 import { benefitsForDish } from "../lib/benefits.js";
+import { coffeeSubcategory } from "../lib/coffeeSplit.js";
+import { buildMenuGroups } from "../lib/menuGroups.js";
 import { LANG, DEFAULT_LANG } from "../i18n/index.js";
 import { localizeMenu } from "../i18n/localize.js";
 
@@ -149,8 +151,11 @@ async function fetchFromSupabase() {
     let sectionName = d.section_name ?? d.category_name;
     const sectionSort = d.section_sort_order ?? d.category_sort_order ?? 0;
     if (sectionId && !catMap.has(sectionId)) {
-      catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort });
+      catMap.set(sectionId, { id: sectionId, name: sectionName, sort_order: sectionSort, count: 0 });
     }
+    // Counts are never shown to the guest (SPEC §2) but code needs them for
+    // ordering and empty checks, so they travel with the section.
+    if (sectionId) catMap.get(sectionId).count += 1;
 
     const allTags = tagMap.get(d.id) ?? [];
     const diets = allTags
@@ -178,22 +183,18 @@ async function fetchFromSupabase() {
     // add-ons (฿111 + ฿38 = ฿149), shown as a flat price the guest can change.
     const priceDefault = dishDefaultPrice(price, modifierGroups);
 
-    // Split the Coffee category into Hot / Cold leaves (hot first) so the menu
-    // shows them as two labelled groups. Cold = iced / cold brew / tonic.
-    let subId = d.category_id ?? sectionId;
-    let subName = d.category_name ?? sectionName;
-    let subSort = d.category_sort_order ?? 0;
-    if (d.product_code === "SALE-BAKED_POTATO_SIDE") {
-      // The grilled potato becomes the Sides subgroup (more to come).
-      subId = "grp-sides"; subName = "🥔 Sides"; subSort = 99;
-    } else if (/coffee/i.test(d.category_name || "")) {
-      const cold = /🧊|\biced\b|\bcold\b|tonic/i.test(d.name || "")
-        || d.product_code === "SALE-COFFEE_ORANGE"
-        || d.product_code === "SALE-COFFEE_PASSION_FRUIT";
-      subId = `${d.category_id}:${cold ? "cold" : "hot"}`;
-      subName = cold ? "🧊 Cold Coffee" : "☕ Hot Coffee";
-      subSort = (d.category_sort_order ?? 0) + (cold ? 0.5 : 0);
-    }
+    // Subcategories come from the dish's own `category_*` fields — the leaf the
+    // admin panel owns. Coffee is the ONE exception left: its Hot / Cold leaves
+    // are synthesized from the dish name because they do not exist in
+    // product_categories. That exception is quarantined in lib/coffeeSplit.js,
+    // which explains why it is a problem and what deletes it (SPEC §2 ‡).
+    // The "SALE-BAKED_POTATO_SIDE → 🥔 Sides" branch that used to sit here was
+    // dead code: that dish is not in menu_public, so it never fired. Migration
+    // 500 gives the dips section a real "Sides" subcategory instead.
+    const coffee = coffeeSubcategory(d);
+    const subId = coffee?.id ?? d.category_id ?? sectionId;
+    const subName = coffee?.name ?? d.category_name ?? sectionName;
+    const subSort = coffee?.sort ?? d.category_sort_order ?? 0;
 
     return {
       id: d.id,
@@ -253,6 +254,11 @@ async function fetchFromSupabase() {
 
   const content = mergeContent(contentResult.error ? [] : contentResult.data);
 
+  // EAT / DRINK / SWEET. The ordering lives in site_content.menu_groups (written
+  // by shishka-os migration 500) with a same-shaped fallback in the site code,
+  // so the two paths cannot disagree about group order. See lib/menuGroups.js.
+  const groups = buildMenuGroups(categories, content.menu_groups);
+
   // Manakish bundle tiers ("Manakish set of N"), discount escalates with size.
   const bundles = (tierResult?.error ? [] : tierResult?.data ?? []).map((t) => ({
     tierCode: t.tier_code,
@@ -270,7 +276,7 @@ async function fetchFromSupabase() {
   const translations = trResult?.error ? [] : trResult?.data ?? [];
   if (trResult?.error) console.warn("menu_translations unavailable, showing English:", trResult.error);
 
-  return { menu: deepStripEmoji({ dishes, categories, content, bundles }), translations };
+  return { menu: deepStripEmoji({ dishes, categories, groups, content, bundles }), translations };
 }
 
 // A hung request is the failure mode this site is most exposed to: Russian ISPs
@@ -307,7 +313,9 @@ export function useMenu() {
     if (!hasSupabase) {
       if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "mock";
       // Single chokepoint: render all display copy in Title Case (hero kept as-is).
-      setData(localizeMenu(titleCaseMenu({ ...MOCK_DATA, content: DEFAULT_CONTENT }), []));
+      const mock = { ...MOCK_DATA, content: DEFAULT_CONTENT };
+      mock.groups = buildMenuGroups(mock.categories, DEFAULT_CONTENT.menu_groups);
+      setData(localizeMenu(titleCaseMenu(mock), []));
       setLoading(false);
       return;
     }
