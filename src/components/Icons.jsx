@@ -116,6 +116,10 @@ export const ClockIcon = (p) => (
 );
 export const CheckIcon = (p) => (<Svg {...p}><path d="M20 6 9 17l-5-5" /></Svg>);
 export const PlusIcon = (p) => (<Svg {...p}><path d="M5 12h14" /><path d="M12 5v14" /></Svg>);
+// The quantity stepper in the dish sheet (SPEC §3) needs the other half of
+// the pair; "−" as a glyph would be a hyphen in some fonts and an em dash in
+// others, so it is drawn like every other icon in the set.
+export const MinusIcon = (p) => (<Svg {...p}><path d="M5 12h14" /></Svg>);
 export const BagIcon = (p) => (
   <Svg {...p}>
     <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />

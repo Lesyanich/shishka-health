@@ -57,6 +57,53 @@ export default {
   "dish.macroCarbs": "CARBS",
   "dish.macroFat": "FAT",
 
+  // menu redesign PR 3 — the menu page itself (spec §3, §4, §8).
+  // EN ONLY so far: RU, TH and AR need a human translator before this page is
+  // put in front of a guest. Missing keys fall back to English (see ../index.js),
+  // so the page is correct in every language — just not yet translated.
+  "menu.lede": "What are you {accent}",
+  "menu.ledeAccent": "craving?",
+  "menu.subline": "Clean · Ultra fresh · Nothing ultra-processed",
+  "menu.group.EAT": "EAT",
+  "menu.group.DRINK": "DRINK",
+  "menu.group.SWEET": "SWEET",
+  "menu.categories": "Menu categories",
+  "menu.subcategories": "{name} subcategories",
+  "menu.allSub": "All",
+  "menu.from": "from {price}",
+  "menu.comingSoonSection": "Coming soon",
+  // The rail label for a category whose every dish is coming soon (§2).
+  "menu.railSoon": "{name} · soon",
+  "menu.clearFilters": "Clear filters",
+
+  // quick filters — only the two the data honestly supports (§7a, lib/quickFilters.js)
+  "filter.under400": "Under 400 kcal",
+  "filter.highProtein": "High protein",
+  "filter.noneHere": "No dishes in this section match these filters.",
+
+  // open / closed status in the header (§3.1, §4.1)
+  "status.openTill": "Open till {time}",
+  "status.openNow": "Open now · daily {from}–{to}",
+  "status.closed": "Closed · opens {time}",
+
+  // visit us (§3.8, §4.6)
+  "visit.title": "Visit us",
+  "visit.hours": "Open daily {from}–{to}",
+  "visit.directions": "Get directions",
+
+  // order bar + desktop order panel (§5, §8)
+  "order.empty": "Your order · Empty",
+  "order.filled.one": "{n} item · {total}",
+  "order.filled.other": "{n} items · {total}",
+  "cart.showAtCounter": "Show at the counter",
+  "cart.emptyHint": "Nothing here yet. Tap + on any dish. Then show this list at the counter — we cook it fresh.",
+
+  // dish sheet (§3): the pinned bottom bar with the quantity stepper
+  "sheet.fewer": "Fewer",
+  "sheet.more": "More",
+  "sheet.qty": "Quantity",
+  "sheet.addQty": "Add to order · {total}",
+
   // dish dialog
   "dlg.share": "Share dish",
   "dlg.close": "Close",
