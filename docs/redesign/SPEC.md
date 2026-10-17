@@ -82,9 +82,18 @@ is **the last hack of the kind the Spring-rolls one belonged to, and the decisio
   its one call site in `useMenu.js`, the `sub.hotCoffee` / `sub.coldCoffee` dictionary keys and the
   `coffee-split` assertion — the code deletes itself and the split becomes editable in the admin, like
   every other subcategory. Cost: one migration, plus the hot/cold names needing translation rows.
-- **Recommended: B.** It is the only option that makes the CEO's rule true, and the clean-up is a
-  deletion rather than new code. Until the migration is applied, A is what ships — removing the split
-  without it would merge hot and iced coffee into one 12-item list, which is worse for the guest.
+- **Decided 2026-10-17: B.** The CEO chose the migration. It is the only option that makes her rule
+  true, and the clean-up is a deletion rather than new code.
+
+Sequencing, so nobody deletes the split too early: PR 1 ships A **unchanged** — removing the code
+before the migration is applied would merge hot and iced coffee into one 12-item list, which is worse
+for the guest. The order is (1) shishka-os migration creating the two subcategories and re-parenting
+the 12 dishes, number claimed with `claim_migration_number`, applied after migration 500; (2) the
+hot/cold names translated for /ru, /th, /ar like any other category; (3) a small shishka-health PR
+that deletes `src/lib/coffeeSplit.js`, its one call site in `useMenu.js`, the `sub.hotCoffee` /
+`sub.coldCoffee` dictionary keys, the `syntheticSubName` helper in `i18n/localize.js` if nothing else
+needs it, and the `coffee-split` assertion in `contracts/menu-contract.json`. Step (3) must not land
+before (1) is applied to production.
 
 Rules:
 - Category = `section_*` in `menu_public`; subcategory = `category_*`, except Coffee (see ‡). Groups
