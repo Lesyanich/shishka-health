@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { CalorieDonut } from "../nutrition/CalorieDonut.jsx";
 import { MacroBar } from "../nutrition/MacroBar.jsx";
-import { DietTag } from "../filters/DietTag.jsx";
 import { Badge } from "../primitives/Badge.jsx";
 import { IconButton } from "../primitives/IconButton.jsx";
 import { ModifierBuilder } from "./ModifierBuilder.jsx";
@@ -11,17 +10,17 @@ import { optimizedSrc } from "../../lib/img.js";
 import { t, unit } from "../../i18n/index.js";
 
 /*
-  Allergen chips sit under a "Contains" heading, so the tag's own "Contains …"
-  prefix is dropped ("Contains Dairy" → "Dairy", «Содержит молочные продукты» →
-  «Молочные продукты»). Without a label the chip used to print the raw slug
-  ("allergen-dairy"), because DietTag has no preset for the DB's allergen slugs.
+  There are deliberately NO diet or allergen tags in this dialog. The CEO took
+  them off the public site (2026-10-18): the allergen "Contains" chips were
+  visual noise, and diet tags are held back until the derivation mechanism in
+  shishka-os docs/plans/spec-diet-tags-derivation.md exists and a human has
+  reviewed each dish. The dialog's disclaimer still tells a guest to ask the
+  team about allergies — that line is the disclosure, and it stays.
+
+  To bring any of it back, do not just re-render `dish.allergens`: 40 of 81
+  dishes have unreviewed BOM lines (fn_dish_allergen_status confident:false),
+  so an empty list means "unknown", never "free of".
 */
-function allergenLabel(tags, slug) {
-  const name = tags.find((tg) => tg.slug === slug)?.name;
-  if (!name) return undefined;
-  const bare = name.replace(/^(contains|содержит)\s+/i, "");
-  return bare.charAt(0).toUpperCase() + bare.slice(1);
-}
 
 /*
   `sheet` (SPEC §3) turns this dialog into the mobile bottom sheet: it slides up
@@ -96,7 +95,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
   const {
     name, description, price, priceDefault = null, priceFrom = null, currency = "฿", image, image_url,
     calories, protein = 0, carbs = 0, fat = 0,
-    diets = [], allergens = [], tags = [], badges = [], benefits = [],
+    badges = [], benefits = [],
     category, portion_size, portion_unit, ingredients,
     modifierGroups = [],
   } = dish;
@@ -269,27 +268,6 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
               <BenefitPills benefits={benefits} />
             </div>
           )}
-
-          {diets.length > 0 && (
-            <div>
-              <div className="shk-dlg__section-label">{t("dlg.suitableFor")}</div>
-              <div className="shk-dlg__tags">
-                {diets.map((d) => <DietTag key={d} type={d} />)}
-              </div>
-            </div>
-          )}
-
-          {allergens.length > 0 && (
-            <div>
-              <div className="shk-dlg__section-label">{t("dlg.contains")}</div>
-              <div className="shk-dlg__tags">
-                {allergens.map((a) => (
-                  <DietTag key={a} type={a} tone="allergen" label={allergenLabel(tags, a)} />
-                ))}
-              </div>
-            </div>
-          )}
-
 
           {ingredients && (
             <div>
