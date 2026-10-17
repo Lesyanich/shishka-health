@@ -1959,6 +1959,12 @@ button.shk-seal:active { transform: scale(0.93); }
   width: 44px; height: 44px; border-radius: var(--radius-circle);
   box-shadow: 0 4px 12px rgba(20, 22, 13, 0.2);
 }
+/* The elevation shadow above is on the same property as the global focus ring
+   and outranks it, so a keyboard user got NO ring on this button. Restate both
+   together — ring first so it reads as the outer edge. */
+.shk-dish__add--fab:focus-visible {
+  box-shadow: var(--shadow-focus), 0 4px 12px rgba(20, 22, 13, 0.2);
+}
 /* Labelled Add on the desktop card. */
 .shk-dish__add--pill {
   height: 44px; padding: 0 18px; border-radius: var(--radius-pill);
@@ -2050,7 +2056,18 @@ a.shk-ctile:active { transform: scale(0.98); }
   font-size: 17px; font-weight: var(--fw-display); line-height: 1.15;
   letter-spacing: -0.01em;
 }
+/* The tile height is fixed and the box clips, so long copy would silently
+   disappear — and this copy comes from the DB (category name, item count,
+   "from ฿…"), not from here. Clamp instead: two lines for the name, one for
+   the meta, both ellipsised. Measured at 375px the `soon` tile had 1px of
+   slack before clamping; one more word would have cut the line in half. */
+.shk-ctile__name,
 .shk-ctile__meta {
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+}
+.shk-ctile__name { -webkit-line-clamp: 2; }
+.shk-ctile__meta {
+  -webkit-line-clamp: 1;
   font-size: 12.5px; font-weight: var(--fw-semibold); color: var(--text-muted);
 }
 .shk-ctile__chevron { flex: none; width: 18px; height: 18px; color: var(--text-muted); }
