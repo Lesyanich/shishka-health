@@ -74,6 +74,17 @@
      the page to do that. Measured: royal-green ink 11.69:1, muted α.70 4.86:1,
      accent red 5.74:1 — all AA. */
   --band-drink:     #FBF4E6;
+
+  /* The "● Open till 18:30" status dot in the menu header (SPEC.md §6 listed
+     this as the one token the redesign still had to add).
+
+     A dot alone never carries the meaning — the words "Open till 18:30" /
+     "Closed · opens 9:30" sit right next to it, per MASTER's no-colour-only
+     rule — so these are read as emphasis, not as information. Open is a green
+     distinct from the brand's royal-green ink so it does not read as another
+     piece of text; closed is the neutral ink grey. */
+  --status-open:   #3F8A2A;
+  --status-closed: var(--ink-400);
 }
 
 /* ---------------------------------------------------------------------------

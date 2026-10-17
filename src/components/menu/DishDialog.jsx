@@ -6,7 +6,7 @@ import { Badge } from "../primitives/Badge.jsx";
 import { IconButton } from "../primitives/IconButton.jsx";
 import { ModifierBuilder } from "./ModifierBuilder.jsx";
 import { BenefitPills } from "./BenefitPills.jsx";
-import { XIcon, ShareIcon, ClockIcon } from "../Icons.jsx";
+import { XIcon, ShareIcon, ClockIcon, PlusIcon, MinusIcon } from "../Icons.jsx";
 import { optimizedSrc } from "../../lib/img.js";
 import { t, unit } from "../../i18n/index.js";
 
@@ -23,8 +23,22 @@ function allergenLabel(tags, slug) {
   return bare.charAt(0).toUpperCase() + bare.slice(1);
 }
 
-export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
+/*
+  `sheet` (SPEC §3) turns this dialog into the mobile bottom sheet: it slides up
+  to viewport height − 56 px, closes by swipe down as well as by ✕, scrim tap,
+  Escape and browser Back, and its Add button moves into a pinned bottom bar
+  with a quantity stepper. Desktop never passes it — above 1024 px there is no
+  dish pop-up at all (§4.5), the full card carries everything inline.
+*/
+export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false }) {
   const dialogRef = useRef(null);
+  // Quantity for the pinned bar. Reset per dish, never per render, so a
+  // re-render while the guest is on 3 does not snap it back to 1.
+  const [qty, setQty] = useState(1);
+  // Live finger offset while a swipe-down is in progress, in px. null = not
+  // dragging, which is also what tells the CSS to animate back into place.
+  const [drag, setDrag] = useState(null);
+  const dragRef = useRef(null);
   useEffect(() => {
     if (!open) return;
     const prevFocus = document.activeElement;
@@ -33,8 +47,12 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
     // preventScroll: focusing the (tall) sheet must not scroll the scrim and bury
     // the photo. Also reset the scrim to the top so every open starts at the photo.
     node?.focus({ preventScroll: true });
-    const scroller = node?.parentElement; // .shk-dlg__scrim (the scroll container)
+    // Which element scrolls depends on the shape: the scrim for the centred
+    // dialog, the sheet itself for the bottom sheet (it is a fixed-height box
+    // with a pinned bar). Reset both — the other one is a no-op.
+    const scroller = node?.parentElement; // .shk-dlg__scrim
     if (scroller) scroller.scrollTop = 0;
+    if (node) node.scrollTop = 0;
     const onKey = (e) => {
       if (e.key === "Escape") return onClose?.();
       if (e.key !== "Tab" || !node) return;
@@ -68,6 +86,11 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   // Reset when the dish changes.
   const [build, setBuild] = useState(null);
   useEffect(() => setBuild(null), [dish?.id]);
+  useEffect(() => {
+    setQty(1);
+    setDrag(null);
+    dragRef.current = null;
+  }, [dish?.id, open]);
 
   if (!open || !dish) return null;
   const {
@@ -97,16 +120,52 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
   const liveCarbs = round1((carbs || 0) + added.carbs);
   const liveFat = round1((fat || 0) + added.fat);
 
+  /*
+    Swipe down to dismiss (§3). Deliberately narrow: the gesture only arms when
+    the sheet is already scrolled to its top, so a flick while reading the
+    ingredients scrolls the sheet instead of throwing it off the screen. Pulling
+    UP does nothing — the sheet is already as tall as it goes.
+  */
+  const DISMISS_PX = 110;
+  const swipe = !sheet
+    ? {}
+    : {
+        onTouchStart: (e) => {
+          const scroller = dialogRef.current;
+          if (!scroller || scroller.scrollTop > 0) return;
+          dragRef.current = e.touches[0].clientY;
+        },
+        onTouchMove: (e) => {
+          if (dragRef.current == null) return;
+          const dy = e.touches[0].clientY - dragRef.current;
+          setDrag(dy > 0 ? dy : 0);
+        },
+        onTouchEnd: () => {
+          const dy = drag ?? 0;
+          dragRef.current = null;
+          setDrag(null);
+          if (dy > DISMISS_PX) onClose?.();
+        },
+      };
+
+  const qtyTotal =
+    headlinePrice != null ? `${currency}${Math.round(headlinePrice * qty)}` : null;
+
   return (
-    <div className="shk-dlg__scrim" onClick={onClose}>
+    <div
+      className={`shk-dlg__scrim${sheet ? " shk-dlg__scrim--sheet" : ""}`}
+      onClick={onClose}
+    >
       <div
-        className="shk-dlg"
+        className={`shk-dlg${sheet ? " shk-dlg--sheet" : ""}`}
         ref={dialogRef}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={name}
         onClick={(e) => e.stopPropagation()}
+        style={drag ? { transform: `translateY(${drag}px)` } : undefined}
+        {...swipe}
       >
         {/* Sticky bar: first child so position:sticky pins the Close button to the
             top of the screen through any amount of scroll — the guest can always exit. */}
@@ -179,7 +238,10 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
             />
           )}
 
-          {onAdd && (
+          {/* In sheet mode the Add button lives in the pinned bar below, with the
+              quantity stepper (§3). Two Add buttons would be two answers to the
+              same question. */}
+          {!sheet && onAdd && (
             <button
               type="button"
               className="shk-dlg__add"
@@ -240,6 +302,48 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd }) {
             {t("dlg.disclaimer")}
           </p>
         </div>
+
+        {/* Pinned bottom bar (§3): quantity stepper + "Add to order · ฿<price ×
+            qty>". Sticky inside the sheet's own scroller, so it is reachable
+            without scrolling to the end of the allergen list. The stepper caps
+            at 20 — past that it is a catering order, which is a phone call. */}
+        {sheet && onAdd && (
+          <div className="shk-dlg__bar">
+            <div className="shk-dlg__step" role="group" aria-label={t("sheet.qty")}>
+              <button
+                type="button"
+                className="shk-dlg__step-btn"
+                aria-label={t("sheet.fewer")}
+                disabled={qty <= 1}
+                onClick={() => setQty((n) => Math.max(1, n - 1))}
+              >
+                <MinusIcon size={18} />
+              </button>
+              <span className="shk-dlg__step-num num" aria-live="polite">{qty}</span>
+              <button
+                type="button"
+                className="shk-dlg__step-btn"
+                aria-label={t("sheet.more")}
+                disabled={qty >= 20}
+                onClick={() => setQty((n) => Math.min(20, n + 1))}
+              >
+                <PlusIcon size={18} />
+              </button>
+            </div>
+            <button
+              type="button"
+              className="shk-dlg__bar-add"
+              onClick={() => onAdd(build, qty)}
+              disabled={!canAdd}
+            >
+              {canAdd
+                ? qtyTotal
+                  ? t("sheet.addQty", { total: qtyTotal })
+                  : t("dlg.addToOrder")
+                : t("dlg.pickRequired")}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -129,7 +129,7 @@
     <nav class="ds-nav" style="margin-top:var(--sp-8)">
       <a href="#color">Color</a><a href="#type">Type</a><a href="#buttons">Buttons</a>
       <a href="#badges">Badges</a><a href="#icons">Icon btns</a><a href="#chips">Chips</a><a href="#tabs">Tabs</a>
-      <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#kseal">Kcal seal</a><a href="#dish">Dish card ✦</a><a href="#ctile">Category tiles ✦</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
+      <a href="#cards">Cards</a><a href="#seal">Price seal</a><a href="#kseal">Kcal seal</a><a href="#dish">Dish card ✦</a><a href="#menu">Menu page ✦</a><a href="#ctile">Category tiles ✦</a><a href="#nutrition">Nutrition</a><a href="#diet">Diet marks</a>
       <a href="#sets">Sets</a><a href="#bundle">Bundle</a><a href="#builder">Builder</a>
       <a href="#hero">Hero</a><a href="#secart">Section art</a><a href="#rule">The Rule</a><a href="#cta">Visit CTA</a><a href="#header">Header</a><a href="#footer">Footer</a>
       <a href="#order">Order</a><a href="#detail">Dish detail</a><a href="#filter">Filter</a><a href="#cart">Cart</a><a href="#rows">Rows</a><a href="#orbit">Orbit</a><a href="#manakish">Potato Tacos</a><a href="#board">TV board</a><a href="#states">States</a>
@@ -537,6 +537,144 @@ Description is line-clamped to 3 so every card in a row matches height without a
       </div>
       <div class="ds-recipe">&lt;DishCard variant="grid-compact|grid-full|list-row" … /&gt; · variant="legacy" (default) = the cut-out tile above, removed in PR 4
 --dish-media-h drives the photo box AND where the round "+" sits · DishCard.jsx · components.css</div>
+    </section>
+
+    <!-- ═══════════ MENU PAGE (REDESIGN PR 3) ═══════════ -->
+    <section class="ds-section" id="menu">
+      <div class="ds-h">Menu page <span style="font-size:var(--text-sm);color:var(--accent)">menu redesign · mounted</span></div>
+      <p class="ds-lead">The page the redesign is about (<code>SPEC.md</code> §3 mobile, §4 desktop): header, lede, the sticky nav in <strong>both</strong> placements, group eyebrows, sections and Visit us. One family, <code>shk-menu</code>; the cards, seals, tabs and chips inside it are the PR 2 primitives above, unchanged.</p>
+      <p class="ds-lead"><strong>Why it looks like this.</strong> On the live site at 375px the first dish photograph sat at <strong>910px</strong> — 1.1 screens down, past a logo, a slogan and a stock photo of the salad bar. <code>Hero</code> is gone, the header is 64px and not sticky, and the menu starts under it. The page is ~10 700px (≈13 phone screens), which is why the rail is load-bearing rather than decoration.</p>
+      <p class="ds-lead"><strong>The nav is one module in two placements.</strong> <code>hooks/useScrollSpy.js</code> — an <code>IntersectionObserver</code> with <code>rootMargin: "-30% 0px -69% 0px"</code>, never a scroll listener. That shrinks the root to a band 1% of the viewport tall sitting on the 30% line; sections are contiguous and tall, so exactly one crosses it at a time — no "nearest heading" maths and no jitter. It observes the <em>sections</em>, not the headings. The mobile rail keeps the active pill in view with its own <code>scrollLeft</code> and <strong>never</strong> <code>scrollIntoView</code>, which would drag the page too.</p>
+
+      <div class="ds-sub">header — 64px, not sticky (§3.1)</div>
+      <div style="max-width:390px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden">
+        <header class="shk-menu__bar">
+          <span class="shk-menu__logo"><img src="https://shishka.health/assets/logo-full-color.png" alt="Shishka Healthy Kitchen" style="height:36px;width:auto" /></span>
+          <span class="shk-menu__bar-right">
+            <a class="shk-menu__status" href="#menu"><span class="shk-menu__dot" aria-hidden="true"></span>Open till <span class="num">18:30</span></a>
+          </span>
+        </header>
+        <div class="shk-menu__lede">
+          <h1 class="shk-menu__title">What are you <span>craving?</span></h1>
+          <p class="shk-menu__sub">Clean · Ultra fresh · Nothing ultra-processed</p>
+        </div>
+        <div class="shk-menu__rail">
+          <div class="shk-tabs" role="tablist" aria-label="Menu categories">
+            <button type="button" role="tab" class="shk-tab" aria-selected="true">Salads &amp; Bowls</button>
+            <button type="button" role="tab" class="shk-tab" aria-selected="false">Wraps</button>
+            <button type="button" role="tab" class="shk-tab" aria-selected="false">Protein meals</button>
+            <button type="button" role="tab" class="shk-tab" aria-selected="false">Fresh juices · soon</button>
+          </div>
+        </div>
+        <p class="shk-menu__group">EAT</p>
+        <div class="shk-menu__sec">
+          <div class="shk-menu__sec-head">
+            <h2 class="shk-menu__sec-title">Salads &amp; Bowls</h2>
+            <p class="shk-menu__from">from ฿149</p>
+          </div>
+          <div class="shk-menu__controls">
+            <div class="shk-tabs shk-tabs--segmented" role="tablist" aria-label="Salads &amp; Bowls subcategories">
+              <button type="button" role="tab" class="shk-tab" aria-selected="true">All</button>
+              <button type="button" role="tab" class="shk-tab" aria-selected="false">Salads</button>
+              <button type="button" role="tab" class="shk-tab" aria-selected="false">Bowls</button>
+            </div>
+            <div class="shk-menu__chips">
+              <button type="button" class="shk-chip" aria-pressed="false"><span>Under 400 kcal</span></button>
+              <button type="button" class="shk-chip" aria-pressed="true"><span>High protein</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-recipe">status dot: --status-open #3F8A2A / --status-closed --ink-400 (the one token §6 still needed) — never colour alone, the words are beside it
+rail: .shk-menu__rail wraps the .shk-tabs pill rail and owns the sticky (the rail's own `position: sticky` is reset to static inside it)
+section header carries NO item count (§2): counts are volatile and a small one undersells a category · "from ฿…" stays, a price is a real decision input
+a category whose every dish is coming soon reads "<name> · soon" in the rail and "Coming soon" in place of the price</div>
+
+      <div class="ds-sub">quick filters — what the data honestly supports (§7a)</div>
+      <p class="ds-lead">§3.7 asked for three chips. Two of them cannot ship, and that is a data fact rather than a preference: <strong>Plant-based</strong> would match <strong>zero</strong> dishes (all 121 tag links on the 81 live dishes are <code>tag_group = 'allergen'</code> — there is not one dietary tag on the menu), and <strong>Seafood</strong> as an exclusion would hide 8 dishes while implying the other 73 are safe, which <code>fn_dish_allergen_status</code> cannot support at 40 of 81 <code>confident: false</code>. <code>Under 400 kcal</code> ships because macros are complete (0 of 81 missing), and <code>High protein</code> reuses the card badge's own <code>protein ≥ 30</code> rule. Evidence lives next to the code in <code>lib/quickFilters.js</code>.</p>
+
+      <div class="ds-sub">desktop left nav (§4.2) — the same nav, stood on its end</div>
+      <div style="max-width:240px">
+        <nav class="shk-menu__nav" style="display:block" aria-label="Menu categories">
+          <div class="shk-menu__nav-group">
+            <p class="shk-menu__nav-label">EAT</p>
+            <ul class="shk-menu__nav-list">
+              <li><a class="shk-menu__nav-link is-on" href="#menu" aria-current="true">Salads &amp; Bowls</a></li>
+              <li><a class="shk-menu__nav-link" href="#menu">Wraps</a></li>
+              <li><a class="shk-menu__nav-link" href="#menu">Hummus, dips &amp; sides</a></li>
+            </ul>
+          </div>
+          <div class="shk-menu__nav-group">
+            <p class="shk-menu__nav-label">DRINK</p>
+            <ul class="shk-menu__nav-list">
+              <li><a class="shk-menu__nav-link" href="#menu">Coffee</a></li>
+              <li><a class="shk-menu__nav-link" href="#menu">Fresh juices · soon</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="ds-recipe">Real &lt;a href="#slug"&gt;, not buttons — a category is a place on this page, so it must be copyable and openable in a new tab. The click handler only adds the smooth scroll.
+"You are here" reads red in BOTH placements (.is-on → --accent on --green-100; the rail's selected pill → --nav-active): one answer to one question.
+The slug comes from the ENGLISH section name, so #wraps is the same anchor on /ru, /th and /ar — not a UUID, and not a translated word.</div>
+
+      <div class="ds-sub">dish sheet — pinned bar with the quantity stepper (§3)</div>
+      <p class="ds-lead"><code>&lt;DishDialog sheet /&gt;</code> is the mobile shape of the dialog documented under <a href="#detail">Dish detail</a>: <code>shk-dlg--sheet</code> sits at <code>100dvh − 56px</code>, scrolls itself (so the bar below stays put), closes by swipe-down, ✕, scrim tap, Escape <em>and</em> browser Back — it has its own <code>?dish=&lt;slug&gt;</code> URL. Desktop passes no <code>sheet</code> and opens no dialog at all (§4.5): the <code>grid-full</code> card already carries the description, macros, weight and allergens.</p>
+      <div style="max-width:390px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden">
+        <div class="shk-dlg__bar" style="position:static">
+          <div class="shk-dlg__step" role="group" aria-label="Quantity">
+            <button type="button" class="shk-dlg__step-btn" aria-label="Fewer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+            <span class="shk-dlg__step-num num">2</span>
+            <button type="button" class="shk-dlg__step-btn" aria-label="More"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <button type="button" class="shk-dlg__bar-add">Add to order · ฿380</button>
+        </div>
+      </div>
+      <div class="ds-recipe">Stepper caps at 20 — past that it is a catering order, which is a phone call. Both stepper buttons are 44px; "−" is MinusIcon, never a text glyph (a hyphen in one font, an em dash in another).
+Swipe-down only arms when the sheet is already scrolled to its top, so a flick while reading the ingredients scrolls instead of dismissing.</div>
+
+      <div class="ds-sub">order bar (§3.9) and desktop order panel (§4.6)</div>
+      <div class="ds-row" style="align-items:flex-start;gap:var(--sp-6)">
+        <div class="ds-stack">
+          <button type="button" class="shk-orderfab shk-orderfab--empty" style="position:static">
+            <span class="shk-orderfab__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+            <span class="shk-orderfab__label">Your order · Empty</span>
+          </button>
+          <button type="button" class="shk-orderfab" style="position:static">
+            <span class="shk-orderfab__icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+            <span class="shk-orderfab__label">3 items · ฿447</span>
+          </button>
+          <span class="ds-src">empty · filled · pulses once on add (.is-pulse)</span>
+        </div>
+        <div style="width:320px">
+          <aside class="shk-cart shk-cart--panel">
+            <header class="shk-cart__head"><h2 class="shk-cart__title">Your order</h2></header>
+            <div class="shk-cart__empty">
+              <span class="shk-cart__empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+              <p class="shk-cart__empty-sub">Nothing here yet. Tap + on any dish. Then show this list at the counter — we cook it fresh.</p>
+            </div>
+          </aside>
+          <span class="ds-src">&lt;Cart variant="panel" /&gt; · 320px, radius 26, sticky in the right column</span>
+        </div>
+      </div>
+      <div class="ds-recipe">Same &lt;Cart&gt; component, two placements: variant="fab" (default) is the floating bar + drawer, variant="panel" is the always-open desktop column — no scrim, no close button, nothing to close.
+The pulse fires on a RISING count only; removing a line is not something to celebrate. Honours prefers-reduced-motion.
+"Show at the counter" renders as a SENTENCE, not a button: there is no online payment and nothing for a control to do, and a dead button is worse than telling the guest what happens next.</div>
+
+      <div class="ds-sub">Visit us (§3.8 / §4.6)</div>
+      <div style="max-width:390px">
+        <section class="shk-menu__visit" style="margin-top:0">
+          <h2 class="shk-menu__visit-title">Visit us</h2>
+          <p class="shk-menu__visit-row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Open daily <span class="num">9:30&ndash;18:30</span></span></p>
+          <p class="shk-menu__visit-row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="shk-menu__visit-addr">31/33 Moo 1, Tops Daily Soi Naya 2, Unit R01<br />Rawai, Phuket</span></p>
+          <div class="shk-menu__visit-acts">
+            <a class="shk-menu__visit-btn" href="#menu">Get directions</a>
+            <a class="shk-menu__visit-link" href="#menu">Instagram</a>
+          </div>
+        </section>
+      </div>
+      <div class="ds-recipe">The address and the map link are FACTS (lib/venue.js), not dictionary copy — a translator must never be handed a URL, and the street line is what a driver types into a map, so it is the same Latin string in every language and is pinned LTR under /ar.
+The map link is a SEARCH by business name: we have no verified lat/long and the AEO record refuses to invent one, so a link claiming to be our pin would be the same lie.
+Hours come from site_content.cta.hoursTime and are compared in Asia/Bangkok — a guest reading from Moscow must be told the truth about the KITCHEN's clock (lib/hours.js).</div>
     </section>
 
     <!-- ═══════════ CATEGORY TILES ═══════════ -->
