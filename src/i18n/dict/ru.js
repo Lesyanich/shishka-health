@@ -29,9 +29,6 @@ export default {
   "menu.noMatch": "Нет блюд под эти фильтры.",
   "menu.clearFilters": "Сбросить фильтры",
 
-  "sub.coldCoffee": "Холодный кофе",
-  "sub.hotCoffee": "Горячий кофе",
-
   "badge.comingSoon": "Скоро",
   "badge.outOfStock": "Нет в наличии",
   "badge.featured": "Рекомендуем",

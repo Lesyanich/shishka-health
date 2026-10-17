@@ -23,8 +23,14 @@
     "",
     "2026-10-17 — PR 1 removed the SALE-BAKED_POTATO_SIDE -> \"Sides\" branch from useMenu.js. It needed",
     "no assertion and never had one: that dish is not in menu_public, so the branch could not fire.",
-    "The Coffee hot/cold split is now the ONLY synthesized grouping left (src/lib/coffeeSplit.js),",
-    "and coffee-split below is the assertion that protects it.",
+    "The Coffee hot/cold split was then the ONLY synthesized grouping left (src/lib/coffeeSplit.js),",
+    "protected by a coffee-split assertion.",
+    "",
+    "2026-10-17 — the coffee-split assertion was REMOVED, and with it src/lib/coffeeSplit.js. The CEO",
+    "chose option B (docs/redesign/SPEC.md section 2) and shishka-os migration 505 made Hot / Cold real",
+    "subcategories (category_code KP-DRK-COF-HOT / KP-DRK-COF-CLD, owned in the admin panel). The site",
+    "reads them through category_* like every other category, so nothing in the code keys off the",
+    "text 'coffee' any more and no group is synthesized anywhere in the site.",
     "",
     "2026-10-16 — the spring-rolls-section assertion was REMOVED for the same reason. It",
     "required at least one menu_public row with product_code LIKE 'SALE-SUMMER_ROLLS*',",
@@ -107,13 +113,6 @@
       "query": "category_code=like.KP-FIN-SDR*&price=lte.50",
       "min": 1,
       "why": "The free-sauce slots in a bundle come from this prefix plus a price ceiling."
-    },
-    {
-      "id": "coffee-split",
-      "resource": "menu_public",
-      "query": "category_name=ilike.*coffee*",
-      "min": 1,
-      "why": "The hot/cold coffee split keys off a case-insensitive match on category_name. The split itself now lives in src/lib/coffeeSplit.js; if the CEO takes option B in SPEC §2 (real Hot/Cold subcategories via a shishka-os migration), delete that file and this assertion together."
     }
   ]
 }

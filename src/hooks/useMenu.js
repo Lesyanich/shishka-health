@@ -5,7 +5,6 @@ import { DEFAULT_CONTENT, mergeContent, writeCachedContent } from "../lib/conten
 import { deepStripEmoji, titleCaseMenu } from "../lib/text.js";
 import { dishFloor, dishDefaultPrice } from "../lib/modifiers.js";
 import { benefitsForDish } from "../lib/benefits.js";
-import { coffeeSubcategory } from "../lib/coffeeSplit.js";
 import { buildMenuGroups } from "../lib/menuGroups.js";
 import { LANG, DEFAULT_LANG } from "../i18n/index.js";
 import { localizeMenu } from "../i18n/localize.js";
@@ -184,17 +183,12 @@ async function fetchFromSupabase() {
     const priceDefault = dishDefaultPrice(price, modifierGroups);
 
     // Subcategories come from the dish's own `category_*` fields — the leaf the
-    // admin panel owns. Coffee is the ONE exception left: its Hot / Cold leaves
-    // are synthesized from the dish name because they do not exist in
-    // product_categories. That exception is quarantined in lib/coffeeSplit.js,
-    // which explains why it is a problem and what deletes it (SPEC §2 ‡).
-    // The "SALE-BAKED_POTATO_SIDE → 🥔 Sides" branch that used to sit here was
-    // dead code: that dish is not in menu_public, so it never fired. Migration
-    // 500 gives the dips section a real "Sides" subcategory instead.
-    const coffee = coffeeSubcategory(d);
-    const subId = coffee?.id ?? d.category_id ?? sectionId;
-    const subName = coffee?.name ?? d.category_name ?? sectionName;
-    const subSort = coffee?.sort ?? d.category_sort_order ?? 0;
+    // admin panel owns, for every dish. That includes Coffee's Hot / Cold split:
+    // since shishka-os migration 505 they are real subcategories
+    // (KP-DRK-COF-HOT / KP-DRK-COF-CLD), no longer synthesized here.
+    const subId = d.category_id ?? sectionId;
+    const subName = d.category_name ?? sectionName;
+    const subSort = d.category_sort_order ?? 0;
 
     return {
       id: d.id,

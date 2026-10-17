@@ -35,9 +35,6 @@ export default {
   "menu.noMatch": "لا توجد أطباق تطابق هذه الفلاتر.",
   "menu.clearFilters": "مسح الفلاتر",
 
-  "sub.coldCoffee": "قهوة مثلجة",
-  "sub.hotCoffee": "قهوة ساخنة",
-
   "badge.comingSoon": "قريبًا",
   "badge.outOfStock": "غير متوفر",
   "badge.featured": "مميّز",
