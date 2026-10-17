@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { Button } from "../primitives/Button.jsx";
+import { useModal } from "../../hooks/useModal.js";
 import { FilterChip } from "./FilterChip.jsx";
 import { XIcon, CheckIcon } from "../Icons.jsx";
 import { t } from "../../i18n/index.js";
@@ -16,6 +18,12 @@ export function FilterPanel({
   onApply,
   resultCount,
 }) {
+  // Before the early return: hooks cannot be conditional. This panel used to be
+  // a bare overlay — no Escape, no focus trap, no focus restore, no scroll lock —
+  // which is MASTER's whole modal contract missing. See hooks/useModal.js.
+  const dialogRef = useRef(null);
+  useModal(open, dialogRef, onClose);
+
   if (!open) return null;
 
   const has = (arr, v) => arr.includes(v);
@@ -25,6 +33,8 @@ export function FilterPanel({
     <div className="shk-fp__scrim" onClick={onClose}>
       <div
         className="shk-fp"
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={t("filter.aria")}
@@ -44,6 +54,10 @@ export function FilterPanel({
         </div>
 
         <div className="shk-fp__body">
+          {/* No dietary tag exists on the live menu today (all 121 tag links are
+              allergens), so this section used to render a heading with nothing
+              under it. It appears by itself the day the menu is tagged. */}
+          {dietOptions.length > 0 && (
           <div className="shk-fp__section">
             <div className="shk-fp__legend">{t("filter.suitableFor")}</div>
             <div className="shk-fp__chips">
@@ -59,6 +73,7 @@ export function FilterPanel({
               ))}
             </div>
           </div>
+          )}
 
           <div className="shk-fp__section">
             <div className="shk-fp__legend">{t("filter.exclude")}</div>
@@ -75,6 +90,14 @@ export function FilterPanel({
                 </FilterChip>
               ))}
             </div>
+            {/* The honest half of an exclusion filter. Hiding every dish tagged
+                "Dairy" implies the rest are dairy-free, and 24 of 81 dishes carry
+                no allergen tag at all — "nobody has looked" reads the same as
+                "nothing in it". Said here, next to the control, not buried in a
+                footer. See lib/dishFilters.js. */}
+            {allergenOptions.length > 0 && (
+              <p className="shk-fp__note">{t("filter.allergenNote")}</p>
+            )}
           </div>
         </div>
 

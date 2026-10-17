@@ -593,6 +593,38 @@ a category whose every dish is coming soon reads "<name> · soon" in the rail an
       <div class="ds-sub">quick filters — what the data honestly supports (§7a)</div>
       <p class="ds-lead">§3.7 asked for three chips. Two of them cannot ship, and that is a data fact rather than a preference: <strong>Plant-based</strong> would match <strong>zero</strong> dishes (all 121 tag links on the 81 live dishes are <code>tag_group = 'allergen'</code> — there is not one dietary tag on the menu), and <strong>Seafood</strong> as an exclusion would hide 8 dishes while implying the other 73 are safe, which <code>fn_dish_allergen_status</code> cannot support at 40 of 81 <code>confident: false</code>. <code>Under 400 kcal</code> ships because macros are complete (0 of 81 missing), and <code>High protein</code> reuses the card badge's own <code>protein ≥ 30</code> rule. Evidence lives next to the code in <code>lib/quickFilters.js</code>.</p>
 
+      <div class="ds-sub">Filters — the page-wide diet / allergen sheet, back behind a button</div>
+      <p class="ds-lead">The old <a href="#filter">filter sheet</a> is mounted again, opened from <code>shk-menu__filter</code>. <strong>Mobile:</strong> pinned to the <em>end of the sticky rail</em> and not scrolling with the pills — the header cannot take a fourth item at 375px, and on a thirteen-screen page a guest who remembers an allergy on screen eight must not have to climb back to the top. <strong>Desktop:</strong> in the header, with its label.</p>
+      <div style="max-width:390px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden">
+        <div class="shk-menu__rail">
+          <div class="shk-tabs" role="tablist" aria-label="Menu categories">
+            <button type="button" role="tab" class="shk-tab" aria-selected="true">Salads &amp; Bowls</button>
+            <button type="button" role="tab" class="shk-tab" aria-selected="false">Sauce, Dressing and Dips</button>
+            <button type="button" role="tab" class="shk-tab" aria-selected="false">Coffee</button>
+          </div>
+          <button type="button" class="shk-menu__filter is-on" aria-label="Filters, 2 active" aria-haspopup="dialog">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+            <span class="shk-menu__filter-badge num" aria-hidden="true">2</span>
+          </button>
+        </div>
+        <div class="shk-menu__filtered" role="status" style="margin-top:var(--sp-3);margin-bottom:var(--sp-3)">
+          <span>Dishes shown <span class="num">33 / 81</span></span>
+          <button type="button" class="shk-menu__filtered-clear">Clear filters</button>
+        </div>
+      </div>
+      <div class="ds-row" style="margin-top:var(--sp-4);gap:var(--sp-4);align-items:center">
+        <button type="button" class="shk-menu__filter shk-menu__filter--labelled" aria-haspopup="dialog">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          <span class="shk-menu__filter-text">Filters</span>
+        </button>
+        <span class="ds-src">desktop header · off · on adds the green fill and the count badge</span>
+      </div>
+      <p class="shk-fp__note" style="max-width:420px;margin-top:var(--sp-4)">Dishes with no allergen listed are not guaranteed to be free of it. Tell our team about any allergy.</p>
+      <div class="ds-recipe">This sheet EXCLUDES, which is a different kind of claim from the per-section quick filters: hiding every dish tagged "Dairy" tells the guest the dishes left on screen are dairy-free. The data cannot promise that — 24 of 81 live dishes carry no allergen tag at all, and an empty tag list means "nobody has looked", not "nothing in it". So the sheet ships with the note above (.shk-fp__note), next to the control and not in a footer.
+A filtered menu must LOOK filtered: .shk-menu__filtered ("Dishes shown 33 / 81 · Clear filters") sits at the top of the list while any filter is on, because a guest who forgets they filtered is a guest ordering from a menu they believe is complete. The count badge is part of the accessible name ("Filters, 2 active"), never colour alone.
+"Suitable for" renders only when a dietary tag exists — none does on the live menu today (all 121 tag links are allergens), so the section would otherwise be a heading with nothing under it. It appears by itself the day the menu is tagged. A shared ?dish= link opens the dish whatever the recipient's filters are.
+The sheet now has MASTER's whole modal contract (hooks/useModal.js): focus in on open and restored on close, Tab trapped, Escape closes, page scroll locked. It had none of it before.</div>
+
       <div class="ds-sub">desktop left nav (§4.2) — the same nav, stood on its end</div>
       <div style="max-width:240px">
         <nav class="shk-menu__nav" style="display:block" aria-label="Menu categories">

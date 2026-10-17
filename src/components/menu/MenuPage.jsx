@@ -55,7 +55,14 @@ function Lede() {
   );
 }
 
-export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAdd }) {
+/*
+  `filter` is the page-wide diet / allergen filter owned by App:
+    { count, onOpen, onClear, shown, total }
+  `data.dishes` has ALREADY been filtered by the time it gets here, so the rail,
+  the nav and the sections simply reflect what survived — a section with nothing
+  left disappears from all three instead of leaving an empty heading.
+*/
+export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAdd, filter }) {
   const wide = useWide();
 
   // The header's opening hours must be right in the first frame, not after the
@@ -142,8 +149,35 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
     return out;
   }, [sections]);
 
+  const filtering = (filter?.count ?? 0) > 0;
+
   const body = (
     <>
+      {/* A filtered menu must LOOK filtered. Page-wide allergen filtering that a
+          guest can forget about — scrolled eight screens down, the badge off
+          screen — is how someone orders from a menu they believe is complete.
+          Not sticky and not dismissable on its own: it goes when the filters do. */}
+      {filtering && !loading && (
+        <div className="shk-menu__filtered" role="status">
+          <span>
+            {t("filter.shown")}{" "}
+            <span className="num">{filter.shown} / {filter.total}</span>
+          </span>
+          <button type="button" className="shk-menu__filtered-clear" onClick={filter.onClear}>
+            {t("menu.clearFilters")}
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && sections.length === 0 && filtering && (
+        <div className="shk-menu__empty">
+          <p>{t("menu.noMatch")}</p>
+          <button type="button" className="shk-app__clear" onClick={filter.onClear}>
+            {t("menu.clearFilters")}
+          </button>
+        </div>
+      )}
+
       {loading && <MenuSkeleton />}
 
       {/* The menu could not be loaded. Say so plainly rather than falling back
@@ -163,12 +197,24 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
 
   return (
     <div className={`shk-menu${wide ? " shk-menu--wide" : ""}`} id="top">
-      <MenuTopbar wide={wide} hoursTime={content?.cta?.hoursTime} />
+      <MenuTopbar
+        wide={wide}
+        hoursTime={content?.cta?.hoursTime}
+        filterCount={filter?.count ?? 0}
+        onOpenFilters={filter?.onOpen}
+      />
 
       {!wide && (
         <>
           <Lede />
-          <CategoryRail sections={sections} idFor={idFor} active={active} onPick={go} />
+          <CategoryRail
+            sections={sections}
+            idFor={idFor}
+            active={active}
+            onPick={go}
+            filterCount={filter?.count ?? 0}
+            onOpenFilters={filter?.onOpen}
+          />
           <main className="shk-menu__main">{body}</main>
           <VisitUs cta={content?.cta} />
         </>
