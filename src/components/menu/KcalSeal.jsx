@@ -55,7 +55,7 @@ export function KcalSeal({ kcal, size = "md", className = "", ...rest }) {
       </svg>
       <span className="shk-kseal__stack" aria-hidden="true">
         <span className="shk-kseal__num">{kcal}</span>
-        <span className="shk-kseal__unit">kcal</span>
+        <span className="shk-kseal__unit">{t("card.kcal")}</span>
       </span>
     </span>
   );
