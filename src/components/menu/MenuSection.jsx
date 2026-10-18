@@ -120,6 +120,7 @@ export function MenuSection({ section, domId, wide, addedIds, onOpen, onQuickAdd
               variant={variant}
               data-code={dish.product_code}
               name={dish.name}
+              nameLocal={dish.name_local}
               description={dish.description}
               price={cardPrice(dish)}
               image={dish.cardImage}

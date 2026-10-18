@@ -487,6 +487,14 @@ tabular-nums but NOT .shk-data: the brand sets the seal in the sans display face
       </div>
       <div class="ds-recipe">default · in-cart (is-added, "+" → check, aria-pressed) · unavailable (is-soldout, photo 50%, name stays readable) · coming-soon (is-coming-soon, 0.78)</div>
 
+      <div class="ds-sub">Name in the guest's language — a gloss under the English name</div>
+      <p class="ds-lead">On <code>/ru</code>, <code>/th</code>, <code>/ar</code> the English name stays primary — bold, in the card, the dialog, the cart and on the till — and the translation sits under it as <code>.shk-dish__sub</code> (12.5&nbsp;px, regular, <code>--text-muted</code>; 14&nbsp;px on <code>grid-full</code>). It is a sibling of the heading inside <code>.shk-dish__titles</code>, so the open button's accessible name stays the English one. Never replace the English name: the cashier reads it off the order. In the dialog the same pair is <code>.shk-dlg__titles</code> / <code>.shk-dlg__sub</code>.</p>
+      <div style="max-width:190px">
+        <article class="shk-dish shk-dish--grid-compact">
+          <div class="shk-dish__head"><div class="shk-dish__titles"><h3 class="shk-dish__name">Tabbouleh Herb Energy</h3><span class="shk-dish__sub">Табуле с зеленью</span></div><span class="shk-dish__price">฿149</span></div>
+        </article>
+      </div>
+
       <div class="ds-sub">grid-full — desktop, everything inline, no dialog</div>
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:620px">
         <article class="shk-dish shk-dish--grid-full">

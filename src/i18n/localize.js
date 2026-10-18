@@ -93,7 +93,14 @@ export function localizeMenu(data, rows) {
   const dishes = (data.dishes ?? []).map((d) => ({
     ...d,
     name_en: d.name,
-    name: EN ? d.name : (text("dish", d.id, "name") ?? d.name),
+    // The English name is NEVER replaced: the cashier reads it on the order and the till knows
+    // only it. A fresh translation rides along as `name_local` and is shown as a small line
+    // under the name (CEO 2026-10-18, variant A). Same text as the name -> nothing to show.
+    name: d.name,
+    name_local: (() => {
+      const local = EN ? null : text("dish", d.id, "name");
+      return local && local !== d.name ? local : null;
+    })(),
     description: EN ? d.description : (text("dish", d.id, "description") ?? d.description),
     ingredients: EN ? d.ingredients : (text("dish", d.id, "ingredients") ?? d.ingredients),
     section_key: d.section_name,

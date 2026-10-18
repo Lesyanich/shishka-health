@@ -52,6 +52,7 @@ export function DishCard({ variant = "legacy", ...props }) {
 
 function DishCardNext({
   name,
+  nameLocal = null,
   description,
   price,
   currency = "฿",
@@ -143,15 +144,20 @@ function DishCardNext({
       </div>
 
       <div className="shk-dish__head">
-        <h3 className="shk-dish__name">
-          {openable ? (
-            <button type="button" className="shk-dish__open" onClick={onClick}>
-              {name}
-            </button>
-          ) : (
-            name
-          )}
-        </h3>
+        <div className="shk-dish__titles">
+          <h3 className="shk-dish__name">
+            {openable ? (
+              <button type="button" className="shk-dish__open" onClick={onClick}>
+                {name}
+              </button>
+            ) : (
+              name
+            )}
+          </h3>
+          {/* The guest's language, small and light, under the English name. Not part of
+              the heading: the accessible name of the open button stays the English one. */}
+          {nameLocal && <span className="shk-dish__sub">{nameLocal}</span>}
+        </div>
         {price != null && (
           <span className="shk-dish__price">
             {currency}
