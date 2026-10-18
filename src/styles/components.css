@@ -504,6 +504,8 @@ button.shk-seal:active { transform: scale(0.93); }
   display: flex; flex-direction: column; gap: var(--space-4); }
 .shk-dlg__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
 .shk-dlg__title { font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--text-2xl); line-height: var(--leading-tight); color: var(--text-strong); }
+.shk-dlg__titles { display: flex; flex-direction: column; min-width: 0; }
+.shk-dlg__sub { margin-top: 2px; font-size: var(--text-base); font-weight: var(--fw-regular); line-height: 1.25; color: var(--text-muted); }
 .shk-dlg__price { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--text-xl); color: var(--menu-price); white-space: nowrap; font-feature-settings: var(--num-feature); }
 .shk-dlg__from { font-family: var(--font-sans); font-weight: var(--fw-regular); font-size: var(--text-sm); color: var(--menu-muted, var(--menu-price)); opacity: 0.75; }
 .shk-dlg__desc { font-size: var(--text-base); color: var(--text-body); line-height: var(--leading-relaxed); text-wrap: pretty; }
@@ -1972,6 +1974,14 @@ button.shk-seal:active { transform: scale(0.93); }
   flex-shrink: 0; font-size: 18px; font-weight: var(--fw-display);
   font-variant-numeric: tabular-nums;
 }
+/* The dish name in the guest's language: small, light, under the English one
+   (variant A). The English name keeps its weight — this is a gloss, not a title. */
+.shk-dish__titles { display: flex; flex-direction: column; min-width: 0; }
+.shk-dish__sub {
+  margin-top: 2px; font-size: 12.5px; font-weight: 400; line-height: 1.25;
+  color: var(--text-muted); overflow-wrap: anywhere;
+}
+.shk-dish--grid-full .shk-dish__sub { font-size: 14px; }
 
 /* The name is the open control. Its ::after is stretched over the whole card
    so the photo is part of the hit area without nesting anything inside a

@@ -93,7 +93,7 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
 
   if (!open || !dish) return null;
   const {
-    name, description, price, priceDefault = null, priceFrom = null, currency = "฿", image, image_url,
+    name, name_local: nameLocal = null, description, price, priceDefault = null, priceFrom = null, currency = "฿", image, image_url,
     calories, protein = 0, carbs = 0, fat = 0,
     badges = [], benefits = [],
     category, portion_size, portion_unit, ingredients,
@@ -206,7 +206,10 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
 
         <div className="shk-dlg__body">
           <div className="shk-dlg__head">
-            <h2 className="shk-dlg__title">{name}</h2>
+            <div className="shk-dlg__titles">
+              <h2 className="shk-dlg__title">{name}</h2>
+              {nameLocal && <span className="shk-dlg__sub">{nameLocal}</span>}
+            </div>
             {buildYourOwn ? (
               <span className="shk-dlg__price">
                 <span className="shk-dlg__from">{t("card.from")} </span>{currency}{priceFrom}
