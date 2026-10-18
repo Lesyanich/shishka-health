@@ -115,7 +115,6 @@ export function MenuSection({ section, domId, wide, addedIds, onOpen, onQuickAdd
             fat={dish.fat ?? 0}
             weight={dish.portion_size}
             weightUnit={dish.portion_unit}
-            allergens={dish.allergens ?? []}
             highProtein={isHighProtein(dish.protein)}
             category={section.name}
             comingSoon={dish.stockState === "coming_soon"}
