@@ -75,52 +75,73 @@ const NAP = {
    literally true, because an answer engine will repeat it verbatim for a long
    time and we cannot retract it once quoted.
 
-   The gluten wording is the load-bearing one. We bake real wheat sourdough, so
-   "gluten-free restaurant" would be false. "Everything except the sourdough" is
-   both true and a stronger citation target than a vague "options available",
-   because it names its own exception.
+   The gluten wording is the load-bearing one. A guest with coeliac disease may
+   act on it, so it names only what the allergen data actually backs and never
+   implies the whole menu is safe.
 */
 const CLAIM_NO_SEED_OILS =
   "We cook with no seed oils at all — not in the kitchen, not in our sauces, and nothing is deep-fried.";
 /*
-  CLAIM_GLUTEN — 2026-10-16. The old wording ("Everything on our menu is
-  gluten-free except our sourdough bread") was removed because it had become
-  false: the menu gained the wheat wrap and toast lines and then lost the potato
-  tacos it was written around (shishka-os migration 466).
+  CLAIM_GLUTEN — MC 98e1ef8d, 2026-10-18. History: "Everything on our menu is
+  gluten-free except our sourdough bread" was removed on 2026-10-16 because it
+  had become false (wheat wraps, 19-grain toast, croutons). Its replacement,
+  "most of our salads and bowls, our dips, and every drink", still overclaimed:
+  5 of the 13 salads and bowls carry the gluten allergen, and most of the rest
+  have unreviewed ingredients, so "most" could not be backed.
 
-  CEO RULE, and the reason this reads the way it does: we do not publish our own
-  weaknesses on our own site. A first draft replaced the false line with "We are
-  not a gluten-free kitchen" — rejected, and rightly: answer engines quote a
-  sentence like that back at guests forever. State what we DO have without
-  gluten. Do not advertise what we lack.
+  The rule now: name a group only when every live item in it has a CONFIRMED
+  allergen status (fn_dish_allergen_status confident = true, no gluten) — an
+  empty allergen list on an unreviewed dish means unknown, not safe. On
+  2026-10-18 that held for the three dips, every coffee, smoothie and fresh
+  juice, and the tabbouleh (quinoa, not bulgur). Matcha is left out because one
+  matcha drink still has an unreviewed ingredient. Re-check before widening it.
 
-  So this says what is made without gluten and stops there. The celiac question
-  below is a direct safety question and still gets a direct answer, which is the
-  one place a limitation belongs.
+  CEO RULE: we do not publish our own weaknesses on our own site, so this states
+  what we DO have without gluten. The celiac question is a direct safety
+  question and gets a direct answer, which is the one place a limitation belongs.
+  CLAIM_GLUTEN_MARK points guests at the per-dish gluten tag the menu renders
+  (allergen-gluten, set on all 28 live dishes that contain it).
+
+  No dish is tagged "gluten-free" on the menu, so none is called that here.
+  "Made without gluten ingredients" is deliberate: it is not a cross-contact
+  promise.
 */
 const CLAIM_GLUTEN =
-  "Much of our menu is made without gluten ingredients: most of our salads and bowls, our dips, and every drink we make.";
+  "Our three dips (hummus, beetroot hummus and smoked eggplant), our coffee, smoothies and fresh juices, and our tabbouleh salad are made without gluten ingredients.";
+const CLAIM_GLUTEN_MARK =
+  "Dishes made with gluten ingredients carry a gluten mark on our menu.";
+// The toast is a bought-in 19-grain loaf, so the kitchen handles wheat but does
+// not bake it — the earlier "we bake wheat sourdough" was not true either.
 const CLAIM_CELIAC =
-  "No. We bake wheat sourdough in the same kitchen, so we cannot promise a celiac-safe environment. Tell us before you order and we will go through the dish with you.";
+  "No. We prepare wheat wraps and bread in the same kitchen, so we cannot promise a celiac-safe environment. Tell us before you order and we will go through the dish with you.";
 
 /*
-  Russian (/ru) — MC f91194f7. Only the seed-oil and deep-frying claims are
-  carried over. The two gluten claims above are deliberately NOT translated:
-  the menu has since gained 19-grain toast, whole-grain wraps and croutons, and
-  several dish descriptions now say "Contains gluten", so "everything except the
-  sourdough" is no longer literally true. Re-signing that claim is a CEO call;
-  until then the Russian pages say nothing about gluten rather than repeat it.
+  Russian, Thai and Arabic carry the same three gluten statements, translated
+  offline here (never per view). Keep all four languages in step: change the
+  English claim, change these in the same commit.
 */
 const CLAIM_NO_SEED_OILS_RU =
   "Мы вообще не используем масла из семян — ни на кухне, ни в соусах, и ничего не жарим во фритюре.";
+const CLAIM_GLUTEN_RU =
+  "Три наших дипа (хумус, свекольный хумус и дип из копчёного баклажана), кофе, смузи и свежевыжатые соки, а также салат табуле готовятся без ингредиентов, содержащих глютен.";
+const CLAIM_GLUTEN_MARK_RU =
+  "Блюда с ингредиентами, содержащими глютен, отмечены в нашем меню значком глютена.";
+const CLAIM_CELIAC_RU =
+  "Нет. На нашей кухне готовят пшеничные лепёшки и хлеб, поэтому мы не можем гарантировать безопасность при целиакии. Предупредите нас до заказа, и мы вместе разберём блюдо.";
 
-/*
-  Arabic (/ar) — MC f91194f7. Same rule as Russian and Thai above: only the
-  seed-oil and deep-frying claims cross over. CLAIM_GLUTEN and CLAIM_CELIAC are
-  NOT translated — the menu has 19-grain toast, whole-grain wraps and croutons,
-  so re-signing a gluten claim is a CEO call (MC 98e1ef8d). Until it is made the
-  Arabic pages say nothing about gluten rather than repeat something untrue.
-*/
+const CLAIM_GLUTEN_TH =
+  "ดิปทั้งสามของเรา (ฮัมมัส ฮัมมัสบีทรูท และดิปมะเขือยาวรมควัน) กาแฟ สมูทตี้ น้ำผลไม้สด และสลัดทาบูเล่ ทำโดยไม่ใช้วัตถุดิบที่มีกลูเตน";
+const CLAIM_GLUTEN_MARK_TH =
+  "เมนูที่ใช้วัตถุดิบที่มีกลูเตนจะมีสัญลักษณ์กลูเตนกำกับไว้ในเมนูของเรา";
+const CLAIM_CELIAC_TH =
+  "ไม่ใช่ เราเตรียมแผ่นแรปและขนมปังจากข้าวสาลีในครัวเดียวกัน จึงไม่สามารถรับรองความปลอดภัยสำหรับผู้เป็นโรคเซลิแอคได้ กรุณาแจ้งเราก่อนสั่ง แล้วเราจะช่วยตรวจสอบเมนูกับคุณ";
+
+const CLAIM_GLUTEN_AR =
+  "أطباق التغميس الثلاثة لدينا (الحمص، وحمص الشمندر، ومتبّل الباذنجان المدخّن)، والقهوة والسموذي والعصائر الطازجة، وسلطة التبولة، تُحضَّر كلها بدون مكوّنات تحتوي على الغلوتين.";
+const CLAIM_GLUTEN_MARK_AR =
+  "الأطباق المحضّرة بمكوّنات تحتوي على الغلوتين تحمل علامة الغلوتين في قائمتنا.";
+const CLAIM_CELIAC_AR =
+  "لا. نحضّر خبز الراب والخبز المصنوعين من القمح في المطبخ نفسه، لذلك لا يمكننا ضمان بيئة آمنة لمرضى السيلياك. أخبرنا قبل الطلب وسنراجع الطبق معك.";
 const CLAIM_NO_SEED_OILS_AR =
   "نحن لا نستخدم زيوت البذور على الإطلاق — لا في المطبخ ولا في صوصاتنا، ولا نقلي أي شيء بالزيت الغزير.";
 
@@ -559,6 +580,8 @@ function ruFaq() {
     { q: "Когда вы открыты?", a: "Мы открыты ежедневно, 9:30 – 18:30." },
     { q: "Вы используете масла из семян?", a: CLAIM_NO_SEED_OILS_RU },
     { q: "Вы что-нибудь жарите во фритюре?", a: "Нет. В нашем меню нет ничего, приготовленного во фритюре." },
+    { q: "У вас есть блюда без глютена?", a: `${CLAIM_GLUTEN_RU} ${CLAIM_GLUTEN_MARK_RU}` },
+    { q: "Ваша кухня безопасна при целиакии?", a: CLAIM_CELIAC_RU },
     { q: "Как сделать заказ?", a: `Подойдите к кассе или позвоните нам: ${NAP.phoneDisplay}. Полное меню с фото — на shishka.health/ru.` },
   ];
 }
@@ -572,6 +595,8 @@ function thFaq() {
     { q: "เปิดกี่โมง", a: "เปิดทุกวัน 9:30 – 18:30 น." },
     { q: "ใช้น้ำมันจากเมล็ดพืชหรือไม่", a: THAI_CLAIM_NO_SEED_OILS },
     { q: "มีเมนูทอดน้ำมันท่วมไหม", a: "ไม่มี ไม่มีเมนูใดในร้านที่ทอดน้ำมันท่วม" },
+    { q: "มีเมนูที่ไม่มีกลูเตนไหม", a: `${CLAIM_GLUTEN_TH} ${CLAIM_GLUTEN_MARK_TH}` },
+    { q: "ครัวของร้านปลอดภัยสำหรับผู้เป็นโรคเซลิแอคไหม", a: CLAIM_CELIAC_TH },
     { q: "สั่งอาหารอย่างไร", a: `สั่งที่เคาน์เตอร์ได้เลย หรือโทร ${NAP.phoneDisplay} เมนูเต็มพร้อมรูปอยู่ที่ shishka.health/th` },
   ];
 }
@@ -582,6 +607,8 @@ function arFaq() {
     { q: "ما هي ساعات العمل؟", a: "مفتوح يوميًا من 9:30 حتى 18:30." },
     { q: "هل تستخدمون زيوت البذور؟", a: CLAIM_NO_SEED_OILS_AR },
     { q: "هل تقدّمون أي طعام مقلي بالزيت الغزير؟", a: "لا. لا يوجد في قائمتنا أي طبق مقلي بالزيت الغزير." },
+    { q: "هل لديكم أطباق بدون غلوتين؟", a: `${CLAIM_GLUTEN_AR} ${CLAIM_GLUTEN_MARK_AR}` },
+    { q: "هل مطبخكم آمن لمرضى السيلياك؟", a: CLAIM_CELIAC_AR },
     { q: "كيف أطلب؟", a: `اطلب عند الكاشير أو اتصل بنا: ${NAP.phoneDisplay}. القائمة الكاملة بالصور على shishka.health/ar` },
   ];
 }
@@ -662,6 +689,7 @@ function buildPages(dishes) {
     { q: "Where is SHiSHKA Healthy Kitchen?", a: `Inside Tops Daily on Soi Naya 2 in Rawai, Phuket — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}.` },
     { q: "What are your opening hours?", a: `We are open ${NAP.hoursHuman}.` },
     { q: "Do you use seed oils?", a: CLAIM_NO_SEED_OILS },
+    { q: "Do you have gluten-free options?", a: `${CLAIM_GLUTEN} ${CLAIM_GLUTEN_MARK}` },
     { q: "Is your kitchen celiac-safe?", a: CLAIM_CELIAC },
     { q: "How do I order?", a: `Come to the counter, or call us on ${NAP.phoneDisplay}. The full menu with photos is on shishka.health.` },
   ];
@@ -683,14 +711,14 @@ function buildPages(dishes) {
       title: `Gluten-Free Options in Phuket — ${NAP.name}, Rawai`,
       description: `${CLAIM_GLUTEN} Fresh every day in Rawai, Phuket.`,
       h1: "Gluten-Free Options in Rawai, Phuket",
-      answer: `${CLAIM_GLUTEN} Our rolls are wrapped in rice paper, our salads and bowls are built on vegetables, quinoa and rice, and our smoothies, juices, matcha and coffee are made without gluten ingredients. Ask at the counter and we will check any dish with you before you order.`,
+      answer: `${CLAIM_GLUTEN} ${CLAIM_GLUTEN_MARK} If you have coeliac disease or a gluten allergy, tell us before you order and we will go through the dish with you.`,
       body: `<h2>What to look at</h2>
-<p>Most of our salads and bowls are built on vegetables, quinoa or rice rather than bread or wheat noodles, and our hummus and dips are naturally gluten-free. Every drink we make — coffee, matcha, smoothies and cold-pressed juices — is made without gluten ingredients.</p>
-<p>We also bake real sourdough on site, and some dishes are built on wheat wraps or toast, so tell us what you are avoiding and we will point you at the right plate.</p>
-<p class="meta">We deliberately do not publish a dish-by-dish gluten-free list, because a list like that gets quoted back to guests long after a recipe changes. Ask us at the counter instead: we know what goes into every dish and we will check yours with you.</p>`,
+<p>Our hummus, beetroot hummus and smoked-eggplant dip are made without gluten ingredients, and so is our tabbouleh, which we make with quinoa instead of bulgur wheat. So are our coffee, smoothies and fresh juices.</p>
+<p>Our wraps, toasts and breakfast plates are made with wheat, and dishes made with gluten ingredients carry a gluten mark on the menu. Tell us what you are avoiding and we will point you to the right plate.</p>
+<p class="meta">Recipes change, so for anything not named above, ask us at the counter: we know what goes into every dish and we will check yours with you.</p>`,
       faqs: [
         { q: "Is your kitchen celiac-safe?", a: CLAIM_CELIAC },
-        { q: "What contains gluten on your menu?", a: "Our sourdough, the wheat wraps and the toasts built on them, and the croutons on the Caesars. The drinks do not. Ask us about a specific dish and we will check it for you." },
+        { q: "What contains gluten on your menu?", a: "Our wraps, toasts and breakfast plates are made with wheat, and so are the protein meals, which come with a wrap. Some salads and bowls contain gluten too, such as the Caesars, the Thai Noodle bowl and the Hummus Protein Boost, and so does one of our chocolate squares. Each of these carries a gluten mark on the menu. Ask us about any dish and we will check it for you." },
         ...sharedFaq.slice(0, 3),
       ],
     },
