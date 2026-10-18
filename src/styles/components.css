@@ -2162,13 +2162,18 @@ a.shk-ctile:active { transform: scale(0.98); }
 
 /* ---- CategoryTabs: segmented ---------------------------------------------
    Equal columns on a tinted track, for the mobile category screen. The
-   default .shk-tabs rail (scrolling pills) is unchanged. */
+   default .shk-tabs rail (scrolling pills) is unchanged.
+   Columns are equal only while every label fits: `minmax(max-content, 1fr)`
+   lets a long label ("Хумус и дипы" next to three short ones) take the width it
+   needs, where `minmax(0, 1fr)` squeezed it and the nowrap text ran 22px into
+   its neighbour at 390px. If even that cannot fit (a 320px phone), the track
+   scrolls sideways instead of overprinting. */
 .shk-tabs--segmented {
   position: static;
-  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(max-content, 1fr);
   gap: 4px; padding: 4px; min-height: 0;
   background: var(--surface-2); border-radius: var(--radius-pill);
-  overflow: visible;
+  overflow-x: auto; scrollbar-width: none;
 }
 .shk-tabs--segmented .shk-tab {
   flex: initial; min-height: 40px; padding: 0 var(--sp-2);
