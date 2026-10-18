@@ -317,6 +317,13 @@ primary/spice → var(--accent) #B62A23 · radius-pill · hover var(--accent-hov
       </div>
       <div class="ds-recipe">&lt;CategoryTabs variant="segmented" … /&gt; — the mobile category screen. Track --surface-2, selected fills --royal-green.
 Tabs appear only when a section has ≥2 categories; "All" is first and selected by default.</div>
+      <div role="tablist" class="shk-tabs shk-tabs--segmented" style="max-width:358px;margin-top:12px" lang="ru">
+        <button type="button" role="tab" class="shk-tab" aria-selected="true">Все</button>
+        <button type="button" role="tab" class="shk-tab" aria-selected="false">Хумус и дипы</button>
+        <button type="button" role="tab" class="shk-tab" aria-selected="false">Соусы</button>
+        <button type="button" role="tab" class="shk-tab" aria-selected="false">Хлеб</button>
+      </div>
+      <div class="ds-recipe">A long label among short ones: columns are <code>minmax(max-content, 1fr)</code> — equal while everything fits, the long one widens rather than overprinting its neighbour; below ~330px of track the row scrolls sideways.</div>
       <div class="ds-recipe">&lt;div class="shk-tabs"&gt;&lt;button class="shk-tab" aria-selected="true"&gt;…&lt;/button&gt;…&lt;/div&gt;  ·  arrow-key nav required (see MASTER.md)
 
 "YOU ARE HERE" IS RED. THE CHOICES YOU MAKE ARE STILL GREEN.
