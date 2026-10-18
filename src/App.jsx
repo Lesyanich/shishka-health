@@ -7,7 +7,8 @@ import { FilterPanel } from "./components/filters/FilterPanel.jsx";
 import { FruitFall } from "./components/menu/FruitFall.jsx";
 import { SliceScore } from "./components/menu/SliceScore.jsx";
 import { FruitSymbols } from "./lib/fruitArt.jsx";
-import { assignDishSlugs } from "./lib/menuSections.js";
+import { assignDishSlugs, buildSections } from "./lib/menuSections.js";
+import { applyQuickFilters, activeCount } from "./lib/quickFilters.js";
 import { buildFilterOptions, dishPasses } from "./lib/dishFilters.js";
 import { useCart } from "./state/cart.jsx";
 
@@ -32,12 +33,15 @@ export default function App() {
 
   const [selected, setSelected] = useState(null);
 
-  // The page-wide diet / allergen sheet. Separate from the per-section quick
-  // filters (lib/quickFilters.js): those only make claims the data can fully
-  // support; this one EXCLUDES, which is why the sheet carries a note.
+  // The Filters sheet: allergen / diet EXCLUSION (it carries a caution line, see
+  // lib/dishFilters.js) plus the same quick filters as the page's chip row. Both
+  // write the state below, so the two can never disagree.
   const [filterOpen, setFilterOpen] = useState(false);
   const [diets, setDiets] = useState([]);
   const [excluded, setExcluded] = useState([]);
+  // The quick filters (lib/quickFilters.js): ONE set for the whole menu, shown
+  // both as a chip row on the page and at the top of the Filters sheet.
+  const [quick, setQuick] = useState([]);
 
   const dishes = data?.dishes ?? [];
   // Slugs and the `?dish=` lookup deliberately use the UNFILTERED list: a shared
@@ -50,14 +54,57 @@ export default function App() {
     () => dishes.filter((d) => dishPasses(d, diets, excluded)),
     [dishes, diets, excluded],
   );
-  const pageData = useMemo(() => (data ? { ...data, dishes: filtered } : data), [data, filtered]);
+
+  // Sheet first (allergen / diet exclusion), then the quick filters over what is
+  // left. `view.sections` is the one list the page, the rail and the nav share,
+  // and `view.shown` is the number a guest can see without opening anything.
+  const sections = useMemo(
+    () => buildSections(data?.groups, data?.categories, filtered),
+    [data?.groups, data?.categories, filtered],
+  );
+  const view = useMemo(() => applyQuickFilters(sections, quick), [sections, quick]);
 
   const toggle = (list, set, id) =>
     set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
   const clearFilters = () => {
     setDiets([]);
     setExcluded([]);
+    setQuick([]);
   };
+  const filterCount = diets.length + excluded.length + activeCount(quick);
+
+  /*
+    Changing filters from the sheet while deep in the page.
+
+    The sheet is THE way to change them from ten thousand pixels down (the chip
+    row under the title scrolls away). But filtering can shrink the page from
+    ~10 700px to a few hundred, and the browser then clamps the scroll position
+    to the new bottom — the guest closes the sheet and finds themselves looking
+    at the footer, with their three results above the fold and nothing to say
+    where they went. So when the sheet closes having CHANGED the filters, bring
+    the results into view: the top of the list, where the chip row and the
+    "Dishes shown" strip are.
+
+    Only on a real change: closing the sheet with nothing touched must not yank
+    the page away from the dish the guest was reading.
+  */
+  const filterSig = JSON.stringify([diets, excluded, quick]);
+  const sigAtOpen = useRef(null);
+  const sheetWasOpen = useRef(false);
+  useEffect(() => {
+    if (filterOpen) {
+      sigAtOpen.current = filterSig;
+    } else if (sheetWasOpen.current && sigAtOpen.current !== filterSig) {
+      const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document
+        .querySelector(".shk-menu__chipbar")
+        ?.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+    }
+    sheetWasOpen.current = filterOpen;
+    // filterSig is read at the moment the sheet opens/closes, not tracked: a
+    // chip toggled while it is open must not itself trigger the scroll.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterOpen]);
   const bySlug = useMemo(() => {
     const m = new Map();
     for (const d of dishes) m.set(slugs.get(d.id), d);
@@ -171,18 +218,20 @@ export default function App() {
       <SliceScore />
 
       <MenuPage
-        data={pageData}
+        data={data}
+        sections={view.sections}
         loading={loading}
         error={error}
         addedIds={cart.addedIds}
         onOpenDish={openDish}
         onQuickAdd={quickAdd}
         filter={{
-          count: diets.length + excluded.length,
+          count: filterCount,
           onOpen: () => setFilterOpen(true),
           onClear: clearFilters,
-          shown: filtered.length,
+          shown: view.shown,
           total: dishes.length,
+          quick: { active: quick, onToggle: (id) => toggle(quick, setQuick, id) },
         }}
       />
 
@@ -193,11 +242,13 @@ export default function App() {
         allergenOptions={allergenOptions}
         selectedDiets={diets}
         excludedAllergens={excluded}
+        quickActive={quick}
+        onToggleQuick={(id) => toggle(quick, setQuick, id)}
         onToggleDiet={(id) => toggle(diets, setDiets, id)}
         onToggleAllergen={(id) => toggle(excluded, setExcluded, id)}
         onClear={clearFilters}
         onApply={() => setFilterOpen(false)}
-        resultCount={filtered.length}
+        resultCount={view.shown}
       />
 
       <DishDialog

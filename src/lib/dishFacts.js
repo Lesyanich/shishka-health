@@ -48,6 +48,20 @@ export function isSeafood(dish) {
   return (dish?.allergens ?? []).some((slug) => SEAFOOD_ALLERGENS.has(slug));
 }
 
+/*
+  The price printed on the card: the default-configured total where a dish has
+  default add-ons (a dip with its bun, ฿111 + ฿38 = ฿149), else the base price.
+
+  ONE definition, used by the card AND by the price filter, so the two cannot
+  disagree. `dishPrice` below is a different thing (it prefers the build-your-own
+  "from" floor) and is for section headers; filtering "Under ฿150" by it would
+  hide a dish whose card plainly says ฿139.
+*/
+export function cardPrice(dish) {
+  const p = dish?.priceDefault ?? dish?.price;
+  return p == null ? null : Number(p);
+}
+
 // What the guest would actually pay for this dish: the price the card shows.
 // A dish configured with default add-ons headlines base + defaults; a
 // build-your-own dish with a required group and no default headlines its floor.

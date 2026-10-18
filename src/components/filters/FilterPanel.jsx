@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { Button } from "../primitives/Button.jsx";
 import { useModal } from "../../hooks/useModal.js";
+import { QuickFilterChips } from "./QuickFilterChips.jsx";
+import { activeCount } from "../../lib/quickFilters.js";
 import { FilterChip } from "./FilterChip.jsx";
 import { XIcon, CheckIcon } from "../Icons.jsx";
 import { t } from "../../i18n/index.js";
@@ -14,6 +16,8 @@ export function FilterPanel({
   excludedAllergens = [],
   onToggleDiet,
   onToggleAllergen,
+  quickActive = [],
+  onToggleQuick,
   onClear,
   onApply,
   resultCount,
@@ -27,7 +31,9 @@ export function FilterPanel({
   if (!open) return null;
 
   const has = (arr, v) => arr.includes(v);
-  const count = selectedDiets.length + excludedAllergens.length;
+  // Quick filters count too: "Clear (3)" that ignores the chips at the top of
+  // the same sheet would leave filters on while saying it had cleared them.
+  const count = selectedDiets.length + excludedAllergens.length + activeCount(quickActive);
 
   return (
     <div className="shk-fp__scrim" onClick={onClose}>
@@ -54,6 +60,19 @@ export function FilterPanel({
         </div>
 
         <div className="shk-fp__body">
+          {/* The same chips as the row under the page title, so a guest ten
+              thousand pixels down can change them without climbing back up. */}
+          {onToggleQuick && (
+            <div className="shk-fp__section">
+              <div className="shk-fp__legend">{t("filter.quick")}</div>
+              <QuickFilterChips
+                className="shk-fp__chips"
+                active={quickActive}
+                onToggle={onToggleQuick}
+              />
+            </div>
+          )}
+
           {/* No dietary tag exists on the live menu today (all 121 tag links are
               allergens), so this section used to render a heading with nothing
               under it. It appears by itself the day the menu is tagged. */}

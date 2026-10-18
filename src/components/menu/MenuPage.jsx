@@ -8,7 +8,8 @@ import { SiteFooter } from "./SiteFooter.jsx";
 import { Cart } from "../cart/Cart.jsx";
 import { useScrollSpy } from "../../hooks/useScrollSpy.js";
 import { useWide } from "../../hooks/useWide.js";
-import { assignSectionIds, buildSections } from "../../lib/menuSections.js";
+import { assignSectionIds } from "../../lib/menuSections.js";
+import { QuickFilterChips } from "../filters/QuickFilterChips.jsx";
 import { DEFAULT_CONTENT } from "../../lib/content.js";
 import { t } from "../../i18n/index.js";
 
@@ -56,23 +57,24 @@ function Lede() {
 }
 
 /*
-  `filter` is the page-wide diet / allergen filter owned by App:
-    { count, onOpen, onClear, shown, total }
-  `data.dishes` has ALREADY been filtered by the time it gets here, so the rail,
-  the nav and the sections simply reflect what survived — a section with nothing
-  left disappears from all three instead of leaving an empty heading.
+  `sections` arrive ALREADY filtered (App runs the Filters sheet and the quick
+  filters, lib/quickFilters.js), so the rail, the left nav, the group eyebrows and
+  the scroll-spy all reflect the same list. A section with nothing left to show is
+  not in it — it leaves the page and the nav together, because a nav entry for a
+  section that is not on the page would leave the spy pointing at nothing. A
+  DRINK section that a nutrition filter does not apply to IS in it, flagged
+  `collapsed`, and renders as a disclosure.
+
+  `filter` is the filter state owned by App:
+    { count, onOpen, onClear, shown, total, quick: { active, onToggle } }
 */
-export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAdd, filter }) {
+export function MenuPage({ data, sections = [], loading, error, onOpenDish, addedIds, onQuickAdd, filter }) {
   const wide = useWide();
 
   // The header's opening hours must be right in the first frame, not after the
   // fetch: a status that appears a second late reads as the page still loading.
   // DEFAULT_CONTENT is the same fallback lib/content.js merges the DB row over.
   const content = data?.content ?? DEFAULT_CONTENT;
-  const sections = useMemo(
-    () => buildSections(data?.groups, data?.categories, data?.dishes),
-    [data?.groups, data?.categories, data?.dishes],
-  );
   const idFor = useMemo(() => assignSectionIds(sections), [sections]);
   const ids = useMemo(() => sections.map((s) => idFor.get(s.id)), [sections, idFor]);
 
@@ -169,7 +171,11 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
         </div>
       )}
 
-      {!loading && !error && sections.length === 0 && filtering && (
+      {/* Keyed on `shown`, not on the section list: some combinations are empty
+          by construction (High protein + Low carb matches no food dish at all),
+          and then the only sections left are collapsed drink headers. A page
+          that is all folded headers and no explanation reads as broken. */}
+      {!loading && !error && filtering && filter.shown === 0 && (
         <div className="shk-menu__empty">
           <p>{t("menu.noMatch")}</p>
           <button type="button" className="shk-app__clear" onClick={filter.onClear}>
@@ -207,6 +213,12 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
       {!wide && (
         <>
           <Lede />
+          {/* One chip row under the title, scrolling sideways, NOT sticky: the
+              rail below is already the sticky bar and a second one would spend
+              another ~56px of a 812px screen. */}
+          <div className="shk-menu__chipbar">
+            <QuickFilterChips active={filter.quick.active} onToggle={filter.quick.onToggle} />
+          </div>
           <CategoryRail
             sections={sections}
             idFor={idFor}
@@ -227,6 +239,9 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
           </div>
           <main className="shk-menu__main">
             <Lede />
+            <div className="shk-menu__chipbar">
+              <QuickFilterChips active={filter.quick.active} onToggle={filter.quick.onToggle} />
+            </div>
             {body}
           </main>
           <div className="shk-menu__aside shk-menu__aside--right">

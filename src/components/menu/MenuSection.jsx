@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import { CategoryTabs } from "../filters/CategoryTabs.jsx";
-import { FilterChip } from "../filters/FilterChip.jsx";
 import { DishCard } from "./DishCard.jsx";
 import { subcategoriesOf, hasSubcategories } from "../../lib/menuSections.js";
-import { minPrice, isHighProtein } from "../../lib/dishFacts.js";
-import { QUICK_FILTERS, applyQuickFilters } from "../../lib/quickFilters.js";
+import { minPrice, isHighProtein, cardPrice } from "../../lib/dishFacts.js";
+import { ChevronDownIcon } from "../Icons.jsx";
 import { t } from "../../i18n/index.js";
 
 const ALL = "all";
@@ -12,36 +11,45 @@ const ALL = "all";
 /*
   One section of the menu (SPEC.md §3.6 mobile, §4.4 desktop).
 
-  Title, "from ฿…", subcategory tabs, the quick filters, then a grid of
-  `grid-compact` / `grid-full` cards or a list of `list-row`s — which one is
-  decided from the data in lib/menuSections.js, not from a list of names here.
+  Title, "from ฿…", subcategory tabs, then a grid of `grid-compact` / `grid-full`
+  cards or a list of `list-row`s — which one is decided from the data in
+  lib/menuSections.js, not from a list of names here.
 
   NO item count anywhere (§2): not after the title, not in the rail. They are
   volatile and a small number undersells a category. "from ฿…" stays, because a
   price is a real decision input.
 
-  Filters are per section (§3.7). A guest filtering the salads to under 400 kcal
-  has said something about salads, not about the chocolate eight screens down —
-  and a page-wide filter on a thirteen-screen page silently changes sections the
-  guest cannot see.
+  The quick filters are NOT here. They used to repeat under every one of ten
+  sections; they are now one row for the whole menu (components/filters/
+  QuickFilterChips) and arrive here already applied: `section.items` is what
+  survived, and `section.collapsed` says this is a DRINK section that a nutrition
+  filter does not apply to.
+
+  A collapsed section is a real disclosure — a <button aria-expanded> that owns
+  the body — not a hidden one. The alternative, dropping drinks from the page
+  while a calorie filter is on, is a silent gap: the guest would not know there
+  were drinks they could not see, or why.
 */
 export function MenuSection({ section, domId, wide, addedIds, onOpen, onQuickAdd }) {
-  const [sub, setSub] = useState(ALL);
-  const [filters, setFilters] = useState([]);
+  const [selectedSub, setSub] = useState(ALL);
+  const [open, setOpen] = useState(false);
 
+  // Built from the items that SURVIVED the filters, so a subcategory with no
+  // matches has no tab, and a section left with one subcategory has none at all.
   const subs = useMemo(() => subcategoriesOf(section.items, section.id), [section.items, section.id]);
   const tabbed = hasSubcategories(subs, section.id) && subs.length >= 2;
 
-  // Tabs narrow first, then the chips: "Cold coffee under 400 kcal".
-  const inSub = tabbed && sub !== ALL ? (subs.find((s) => s.id === sub)?.items ?? []) : section.items;
-  const shown = applyQuickFilters(inSub, filters);
+  // A filter can remove the very subcategory the guest had selected ("Cold
+  // coffee" with nothing cold left). Fall back to All rather than show an empty
+  // grid under a tab that no longer exists.
+  const sub = subs.some((s) => s.id === selectedSub) ? selectedSub : ALL;
+  const shown = tabbed && sub !== ALL ? (subs.find((s) => s.id === sub)?.items ?? []) : section.items;
 
   const from = minPrice(section.items);
   const panelId = `panel-${domId}`;
+  const bodyId = `body-${domId}`;
   const variant = section.layout === "list" ? "list-row" : wide ? "grid-full" : "grid-compact";
-
-  const toggle = (id) =>
-    setFilters((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
+  const closed = section.collapsed && !open;
 
   return (
     /*
@@ -60,9 +68,32 @@ export function MenuSection({ section, domId, wide, addedIds, onOpen, onQuickAdd
         </p>
       </div>
 
-      {(tabbed || QUICK_FILTERS.length > 0) && (
-        <div className="shk-menu__controls">
-          {tabbed && (
+      {section.collapsed && (
+        <button
+          type="button"
+          className={`shk-menu__collapse${open ? " is-open" : ""}`}
+          aria-expanded={open}
+          aria-controls={bodyId}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {/* In words, because a colour or an icon cannot say WHY the drinks are
+              folded away. The filters that do apply to drinks (price, seafood)
+              are not nutrition filters and never collapse a section. */}
+          <span className="shk-menu__collapse-text">{t("filter.drinksNote")}</span>
+          <span className="shk-menu__collapse-action">
+            {open ? t("filter.drinksHide") : t("filter.drinksShow")}
+            {!open && <> <span className="num">{section.items.length}</span></>}
+            <ChevronDownIcon size={18} />
+          </span>
+        </button>
+      )}
+
+      {/* `hidden`, not unmounted: the photos below are lazy, and a display:none
+          subtree never fetches them — so a folded drinks section costs nothing
+          until it is opened. */}
+      <div id={bodyId} hidden={closed}>
+        {tabbed && (
+          <div className="shk-menu__controls">
             <CategoryTabs
               variant="segmented"
               className="shk-menu__subtabs"
@@ -74,66 +105,41 @@ export function MenuSection({ section, domId, wide, addedIds, onOpen, onQuickAdd
                 ...subs.map((s) => ({ id: s.id, label: s.name, panelId })),
               ]}
             />
-          )}
-
-          {/* Two chips, not the three §3 asked for. Plant-based would match zero
-              dishes and Seafood would promise an allergen guarantee the data
-              cannot support — lib/quickFilters.js carries the evidence. */}
-          <div className="shk-menu__chips">
-            {QUICK_FILTERS.map((f) => (
-              <FilterChip
-                key={f.id}
-                className="shk-menu__chip"
-                active={filters.includes(f.id)}
-                onClick={() => toggle(f.id)}
-              >
-                {t(f.labelKey)}
-              </FilterChip>
-            ))}
           </div>
-        </div>
-      )}
+        )}
 
-      <div
-        className={section.layout === "list" ? "shk-menu__list" : "shk-menu__grid"}
-        {...(tabbed
-          ? { role: "tabpanel", id: panelId, "aria-labelledby": `tab-${sub}` }
-          : {})}
-      >
-        {shown.map((dish) => (
-          <DishCard
-            key={dish.id}
-            variant={variant}
-            data-code={dish.product_code}
-            name={dish.name}
-            description={dish.description}
-            price={dish.priceDefault ?? dish.price}
-            image={dish.cardImage}
-            kcal={dish.calories}
-            protein={dish.protein ?? 0}
-            carbs={dish.carbs ?? 0}
-            fat={dish.fat ?? 0}
-            weight={dish.portion_size}
-            weightUnit={dish.portion_unit}
-            highProtein={isHighProtein(dish.protein)}
-            category={section.name}
-            comingSoon={dish.stockState === "coming_soon"}
-            soldOut={dish.stockState === "out_of_stock"}
-            added={addedIds.has(dish.id)}
-            onClick={onOpen ? () => onOpen(dish) : undefined}
-            onQuickAdd={() => onQuickAdd(dish)}
-          />
-        ))}
+        <div
+          className={section.layout === "list" ? "shk-menu__list" : "shk-menu__grid"}
+          {...(tabbed
+            ? { role: "tabpanel", id: panelId, "aria-labelledby": `tab-${sub}` }
+            : {})}
+        >
+          {shown.map((dish) => (
+            <DishCard
+              key={dish.id}
+              variant={variant}
+              data-code={dish.product_code}
+              name={dish.name}
+              description={dish.description}
+              price={cardPrice(dish)}
+              image={dish.cardImage}
+              kcal={dish.calories}
+              protein={dish.protein ?? 0}
+              carbs={dish.carbs ?? 0}
+              fat={dish.fat ?? 0}
+              weight={dish.portion_size}
+              weightUnit={dish.portion_unit}
+              highProtein={isHighProtein(dish.protein)}
+              category={section.name}
+              comingSoon={dish.stockState === "coming_soon"}
+              soldOut={dish.stockState === "out_of_stock"}
+              added={addedIds.has(dish.id)}
+              onClick={onOpen ? () => onOpen(dish) : undefined}
+              onQuickAdd={() => onQuickAdd(dish)}
+            />
+          ))}
+        </div>
       </div>
-
-      {shown.length === 0 && (
-        <div className="shk-menu__empty">
-          <p>{t("filter.noneHere")}</p>
-          <button type="button" className="shk-app__clear" onClick={() => setFilters([])}>
-            {t("menu.clearFilters")}
-          </button>
-        </div>
-      )}
     </section>
   );
 }

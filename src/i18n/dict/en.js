@@ -74,7 +74,23 @@ export default {
   // quick filters — only the two the data honestly supports (§7a, lib/quickFilters.js)
   "filter.under400": "Under 400 kcal",
   "filter.highProtein": "High protein",
-  "filter.noneHere": "No dishes in this section match these filters.",
+  // The quick filters are one row for the whole menu now (lib/quickFilters.js),
+  // so the per-section "nothing here matches" message is gone with them — a
+  // section with no matches leaves the page instead of showing an empty grid.
+  "filter.quick": "Quick filters",
+  "filter.lowCarb": "Low carb",
+  "filter.under150": "Under ฿150",
+  // POSITIVE wording on purpose: "With seafood" lists dishes that carry it. It
+  // must never read as "seafood-free" — see the note below.
+  "filter.seafood": "With seafood",
+  "filter.seafoodNote":
+    "Shows dishes listed with fish or shellfish. Dishes not listed here may still contain them — ask our team about any allergy.",
+  // A DRINK section while a nutrition filter is on. Says in words why the drinks
+  // are folded away; the count renders in its own .num span so it stays LTR in
+  // Arabic, which is why "Show" carries no {n}.
+  "filter.drinksNote": "Calorie, protein and carb filters don’t apply to drinks.",
+  "filter.drinksShow": "Show",
+  "filter.drinksHide": "Hide",
 
   // the page-wide diet / allergen sheet, brought back behind the Filters button
   "filter.button": "Filters",
