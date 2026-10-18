@@ -2730,13 +2730,10 @@ a.shk-ctile:active { transform: scale(0.98); }
 :root[dir="rtl"] .shk-dish__macro-val,
 :root[dir="rtl"] .shk-kseal__stack,
 :root[dir="rtl"] .shk-ctile__meta,
-/* Menu redesign (PR 3): the page's own numeric runs. "from ฿149" in a section
-   header and "Add to order · ฿447" in the sheet's pinned bar each glue a ฿ to
-   a figure, which is exactly the pair the bidi algorithm puts the wrong way
-   round. The clock figures in the header and in Visit us carry `.num` and are
-   already covered by the first selector above. */
-:root[dir="rtl"] .shk-menu__from,
-:root[dir="rtl"] .shk-dlg__bar-add,
+/* "from ฿149" in a section header and "Add to order · ฿447" in the sheet's bar
+   used to be pinned LTR here while they were English fallbacks. Now that they are
+   Arabic sentences they must flow RTL; the baht amount inside them is isolated by
+   t() itself (i18n/index.js, rtlSafe), which is what keeps "฿149" in one piece. */
 /* Latin dish names — never translated, so never reordered either. The street
    address joins them: it is the same Latin string in every language, because it
    is what a driver types into a map (lib/venue.js). */

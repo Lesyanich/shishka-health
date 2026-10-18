@@ -115,8 +115,19 @@ const dict = DICTS[LANG] ?? en;
 // to the key itself so a missing string is visible rather than blank.
 export function t(key, vars) {
   let s = dict[key] ?? en[key] ?? key;
-  if (vars) s = s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`));
+  if (vars) s = s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] == null ? `{${k}}` : rtlSafe(vars[k])));
   return s;
+}
+
+/*
+  A baht amount dropped into an Arabic sentence ("يبدأ من ฿149") is reordered by the
+  bidi algorithm: digits that follow Arabic letters become Arabic numbers, the run
+  turns right-to-left and the guest reads "149฿". Wrapping the amount in
+  LEFT-TO-RIGHT ISOLATE … POP DIRECTIONAL ISOLATE (U+2066 / U+2069) keeps "฿149"
+  in one piece wherever it lands in the sentence. Invisible, and only on RTL pages.
+*/
+function rtlSafe(v) {
+  return IS_RTL && typeof v === "string" && v.includes("฿") ? `⁦${v}⁩` : v;
 }
 
 /*
