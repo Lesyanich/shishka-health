@@ -2,7 +2,7 @@ import { FilterIcon } from "../Icons.jsx";
 import { t } from "../../i18n/index.js";
 
 /*
-  The Filters button — opens the diet / allergen sheet (filters/FilterPanel.jsx).
+  The Filters button — opens the Filters sheet (filters/FilterPanel.jsx).
 
   Two placements, one component:
     mobile   pinned to the END of the sticky category rail, icon only. It cannot

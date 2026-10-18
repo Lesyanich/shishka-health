@@ -101,7 +101,7 @@ DO NOT switch to Playfair/Karla (the skill's restaurant default) — off-brand h
   inside (✓), body scroll locked while open (✓). **Corrected 2026-10-17:** this
   block listed all three as "REQUIRED additions (currently missing)". They were
   implemented before that; the note had gone stale. Keep them.
-- `FilterPanel` (the page-wide diet / allergen sheet) uses the shared
+- `FilterPanel` (the Filters sheet — the five single-select quick filters; it names no allergens) uses the shared
   `hooks/useModal.js` for the same contract. It had **none** of it before PR 3 —
   no Escape, no trap, no focus restore, no scroll lock. `DishDialog` still carries
   its own inline copy; migrating it is a follow-up with no visible effect.

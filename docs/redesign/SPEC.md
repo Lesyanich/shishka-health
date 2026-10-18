@@ -126,8 +126,11 @@ Flow: menu → dish sheet → cart. There is no home screen to go back to.
 6. Section: H2 24 px, `from ฿…` under it, subcategory tabs, then the grid or list.
 7. Quick filters — **one row for the whole menu** (revised 2026-10-18; they used to repeat under every
    one of ten sections). A chip row under the title, scrolling sideways and **not sticky** (the rail is
-   already the sticky bar), and the same chips at the top of the Filters sheet. Five toggles, several at
-   once, AND-ed: Under 400 kcal · High protein · Low carb (carbs ≤ 20 g) · Under ฿150 · With seafood.
+   already the sticky bar), and the same chips at the top of the Filters sheet. Five chips,
+   **single-select**: Under 400 kcal · High protein · Low carb (carbs ≤ 20 g) · Under ฿150 · With seafood.
+   Choosing a chip switches the previous one off; tapping the active chip clears it (CEO, 2026-10-18 —
+   they were briefly AND-ed, which made dead ends such as High protein + Low carb matching no food dish).
+   The badge on the Filters button is therefore 0 or 1.
    - **Nutrition filters (the first three) apply to FOOD only** — groups EAT and SWEET. On the live menu
      "Under 400 kcal" matches 54 dishes and 32 are drinks, so on a mixed menu it degenerates into "show me
      coffee". Price and seafood apply to everything.
@@ -137,6 +140,11 @@ Flow: menu → dish sheet → cart. There is no home screen to go back to.
    - A section with **zero** matches leaves the page **and** the rail / left nav together.
    - "Dishes shown N / 81 · Clear filters" stays. N counts what a guest can see without opening
      anything; a collapsed drink section is not counted.
+   - **The Filters sheet names no allergens at all** (CEO, 2026-10-18). It holds the same chips and nothing
+     else today; the "Exclude allergens" section it briefly had, and its caution line, are gone. There is
+     no allergen exclusion anywhere on the site — the dish dialog's generic disclaimer ("tell our team
+     about any allergy") is the only allergen language left. A "Suitable for" section would appear in the
+     sheet if the menu were ever given dietary tags, which is itself the CEO's call (#75).
 8. Visit us block at the end: hours, address, Directions, Instagram.
 9. Order bar floats at the bottom of every screen (16 px side inset, 20 px + safe-area bottom).
 
@@ -160,7 +168,9 @@ content max 1440 px, centred.
 2. Left nav is sticky (`top: 24px`). Categories grouped EAT / DRINK / SWEET, **without counts**.
    Click smooth-scrolls to the section and updates the hash (`#wraps`).
 3. Scroll-spy: identical rule and identical implementation to §3.4 — one module, two placements.
-4. Section: H2 40 px, `from ฿…`, subcategory tabs, then a 3-column grid
+4. The quick filters (§3.7) sit at the top of the main column, above the first section, as one wrapping
+   row of the same chips; the left nav and the sticky cart are unchanged.
+   Section: H2 40 px, `from ฿…`, subcategory tabs, then a 3-column grid
    (gap 20 px, row gap 36 px). 64 px between sections. First section starts right under the header.
 5. Dish card shows everything inline, no pop-up: photo with kcal seal, name + price, description,
    3 macro tiles, weight + allergens, Add button.
@@ -254,9 +264,10 @@ Everything is already in `menu_public`, read by `src/hooks/useMenu.js`
 
 ### 7a. The quick filters — what the data supports (checked 2026-10-17, revised 2026-10-18)
 
-> **2026-10-18.** The filters are now five and global, see §3.7. Seafood ships as a **positive** "With
-> seafood" filter — the *label* option this section allowed — and still never as an exclusion; Plant-based
-> still does not ship. The measured reasoning below stands.
+> **2026-10-18.** The filters are now five, global and **single-select**, see §3.7. Seafood ships as a
+> **positive** "With seafood" filter — the *label* option this section allowed — and still never as an
+> exclusion; Plant-based still does not ship. The Filters sheet no longer names allergens at all, so there
+> is no allergen exclusion anywhere on the site. The measured reasoning below stands.
 
 
 §3 lists Plant-based · Under 400 kcal · Seafood. Two of those three are not a coding job, and PR 1

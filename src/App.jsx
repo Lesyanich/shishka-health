@@ -8,8 +8,8 @@ import { FruitFall } from "./components/menu/FruitFall.jsx";
 import { SliceScore } from "./components/menu/SliceScore.jsx";
 import { FruitSymbols } from "./lib/fruitArt.jsx";
 import { assignDishSlugs, buildSections } from "./lib/menuSections.js";
-import { applyQuickFilters, activeCount } from "./lib/quickFilters.js";
-import { buildFilterOptions, dishPasses } from "./lib/dishFilters.js";
+import { applyQuickFilters } from "./lib/quickFilters.js";
+import { buildDietOptions, dishPasses } from "./lib/dishFilters.js";
 import { useCart } from "./state/cart.jsx";
 
 /*
@@ -33,15 +33,15 @@ export default function App() {
 
   const [selected, setSelected] = useState(null);
 
-  // The Filters sheet: allergen / diet EXCLUSION (it carries a caution line, see
-  // lib/dishFilters.js) plus the same quick filters as the page's chip row. Both
-  // write the state below, so the two can never disagree.
+  // The Filters sheet: the quick filters (the same chips as the row under the
+  // page title) and, if the menu is ever tagged, a diet section. It names NO
+  // allergens — see lib/dishFilters.js. Both write the state below, so the page
+  // and the sheet can never disagree.
   const [filterOpen, setFilterOpen] = useState(false);
   const [diets, setDiets] = useState([]);
-  const [excluded, setExcluded] = useState([]);
-  // The quick filters (lib/quickFilters.js): ONE set for the whole menu, shown
-  // both as a chip row on the page and at the top of the Filters sheet.
-  const [quick, setQuick] = useState([]);
+  // SINGLE-SELECT: one filter id or null. Choosing a chip replaces the previous
+  // one; tapping the active chip clears it (lib/quickFilters.js).
+  const [quick, setQuick] = useState(null);
 
   const dishes = data?.dishes ?? [];
   // Slugs and the `?dish=` lookup deliberately use the UNFILTERED list: a shared
@@ -49,14 +49,10 @@ export default function App() {
   const slugs = useMemo(() => assignDishSlugs(dishes), [dishes]);
 
   // Options come from what the menu's own dishes carry, never a fixed list.
-  const { dietOptions, allergenOptions } = useMemo(() => buildFilterOptions(dishes), [dishes]);
-  const filtered = useMemo(
-    () => dishes.filter((d) => dishPasses(d, diets, excluded)),
-    [dishes, diets, excluded],
-  );
+  const dietOptions = useMemo(() => buildDietOptions(dishes), [dishes]);
+  const filtered = useMemo(() => dishes.filter((d) => dishPasses(d, diets)), [dishes, diets]);
 
-  // Sheet first (allergen / diet exclusion), then the quick filters over what is
-  // left. `view.sections` is the one list the page, the rail and the nav share,
+  // Diet selection first, then the quick filter over what is left. `view.sections` is the one list the page, the rail and the nav share,
   // and `view.shown` is the number a guest can see without opening anything.
   const sections = useMemo(
     () => buildSections(data?.groups, data?.categories, filtered),
@@ -64,45 +60,43 @@ export default function App() {
   );
   const view = useMemo(() => applyQuickFilters(sections, quick), [sections, quick]);
 
-  const toggle = (list, set, id) =>
-    set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
+  const toggleDiet = (id) =>
+    setDiets((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
+  const toggleQuick = (id) => setQuick((cur) => (cur === id ? null : id));
   const clearFilters = () => {
     setDiets([]);
-    setExcluded([]);
-    setQuick([]);
+    setQuick(null);
   };
-  const filterCount = diets.length + excluded.length + activeCount(quick);
+  const filterCount = diets.length + (quick ? 1 : 0);
 
   /*
-    Changing filters from the sheet while deep in the page.
+    Changing the filter from the sheet while deep in the page.
 
-    The sheet is THE way to change them from ten thousand pixels down (the chip
-    row under the title scrolls away). But filtering can shrink the page from
+    The sheet is THE way to change it from ten thousand pixels down (the chip row
+    under the title scrolls away). But filtering can shrink the page from
     ~10 700px to a few hundred, and the browser then clamps the scroll position
     to the new bottom — the guest closes the sheet and finds themselves looking
-    at the footer, with their three results above the fold and nothing to say
-    where they went. So when the sheet closes having CHANGED the filters, bring
-    the results into view: the top of the list, where the chip row and the
-    "Dishes shown" strip are.
+    at the footer, with their results above the fold and nothing to say where
+    they went. So when the sheet closes having CHANGED the filter, bring the
+    results into view. The page does the scrolling (it also has to reset the
+    rail's pill, see MenuPage); this only says "now".
 
     Only on a real change: closing the sheet with nothing touched must not yank
     the page away from the dish the guest was reading.
   */
-  const filterSig = JSON.stringify([diets, excluded, quick]);
+  const [resultsTick, setResultsTick] = useState(0);
+  const filterSig = JSON.stringify([diets, quick]);
   const sigAtOpen = useRef(null);
   const sheetWasOpen = useRef(false);
   useEffect(() => {
     if (filterOpen) {
       sigAtOpen.current = filterSig;
     } else if (sheetWasOpen.current && sigAtOpen.current !== filterSig) {
-      const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      document
-        .querySelector(".shk-menu__chipbar")
-        ?.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+      setResultsTick((n) => n + 1);
     }
     sheetWasOpen.current = filterOpen;
-    // filterSig is read at the moment the sheet opens/closes, not tracked: a
-    // chip toggled while it is open must not itself trigger the scroll.
+    // filterSig is read at the moment the sheet opens/closes, not tracked: a chip
+    // toggled while it is open must not itself trigger the scroll.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterOpen]);
   const bySlug = useMemo(() => {
@@ -169,7 +163,7 @@ export default function App() {
     A `?dish=` link arriving cold, once the menu has loaded.
 
     On desktop there is no dish dialog at all (§4.5) — the full card already
-    shows the description, the macros, the weight and the allergens inline — so
+    shows the description, the macros and the weight inline — so
     the parameter is dropped rather than honoured by a sheet that exists nowhere
     else on that breakpoint.
   */
@@ -220,6 +214,7 @@ export default function App() {
       <MenuPage
         data={data}
         sections={view.sections}
+        resultsTick={resultsTick}
         loading={loading}
         error={error}
         addedIds={cart.addedIds}
@@ -231,7 +226,7 @@ export default function App() {
           onClear: clearFilters,
           shown: view.shown,
           total: dishes.length,
-          quick: { active: quick, onToggle: (id) => toggle(quick, setQuick, id) },
+          quick: { active: quick, onToggle: toggleQuick },
         }}
       />
 
@@ -239,13 +234,10 @@ export default function App() {
         open={filterOpen}
         onClose={() => setFilterOpen(false)}
         dietOptions={dietOptions}
-        allergenOptions={allergenOptions}
         selectedDiets={diets}
-        excludedAllergens={excluded}
         quickActive={quick}
-        onToggleQuick={(id) => toggle(quick, setQuick, id)}
-        onToggleDiet={(id) => toggle(diets, setDiets, id)}
-        onToggleAllergen={(id) => toggle(excluded, setExcluded, id)}
+        onToggleQuick={toggleQuick}
+        onToggleDiet={toggleDiet}
         onClear={clearFilters}
         onApply={() => setFilterOpen(false)}
         resultCount={view.shown}

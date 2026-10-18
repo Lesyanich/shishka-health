@@ -17,12 +17,12 @@ import { t } from "../../i18n/index.js";
 
   Everything below the header is the menu.
 */
-export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit", filterCount = 0, onOpenFilters }) {
+export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit", filterCount = 0, onOpenFilters, onTop, onVisit }) {
   const status = openStatus(hoursTime);
 
   return (
     <header className={`shk-menu__bar${wide ? " shk-menu__bar--wide" : ""}`}>
-      <a className="shk-menu__logo" href={visitHref.startsWith("#") ? "#top" : "/"} aria-label="Shishka Healthy Kitchen">
+      <a className="shk-menu__logo" href={visitHref.startsWith("#") ? "#top" : "/"} aria-label="Shishka Healthy Kitchen" onClick={onTop}>
         <img src="/assets/logo-full-color.png" alt="Shishka Healthy Kitchen" />
       </a>
 
@@ -30,7 +30,7 @@ export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit", filt
         {/* Hours are content (site_content.cta.hoursTime); an unparseable or
             missing range renders NO status rather than an invented one. */}
         {status && (
-          <a className="shk-menu__status" href={visitHref}>
+          <a className="shk-menu__status" href={visitHref} onClick={onVisit}>
             <span
               className={`shk-menu__dot${status.open ? "" : " is-closed"}`}
               aria-hidden="true"

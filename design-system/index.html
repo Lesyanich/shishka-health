@@ -591,7 +591,7 @@ a category whose every dish is coming soon reads "<name> · soon" in the rail an
       <div style="max-width:390px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden;padding:var(--sp-3) 0">
         <div class="shk-menu__chipgroup">
           <div class="shk-menu__chips" role="group" aria-label="Quick filters">
-            <button type="button" class="shk-chip shk-menu__chip" aria-pressed="true"><span>Under 400 kcal</span></button>
+            <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>Under 400 kcal</span></button>
             <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>High protein</span></button>
             <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>Low carb</span></button>
             <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>Under ฿150</span></button>
@@ -600,11 +600,11 @@ a category whose every dish is coming soon reads "<name> · soon" in the rail an
           <p class="shk-menu__chipnote" role="note">Shows dishes listed with fish or shellfish. Dishes not listed here may still contain them — ask our team about any allergy.</p>
         </div>
       </div>
-      <div class="ds-recipe">Five filters, AND-ed: Under 400 kcal (calories &lt; 400) · High protein (protein ≥ 30 g, the card badge's own rule) · Low carb (carbs ≤ 20 g) · Under ฿150 (the price the CARD shows, default add-ons included) · With seafood (allergen-fish or allergen-shellfish).
+      <div class="ds-recipe">Five filters, SINGLE-SELECT: choosing a chip switches the previous one off, and tapping the active chip clears it (so the badge on the Filters button is 0 or 1). Under 400 kcal (calories &lt; 400) · High protein (protein ≥ 30 g, the card badge's own rule) · Low carb (carbs ≤ 20 g) · Under ฿150 (the price the CARD shows, default add-ons included) · With seafood (allergen-fish or allergen-shellfish).
 NUTRITION FILTERS APPLY TO FOOD ONLY (groups EAT and SWEET). Measured on the live menu, "Under 400 kcal" matches 54 dishes and 32 of them are drinks — coffee is 0–150 kcal — so on a mixed menu it degenerates into "show me coffee". Price and seafood are not about nutrition, so they apply to everything.
-"With seafood" is a POSITIVE filter: it lists dishes carrying the tag and must never read as "seafood-free". 40 of 81 dishes have unreviewed ingredient data, 24 carry no allergen tag at all, and there is no crustacean tag. The note under the row appears while it is on, and there is deliberately NO "exclude seafood" counterpart — allergen exclusion lives in the Filters sheet, with its caution line, and nowhere else.
+"With seafood" is a POSITIVE filter: it lists dishes carrying the tag and must never read as "seafood-free". 40 of 81 dishes have unreviewed ingredient data, 24 carry no allergen tag at all, and there is no crustacean tag. The note under the row appears while it is on. There is NO "exclude seafood" counterpart and no allergen exclusion anywhere on the site: the Filters sheet names no allergens at all (CEO, 2026-10-18).
 Still not offered: Plant-based — no dietary tag exists on the live menu, so it would match zero dishes (SPEC §7a).
-Some combinations are empty by construction: High protein + Low carb matches no food dish at all. The page shows "No dishes match these filters" with Clear whenever "Dishes shown" is 0, even if collapsed drink headers remain below it.</div>
+Single-select is also what removes the dead ends that AND-ing made: High protein + Low carb matches no food dish at all. Each chip alone matches something today; if the data ever leaves one empty, the page shows "No dishes match these filters" with Clear whenever "Dishes shown" is 0, even if folded drink headers remain below it.</div>
 
       <div class="ds-sub">a DRINK section folded away by a nutrition filter</div>
       <p class="ds-lead">A real disclosure — a <code>&lt;button aria-expanded aria-controls&gt;</code> — not a silent gap. With a calorie, protein or carb filter on, each drink section shows its title and one line saying <em>in words</em> that those filters do not apply to drinks, with a control to open it. Opened, it shows the section's normal dishes (still narrowed by price and seafood, which do apply). A drink section with nothing left after price/seafood leaves the page <strong>and the nav</strong> instead of showing an empty header.</p>
@@ -631,8 +631,8 @@ Some combinations are empty by construction: High protein + Low carb matches no 
 The wash is --band-drink (the DRINK tint the category tiles already use); the whole row is the 44px tap target. The count renders in its own .num span so it stays LTR in Arabic.
 "Dishes shown N / 81" counts what a guest can see WITHOUT opening anything — a collapsed drink section is not counted, and opening one does not change the number.</div>
 
-      <div class="ds-sub">Filters — the page-wide diet / allergen sheet, back behind a button</div>
-      <p class="ds-lead">The old <a href="#filter">filter sheet</a> is mounted again, opened from <code>shk-menu__filter</code>. <strong>Mobile:</strong> pinned to the <em>end of the sticky rail</em> and not scrolling with the pills — the header cannot take a fourth item at 375px, and on a thirteen-screen page a guest who remembers an allergy on screen eight must not have to climb back to the top. <strong>Desktop:</strong> in the header, with its label.</p>
+      <div class="ds-sub">Filters — the sheet behind the button</div>
+      <p class="ds-lead">The <a href="#filter">filter sheet</a> opens from <code>shk-menu__filter</code>. <strong>Mobile:</strong> pinned to the <em>end of the sticky rail</em> and not scrolling with the pills — the header cannot take a fourth item at 375px, and on a thirteen-screen page a guest who remembers an allergy on screen eight must not have to climb back to the top. <strong>Desktop:</strong> in the header, with its label.</p>
       <div style="max-width:390px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden">
         <div class="shk-menu__rail">
           <div class="shk-tabs" role="tablist" aria-label="Menu categories">
@@ -640,13 +640,13 @@ The wash is --band-drink (the DRINK tint the category tiles already use); the wh
             <button type="button" role="tab" class="shk-tab" aria-selected="false">Sauce, Dressing and Dips</button>
             <button type="button" role="tab" class="shk-tab" aria-selected="false">Coffee</button>
           </div>
-          <button type="button" class="shk-menu__filter is-on" aria-label="Filters, 2 active" aria-haspopup="dialog">
+          <button type="button" class="shk-menu__filter is-on" aria-label="Filters, 1 active" aria-haspopup="dialog">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-            <span class="shk-menu__filter-badge num" aria-hidden="true">2</span>
+            <span class="shk-menu__filter-badge num" aria-hidden="true">1</span>
           </button>
         </div>
         <div class="shk-menu__filtered" role="status" style="margin-top:var(--sp-3);margin-bottom:var(--sp-3)">
-          <span>Dishes shown <span class="num">33 / 81</span></span>
+          <span>Dishes shown <span class="num">22 / 81</span></span>
           <button type="button" class="shk-menu__filtered-clear">Clear filters</button>
         </div>
       </div>
@@ -657,11 +657,10 @@ The wash is --band-drink (the DRINK tint the category tiles already use); the wh
         </button>
         <span class="ds-src">desktop header · off · on adds the green fill and the count badge</span>
       </div>
-      <p class="shk-fp__note" style="max-width:420px;margin-top:var(--sp-4)">Dishes with no allergen listed are not guaranteed to be free of it. Tell our team about any allergy.</p>
-      <div class="ds-recipe">This sheet EXCLUDES, which is a different kind of claim from the quick filters above: hiding every dish tagged "Dairy" tells the guest the dishes left on screen are dairy-free. The data cannot promise that — 24 of 81 live dishes carry no allergen tag at all, and an empty tag list means "nobody has looked", not "nothing in it". So the sheet ships with the note above (.shk-fp__note), next to the control and not in a footer.
-A filtered menu must LOOK filtered: .shk-menu__filtered ("Dishes shown 33 / 81 · Clear filters") sits at the top of the list while any filter is on, because a guest who forgets they filtered is a guest ordering from a menu they believe is complete. The count badge is part of the accessible name ("Filters, 2 active"), never colour alone.
-"Suitable for" renders only when a dietary tag exists — none does on the live menu today (all 121 tag links are allergens), so the section would otherwise be a heading with nothing under it. It appears by itself the day the menu is tagged. A shared ?dish= link opens the dish whatever the recipient's filters are.
-The sheet now has MASTER's whole modal contract (hooks/useModal.js): focus in on open and restored on close, Tab trapped, Escape closes, page scroll locked. It had none of it before.</div>
+      <div class="ds-recipe">The sheet names NO allergens (CEO, 2026-10-18). It holds the same five single-select chips as the row under the page title and, today, nothing else; the "Exclude allergens" section it briefly had, and its caution line, are gone. Do not rebuild it from dish.allergens: 24 of 81 live dishes carry no allergen tag and 40 of 81 have unreviewed ingredient data, so hiding every dish tagged "Dairy" would imply the rest are dairy-free.
+A filtered menu must LOOK filtered: .shk-menu__filtered ("Dishes shown 22 / 81 · Clear filters") sits at the top of the list while a filter is on, because a guest who forgets they filtered is a guest reading a menu they believe is complete. The count badge is part of the accessible name ("Filters, 1 active"), never colour alone.
+"Suitable for" renders only when a dietary tag exists — none does on the live menu today (all 121 tag links are allergens) — and whether the menu should ever be given dietary tags is the CEO's call (#75). A shared ?dish= link opens the dish whatever filter is on.
+The sheet has MASTER's whole modal contract (hooks/useModal.js): focus in on open and restored on close, Tab trapped, Escape closes, page scroll locked.</div>
 
       <div class="ds-sub">desktop left nav (§4.2) — the same nav, stood on its end</div>
       <div style="max-width:240px">
@@ -837,13 +836,12 @@ Demos above omit the food cut-outs (those come from Supabase per category); the 
     <!-- ═══════════ CHIPS ═══════════ -->
     <section class="ds-section" id="chips">
       <div class="ds-h">Filter Chips</div>
-      <p class="ds-lead">Selectable filter chips (<code>aria-pressed</code>). Include = green when active; allergen exclude = spice. The pressed state is a <code>--green-100</code> fill with a royal-green edge and ink (menu redesign, spec §5) — it used to be a solid <code>--highlight</code> fill, which fought the quiet-page look the light theme is built on. The redesign's quick filters (Under 400 kcal · High protein · Low carb · Under ฿150 · With seafood — one row for the whole menu, see <a href="#menu">Menu page</a>) are these same chips.</p>
+      <p class="ds-lead">Selectable filter chips (<code>aria-pressed</code>). Green when active. The pressed state is a <code>--green-100</code> fill with a royal-green edge and ink (menu redesign, spec §5) — it used to be a solid <code>--highlight</code> fill, which fought the quiet-page look the light theme is built on. The redesign's quick filters (Under 400 kcal · High protein · Low carb · Under ฿150 · With seafood — one row for the whole menu, see <a href="#menu">Menu page</a>) are these same chips.</p>
       <div class="ds-row">
         <button type="button" class="shk-chip" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegan</span></button>
         <button type="button" class="shk-chip" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegetarian</span></button>
-        <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22 16 8"></path><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path></svg><span>Gluten</span></button>
       </div>
-      <div class="ds-recipe">shk-chip[aria-pressed=true|false] · shk-chip--exclude for allergen filters</div>
+      <div class="ds-recipe">shk-chip[aria-pressed=true|false] · the old shk-chip--exclude (allergen) variant is gone with the allergen filter</div>
     </section>
 
     <!-- ═══════════ ICON BUTTONS ═══════════ -->
@@ -1176,22 +1174,23 @@ capping the longest edge instead would have starved it to ~310px wide and left i
     <!-- ═══════════ FILTER PANEL ═══════════ -->
     <section class="ds-section" id="filter">
       <div class="ds-h">Filter Panel</div>
-      <p class="ds-lead">Bottom-sheet modal: grab handle, chip sections (suitable-for / exclude-allergens), sticky Clear + Show-N footer.</p>
+      <p class="ds-lead">Bottom-sheet modal: grab handle, a Quick filters section (the five single-select chips), a Suitable-for section only if the menu has dietary tags, sticky Clear + Show-N footer. It names no allergens.</p>
       <div class="ds-pad" style="max-width:460px;padding:0;overflow:hidden">
         <div class="shk-fp" role="dialog" aria-modal="true" aria-label="Filter the menu" style="position:static;max-width:none">
           <div class="shk-fp__grab"></div>
           <div class="shk-fp__head"><span class="shk-fp__title">Filters</span><button class="shk-iconbtn" aria-label="Close filters"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div>
           <div class="shk-fp__body">
-            <div class="shk-fp__section"><div class="shk-fp__legend">Suitable for</div><div class="shk-fp__chips">
-              <button type="button" class="shk-chip" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegan</span></button>
-              <button type="button" class="shk-chip" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path></svg><span>Vegetarian</span></button>
-              <button type="button" class="shk-chip" aria-pressed="false"><span>Dairy-free</span></button>
-            </div></div>
-            <div class="shk-fp__section"><div class="shk-fp__legend">Exclude allergens</div><div class="shk-fp__chips">
-              <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 22 16 8"></path><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"></path></svg><span>Gluten</span></button>
-              <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><span>Dairy</span></button>
-              <button type="button" class="shk-chip shk-chip--exclude" aria-pressed="false"><span>Nuts</span></button>
-            </div></div>
+            <div class="shk-fp__section"><div class="shk-fp__legend">Quick filters</div>
+              <div class="shk-menu__chipgroup">
+                <div class="shk-fp__chips" role="group" aria-label="Quick filters">
+                  <button type="button" class="shk-chip shk-menu__chip" aria-pressed="true"><span>Under 400 kcal</span></button>
+                  <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>High protein</span></button>
+                  <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>Low carb</span></button>
+                  <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>Under ฿150</span></button>
+                  <button type="button" class="shk-chip shk-menu__chip" aria-pressed="false"><span>With seafood</span></button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="shk-fp__foot"><button class="shk-btn shk-btn--secondary shk-btn--md">Clear</button><button class="shk-btn shk-btn--primary shk-btn--md"><span class="shk-btn__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>Show 78</button></div>
         </div>

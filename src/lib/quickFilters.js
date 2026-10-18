@@ -3,6 +3,10 @@
   2026-10-18: the per-section rows are gone; they repeated the same two chips
   under every one of ten sections).
 
+  SINGLE-SELECT. Choosing a chip switches the previous one off; tapping the active
+  chip clears it. (The CEO's call, 2026-10-18 — they were briefly AND-ed, which
+  made dead ends: High protein + Low carb matches no food dish at all.)
+
   Five filters. The first three are NUTRITION filters, the last two are not, and
   that split is the whole design:
 
@@ -12,11 +16,11 @@
     under150     the price the card shows <= ฿150
     seafood      the dish carries allergen-fish or allergen-shellfish
 
-  NUTRITION FILTERS APPLY TO FOOD ONLY (groups EAT and SWEET).
+  NUTRITION FILTERS APPLY TO FOOD ONLY (everything outside the DRINK group).
   Measured on the live menu: "Under 400 kcal" matches 54 dishes and 32 of them
   are drinks (coffee is 0–150 kcal), so on a mixed menu it degenerates into
   "show me coffee". Low carb is the same story (15 of 22 matches are drinks).
-  So a nutrition chip never touches a drink; the page says so in words and hides
+  So a nutrition chip never touches a drink; the page says so in words and folds
   the drink sections behind a disclosure instead (components/menu/MenuSection).
   Price and seafood are not about nutrition, so they apply to everything.
 
@@ -28,18 +32,15 @@
   THE SEAFOOD CHIP IS POSITIVE ONLY. It shows dishes listed with fish or
   shellfish, and it must never read as "seafood-free": 40 of 81 dishes have
   unreviewed ingredient data (fn_dish_allergen_status confident:false), 24 carry
-  no allergen tag at all, and there is no crustacean tag in the data. There is
-  deliberately NO "exclude seafood" counterpart here — allergen exclusion lives
-  in the Filters sheet, with its caution line, and nowhere else. SPEC §7a refused
-  Seafood as an exclusion control for exactly this reason; the label option it
-  allowed ("show it as a label on the dishes that do carry the tag") is this.
+  no allergen tag at all, and there is no crustacean tag in the data. There is no
+  "exclude seafood" counterpart, and no allergen exclusion ANYWHERE: the Filters
+  sheet no longer names allergens at all (CEO, 2026-10-18; lib/dishFilters.js).
+  SPEC §7a refused Seafood as an exclusion control for exactly this reason; the
+  label option it allowed ("show it as a label on the dishes that do carry the
+  tag") is this.
 
   Plant-based is still not offered: there is no dietary tag on the live menu, so
   the chip would match zero dishes (§7a).
-
-  Filters combine with AND. Some combinations are empty by construction — on the
-  live menu High protein + Low carb matches no food dish at all — so the page
-  has an empty state for "shown 0" even when collapsed drink headers remain.
 
   Each entry is `{ id, kind, labelKey, test }`. A chip the data cannot honestly
   support has no entry at all, rather than an entry that is switched off.
@@ -89,55 +90,46 @@ export const QUICK_FILTERS = [
   },
 ];
 
-const KNOWN = new Set(QUICK_FILTERS.map((f) => f.id));
-
 // Filter state can outlive a filter; an unknown id is ignored, never thrown on.
-function activeOf(ids) {
-  return QUICK_FILTERS.filter((f) => (ids ?? []).includes(f.id));
+function filterOf(id) {
+  return QUICK_FILTERS.find((f) => f.id === id) ?? null;
 }
 
-export function hasNutritionActive(ids) {
-  return activeOf(ids).some((f) => f.kind === "nutrition");
-}
-
-export function activeCount(ids) {
-  return (ids ?? []).filter((id) => KNOWN.has(id)).length;
+export function hasNutritionActive(id) {
+  return filterOf(id)?.kind === "nutrition";
 }
 
 /*
-  One section through the active filters.
+  One section through the active filter.
 
-    items      what the section shows when open. For a food section: every filter.
-               For a drink section: only the NON-nutrition ones, because a
-               calorie filter has no meaning for a latte.
+    items      what the section shows when open. For a food section: the filter.
+               For a drink section: the filter only if it is NOT a nutrition
+               one, because a calorie filter has no meaning for a latte.
     collapsed  a drink section while a nutrition filter is on, with at least one
                dish left. The page renders it as a one-line disclosure, not as a
-               silent gap (SPEC addendum 2026-10-18): the guest is told in words
-               that the calorie/protein/carb filter does not apply, and can open
-               it.
+               silent gap: the guest is told in words that the calorie / protein
+               / carb filter does not apply, and can open it.
 
   A section with no items left is the caller's to drop (see applyQuickFilters).
 */
-export function filterSection(section, ids) {
-  const active = activeOf(ids);
-  if (active.length === 0) return { ...section, collapsed: false };
+export function filterSection(section, id) {
+  const f = filterOf(id);
+  if (!f) return { ...section, collapsed: false };
 
   const isDrink = section.group === DRINK_GROUP;
-  const tests = active.filter((f) => !isDrink || f.kind !== "nutrition").map((f) => f.test);
-  const items = tests.length
-    ? (section.items ?? []).filter((d) => tests.every((fn) => fn(d)))
-    : section.items ?? [];
+  const nutrition = f.kind === "nutrition";
+  const items = isDrink && nutrition ? section.items ?? [] : (section.items ?? []).filter(f.test);
 
   return {
     ...section,
     items,
     allSoon: allComingSoon(items),
-    collapsed: isDrink && hasNutritionActive(ids) && items.length > 0,
+    collapsed: isDrink && nutrition && items.length > 0,
   };
 }
 
 /*
-  The whole menu through the filters.
+  The whole menu through the filter.
 
   Returns the sections that still have something to show — a section with zero
   matches leaves the page AND the rail / left nav together, because both are
@@ -149,11 +141,11 @@ export function filterSection(section, ids) {
   a menu the guest is not looking at. Expanding a section does not change it
   either, so the number stays put while the guest explores.
 */
-export function applyQuickFilters(sections, ids) {
+export function applyQuickFilters(sections, id) {
   const out = [];
   let shown = 0;
   for (const s of sections ?? []) {
-    const f = filterSection(s, ids);
+    const f = filterSection(s, id);
     if (f.items.length === 0) continue;
     out.push(f);
     if (!f.collapsed) shown += f.items.length;

@@ -92,15 +92,12 @@ export default {
   "filter.drinksShow": "Show",
   "filter.drinksHide": "Hide",
 
-  // the page-wide diet / allergen sheet, brought back behind the Filters button
+  // the Filters sheet, behind the Filters button. It names no allergens.
   "filter.button": "Filters",
   "filter.buttonActive": "Filters, {n} active",
   // Label only; the figures ("74 / 81") render in their own .num span so they
   // stay left-to-right in Arabic.
   "filter.shown": "Dishes shown",
-  // The honest half of an exclusion filter — see lib/dishFilters.js.
-  "filter.allergenNote":
-    "Dishes with no allergen listed are not guaranteed to be free of it. Tell our team about any allergy.",
 
   // Open / closed status in the header (§3.1, §4.1). The LABEL and the CLOCK
   // FIGURE are separate keys on purpose: the figure renders in its own `.num`
@@ -174,7 +171,6 @@ export default {
   "filter.title": "Filters",
   "filter.close": "Close filters",
   "filter.suitableFor": "Suitable for",
-  "filter.exclude": "Exclude allergens",
   "filter.clear": "Clear",
   "filter.show": "Show {n}",
   "filter.apply": "Apply",

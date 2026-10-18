@@ -4,7 +4,8 @@ import { QUICK_FILTERS } from "../../lib/quickFilters.js";
 import { t } from "../../i18n/index.js";
 
 /*
-  The quick filters, once for the whole menu (lib/quickFilters.js).
+  The quick filters, once for the whole menu (lib/quickFilters.js). Single-select:
+  `active` is one filter id or null, and tapping the active chip clears it.
 
   Rendered in TWO places from this one component, on purpose: as a row under the
   page title, and at the top of the Filters sheet — so a guest ten thousand
@@ -22,14 +23,14 @@ import { t } from "../../i18n/index.js";
   contain seafood. The note is the honest half of the control and sits next to
   it, not in a footer.
 */
-export function QuickFilterChips({ active = [], onToggle, className = "shk-menu__chips" }) {
+export function QuickFilterChips({ active = null, onToggle, className = "shk-menu__chips" }) {
   const rowRef = useRef(null);
 
   /*
     On a phone the row scrolls sideways and only three chips fit, so a chip
     switched on from the Filters sheet can sit off-screen to the right — leaving
-    a badge as the only sign anything is on. Slide the row so the last active chip
-    is visible.
+    a badge as the only sign anything is on. Slide the row so the active chip is
+    visible.
 
     Horizontal only, and by `scrollBy` on the row itself: `scrollIntoView` would
     also scroll the PAGE to bring the row into view, and this effect runs while
@@ -37,12 +38,11 @@ export function QuickFilterChips({ active = [], onToggle, className = "shk-menu_
     rects so it holds in a right-to-left layout too, where `scrollLeft` is
     negative. A no-op wherever the row wraps (desktop, the sheet).
   */
-  const key = active.join("|");
+  const key = active ?? "";
   useEffect(() => {
     const row = rowRef.current;
     if (!row) return;
-    const on = row.querySelectorAll('[aria-pressed="true"]');
-    const chip = on[on.length - 1];
+    const chip = row.querySelector('[aria-pressed="true"]');
     if (!chip) return;
     const r = row.getBoundingClientRect();
     const c = chip.getBoundingClientRect();
@@ -57,14 +57,14 @@ export function QuickFilterChips({ active = [], onToggle, className = "shk-menu_
           <FilterChip
             key={f.id}
             className="shk-menu__chip"
-            active={active.includes(f.id)}
+            active={active === f.id}
             onClick={() => onToggle(f.id)}
           >
             {t(f.labelKey)}
           </FilterChip>
         ))}
       </div>
-      {active.includes("seafood") && (
+      {active === "seafood" && (
         <p className="shk-menu__chipnote" role="note">{t("filter.seafoodNote")}</p>
       )}
     </div>

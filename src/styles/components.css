@@ -222,10 +222,6 @@
 }
 .shk-chip[aria-pressed="true"] svg { color: var(--highlight-ink); }
 
-.shk-chip--exclude[aria-pressed="true"] {
-  background: rgba(184,136,48,0.16); border-color: var(--gold-400); color: var(--gold-300);
-}
-.shk-chip--exclude[aria-pressed="true"] svg { color: var(--gold-400); }
 
 /* ---- CategoryTabs ---- */
 .shk-tabs {
@@ -2403,10 +2399,10 @@ a.shk-ctile:active { transform: scale(0.98); }
   font-variant-numeric: tabular-nums;
 }
 
-/* "Dishes shown 74 / 81 · Clear filters". Page-wide allergen filtering that a
-   guest can forget about — scrolled eight screens down, the badge off screen —
-   is how someone ends up ordering from a menu they believe is complete. So a
-   filtered menu has to look filtered, at the top of the list, in words. */
+/* "Dishes shown 22 / 81 · Clear filters". A filter a guest can forget about —
+   scrolled eight screens down, the badge off screen — is how someone ends up
+   reading a menu they believe is complete. So a filtered menu has to look
+   filtered, at the top of the list, in words. */
 .shk-menu__filtered {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
   margin: var(--sp-3) var(--sp-4) 0; padding: var(--sp-1) var(--sp-4);
@@ -2420,11 +2416,6 @@ a.shk-ctile:active { transform: scale(0.98); }
   min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
   font-size: var(--text-sm); font-weight: var(--fw-bold); color: var(--text-strong);
   text-decoration: underline; white-space: nowrap;
-}
-
-/* The allergen note inside the sheet — the honest half of an exclusion filter. */
-.shk-fp__note {
-  margin-top: var(--sp-3); font-size: 13px; line-height: 1.45; color: var(--text-muted);
 }
 
 /* ---- Visit us (§3.8 / §4.6) --------------------------------------------- */
