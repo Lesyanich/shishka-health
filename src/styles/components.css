@@ -222,10 +222,6 @@
 }
 .shk-chip[aria-pressed="true"] svg { color: var(--highlight-ink); }
 
-.shk-chip--exclude[aria-pressed="true"] {
-  background: rgba(184,136,48,0.16); border-color: var(--gold-400); color: var(--gold-300);
-}
-.shk-chip--exclude[aria-pressed="true"] svg { color: var(--gold-400); }
 
 /* ---- CategoryTabs ---- */
 .shk-tabs {
@@ -2323,10 +2319,55 @@ a.shk-ctile:active { transform: scale(0.98); }
 .shk-menu__controls {
   display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-3);
 }
-.shk-menu__chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
-/* Two chips today, not three: Plant-based would match zero dishes and Seafood
-   would imply an allergen guarantee the data cannot support. See
-   lib/quickFilters.js for the evidence. */
+
+/* ---- The quick filters — ONE row for the whole menu ----------------------
+   (QuickFilterChips.jsx, lib/quickFilters.js.) They used to repeat under every
+   one of ten sections. Now: a row under the page title, and the same chips at
+   the top of the Filters sheet, both writing the same state.
+
+   Mobile: one row that scrolls sideways and is NOT sticky — the category rail
+   below it is already the sticky bar, and a second one would spend another
+   ~56px of an 812px screen. The side padding is the page gutter, so the first
+   chip lines up with the title and the last can scroll clear of the edge. */
+.shk-menu__chipbar { margin: 0 0 var(--sp-3); }
+.shk-menu__chips {
+  display: flex; gap: var(--sp-2);
+  overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  padding: 2px var(--sp-4);
+}
+.shk-menu__chips::-webkit-scrollbar { display: none; }
+.shk-menu__chips .shk-chip { flex: none; }
+/* Under the seafood chip while it is on: it is a POSITIVE filter and must never
+   read as "seafood-free" (24 of 81 dishes carry no allergen tag at all). */
+.shk-menu__chipnote {
+  margin: var(--sp-2) var(--sp-4) 0; font-size: 13px; line-height: 1.45;
+  color: var(--text-muted);
+}
+.shk-fp__section .shk-menu__chipnote { margin-inline: 0; }
+
+/* ---- A DRINK section folded away by a nutrition filter -------------------
+   A real disclosure (<button aria-expanded>), not a gap: a calorie filter has no
+   meaning for a latte (54 dishes are under 400 kcal and 32 of them are drinks),
+   so the drinks are not filtered by it — they are folded, and the page says so
+   in words. --band-drink is the DRINK wash the tiles already use. The 44px
+   minimum is the tap target, not a style choice. */
+.shk-menu__collapse {
+  width: 100%; min-height: 44px; margin-top: var(--sp-3);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+  background: var(--band-drink); color: var(--text-strong);
+  font: inherit; text-align: start; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.shk-menu__collapse:hover { border-color: var(--border-strong); }
+.shk-menu__collapse-text { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.35; color: var(--text-body); }
+.shk-menu__collapse-action {
+  flex: none; display: inline-flex; align-items: center; gap: 4px;
+  font-size: var(--text-sm); font-weight: var(--fw-bold); white-space: nowrap;
+}
+.shk-menu__collapse-action svg { transition: transform var(--dur-fast) var(--ease-out); }
+.shk-menu__collapse.is-open .shk-menu__collapse-action svg { transform: rotate(180deg); }
 .shk-menu__grid {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px 12px; margin-top: var(--sp-3);
@@ -2368,10 +2409,10 @@ a.shk-ctile:active { transform: scale(0.98); }
   font-variant-numeric: tabular-nums;
 }
 
-/* "Dishes shown 74 / 81 · Clear filters". Page-wide allergen filtering that a
-   guest can forget about — scrolled eight screens down, the badge off screen —
-   is how someone ends up ordering from a menu they believe is complete. So a
-   filtered menu has to look filtered, at the top of the list, in words. */
+/* "Dishes shown 22 / 81 · Clear filters". A filter a guest can forget about —
+   scrolled eight screens down, the badge off screen — is how someone ends up
+   reading a menu they believe is complete. So a filtered menu has to look
+   filtered, at the top of the list, in words. */
 .shk-menu__filtered {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
   margin: var(--sp-3) var(--sp-4) 0; padding: var(--sp-1) var(--sp-4);
@@ -2385,11 +2426,6 @@ a.shk-ctile:active { transform: scale(0.98); }
   min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
   font-size: var(--text-sm); font-weight: var(--fw-bold); color: var(--text-strong);
   text-decoration: underline; white-space: nowrap;
-}
-
-/* The allergen note inside the sheet — the honest half of an exclusion filter. */
-.shk-fp__note {
-  margin-top: var(--sp-3); font-size: 13px; line-height: 1.45; color: var(--text-muted);
 }
 
 /* ---- Visit us (§3.8 / §4.6) --------------------------------------------- */
@@ -2475,6 +2511,11 @@ a.shk-ctile:active { transform: scale(0.98); }
 
   .shk-menu__lede { padding: var(--sp-6) 0 var(--sp-8); }
   .shk-menu__filtered { margin: 0 0 var(--sp-6); }
+  /* On desktop the row has the width to WRAP, so nothing needs to scroll sideways
+     and the gutter padding goes: the chips sit flush with the title above. */
+  .shk-menu__chipbar { margin: 0 0 var(--sp-5); }
+  .shk-menu__chips { flex-wrap: wrap; overflow: visible; padding: 0; }
+  .shk-menu__chipnote { margin-inline: 0; }
   .shk-menu__title { font-size: clamp(40px, 4vw, 56px); letter-spacing: -0.03em; line-height: 1.02; }
   .shk-menu__sub { font-size: var(--text-md); margin-top: var(--sp-3); }
 
@@ -2482,7 +2523,8 @@ a.shk-ctile:active { transform: scale(0.98); }
   .shk-menu__sec { padding: 0; margin-bottom: var(--sp-16); scroll-margin-top: var(--sp-6); }
   .shk-menu__sec-title { font-size: 40px; }
   .shk-menu__from { font-size: var(--text-md); }
-  /* Tabs and filters share one row (§4.4). */
+  /* Subcategory tabs (§4.4). The quick filters used to share this row; they are
+     one row for the whole menu now (.shk-menu__chipbar above the first section). */
   .shk-menu__controls {
     flex-direction: row; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: var(--sp-4); margin-top: var(--sp-4);
@@ -2703,6 +2745,15 @@ a.shk-ctile:active { transform: scale(0.98); }
   direction: ltr;
   unicode-bidi: isolate;
 }
+
+/* Menu redesign (quick filters): "Under ฿150" and "Under 400 kcal" are chip labels
+   with a currency sign or a unit glued to a figure. Isolated rather than forced
+   LTR — the label is real translatable text and must keep the language's own
+   direction; only the bidi run needs a boundary, so the ฿ cannot drift to the
+   other end of its number. The count in the drink disclosure ("Show 12") carries
+   `.num` and is already covered by the first selector. */
+:root[dir="rtl"] .shk-menu__chips .shk-chip > span,
+:root[dir="rtl"] .shk-fp__chips .shk-chip > span { unicode-bidi: isolate; }
 
 /* The name spans above are isolated, not re-aligned: inside an RTL column they
    still start at the inline-start (right) edge like every other line. */

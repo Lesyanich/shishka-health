@@ -8,7 +8,8 @@ import { SiteFooter } from "./SiteFooter.jsx";
 import { Cart } from "../cart/Cart.jsx";
 import { useScrollSpy } from "../../hooks/useScrollSpy.js";
 import { useWide } from "../../hooks/useWide.js";
-import { assignSectionIds, buildSections } from "../../lib/menuSections.js";
+import { assignSectionIds } from "../../lib/menuSections.js";
+import { QuickFilterChips } from "../filters/QuickFilterChips.jsx";
 import { DEFAULT_CONTENT } from "../../lib/content.js";
 import { t } from "../../i18n/index.js";
 
@@ -56,23 +57,24 @@ function Lede() {
 }
 
 /*
-  `filter` is the page-wide diet / allergen filter owned by App:
-    { count, onOpen, onClear, shown, total }
-  `data.dishes` has ALREADY been filtered by the time it gets here, so the rail,
-  the nav and the sections simply reflect what survived — a section with nothing
-  left disappears from all three instead of leaving an empty heading.
+  `sections` arrive ALREADY filtered (App runs the Filters sheet and the quick
+  filters, lib/quickFilters.js), so the rail, the left nav, the group eyebrows and
+  the scroll-spy all reflect the same list. A section with nothing left to show is
+  not in it — it leaves the page and the nav together, because a nav entry for a
+  section that is not on the page would leave the spy pointing at nothing. A
+  DRINK section that a nutrition filter does not apply to IS in it, flagged
+  `collapsed`, and renders as a disclosure.
+
+  `filter` is the filter state owned by App:
+    { count, onOpen, onClear, shown, total, quick: { active, onToggle } }
 */
-export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAdd, filter }) {
+export function MenuPage({ data, sections = [], resultsTick = 0, loading, error, onOpenDish, addedIds, onQuickAdd, filter }) {
   const wide = useWide();
 
   // The header's opening hours must be right in the first frame, not after the
   // fetch: a status that appears a second late reads as the page still loading.
   // DEFAULT_CONTENT is the same fallback lib/content.js merges the DB row over.
   const content = data?.content ?? DEFAULT_CONTENT;
-  const sections = useMemo(
-    () => buildSections(data?.groups, data?.categories, data?.dishes),
-    [data?.groups, data?.categories, data?.dishes],
-  );
   const idFor = useMemo(() => assignSectionIds(sections), [sections]);
   const ids = useMemo(() => sections.map((s) => idFor.get(s.id)), [sections, idFor]);
 
@@ -98,6 +100,47 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
     // once per category they looked at.
     if (typeof history !== "undefined") history.replaceState(null, "", `#${id}`);
   };
+
+  /*
+    The two places this page jumps by itself, and why each resets the pill.
+
+    The scroll-spy is an IntersectionObserver, which only reports CHANGES. Jump
+    from "past the last section" (the footer) to "above the first" and there is
+    nothing in the 30% band before or after, so it fires nothing and the rail
+    keeps the last section's pill at the top of the page. A smooth scroll passes
+    through the sections and is fine; an instant jump is not. So wherever the page
+    itself jumps, it says where it landed: the first section.
+
+      resultsTick  the Filters sheet closed having changed the filter: bring the
+                   results into view (the chip row, the top of the list).
+      onTop        the logo's #top link.
+      onVisit      the header status, which links to Visit us (below the last section).
+
+    Deliberately not a scroll listener: that is the thing §3.4 rules out.
+  */
+  const toFirst = () => {
+    if (!ids[0]) return;
+    setActive(ids[0]);
+    setSpyActive(ids[0]);
+  };
+  // The mirror image: the header status links to Visit us, below the last section,
+  // so the pill is the last section's.
+  const toLast = () => {
+    const last = ids[ids.length - 1];
+    if (!last) return;
+    setActive(last);
+    setSpyActive(last);
+  };
+  useEffect(() => {
+    if (!resultsTick) return;
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document
+      .querySelector(".shk-menu__chipbar")
+      ?.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+    toFirst();
+    // Runs on the tick only; `ids` is read as it is at that moment.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resultsTick]);
 
   // A `#wraps` link arriving from outside (a share, a bookmark, the AEO pages).
   // One shot, after the sections exist — the browser's own anchor jump fired
@@ -153,10 +196,10 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
 
   const body = (
     <>
-      {/* A filtered menu must LOOK filtered. Page-wide allergen filtering that a
-          guest can forget about — scrolled eight screens down, the badge off
-          screen — is how someone orders from a menu they believe is complete.
-          Not sticky and not dismissable on its own: it goes when the filters do. */}
+      {/* A filtered menu must LOOK filtered. A filter a guest can forget about —
+          scrolled eight screens down, the badge off screen — is how someone ends
+          up reading a menu they believe is complete. Not sticky and not
+          dismissable on its own: it goes when the filter does. */}
       {filtering && !loading && (
         <div className="shk-menu__filtered" role="status">
           <span>
@@ -169,7 +212,13 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
         </div>
       )}
 
-      {!loading && !error && sections.length === 0 && filtering && (
+      {/* Keyed on `shown`, not on the section list: a filter can match nothing
+          while folded drink headers remain (a nutrition filter folds drinks
+          rather than filtering them), and a page that is all folded headers and
+          no explanation reads as broken. With the filters single-select this is
+          no longer reachable by combining chips; it covers the data changing
+          under a live filter (e.g. no dish carrying seafood is live that day). */}
+      {!loading && !error && filtering && filter.shown === 0 && (
         <div className="shk-menu__empty">
           <p>{t("menu.noMatch")}</p>
           <button type="button" className="shk-app__clear" onClick={filter.onClear}>
@@ -200,6 +249,8 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
       <MenuTopbar
         wide={wide}
         hoursTime={content?.cta?.hoursTime}
+        onTop={toFirst}
+        onVisit={toLast}
         filterCount={filter?.count ?? 0}
         onOpenFilters={filter?.onOpen}
       />
@@ -207,6 +258,12 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
       {!wide && (
         <>
           <Lede />
+          {/* One chip row under the title, scrolling sideways, NOT sticky: the
+              rail below is already the sticky bar and a second one would spend
+              another ~56px of a 812px screen. */}
+          <div className="shk-menu__chipbar">
+            <QuickFilterChips active={filter.quick.active} onToggle={filter.quick.onToggle} />
+          </div>
           <CategoryRail
             sections={sections}
             idFor={idFor}
@@ -227,6 +284,9 @@ export function MenuPage({ data, loading, error, onOpenDish, addedIds, onQuickAd
           </div>
           <main className="shk-menu__main">
             <Lede />
+            <div className="shk-menu__chipbar">
+              <QuickFilterChips active={filter.quick.active} onToggle={filter.quick.onToggle} />
+            </div>
             {body}
           </main>
           <div className="shk-menu__aside shk-menu__aside--right">

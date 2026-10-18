@@ -55,7 +55,32 @@ export function useScrollSpy(ids) {
 
     const io = new IntersectionObserver(
       (entries) => {
-        for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
+        let entered = false;
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setActive(e.target.id);
+            entered = true;
+          }
+        }
+        /*
+          Nothing entered the band, so either the guest is still above the first
+          section or they have scrolled past the last one. Sections are
+          contiguous, so there is no gap BETWEEN them — a section always enters
+          as the previous one leaves.
+
+          Above the first section the answer is the first section. Without this
+          the observer only ever reports an ENTRY, so scrolling back up to the top
+          left the pill on whichever section the guest had last been in
+          ("Matcha" at scrollY 0). It matters most after a filter change, which
+          scrolls the page back to the top. Past the last section the last pill
+          correctly stays.
+        */
+        if (!entered) {
+          const first = els[0];
+          if (first && first.getBoundingClientRect().top > window.innerHeight * 0.3) {
+            setActive(first.id);
+          }
+        }
       },
       { rootMargin: SPY_ROOT_MARGIN, threshold: 0 },
     );

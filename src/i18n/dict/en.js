@@ -74,17 +74,30 @@ export default {
   // quick filters — only the two the data honestly supports (§7a, lib/quickFilters.js)
   "filter.under400": "Under 400 kcal",
   "filter.highProtein": "High protein",
-  "filter.noneHere": "No dishes in this section match these filters.",
+  // The quick filters are one row for the whole menu now (lib/quickFilters.js),
+  // so the per-section "nothing here matches" message is gone with them — a
+  // section with no matches leaves the page instead of showing an empty grid.
+  "filter.quick": "Quick filters",
+  "filter.lowCarb": "Low carb",
+  "filter.under150": "Under ฿150",
+  // POSITIVE wording on purpose: "With seafood" lists dishes that carry it. It
+  // must never read as "seafood-free" — see the note below.
+  "filter.seafood": "With seafood",
+  "filter.seafoodNote":
+    "Shows dishes listed with fish or shellfish. Dishes not listed here may still contain them — ask our team about any allergy.",
+  // A DRINK section while a nutrition filter is on. Says in words why the drinks
+  // are folded away; the count renders in its own .num span so it stays LTR in
+  // Arabic, which is why "Show" carries no {n}.
+  "filter.drinksNote": "Calorie, protein and carb filters don’t apply to drinks.",
+  "filter.drinksShow": "Show",
+  "filter.drinksHide": "Hide",
 
-  // the page-wide diet / allergen sheet, brought back behind the Filters button
+  // the Filters sheet, behind the Filters button. It names no allergens.
   "filter.button": "Filters",
   "filter.buttonActive": "Filters, {n} active",
   // Label only; the figures ("74 / 81") render in their own .num span so they
   // stay left-to-right in Arabic.
   "filter.shown": "Dishes shown",
-  // The honest half of an exclusion filter — see lib/dishFilters.js.
-  "filter.allergenNote":
-    "Dishes with no allergen listed are not guaranteed to be free of it. Tell our team about any allergy.",
 
   // Open / closed status in the header (§3.1, §4.1). The LABEL and the CLOCK
   // FIGURE are separate keys on purpose: the figure renders in its own `.num`
@@ -158,7 +171,6 @@ export default {
   "filter.title": "Filters",
   "filter.close": "Close filters",
   "filter.suitableFor": "Suitable for",
-  "filter.exclude": "Exclude allergens",
   "filter.clear": "Clear",
   "filter.show": "Show {n}",
   "filter.apply": "Apply",

@@ -98,7 +98,6 @@ export default {
   "filter.title": "Фильтры",
   "filter.close": "Закрыть фильтры",
   "filter.suitableFor": "Подходит для",
-  "filter.exclude": "Исключить аллергены",
   "filter.clear": "Сбросить",
   "filter.show": "Показать {n}",
   "filter.apply": "Применить",
@@ -204,11 +203,9 @@ export default {
   "menu.railSoon": "{name} · скоро",
   "filter.under400": "До 400 ккал",
   "filter.highProtein": "Много белка",
-  "filter.noneHere": "В этом разделе нет блюд под эти фильтры.",
   "filter.button": "Фильтры",
   "filter.buttonActive": "Фильтры, активно: {n}",
   "filter.shown": "Показано блюд",
-  "filter.allergenNote": "Если у блюда не указан аллерген, это не гарантирует, что его там нет. Сообщите команде о любой аллергии.",
   "status.openTill": "Открыто до",
   "status.openNow": "Открыто сейчас · ежедневно",
   "status.closed": "Закрыто · откроемся в",
@@ -226,4 +223,16 @@ export default {
   "sheet.more": "Больше",
   "sheet.qty": "Количество",
   "sheet.addQty": "Добавить в заказ · {total}",
+
+  // One filter bar for the whole menu (lib/quickFilters.js). Drafted, NOT yet read
+  // by a native speaker — filter.seafoodNote is the one that must be, because it
+  // is a line telling a guest not to rely on a control.
+  "filter.quick": "Быстрые фильтры",
+  "filter.lowCarb": "Мало углеводов",
+  "filter.under150": "До ฿150",
+  "filter.seafood": "С морепродуктами",
+  "filter.seafoodNote": "Показаны блюда, где указаны рыба или морепродукты. Если блюда в списке нет, это не гарантирует, что в нём их нет. Сообщите команде о любой аллергии.",
+  "filter.drinksNote": "Фильтры по калориям, белку и углеводам не действуют на напитки.",
+  "filter.drinksShow": "Показать",
+  "filter.drinksHide": "Скрыть",
 };

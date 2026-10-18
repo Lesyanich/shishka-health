@@ -91,7 +91,6 @@ export default {
   "filter.title": "ตัวกรอง",
   "filter.close": "ปิดตัวกรอง",
   "filter.suitableFor": "เหมาะสำหรับ",
-  "filter.exclude": "ตัดสารก่อภูมิแพ้ออก",
   "filter.clear": "ล้าง",
   "filter.show": "ดู {n} รายการ",
   "filter.apply": "ใช้ตัวกรอง",

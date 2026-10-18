@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Button } from "../primitives/Button.jsx";
 import { useModal } from "../../hooks/useModal.js";
+import { QuickFilterChips } from "./QuickFilterChips.jsx";
 import { FilterChip } from "./FilterChip.jsx";
 import { XIcon, CheckIcon } from "../Icons.jsx";
 import { t } from "../../i18n/index.js";
@@ -9,11 +10,10 @@ export function FilterPanel({
   open,
   onClose,
   dietOptions = [],
-  allergenOptions = [],
   selectedDiets = [],
-  excludedAllergens = [],
   onToggleDiet,
-  onToggleAllergen,
+  quickActive = null,
+  onToggleQuick,
   onClear,
   onApply,
   resultCount,
@@ -27,7 +27,9 @@ export function FilterPanel({
   if (!open) return null;
 
   const has = (arr, v) => arr.includes(v);
-  const count = selectedDiets.length + excludedAllergens.length;
+  // The quick filter counts too: "Clear (1)" that ignored the chips at the top of
+  // the same sheet would leave a filter on while saying it had cleared it.
+  const count = selectedDiets.length + (quickActive ? 1 : 0);
 
   return (
     <div className="shk-fp__scrim" onClick={onClose}>
@@ -54,6 +56,19 @@ export function FilterPanel({
         </div>
 
         <div className="shk-fp__body">
+          {/* The same chips as the row under the page title, so a guest ten
+              thousand pixels down can change them without climbing back up. */}
+          {onToggleQuick && (
+            <div className="shk-fp__section">
+              <div className="shk-fp__legend">{t("filter.quick")}</div>
+              <QuickFilterChips
+                className="shk-fp__chips"
+                active={quickActive}
+                onToggle={onToggleQuick}
+              />
+            </div>
+          )}
+
           {/* No dietary tag exists on the live menu today (all 121 tag links are
               allergens), so this section used to render a heading with nothing
               under it. It appears by itself the day the menu is tagged. */}
@@ -74,31 +89,6 @@ export function FilterPanel({
             </div>
           </div>
           )}
-
-          <div className="shk-fp__section">
-            <div className="shk-fp__legend">{t("filter.exclude")}</div>
-            <div className="shk-fp__chips">
-              {allergenOptions.map((a) => (
-                <FilterChip
-                  key={a.id}
-                  exclude
-                  icon={a.icon}
-                  active={has(excludedAllergens, a.id)}
-                  onClick={() => onToggleAllergen?.(a.id)}
-                >
-                  {a.label}
-                </FilterChip>
-              ))}
-            </div>
-            {/* The honest half of an exclusion filter. Hiding every dish tagged
-                "Dairy" implies the rest are dairy-free, and 24 of 81 dishes carry
-                no allergen tag at all — "nobody has looked" reads the same as
-                "nothing in it". Said here, next to the control, not buried in a
-                footer. See lib/dishFilters.js. */}
-            {allergenOptions.length > 0 && (
-              <p className="shk-fp__note">{t("filter.allergenNote")}</p>
-            )}
-          </div>
         </div>
 
         <div className="shk-fp__foot">

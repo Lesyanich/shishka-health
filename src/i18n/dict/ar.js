@@ -94,7 +94,6 @@ export default {
   "filter.title": "الفلاتر",
   "filter.close": "إغلاق الفلاتر",
   "filter.suitableFor": "مناسب لـ",
-  "filter.exclude": "استبعاد مسببات الحساسية",
   "filter.clear": "مسح",
   "filter.show": "عرض {n}",
   "filter.apply": "تطبيق",

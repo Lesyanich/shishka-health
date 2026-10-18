@@ -2,12 +2,11 @@ export function FilterChip({
   children,
   icon,
   active = false,
-  exclude = false,
   onClick,
   className = "",
   ...rest
 }) {
-  const cls = ["shk-chip", exclude ? "shk-chip--exclude" : "", className]
+  const cls = ["shk-chip", className]
     .filter(Boolean)
     .join(" ");
   return (
