@@ -51,8 +51,13 @@ const SITE = "https://shishka.health";
    L2 ONLY. L1 is the prep kitchen in Saiyuan and must never be published as a
    customer-facing address. Confirmed by the CEO 2026-07-29 (MC cfd30575).
 
-   No `geo` block: we have no verified lat/long, and inventing coordinates for a
-   machine-readable local-business record is worse than omitting them.
+   `geo` and `googlePlaceId` come from our own Google Business Profile pin
+   (listing "SHiSHKA Healthy kitchen", phone +66 95 696 9059 — matches NAP),
+   read 2026-10-23. The pin is the one guests navigate to, so it is the
+   coordinate we publish; never type coordinates in by hand from a map.
+   `mapsUrl` uses Google's documented Maps URLs format with the place id, which
+   is stable across listing renames — this is the link that tells Google the
+   site and the Maps listing are one business.
 */
 const NAP = {
   name: "SHiSHKA Healthy Kitchen",
@@ -67,7 +72,20 @@ const NAP = {
   hoursOpen: "09:30",
   hoursClose: "18:30",
   hoursHuman: "every day, 9:30 – 18:30",
+  lat: 7.787422,
+  lng: 98.317266,
+  googlePlaceId: "ChIJe3f6Su4pUDARs3vXOqWIJpw",
+  mapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=SHiSHKA+Healthy+Kitchen&query_place_id=ChIJe3f6Su4pUDARs3vXOqWIJpw",
 };
+
+/*
+  A real photo of the restaurant (facade or room), for the Restaurant entity's
+  `image`. Google wants it to show the actual place, so the generated salad-bar
+  hero does not qualify. Emitted only once the file exists in public/: drop the
+  photo at this path and the next build picks it up — no code change needed.
+*/
+const RESTAURANT_PHOTO = "assets/restaurant.jpg";
 
 /* ------------------------------------------------------------------ claims --
 
@@ -363,9 +381,19 @@ function restaurantLd(extra = {}) {
       postalCode: NAP.postal,
       addressCountry: NAP.country,
     },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: NAP.lat,
+      longitude: NAP.lng,
+    },
+    hasMap: NAP.mapsUrl,
     telephone: NAP.phone,
     url: SITE,
-    sameAs: [NAP.instagram],
+    logo: `${SITE}/assets/logo-full-color.png`,
+    ...(existsSync(join(ROOT, "public", RESTAURANT_PHOTO))
+      ? { image: `${SITE}/${RESTAURANT_PHOTO}` }
+      : {}),
+    sameAs: [NAP.instagram, NAP.mapsUrl],
     servesCuisine: ["Middle Eastern", "Healthy", "Mediterranean"],
     priceRange: "฿฿",
     openingHoursSpecification: [
