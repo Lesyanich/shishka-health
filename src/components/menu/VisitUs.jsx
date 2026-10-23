@@ -1,7 +1,7 @@
 import { MapPinIcon, ClockIcon } from "../Icons.jsx";
 import { VENUE } from "../../lib/venue.js";
-import { parseHours } from "../../lib/hours.js";
-import { t } from "../../i18n/index.js";
+import { parseHours, weekdayName, dateForWeekday } from "../../lib/hours.js";
+import { t, LANG } from "../../i18n/index.js";
 
 /*
   "Visit us" (SPEC.md §3.8 / §4.6) — hours, address, directions, Instagram.
@@ -31,6 +31,16 @@ export function VisitUs({ cta, wide = false }) {
           <span>
             {t("visit.hours")}{" "}
             <span className="num">{hours.open.label}&ndash;{hours.close.label}</span>
+            {VENUE.closedDays.length > 0 && (
+              <>
+                {" · "}
+                {t("visit.closedOn", {
+                  day: VENUE.closedDays
+                    .map((d) => weekdayName(dateForWeekday(d), LANG))
+                    .join(", "),
+                })}
+              </>
+            )}
           </span>
         </p>
       )}

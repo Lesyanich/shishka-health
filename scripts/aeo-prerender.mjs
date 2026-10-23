@@ -71,7 +71,10 @@ const NAP = {
   instagram: "https://www.instagram.com/shishka_healthy_kitchen",
   hoursOpen: "09:30",
   hoursClose: "18:30",
-  hoursHuman: "every day, 9:30 – 18:30",
+  hoursHuman: "every day except Wednesday, 9:30 – 18:30",
+  // 0 = Sunday … 6 = Saturday. Wednesday is the weekly day off (CEO,
+  // 2026-10-23). Mirrors VENUE.closedDays in src/lib/venue.js.
+  closedDays: [3],
   lat: 7.787422,
   lng: 98.317266,
   googlePlaceId: "ChIJe3f6Su4pUDARs3vXOqWIJpw",
@@ -217,7 +220,7 @@ const TEXT = {
     faqTitle: "Частые вопросы",
     visit: "Как нас найти",
     country: "Thailand",
-    open: "Открыто ежедневно, 9:30 – 18:30",
+    open: "Открыто каждый день, кроме среды, 9:30 – 18:30",
     fullMenu: "Интерактивное меню с фото",
     home: "/ru",
     tagline: "— Раваи, Пхукет. From the SOIL to the SOUL.",
@@ -230,7 +233,7 @@ const TEXT = {
     faqTitle: "أسئلة شائعة",
     visit: "زورونا",
     country: "Thailand",
-    open: "مفتوح يوميًا 9:30 – 18:30",
+    open: "مفتوح يوميًا ما عدا الأربعاء، 9:30 – 18:30",
     fullMenu: "شاهد القائمة الكاملة بالصور",
     home: "/ar",
     tagline: "— راواي، فوكيت. From the SOIL to the SOUL.",
@@ -243,7 +246,7 @@ const TEXT = {
     faqTitle: "คำถามที่พบบ่อย",
     visit: "แวะมาหาเรา",
     country: "Thailand",
-    open: "เปิดทุกวัน 9:30 – 18:30 น.",
+    open: "เปิดทุกวัน ยกเว้นวันพุธ 9:30 – 18:30 น.",
     fullMenu: "ดูเมนูเต็มพร้อมรูป",
     home: "/th",
     tagline: "— ราไวย์ ภูเก็ต From the SOIL to the SOUL.",
@@ -368,6 +371,10 @@ function groupBySection(dishes) {
 
 /* -------------------------------------------------------------- structured */
 
+const SCHEMA_DAYS = [
+  "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+];
+
 function restaurantLd(extra = {}) {
   return {
     "@context": "https://schema.org",
@@ -399,10 +406,7 @@ function restaurantLd(extra = {}) {
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday", "Tuesday", "Wednesday", "Thursday",
-          "Friday", "Saturday", "Sunday",
-        ],
+        dayOfWeek: SCHEMA_DAYS.filter((_, i) => !NAP.closedDays.includes(i)),
         opens: NAP.hoursOpen,
         closes: NAP.hoursClose,
       },
@@ -605,7 +609,7 @@ const HOME_ALTERNATES = [
 function ruFaq() {
   return [
     { q: "Где находится SHiSHKA Healthy Kitchen?", a: `Внутри Tops Daily на Soi Naya 2 в Раваи, Пхукет — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}.` },
-    { q: "Когда вы открыты?", a: "Мы открыты ежедневно, 9:30 – 18:30." },
+    { q: "Когда вы открыты?", a: "Мы открыты каждый день, кроме среды, 9:30 – 18:30." },
     { q: "Вы используете масла из семян?", a: CLAIM_NO_SEED_OILS_RU },
     { q: "Вы что-нибудь жарите во фритюре?", a: "Нет. В нашем меню нет ничего, приготовленного во фритюре." },
     { q: "У вас есть блюда без глютена?", a: `${CLAIM_GLUTEN_RU} ${CLAIM_GLUTEN_MARK_RU}` },
@@ -620,7 +624,7 @@ const THAI_CLAIM_NO_SEED_OILS =
 function thFaq() {
   return [
     { q: "SHiSHKA Healthy Kitchen อยู่ที่ไหน", a: `อยู่ในท็อปส์ เดลี่ ซอยนาใน 2 ราไวย์ ภูเก็ต — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}` },
-    { q: "เปิดกี่โมง", a: "เปิดทุกวัน 9:30 – 18:30 น." },
+    { q: "เปิดกี่โมง", a: "เปิดทุกวัน ยกเว้นวันพุธ 9:30 – 18:30 น." },
     { q: "ใช้น้ำมันจากเมล็ดพืชหรือไม่", a: THAI_CLAIM_NO_SEED_OILS },
     { q: "มีเมนูทอดน้ำมันท่วมไหม", a: "ไม่มี ไม่มีเมนูใดในร้านที่ทอดน้ำมันท่วม" },
     { q: "มีเมนูที่ไม่มีกลูเตนไหม", a: `${CLAIM_GLUTEN_TH} ${CLAIM_GLUTEN_MARK_TH}` },
@@ -632,7 +636,7 @@ function thFaq() {
 function arFaq() {
   return [
     { q: "أين يقع SHiSHKA Healthy Kitchen؟", a: `داخل Tops Daily في سوي نايا 2، راواي، فوكيت — ${NAP.street}, ${NAP.locality}, ${NAP.region} ${NAP.postal}` },
-    { q: "ما هي ساعات العمل؟", a: "مفتوح يوميًا من 9:30 حتى 18:30." },
+    { q: "ما هي ساعات العمل؟", a: "مفتوح يوميًا ما عدا الأربعاء، من 9:30 حتى 18:30." },
     { q: "هل تستخدمون زيوت البذور؟", a: CLAIM_NO_SEED_OILS_AR },
     { q: "هل تقدّمون أي طعام مقلي بالزيت الغزير؟", a: "لا. لا يوجد في قائمتنا أي طبق مقلي بالزيت الغزير." },
     { q: "هل لديكم أطباق بدون غلوتين؟", a: `${CLAIM_GLUTEN_AR} ${CLAIM_GLUTEN_MARK_AR}` },
@@ -782,7 +786,7 @@ ${menuBody}`,
     {
       slug: "clean-eating-phuket",
       title: `Clean Eating in Phuket — ${NAP.name}, Rawai`,
-      description: `Real, unprocessed food in Phuket: no seed oils, no MSG, no preservatives, nothing deep-fried. Macros on every dish. Rawai, open daily.`,
+      description: `Real, unprocessed food in Phuket: no seed oils, no MSG, no preservatives, nothing deep-fried. Macros on every dish. Rawai, Phuket.`,
       h1: "Clean Eating in Phuket",
       answer: `If clean eating means real ingredients and nothing hidden, that is the whole point of ${NAP.name} in Rawai, Phuket. No seed oils, no MSG, no preservatives, nothing deep-fried — and calories and protein printed on every dish so you can see what you are eating.`,
       body: `<h2>Our rule</h2>

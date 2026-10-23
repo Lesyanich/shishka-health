@@ -45,7 +45,7 @@ export const DEFAULT_CONTENT = {
     sub: "Real food, made fresh every day — drop by our Phuket kitchen.",
     instagramUrl: "https://www.instagram.com/shishka_healthy_kitchen",
     whatsappUrl: "", // button hidden while empty
-    hoursLabel: "open daily",
+    hoursLabel: "open daily except Wednesday",
     hoursTime: "9:30 – 18:30",
   },
   // Short intro paragraph rendered under a section title. Keyed by section

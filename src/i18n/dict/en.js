@@ -104,12 +104,17 @@ export default {
   // span, which components.css pins to LTR under /ar — interpolated into the
   // sentence it would come out as "18:30 till Open" in Arabic.
   "status.openTill": "Open till",
-  "status.openNow": "Open now · daily",
+  "status.openNow": "Open now",
   "status.closed": "Closed · opens",
+  // Before a weekday name ("Closed · opens Thu 9:30") — a day off, or the
+  // evening before one.
+  "status.closedUntilDay": "Closed · opens",
 
   // visit us (§3.8, §4.6)
   "visit.title": "Visit us",
-  "visit.hours": "Open daily",
+  "visit.hours": "Open",
+  // {day} is the weekday name from Intl, already in the page language.
+  "visit.closedOn": "closed {day}s",
   "visit.directions": "Get directions",
 
   // order bar + desktop order panel (§5, §8)

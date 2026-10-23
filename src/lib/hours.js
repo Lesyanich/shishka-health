@@ -4,7 +4,8 @@
   The hours themselves are content, not code: `site_content.cta.hoursTime`,
   edited in the database like the rest of the copy, with DEFAULT_CONTENT's
   "9:30 – 18:30" as the fallback. This file only parses that string and answers
-  "open right now?".
+  "open right now?". Whole days off (Wednesday) are a venue fact, not copy:
+  VENUE.closedDays in lib/venue.js, passed in by the caller.
 
   The clock that matters is the KITCHEN's. A guest reading the menu from Moscow
   at 16:00 their time must be told the Phuket kitchen is shut, not that it is
@@ -30,39 +31,82 @@ export function parseHours(hoursTime) {
   };
 }
 
-// Minutes since midnight in the kitchen's own timezone. Intl is doing the
-// DST/offset work; if it is unavailable or throws, fall back to the device
-// clock — a status an hour out is better than no header at all.
-function kitchenMinutes(now) {
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Minutes since midnight and weekday (0 = Sunday) in the kitchen's own
+// timezone. Intl is doing the DST/offset work; if it is unavailable or throws,
+// fall back to the device clock — a status an hour out is better than no
+// header at all.
+function kitchenClock(now) {
   try {
     const parts = new Intl.DateTimeFormat("en-GB", {
       timeZone: KITCHEN_TZ,
+      weekday: "short",
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
     }).formatToParts(now);
     const h = Number(parts.find((p) => p.type === "hour")?.value);
     const m = Number(parts.find((p) => p.type === "minute")?.value);
-    if (Number.isFinite(h) && Number.isFinite(m)) return (h % 24) * 60 + m;
+    const day = WEEKDAYS.indexOf(parts.find((p) => p.type === "weekday")?.value);
+    if (Number.isFinite(h) && Number.isFinite(m) && day >= 0) {
+      return { mins: (h % 24) * 60 + m, day };
+    }
   } catch {
     /* no Intl timezone support — device clock below */
   }
-  return now.getHours() * 60 + now.getMinutes();
+  return { mins: now.getHours() * 60 + now.getMinutes(), day: now.getDay() };
 }
 
 /*
-  { open, hours } — or null when the copy carries no parseable range, in which
-  case the caller renders no status rather than guessing one.
+  The kitchen's weekday name for a date, in the page language — "Wednesday",
+  "среда", "วันพุธ", "الأربعاء". From Intl, so no translator has to keep seven
+  day names in four dictionaries.
 */
-export function openStatus(hoursTime, now = new Date()) {
+export function weekdayName(date, lang, style = "long") {
+  try {
+    return new Intl.DateTimeFormat(lang, { timeZone: KITCHEN_TZ, weekday: style }).format(date);
+  } catch {
+    return new Intl.DateTimeFormat("en", { weekday: style }).format(date);
+  }
+}
+
+// Any date that falls on `day` (0 = Sunday), for weekdayName.
+export function dateForWeekday(day) {
+  // 2026-01-04 was a Sunday; noon UTC is the same date in Bangkok.
+  return new Date(Date.UTC(2026, 0, 4 + day, 12));
+}
+
+/*
+  { open, hours, opensOn } — or null when the copy carries no parseable range,
+  in which case the caller renders no status rather than guessing one.
+
+  `closedDays` are whole weekdays off (VENUE.closedDays). `opensOn` is null
+  when the next opening reads naturally from the time alone — later today, or
+  tomorrow morning after an ordinary close — and otherwise the Date of the
+  next opening day, so the header can say "opens Thu 9:30" instead of a bare
+  "opens 9:30" that, on a day off, a guest would read as "today".
+*/
+export function openStatus(hoursTime, now = new Date(), closedDays = []) {
   const hours = parseHours(hoursTime);
   if (!hours) return null;
-  const mins = kitchenMinutes(now);
+  const { mins, day } = kitchenClock(now);
   const from = hours.open.h * 60 + hours.open.m;
   const to = hours.close.h * 60 + hours.close.m;
+  const closedToday = closedDays.includes(day);
   // A range that wraps past midnight ("18:00 – 02:00") is not what this kitchen
   // does, but the copy could say it, so read it as two intervals rather than as
   // "never open".
-  const open = from <= to ? mins >= from && mins < to : mins >= from || mins < to;
-  return { open, hours };
+  const inRange = from <= to ? mins >= from && mins < to : mins >= from || mins < to;
+  const open = inRange && !closedToday;
+  if (open) return { open, hours, opensOn: null };
+
+  // Later today: nothing to add.
+  if (!closedToday && mins < from) return { open, hours, opensOn: null };
+  // Otherwise the first day after today that is not a day off.
+  let offset = 1;
+  while (offset < 7 && closedDays.includes((day + offset) % 7)) offset++;
+  const opensOn = closedToday || offset > 1 ? new Date(now.getTime() + offset * DAY_MS) : null;
+  return { open, hours, opensOn };
 }
