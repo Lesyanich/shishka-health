@@ -1,0 +1,37 @@
+name: Daily rebuild
+
+# The AEO pages (/menu, /healthy-food-rawai, ...) and their Menu JSON-LD are
+# rendered from menu_public at BUILD time by scripts/aeo-prerender.mjs. A build
+# only happens on a git push, so a price or dish changed in the admin panel used
+# to stay stale on those pages — and in what answer engines quote — until the
+# next code change. This rebuilds production once a day so the static menu is
+# never more than ~24h behind the database.
+#
+# It calls a Vercel Deploy Hook for project shishka-web (branch main). The hook
+# URL is a secret: anyone holding it can trigger builds.
+#   Vercel → shishka-web → Settings → Git → Deploy Hooks → name "daily-rebuild",
+#   branch "main" → copy the URL →
+#   GitHub → shishka-health → Settings → Secrets and variables → Actions →
+#   New repository secret VERCEL_DEPLOY_HOOK_URL.
+#
+# GitHub disables scheduled workflows in a repo with no activity for 60 days.
+# If the menu pages go stale again, check this workflow is still enabled.
+on:
+  schedule:
+    # 20:00 UTC = 03:00 Asia/Bangkok, while the restaurant is closed.
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel production build
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK_URL secret is not set — see the header of this workflow."
+            exit 1
+          fi
+          curl -fsS -X POST "$HOOK"

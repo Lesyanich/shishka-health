@@ -1,8 +1,8 @@
 import { LangSwitch } from "./LangSwitch.jsx";
 import { FilterButton } from "./FilterButton.jsx";
-import { openStatus } from "../../lib/hours.js";
+import { openStatus, weekdayName } from "../../lib/hours.js";
 import { VENUE } from "../../lib/venue.js";
-import { t } from "../../i18n/index.js";
+import { t, LANG } from "../../i18n/index.js";
 
 /*
   The menu page's header (SPEC.md §3.1 and §4.1) — 64 px on a phone, 84 px on a
@@ -18,7 +18,7 @@ import { t } from "../../i18n/index.js";
   Everything below the header is the menu.
 */
 export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit", filterCount = 0, onOpenFilters, onTop, onVisit }) {
-  const status = openStatus(hoursTime);
+  const status = openStatus(hoursTime, new Date(), VENUE.closedDays);
 
   return (
     <header className={`shk-menu__bar${wide ? " shk-menu__bar--wide" : ""}`}>
@@ -39,7 +39,13 @@ export function MenuTopbar({ wide = false, hoursTime, visitHref = "#visit", filt
               ? wide
                 ? t("status.openNow")
                 : t("status.openTill")
-              : t("status.closed")}{" "}
+              : status.opensOn
+                ? t("status.closedUntilDay")
+                : t("status.closed")}{" "}
+            {/* On a day off (or the evening before one) a bare "opens 9:30"
+                would read as "tomorrow" — name the day. Its own span, outside
+                .num, so under /ar the word stays RTL and the clock LTR. */}
+            {status.opensOn && <>{weekdayName(status.opensOn, LANG, "short")}{" "}</>}
             <span className="num">
               {status.open
                 ? wide
