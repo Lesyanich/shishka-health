@@ -19,17 +19,21 @@ rendered "The menu is temporarily unavailable" — a DB outage became a site out
    or duplicate ids. There is no skip flag. (`aeo-prerender.mjs` already fails the same way.)
 3. **Runtime** — `src/hooks/useMenu.js`:
    - `index.html` preloads `/menu-snapshot.json`; the hook paints from it immediately;
-   - in parallel it asks Supabase (through the `/sb` proxy) with an `AbortController`, 3 s deadline,
+   - in parallel it asks Supabase (through the `/sb` proxy) with an `AbortController`, 4 s deadline (two sequential round trips),
      one attempt;
-   - the live answer is **merged per resource** (`mergeLive` in `src/lib/menuSnapshot.js`). A live
-     resource replaces its snapshot rows only if it did not error, has at least the contract
-     `minRows` (`MIN_ROWS`, asserted equal to the contract by `snapshot-check`), and is not exactly
-     1000 rows (PostgREST max-rows, i.e. probably truncated). Live dishes must also be valid and at
-     least 50% of the snapshot's count. Everything else keeps the snapshot rows — including
-     `translations[LANG]` and `site_content` (defaults derived from a failed call are never written
-     to the content cache);
+   - the live answer replaces the snapshot **atomically for the menu**: dishes + tags + modifiers (+
+     translations for non-English pages) are one unit, because tags carry allergens and modifiers carry
+     "From X" prices — live dishes over snapshot tags would show a dish as allergen-free. Live replaces
+     the snapshot menu only if ALL parts are valid (not errored, at least the contract `minRows` —
+     `MIN_ROWS`, asserted equal to the contract by `snapshot-check` — not exactly 1000 rows i.e.
+     probably truncated, and dishes at least 50% of the snapshot's count). Otherwise the whole snapshot
+     menu stays. `site_content` and `price_tiers` are independent (each keeps its snapshot rows on
+     failure; defaults from a failed call are never written to the content cache);
+   - live tags and modifiers are requested only for the live dishes' ids (`.in(...)`, 100 ids per
+     request, ~4 KB URL), after the dishes arrive — so they cannot creep into PostgREST's max-rows;
+   - a snapshot paint never replaces data already on screen, and a throw while painting the snapshot
+     degrades to the no-snapshot path instead of an endless spinner;
    - a generation counter makes an older `load()` ignore its results; requests are aborted on unmount;
-     an answer identical to what is on screen causes no re-render;
    - "menu is temporarily unavailable" can only appear when there is **no snapshot at all**
      (vite dev, or a deployment that predates this change); that path keeps the old 3 x 8 s retry and
      requires live dishes, tags and modifiers.
@@ -52,7 +56,7 @@ rendered "The menu is temporarily unavailable" — a DB outage became a site out
 ## Trade-off: freshness
 
 A price/photo/availability change is **not visible on the site until the next deploy** — except for
-guests whose browser reaches Supabase within 3 s, who get live data over the snapshot. Hence the
+guests whose browser reaches Supabase within 4 s, who get live data over the snapshot. Hence the
 rebuild trigger below. Without it the worst-case staleness is "until someone pushes to main".
 
 ## Rebuild trigger (spec — the OS-side half is NOT built in this repo)

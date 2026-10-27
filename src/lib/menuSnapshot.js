@@ -119,51 +119,53 @@ export function filterToDishes(raw) {
 }
 
 /*
-  Merge a LIVE answer over the snapshot, resource by resource. Only data that is
-  present, non-truncated and above the contract minimum replaces its snapshot
-  counterpart; everything else keeps the snapshot rows. This is "swap in fresher data
-  only if it is valid" applied per resource, so one failed or empty query (RLS blip,
-  statement timeout, truncated page) can never blank part of a good menu.
+  Merge a LIVE answer over the snapshot.
 
-  live: { dishes, tags, content, modifiers, tiers, translations } where a resource that
-        errored is null/undefined. `lang` is the page language (translations[lang]).
-  snap: snapshot.raw with translations already narrowed to `lang`, or null (no snapshot).
-  Returns { raw, kept: [resource names that kept snapshot rows], live: bool, problems }.
-  `live` is true when at least the dishes came from the live answer.
+  The MENU is one atomic unit: dishes + tags + modifiers + (non-English) translations.
+  Tags carry allergens, modifiers carry the "From X" floor prices, translations name the
+  dishes — mixing live dishes with snapshot tags would show a new dish with no allergens
+  ("allergen-free") or a wrong price. So live replaces the snapshot menu only if EVERY
+  part is valid: not errored (null), at least the contract minimum, not exactly max-rows
+  (probably truncated), and dishes at least MIN_DISH_SHARE of the snapshot's. If any part
+  fails, the WHOLE snapshot menu stays. site_content and price_tiers are independent
+  (each keeps its snapshot rows on failure).
+
+  live: { dishes, tags, content, modifiers, tiers, translations } — an errored resource is
+        null/undefined. `lang` is the page language.
+  snap: snapshot.raw with translations narrowed to `lang`, or null (no snapshot).
+  Returns { raw, kept, live, problems }; `kept` names what stayed from the snapshot
+  ("menu" = the whole atomic unit), `live` is true when the live menu was used.
 */
 export function mergeLive(snap, live, lang) {
   const kept = [];
   const out = {};
-  const ok = (k, rows) => {
-    if (!Array.isArray(rows)) return false;
-    if (rows.length < MIN_ROWS[k]) return false;
-    // Exactly max-rows = probably cut off; a snapshot (complete, paginated) beats it.
-    if (rows.length >= MAX_ROWS) return false;
-    return true;
-  };
+  const ok = (k, rows) => Array.isArray(rows) && rows.length >= MIN_ROWS[k] && rows.length < MAX_ROWS;
 
-  // dishes: contract min, valid rows, and not a collapse versus the snapshot.
-  let dishesOk = ok("dishes", live?.dishes) && validateDishes(live.dishes).length === 0;
-  if (dishesOk && snap && live.dishes.length < snap.dishes.length * MIN_DISH_SHARE) dishesOk = false;
-  out.dishes = dishesOk ? live.dishes : snap?.dishes;
-  if (!dishesOk) kept.push("dishes");
+  const liveTr = live?.translations;
+  const trOk = lang === "en" || (Array.isArray(liveTr) && liveTr.length >= MIN_TRANSLATIONS && liveTr.length < MAX_ROWS);
+  let menuOk =
+    ok("dishes", live?.dishes) && validateDishes(live.dishes).length === 0 &&
+    ok("tags", live?.tags) && ok("modifiers", live?.modifiers) && trOk;
+  if (menuOk && snap && live.dishes.length < snap.dishes.length * MIN_DISH_SHARE) menuOk = false;
 
-  for (const k of ["tags", "content", "modifiers", "tiers"]) {
+  if (menuOk) {
+    Object.assign(out, { dishes: live.dishes, tags: live.tags, modifiers: live.modifiers });
+    out.translations = lang === "en" ? [] : liveTr;
+  } else {
+    Object.assign(out, {
+      dishes: snap?.dishes, tags: snap?.tags ?? [], modifiers: snap?.modifiers ?? [],
+      translations: lang === "en" ? [] : snap?.translations ?? [],
+    });
+    kept.push("menu");
+  }
+
+  for (const k of ["content", "tiers"]) {
     if (ok(k, live?.[k])) out[k] = live[k];
     else { out[k] = snap?.[k] ?? []; kept.push(k); }
   }
 
-  const liveTr = live?.translations;
-  const trOk = Array.isArray(liveTr) && liveTr.length >= MIN_TRANSLATIONS && liveTr.length < MAX_ROWS;
-  if (lang === "en") out.translations = [];
-  else if (trOk) out.translations = liveTr;
-  else { out.translations = snap?.translations ?? []; kept.push("translations"); }
-
-  const problems = Array.isArray(out.dishes) ? validateDishes(out.dishes) : ["no dishes"];
-  // Without a snapshot there is nothing to fall back on: the resources the menu cannot
-  // render without must have come from the live answer.
-  if (!snap) {
-    for (const k of ["dishes", "tags", "modifiers"]) if (kept.includes(k)) problems.push(`live ${k} unavailable and no snapshot`);
-  }
-  return { raw: out, kept, live: dishesOk, problems };
+  const problems = [];
+  if (!Array.isArray(out.dishes)) problems.push("live menu invalid and no snapshot");
+  else problems.push(...validateDishes(out.dishes));
+  return { raw: out, kept, live: menuOk, problems };
 }

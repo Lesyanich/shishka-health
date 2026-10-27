@@ -35,6 +35,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { deepStripEmoji, titleCase } from "../src/lib/text.js";
+import { validateSnapshot } from "../src/lib/menuSnapshot.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -51,7 +52,8 @@ function readSnapshot() {
   if (!existsSync(f)) return null;
   try {
     const snap = JSON.parse(readFileSync(f, "utf8"));
-    return Array.isArray(snap?.raw?.dishes) && snap.raw.dishes.length ? snap : null;
+    // Same validation the build ran when it wrote the file; cheap, and catches a hand-edited dist/.
+    return validateSnapshot(snap).length === 0 ? snap : null;
   } catch {
     return null;
   }
