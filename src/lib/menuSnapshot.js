@@ -28,26 +28,41 @@ export const SNAPSHOT_VERSION = 1;
 export const SNAPSHOT_FILE = "menu-snapshot.json";
 export const SNAPSHOT_LANGS = ["ru", "th", "ar"];
 
+// PostgREST's default max-rows. A response of exactly this many rows is almost
+// certainly TRUNCATED, so live data of that length is never trusted over a snapshot.
+export const MAX_ROWS = 1000;
+
+// Contract minRows per snapshot key — scripts/snapshot-check.mjs asserts these equal
+// contracts/menu-contract.json, so the browser, the build and CI share one number.
+export const MIN_ROWS = { dishes: 1, tags: 1, content: 1, modifiers: 1, tiers: 0 };
+// Translations: every shipped language must have rows (aeo-prerender requires the same).
+export const MIN_TRANSLATIONS = 1;
+// Live dishes below this share of the snapshot's are a broken view, not a menu change.
+export const MIN_DISH_SHARE = 0.5;
+
 const arr = (v) => Array.isArray(v);
 
-/** Returns a list of problems; an empty list means the raw rows are safe to render. */
-export function validateRaw(raw) {
+/** Dish rows only: the view exposes sellable dishes, so a dish without id/name/price is a broken row. */
+export function validateDishes(dishes) {
+  if (!arr(dishes)) return ["dishes is not an array"];
   const problems = [];
-  if (!raw || typeof raw !== "object") return ["raw payload missing"];
-
-  for (const k of ["dishes", "tags", "content", "modifiers", "tiers"]) {
-    if (!arr(raw[k])) problems.push(`${k} is not an array`);
-  }
-  if (problems.length) return problems;
-
-  if (raw.dishes.length < 1) problems.push("menu_public is empty");
-  // The view exposes only sellable dishes; a dish without id/name/price would
-  // reach the guest as a blank card.
-  const bad = raw.dishes.filter((d) => !d || !d.id || !(d.customer_short_name || d.name) || d.price == null);
+  if (dishes.length < MIN_ROWS.dishes) problems.push("menu_public is empty");
+  const bad = dishes.filter((d) => !d || !d.id || !(d.customer_short_name || d.name) || d.price == null);
   if (bad.length) problems.push(`${bad.length} dish row(s) without id, name or price`);
   // Ids are the join key for tags and modifiers; a duplicate means a broken view.
-  const ids = new Set(raw.dishes.map((d) => d?.id));
-  if (ids.size !== raw.dishes.length) problems.push("duplicate dish ids");
+  if (new Set(dishes.map((d) => d?.id)).size !== dishes.length) problems.push("duplicate dish ids");
+  return problems;
+}
+
+/** Returns a list of problems; an empty list means the raw rows are safe to ship/render. */
+export function validateRaw(raw) {
+  if (!raw || typeof raw !== "object") return ["raw payload missing"];
+  const problems = [];
+  for (const k of Object.keys(MIN_ROWS)) {
+    if (!arr(raw[k])) problems.push(`${k} is not an array`);
+    else if (raw[k].length < MIN_ROWS[k]) problems.push(`${k}: ${raw[k].length} rows, contract requires at least ${MIN_ROWS[k]}`);
+  }
+  if (arr(raw.dishes)) problems.push(...validateDishes(raw.dishes));
   return problems;
 }
 
@@ -57,8 +72,18 @@ export function validateSnapshot(snap) {
   if (snap.version !== SNAPSHOT_VERSION) problems.push(`snapshot version ${snap.version}, expected ${SNAPSHOT_VERSION}`);
   if (!snap.generatedAt || Number.isNaN(Date.parse(snap.generatedAt))) problems.push("generatedAt missing");
   problems.push(...validateRaw(snap.raw));
-  if (!snap.raw?.translations || typeof snap.raw.translations !== "object") {
-    problems.push("translations missing");
+  const tr = snap.raw?.translations;
+  if (!tr || typeof tr !== "object") problems.push("translations missing");
+  else for (const l of SNAPSHOT_LANGS) {
+    if (!Array.isArray(tr[l]) || tr[l].length < MIN_TRANSLATIONS) problems.push(`translations.${l}: fewer than ${MIN_TRANSLATIONS} rows`);
+  }
+  // Tags and modifiers are filtered to menu_public dishes at build time.
+  if (!problems.length) {
+    const ids = new Set(snap.raw.dishes.map((d) => d.id));
+    const strayTags = snap.raw.tags.filter((t) => !ids.has(t.nomenclature_id)).length;
+    const strayMods = snap.raw.modifiers.filter((m) => !ids.has(m.dish_id)).length;
+    if (strayTags) problems.push(`${strayTags} tag row(s) for dishes not in menu_public`);
+    if (strayMods) problems.push(`${strayMods} modifier row(s) for dishes not in menu_public`);
   }
   return problems;
 }
@@ -66,7 +91,9 @@ export function validateSnapshot(snap) {
 /** Browser: load the shipped snapshot. Resolves null (never rejects) when absent or invalid. */
 export async function loadSnapshot(baseUrl = "/") {
   try {
-    const res = await fetch(`${baseUrl}${SNAPSHOT_FILE}`, { cache: "no-cache" });
+    // Default cache mode on purpose: index.html preloads this URL, and a no-cache fetch
+    // would bypass the preload. Vercel serves public files max-age=0, must-revalidate.
+    const res = await fetch(`${baseUrl}${SNAPSHOT_FILE}`);
     if (!res.ok) return null;
     const snap = await res.json();
     const problems = validateSnapshot(snap);
@@ -79,4 +106,64 @@ export async function loadSnapshot(baseUrl = "/") {
     // vite dev has no snapshot and answers with index.html -> JSON parse error.
     return null;
   }
+}
+
+/** Keep only rows belonging to the given dish ids (data minimisation + size). */
+export function filterToDishes(raw) {
+  const ids = new Set(raw.dishes.map((d) => d.id));
+  return {
+    ...raw,
+    tags: raw.tags.filter((t) => ids.has(t.nomenclature_id)),
+    modifiers: raw.modifiers.filter((m) => ids.has(m.dish_id)),
+  };
+}
+
+/*
+  Merge a LIVE answer over the snapshot, resource by resource. Only data that is
+  present, non-truncated and above the contract minimum replaces its snapshot
+  counterpart; everything else keeps the snapshot rows. This is "swap in fresher data
+  only if it is valid" applied per resource, so one failed or empty query (RLS blip,
+  statement timeout, truncated page) can never blank part of a good menu.
+
+  live: { dishes, tags, content, modifiers, tiers, translations } where a resource that
+        errored is null/undefined. `lang` is the page language (translations[lang]).
+  snap: snapshot.raw with translations already narrowed to `lang`, or null (no snapshot).
+  Returns { raw, kept: [resource names that kept snapshot rows], live: bool, problems }.
+  `live` is true when at least the dishes came from the live answer.
+*/
+export function mergeLive(snap, live, lang) {
+  const kept = [];
+  const out = {};
+  const ok = (k, rows) => {
+    if (!Array.isArray(rows)) return false;
+    if (rows.length < MIN_ROWS[k]) return false;
+    // Exactly max-rows = probably cut off; a snapshot (complete, paginated) beats it.
+    if (rows.length >= MAX_ROWS) return false;
+    return true;
+  };
+
+  // dishes: contract min, valid rows, and not a collapse versus the snapshot.
+  let dishesOk = ok("dishes", live?.dishes) && validateDishes(live.dishes).length === 0;
+  if (dishesOk && snap && live.dishes.length < snap.dishes.length * MIN_DISH_SHARE) dishesOk = false;
+  out.dishes = dishesOk ? live.dishes : snap?.dishes;
+  if (!dishesOk) kept.push("dishes");
+
+  for (const k of ["tags", "content", "modifiers", "tiers"]) {
+    if (ok(k, live?.[k])) out[k] = live[k];
+    else { out[k] = snap?.[k] ?? []; kept.push(k); }
+  }
+
+  const liveTr = live?.translations;
+  const trOk = Array.isArray(liveTr) && liveTr.length >= MIN_TRANSLATIONS && liveTr.length < MAX_ROWS;
+  if (lang === "en") out.translations = [];
+  else if (trOk) out.translations = liveTr;
+  else { out.translations = snap?.translations ?? []; kept.push("translations"); }
+
+  const problems = Array.isArray(out.dishes) ? validateDishes(out.dishes) : ["no dishes"];
+  // Without a snapshot there is nothing to fall back on: the resources the menu cannot
+  // render without must have come from the live answer.
+  if (!snap) {
+    for (const k of ["dishes", "tags", "modifiers"]) if (kept.includes(k)) problems.push(`live ${k} unavailable and no snapshot`);
+  }
+  return { raw: out, kept, live: dishesOk, problems };
 }

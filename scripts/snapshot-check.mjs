@@ -16,7 +16,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateSnapshot } from "../src/lib/menuSnapshot.js";
+import { validateSnapshot, MIN_ROWS } from "../src/lib/menuSnapshot.js";
 
 // contract resource -> key in snapshot.raw
 const KEY_OF = {
@@ -46,6 +46,11 @@ function parseSelect(select) {
 export function checkSnapshotAgainstContract(snap, contract) {
   const problems = [];
   for (const r of contract.resources) {
+    // The browser and the build share MIN_ROWS (src/lib/menuSnapshot.js); keep it equal to the contract.
+    const key = KEY_OF[r.name];
+    if (key && MIN_ROWS[key] !== (r.minRows ?? 0)) {
+      problems.push(`${r.name}: MIN_ROWS.${key}=${MIN_ROWS[key]} in menuSnapshot.js but contract minRows=${r.minRows ?? 0}`);
+    }
     const rows =
       r.name === "menu_translations" ? snap.raw?.translations?.ru : snap.raw?.[KEY_OF[r.name]];
     if (!Array.isArray(rows)) { problems.push(`${r.name}: missing from snapshot`); continue; }

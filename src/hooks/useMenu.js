@@ -8,7 +8,7 @@ import { benefitsForDish } from "../lib/benefits.js";
 import { buildMenuGroups } from "../lib/menuGroups.js";
 import { LANG, DEFAULT_LANG } from "../i18n/index.js";
 import { localizeMenu } from "../i18n/localize.js";
-import { loadSnapshot, validateRaw } from "../lib/menuSnapshot.js";
+import { loadSnapshot, mergeLive } from "../lib/menuSnapshot.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -87,22 +87,26 @@ async function fetchRawFromSupabase(signal) {
           .eq("lang", LANG)),
   ]);
 
-  // Each of these is required: a snapshot-less guest sees nothing without them, and
-  // a partial live answer must not overwrite a complete snapshot. Translations are
-  // optional (English fallback), exactly as before.
-  if (dishResult.error) throw dishResult.error;
-  if (tagResult.error) throw tagResult.error;
-  if (modResult.error) throw modResult.error;
-  if (tierResult.error) throw tierResult.error;
-  if (trResult?.error) console.warn("menu_translations unavailable, showing English:", trResult.error);
+  // An aborted request (revalidation deadline / unmount) is a failed attempt, not a
+  // partial answer — reject so the caller keeps whatever is on screen.
+  if (signal?.aborted) throw new Error("aborted");
 
+  // Per-resource: a resource that errored is null, never [] — "unavailable" and "empty"
+  // must stay distinguishable so mergeLive() can keep the snapshot rows for the former.
+  const rows = (r) => {
+    if (r?.error) {
+      console.warn("menu live query failed:", r.error?.message ?? r.error);
+      return null;
+    }
+    return r?.data ?? null;
+  };
   return {
-    dishes: dishResult.data ?? [],
-    tags: tagResult.data ?? [],
-    content: contentResult.error ? [] : contentResult.data ?? [],
-    modifiers: modResult.data ?? [],
-    tiers: tierResult.data ?? [],
-    translations: trResult?.error ? [] : trResult?.data ?? [],
+    dishes: rows(dishResult),
+    tags: rows(tagResult),
+    content: rows(contentResult),
+    modifiers: rows(modResult),
+    tiers: rows(tierResult),
+    translations: LANG === DEFAULT_LANG ? [] : rows(trResult),
   };
 }
 
@@ -312,26 +316,29 @@ function buildMenu(raw) {
 // Since the build-time snapshot (MC 46810edc) the guest never waits on it: the
 // page paints from /menu-snapshot.json and this fetch only REVALIDATES, so it gets
 // a short deadline and one attempt — if fresher data does not arrive in time the
-// snapshot simply stays. Only when NO snapshot exists (vite dev, or a deployment
-// predating the snapshot) does the old behaviour apply: 3 attempts x 8 s, then the
-// "menu is temporarily unavailable" state.
+// snapshot simply stays. Live data is merged over the snapshot PER RESOURCE
+// (lib/menuSnapshot.js mergeLive): an errored, empty, truncated or below-contract
+// resource keeps its snapshot rows. Only when NO snapshot exists (vite dev, or a
+// deployment predating the snapshot) does the old behaviour apply: 3 attempts x 8 s,
+// then the "menu is temporarily unavailable" state.
 const REVALIDATE_TIMEOUT_MS = 3000;
 const NO_SNAPSHOT_TIMEOUT_MS = 8000;
 
-/** One bounded live fetch. Rejects on timeout, HTTP error, or invalid/empty data. */
-async function fetchLive(timeoutMs) {
+/** One bounded live fetch -> raw rows (null per failed resource). Rejects on timeout/abort. */
+async function fetchLive(timeoutMs, outer) {
   const ac = new AbortController();
+  const onOuterAbort = () => ac.abort();
+  outer?.addEventListener("abort", onOuterAbort);
   const timer = setTimeout(() => ac.abort(), timeoutMs);
   try {
-    const raw = await fetchRawFromSupabase(ac.signal);
-    const problems = validateRaw(raw);
-    if (problems.length) throw new Error(`live menu rejected: ${problems.join("; ")}`);
-    return raw;
+    return await fetchRawFromSupabase(ac.signal);
   } catch (err) {
+    if (outer?.aborted) throw new Error("superseded");
     if (ac.signal.aborted) throw new Error(`menu fetch timed out after ${timeoutMs}ms`);
     throw err;
   } finally {
     clearTimeout(timer);
+    outer?.removeEventListener("abort", onOuterAbort);
   }
 }
 
@@ -339,19 +346,32 @@ export function useMenu() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // Anything rendered yet (snapshot or live)? Refs, not state: load() is re-entrant
-  // (realtime events in dev) and must see the latest value without re-creating itself.
+  // Refs, not state: load() is re-entrant (realtime events in dev) and must see the
+  // latest values without re-creating itself.
   const haveData = useRef(false);
-  const liveWon = useRef(false);
+  const generation = useRef(0);   // load() calls; an older call's results are ignored
+  const snapRef = useRef(null);   // snapshot.raw narrowed to LANG, once loaded
+  const shownKey = useRef("");    // serialized raw last rendered — skip identical swaps
+  const abortRef = useRef(null);
 
-  const show = useCallback((raw, source) => {
+  // `gen` guards against a stale load() finishing after a newer one started.
+  const show = useCallback((raw, source, kept, gen) => {
+    if (gen !== generation.current) return;
+    const key = JSON.stringify(raw);
+    if (typeof window !== "undefined") {
+      window.__SHISHKA_MENU_SOURCE__ = source;
+      window.__SHISHKA_MENU_KEPT__ = kept; // resources that kept snapshot rows (debug/verification)
+    }
+    if (key === shownKey.current) return; // live answer equals what is on screen: no re-render
+    shownKey.current = key;
     // Title Case is an English rule (lib/text.js) — applied to the English
     // payload BEFORE translations are laid over it, never to other languages.
     const { menu, translations } = buildMenu(raw);
     const localized = localizeMenu(titleCaseMenu(menu), translations);
-    if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = source;
-    // Next load paints this instead of the shipped defaults (see App.jsx).
-    writeCachedContent(LANG, localized.content);
+    // Next load paints this instead of the shipped defaults (see App.jsx). Only when real
+    // site_content rows backed it: a failed/empty live call yields DEFAULT_CONTENT, which
+    // must never overwrite the last good cached copy.
+    if (raw.content.length > 0) writeCachedContent(LANG, localized.content);
     haveData.current = true;
     setData(localized);
     setError(null);
@@ -359,6 +379,12 @@ export function useMenu() {
   }, []);
 
   const load = useCallback(async () => {
+    const gen = ++generation.current;
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    const alive = () => gen === generation.current && !ac.signal.aborted;
+
     if (!haveData.current) setLoading(true);
 
     // No credentials configured — the documented offline development path.
@@ -375,28 +401,41 @@ export function useMenu() {
       return;
     }
 
-    // 1. Snapshot, in parallel with the live request below. Never blocks it and is
-    //    ignored if live data already won the race.
+    // 1. Snapshot, in parallel with the live request below. Never blocks it, and is
+    //    skipped once live data has been shown (shownKey would differ, so guard on source).
+    let liveShown = false;
     const snapshotP = loadSnapshot(import.meta.env.BASE_URL || "/").then((snap) => {
-      if (snap && !liveWon.current) {
-        show({ ...snap.raw, translations: snap.raw.translations[LANG] ?? [] }, "snapshot");
+      if (snap) {
+        snapRef.current = { ...snap.raw, translations: snap.raw.translations[LANG] ?? [] };
+        if (!liveShown && alive()) show(snapRef.current, "snapshot", [], gen);
       }
       return snap;
     });
 
     // 2. Live revalidation. First attempt is short; the snapshot (if any) covers a miss.
+    const tryLive = async (timeoutMs) => {
+      const live = await fetchLive(timeoutMs, ac.signal);
+      // Make sure the snapshot (if any) is known before merging: it is a static file
+      // fetched in parallel, so this is normally already resolved.
+      await snapshotP;
+      if (!alive()) return true; // superseded: someone else owns the screen now
+      const merged = mergeLive(snapRef.current, live, LANG);
+      if (merged.problems.length) throw new Error(`live menu rejected: ${merged.problems.join("; ")}`);
+      liveShown = merged.live;
+      show(merged.raw, merged.live ? "live" : "snapshot", merged.kept, gen);
+      return true;
+    };
+
     let lastErr;
     try {
-      const raw = await fetchLive(REVALIDATE_TIMEOUT_MS);
-      liveWon.current = true;
-      show(raw, "live");
-      return;
+      if (await tryLive(REVALIDATE_TIMEOUT_MS)) return;
     } catch (err) {
       lastErr = err;
     }
+    if (!alive()) return;
 
-    const snap = await snapshotP;
-    if (snap || haveData.current) {
+    await snapshotP;
+    if (snapRef.current || haveData.current) {
       // The snapshot is on screen. Say so quietly; the guest sees a full menu.
       console.warn("menu revalidation failed, keeping the snapshot:", lastErr?.message ?? lastErr);
       setLoading(false);
@@ -408,15 +447,14 @@ export function useMenu() {
     // invented prices for real ones.
     for (let attempt = 2; attempt <= 3; attempt++) {
       await new Promise((r) => setTimeout(r, 600 * (attempt - 1)));
+      if (!alive()) return;
       try {
-        const raw = await fetchLive(NO_SNAPSHOT_TIMEOUT_MS);
-        liveWon.current = true;
-        show(raw, "live");
-        return;
+        if (await tryLive(NO_SNAPSHOT_TIMEOUT_MS)) return;
       } catch (err) {
         lastErr = err;
       }
     }
+    if (!alive()) return;
 
     console.error("Menu fetch failed after 3 attempts:", lastErr);
     if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "error";
@@ -430,7 +468,13 @@ export function useMenu() {
   useEffect(() => {
     load();
 
-    if (!canRealtime) return;
+    // Unmount: abort in-flight requests and invalidate the running load().
+    const stop = () => {
+      generation.current++;
+      abortRef.current?.abort();
+    };
+
+    if (!canRealtime) return stop;
 
     const channel = supabase
       .channel("menu-live")
@@ -439,7 +483,10 @@ export function useMenu() {
       .on("postgres_changes", { event: "*", schema: "public", table: "site_content" }, load)
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      stop();
+      supabase.removeChannel(channel);
+    };
   }, [load]);
 
   return { data, loading, error };

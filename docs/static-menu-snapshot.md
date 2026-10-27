@@ -18,17 +18,36 @@ rendered "The menu is temporarily unavailable" — a DB outage became a site out
    below its `minRows`, a selected column is missing, `menu_public` has a dish without id/name/price
    or duplicate ids. There is no skip flag. (`aeo-prerender.mjs` already fails the same way.)
 3. **Runtime** — `src/hooks/useMenu.js`:
-   - fetches `/menu-snapshot.json` (same origin, static) and paints from it immediately;
-   - in parallel asks Supabase (through the `/sb` proxy) with an `AbortController`, 3 s deadline,
-     one attempt. If valid data arrives it replaces the snapshot; if not, the snapshot stays;
-   - live data is validated by the same `validateRaw()` (`src/lib/menuSnapshot.js`) — an empty or
-     partial answer never replaces a good snapshot;
+   - `index.html` preloads `/menu-snapshot.json`; the hook paints from it immediately;
+   - in parallel it asks Supabase (through the `/sb` proxy) with an `AbortController`, 3 s deadline,
+     one attempt;
+   - the live answer is **merged per resource** (`mergeLive` in `src/lib/menuSnapshot.js`). A live
+     resource replaces its snapshot rows only if it did not error, has at least the contract
+     `minRows` (`MIN_ROWS`, asserted equal to the contract by `snapshot-check`), and is not exactly
+     1000 rows (PostgREST max-rows, i.e. probably truncated). Live dishes must also be valid and at
+     least 50% of the snapshot's count. Everything else keeps the snapshot rows — including
+     `translations[LANG]` and `site_content` (defaults derived from a failed call are never written
+     to the content cache);
+   - a generation counter makes an older `load()` ignore its results; requests are aborted on unmount;
+     an answer identical to what is on screen causes no re-render;
    - "menu is temporarily unavailable" can only appear when there is **no snapshot at all**
-     (vite dev, or a deployment that predates this change); that path keeps the old 3 x 8 s retry.
-   - `window.__SHISHKA_MENU_SOURCE__` is `snapshot` or `live` (was `live`/`mock`/`error`).
-4. **CI** — `.github/workflows/verify.yml` job `snapshot` fetches a snapshot and runs
-   `scripts/snapshot-check.mjs` (non-empty + matches the contract). Existing `contract` job
-   (`contract-check.mjs`, live queries incl. assertions) is unchanged.
+     (vite dev, or a deployment that predates this change); that path keeps the old 3 x 8 s retry and
+     requires live dishes, tags and modifiers.
+   - `window.__SHISHKA_MENU_SOURCE__` is `snapshot` (dishes from the snapshot), `live` (dishes from the
+     live answer), `mock` (no credentials, dev only) or `error` (no snapshot and live failed);
+     `window.__SHISHKA_MENU_KEPT__` lists the resources that kept snapshot rows.
+4. **CI** — the `build` job runs `npm run build` (prebuild = the snapshot gate) and then
+   `node scripts/snapshot-check.mjs dist/menu-snapshot.json` on the shipped artifact (non-empty, every
+   contract resource and selected column present, ru/th/ar translations non-empty, tags/modifiers only
+   for menu_public dishes). The `contract` job (`contract-check.mjs`, live queries incl. assertions)
+   is unchanged.
+5. **Data minimisation** — tags and modifiers are filtered to `menu_public` dish ids before writing
+   (942 -> 121 tag rows). All paged queries use a total `order` so offset pagination is deterministic.
+6. **Single read per build** — `aeo-prerender.mjs` reads `dist/menu-snapshot.json` instead of fetching
+   again (its live fetch remains the fallback for a stand-alone `npm run aeo`).
+7. **Key guard** — the script refuses a key whose JWT role is not `anon` or that starts with
+   `sb_secret_`. It reads `VITE_SUPABASE_ANON_KEY` (what Vercel, `supabase.js` and the prerender use),
+   then `SUPABASE_ANON_KEY` (the name in the contract comment), then the contract's `anonKey`.
 
 ## Trade-off: freshness
 

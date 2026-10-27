@@ -38,6 +38,25 @@ import { deepStripEmoji, titleCase } from "../src/lib/text.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
+
+/*
+  The build-time snapshot (scripts/snapshot-menu.mjs, `prebuild`) is already in dist/
+  by the time this runs. Reading it instead of fetching again means the static pages,
+  the SPA's first paint and the sitemap all come from ONE consistent read of the
+  database, and the build makes a single round of requests. The live fetches below
+  stay as the fallback for `npm run aeo` run on its own, without a snapshot.
+*/
+function readSnapshot() {
+  const f = join(DIST, "menu-snapshot.json");
+  if (!existsSync(f)) return null;
+  try {
+    const snap = JSON.parse(readFileSync(f, "utf8"));
+    return Array.isArray(snap?.raw?.dishes) && snap.raw.dishes.length ? snap : null;
+  } catch {
+    return null;
+  }
+}
+const nullsLast = (v) => (v == null ? Infinity : Number(v));
 const SITE = "https://shishka.health";
 
 /* ---------------------------------------------------------------- identity --
@@ -250,6 +269,7 @@ function hreflangLinks(alternates) {
 /* ------------------------------------------------------------------- fetch */
 
 async function fetchMenu() {
+  const snap = readSnapshot();
   const url = process.env.VITE_SUPABASE_URL || "https://qcqgtcsjoacuktcewpvo.supabase.co";
   const key =
     process.env.VITE_SUPABASE_ANON_KEY ||
@@ -270,17 +290,26 @@ async function fetchMenu() {
     "section_name", "section_sort_order", "category_name", "display_order",
   ].join(",");
 
-  const endpoint =
-    `${url}/rest/v1/menu_public?select=${select}` +
-    "&order=section_sort_order.asc.nullslast,display_order.asc.nullslast";
+  let data;
+  if (snap) {
+    // Same ordering the query below asks PostgREST for.
+    data = [...snap.raw.dishes].sort(
+      (a, b) => nullsLast(a.section_sort_order) - nullsLast(b.section_sort_order) ||
+        nullsLast(a.display_order) - nullsLast(b.display_order),
+    );
+  } else {
+    const endpoint =
+      `${url}/rest/v1/menu_public?select=${select}` +
+      "&order=section_sort_order.asc.nullslast,display_order.asc.nullslast";
 
-  const res = await fetch(endpoint, {
-    headers: { apikey: key, Authorization: `Bearer ${key}` },
-  });
-  if (!res.ok) {
-    throw new Error(`menu_public fetch failed: HTTP ${res.status} ${await res.text()}`);
+    const res = await fetch(endpoint, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+    });
+    if (!res.ok) {
+      throw new Error(`menu_public fetch failed: HTTP ${res.status} ${await res.text()}`);
+    }
+    data = await res.json();
   }
-  const data = await res.json();
 
   // Publish only what a guest can actually order today (CEO decision D1).
   const sellable = (data ?? []).filter((d) => (d.stock_state ?? "in_stock") === "in_stock");
@@ -307,6 +336,12 @@ async function fetchMenu() {
   can never reach a static page — the English is used for that field instead.
 */
 async function fetchTranslations(lang) {
+  const snap = readSnapshot();
+  if (snap?.raw?.translations?.[lang]?.length) {
+    const map = new Map();
+    for (const r of snap.raw.translations[lang]) map.set(`${r.entity}|${r.entity_key}|${r.field}`, r.value);
+    return map;
+  }
   const url = process.env.VITE_SUPABASE_URL || "https://qcqgtcsjoacuktcewpvo.supabase.co";
   const key =
     process.env.VITE_SUPABASE_ANON_KEY ||
