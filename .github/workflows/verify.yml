@@ -10,9 +10,13 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,13 +24,18 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # prebuild fetches the snapshot and fails the build on empty/contract-invalid data;
+      # then check the artifact that actually ships (dist/), not a second fetch.
       - run: npm run build
+      - name: Shipped snapshot is non-empty and matches the contract
+        run: node scripts/snapshot-check.mjs dist/menu-snapshot.json
 
   # The repo rule — "whoever writes to the database is shishka-os" — as an
   # invariant rather than a convention. menu-photo-sync used to be the one
   # exception; it now lives in shishka-os and must not come back.
   boundary:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,6 +46,7 @@ jobs:
 
   contract:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,3 +55,4 @@ jobs:
       # Reads production with the public anon key — no secret required.
       - name: Check the menu contract
         run: node scripts/contract-check.mjs
+

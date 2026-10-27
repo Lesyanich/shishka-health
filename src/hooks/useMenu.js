@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase, hasSupabase, canRealtime } from "../lib/supabase.js";
 import { MOCK_DATA } from "../lib/mockData.js";
 import { DEFAULT_CONTENT, mergeContent, writeCachedContent } from "../lib/content.js";
@@ -8,6 +8,7 @@ import { benefitsForDish } from "../lib/benefits.js";
 import { buildMenuGroups } from "../lib/menuGroups.js";
 import { LANG, DEFAULT_LANG } from "../i18n/index.js";
 import { localizeMenu } from "../i18n/localize.js";
+import { loadSnapshot, mergeLive } from "../lib/menuSnapshot.js";
 
 /*
   Schema reference: Lesyanich/shishka-os
@@ -33,9 +34,34 @@ import { localizeMenu } from "../i18n/localize.js";
        (menu_public is security_invoker, so the nomenclature row RLS still applies.)
 */
 
-async function fetchFromSupabase() {
-  const [dishResult, tagResult, contentResult, modResult, tierResult, trResult] = await Promise.all([
-    supabase
+// Tags and modifiers are asked for ONLY the menu's dishes. The tables hold rows for every
+// nomenclature item (942 tag rows, 121 on the menu) and creep toward PostgREST's 1000-row
+// cap; narrowing keeps the answer small and complete. Ids go in batches so the URL stays
+// short (a uuid is ~38 chars; 100 per request is ~4 KB).
+const ID_BATCH = 100;
+
+async function fetchRawFromSupabase(signal) {
+  // `signal` aborts every request at once (revalidation deadline / unmount, see useMenu).
+  const abortable = (q) => (signal ? q.abortSignal(signal) : q);
+  // Per-resource: a resource that errored is null, never [] — "unavailable" and "empty"
+  // must stay distinguishable so mergeLive() can reject the answer.
+  const rows = (r) => {
+    if (r?.error) {
+      console.warn("menu live query failed:", r.error?.message ?? r.error);
+      return null;
+    }
+    return r?.data ?? null;
+  };
+  const inBatches = async (ids, run) => {
+    const parts = [];
+    for (let i = 0; i < ids.length; i += ID_BATCH) parts.push(run(ids.slice(i, i + ID_BATCH)));
+    const results = await Promise.all(parts);
+    const all = results.map(rows);
+    return all.some((r) => r == null) ? null : all.flat();
+  };
+
+  const [dishResult, contentResult, tierResult, trResult] = await Promise.all([
+    abortable(supabase
       .from("menu_public")
       .select(`
         id, name, product_code,
@@ -49,28 +75,20 @@ async function fetchFromSupabase() {
         section_id, section_name, section_sort_order,
         bundle_min_price
       `)
-      .order("display_order", { ascending: true, nullsFirst: false }),
+      .order("display_order", { ascending: true, nullsFirst: false })),
 
-    supabase
-      .from("nomenclature_tags")
-      .select("nomenclature_id, tags(slug, name, tag_group, color)"),
-
-    supabase
+    abortable(supabase
       .from("site_content")
-      .select("key, data"),
-
-    supabase
-      .from("menu_modifiers")
-      .select("dish_id, group_name, group_sort, group_min_select, group_max_select, option_name, option_emoji, price_delta, is_default, sort_order, calories, protein, carbs, fat"),
+      .select("key, data")),
 
     // Manakish bundle tiers (the "Manakish set of N" sets). Discount escalates
     // with size; the constructor + cards price entirely from this.
-    supabase
+    abortable(supabase
       .from("price_tiers")
       .select("tier_code, label, discount_pct, bundle_manakish_count, bundle_sauce_count, sort_order")
       .not("bundle_dish_code", "is", null)
       .eq("is_active", true)
-      .order("sort_order"),
+      .order("sort_order")),
 
     // Translations for the page language (shishka-os mig 446). The view only
     // returns FRESH rows — a translation whose English source has changed since
@@ -78,13 +96,57 @@ async function fetchFromSupabase() {
     // (possibly wrong-allergen) translation. English needs no request.
     LANG === DEFAULT_LANG
       ? Promise.resolve({ data: [], error: null })
-      : supabase
+      : abortable(supabase
           .from("menu_translations")
           .select("entity, entity_key, field, value")
-          .eq("lang", LANG),
+          .eq("lang", LANG)),
   ]);
 
-  if (dishResult.error) throw dishResult.error;
+  const dishes = rows(dishResult);
+  let tags = null;
+  let modifiers = null;
+  if (dishes?.length) {
+    const ids = dishes.map((d) => d.id);
+    [tags, modifiers] = await Promise.all([
+      inBatches(ids, (chunk) =>
+        abortable(supabase
+          .from("nomenclature_tags")
+          .select("nomenclature_id, tags(slug, name, tag_group, color)")
+          .in("nomenclature_id", chunk))),
+      inBatches(ids, (chunk) =>
+        abortable(supabase
+          .from("menu_modifiers")
+          .select("dish_id, group_name, group_sort, group_min_select, group_max_select, option_name, option_emoji, price_delta, is_default, sort_order, calories, protein, carbs, fat")
+          .in("dish_id", chunk))),
+    ]);
+  }
+
+  // An aborted request (revalidation deadline / unmount) is a failed attempt, not a
+  // partial answer — reject so the caller keeps whatever is on screen.
+  if (signal?.aborted) throw new Error("aborted");
+
+  return {
+    dishes,
+    tags,
+    content: rows(contentResult),
+    modifiers,
+    tiers: rows(tierResult),
+    translations: LANG === DEFAULT_LANG ? [] : rows(trResult),
+  };
+}
+
+/*
+  Raw rows -> the menu the UI renders. Pure and synchronous: the build-time
+  snapshot (scripts/snapshot-menu.mjs) and the live fetch both feed it the same
+  row shapes, so the two paths cannot render differently.
+*/
+function buildMenu(raw) {
+  const dishResult = { data: raw.dishes };
+  const tagResult = { data: raw.tags };
+  const contentResult = { data: raw.content };
+  const modResult = { data: raw.modifiers };
+  const tierResult = { data: raw.tiers };
+  const trResult = { data: raw.translations };
 
   // Build modifier map: dish_id → grouped builder options
   const modMap = new Map();
@@ -246,7 +308,7 @@ async function fetchFromSupabase() {
   const categories = Array.from(catMap.values())
     .sort((a, b) => a.sort_order - b.sort_order);
 
-  const content = mergeContent(contentResult.error ? [] : contentResult.data);
+  const content = mergeContent(contentResult.data);
 
   // EAT / DRINK / SWEET. The ordering lives in site_content.menu_groups (written
   // by shishka-os migration 500) with a same-shaped fallback in the site code,
@@ -254,7 +316,7 @@ async function fetchFromSupabase() {
   const groups = buildMenuGroups(categories, content.menu_groups);
 
   // Manakish bundle tiers ("Manakish set of N"), discount escalates with size.
-  const bundles = (tierResult?.error ? [] : tierResult?.data ?? []).map((t) => ({
+  const bundles = (tierResult.data ?? []).map((t) => ({
     tierCode: t.tier_code,
     label: t.label,
     discountPct: Number(t.discount_pct),
@@ -267,38 +329,86 @@ async function fetchFromSupabase() {
   // boundary where all Supabase menu data is assembled. (See lib/text.js.)
   // Translations are optional: if they fail to load, the menu still renders in
   // English rather than not at all.
-  const translations = trResult?.error ? [] : trResult?.data ?? [];
-  if (trResult?.error) console.warn("menu_translations unavailable, showing English:", trResult.error);
+  const translations = trResult.data ?? [];
 
   return { menu: deepStripEmoji({ dishes, categories, groups, content, bundles }), translations };
 }
 
 // A hung request is the failure mode this site is most exposed to: Russian ISPs
 // throttle the CDN in front of Supabase, and a throttled socket does not reject,
-// it just never answers. Without a deadline the guest sits on the loading
-// skeleton forever, which is the same lie as stale prices in a slower costume.
-// 8s × 3 attempts + backoff ≈ 25s worst case before the guest is told the truth.
-// A healthy load is under 2s, so this only bites when something is genuinely wrong.
-const FETCH_TIMEOUT_MS = 8000;
+// it just never answers.
+//
+// Since the build-time snapshot (MC 46810edc) the guest never waits on it: the
+// page paints from /menu-snapshot.json and this fetch only REVALIDATES, so it gets
+// a short deadline and one attempt — if fresher data does not arrive in time the
+// snapshot simply stays. Live data is merged over the snapshot PER RESOURCE
+// (lib/menuSnapshot.js mergeLive): an errored, empty, truncated or below-contract
+// resource keeps its snapshot rows. Only when NO snapshot exists (vite dev, or a
+// deployment predating the snapshot) does the old behaviour apply: 3 attempts x 8 s,
+// then the "menu is temporarily unavailable" state.
+// 4 s, not 3: the live fetch is now two sequential round trips (dishes, then the tags and
+// modifiers of exactly those dishes). Measured ~0.9 s + ~0.6 s through a cold local proxy.
+const REVALIDATE_TIMEOUT_MS = 4000;
+const NO_SNAPSHOT_TIMEOUT_MS = 8000;
 
-function withTimeout(promise, ms) {
-  let timer;
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      timer = setTimeout(() => reject(new Error(`menu fetch timed out after ${ms}ms`)), ms);
-    }),
-  ]).finally(() => clearTimeout(timer));
+/** One bounded live fetch -> raw rows (null per failed resource). Rejects on timeout/abort. */
+async function fetchLive(timeoutMs, outer) {
+  const ac = new AbortController();
+  const onOuterAbort = () => ac.abort();
+  outer?.addEventListener("abort", onOuterAbort);
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    return await fetchRawFromSupabase(ac.signal);
+  } catch (err) {
+    if (outer?.aborted) throw new Error("superseded");
+    if (ac.signal.aborted) throw new Error(`menu fetch timed out after ${timeoutMs}ms`);
+    throw err;
+  } finally {
+    clearTimeout(timer);
+    outer?.removeEventListener("abort", onOuterAbort);
+  }
 }
 
 export function useMenu() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Refs, not state: load() is re-entrant (realtime events in dev) and must see the
+  // latest values without re-creating itself.
+  const haveData = useRef(false);
+  const generation = useRef(0);   // load() calls; an older call's results are ignored
+  const snapRef = useRef(null);   // snapshot.raw narrowed to LANG, once loaded
+  const abortRef = useRef(null);
+
+  // `gen` guards against a stale load() finishing after a newer one started.
+  const show = useCallback((raw, source, kept, gen) => {
+    if (gen !== generation.current) return;
+    if (typeof window !== "undefined") {
+      window.__SHISHKA_MENU_SOURCE__ = source;
+      window.__SHISHKA_MENU_KEPT__ = kept; // resources that kept snapshot rows (debug/verification)
+    }
+    // Title Case is an English rule (lib/text.js) — applied to the English
+    // payload BEFORE translations are laid over it, never to other languages.
+    const { menu, translations } = buildMenu(raw);
+    const localized = localizeMenu(titleCaseMenu(menu), translations);
+    // Next load paints this instead of the shipped defaults (see App.jsx). Only when real
+    // site_content rows backed it: a failed/empty live call yields DEFAULT_CONTENT, which
+    // must never overwrite the last good cached copy.
+    if (raw.content.length > 0) writeCachedContent(LANG, localized.content);
+    haveData.current = true;
+    setData(localized);
+    setError(null);
+    setLoading(false);
+  }, []);
 
   const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    const gen = ++generation.current;
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    const alive = () => gen === generation.current && !ac.signal.aborted;
+
+    if (!haveData.current) setLoading(true);
 
     // No credentials configured — the documented offline development path.
     // This is the ONLY branch allowed to render MOCK_DATA: in production those
@@ -314,39 +424,90 @@ export function useMenu() {
       return;
     }
 
-    // Russian ISPs throttle the CDN in front of Supabase, so one failed fetch is
-    // expected noise rather than a broken contract. Retry before giving up —
-    // but never substitute invented prices for real ones.
+    // 1. Snapshot, in parallel with the live request below. Never blocks it. It paints only
+    //    when nothing is on screen yet (a dev realtime reload must not replace live data
+    //    with the older snapshot) and never rejects: a throw while building the snapshot
+    //    menu must not leave the page on the loading skeleton forever — it degrades to the
+    //    no-snapshot path (live retries, then the honest error state).
+    const snapshotP = loadSnapshot(import.meta.env.BASE_URL || "/")
+      .then((snap) => {
+        if (!snap) return null;
+        // Built while the database was unreachable (scripts/snapshot-menu.mjs fallback).
+        // Still painted; live revalidation below runs as usual.
+        if (snap.stale) console.warn(`menu snapshot is STALE (generated ${snap.generatedAt}); revalidating live`);
+        const narrowed = { ...snap.raw, translations: snap.raw.translations[LANG] ?? [] };
+        if (!haveData.current && alive()) show(narrowed, "snapshot", [], gen);
+        snapRef.current = narrowed; // only after it rendered without throwing
+        return snap;
+      })
+      .catch((err) => {
+        console.error("menu snapshot unusable:", err);
+        snapRef.current = null;
+        return null;
+      });
+
+    // 2. Live revalidation. First attempt is short; the snapshot (if any) covers a miss.
+    const tryLive = async (timeoutMs) => {
+      const live = await fetchLive(timeoutMs, ac.signal);
+      // Make sure the snapshot (if any) is known before merging: it is a static file
+      // fetched in parallel, so this is normally already resolved.
+      await snapshotP;
+      if (!alive()) return true; // superseded: someone else owns the screen now
+      const merged = mergeLive(snapRef.current, live, LANG);
+      if (merged.problems.length) throw new Error(`live menu rejected: ${merged.problems.join("; ")}`);
+      show(merged.raw, merged.live ? "live" : "snapshot", merged.kept, gen);
+      return true;
+    };
+
     let lastErr;
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      if (await tryLive(REVALIDATE_TIMEOUT_MS)) return;
+    } catch (err) {
+      lastErr = err;
+    }
+    if (!alive()) return;
+
+    await snapshotP;
+    if (snapRef.current || haveData.current) {
+      // The snapshot is on screen. Say so quietly; the guest sees a full menu.
+      console.warn("menu revalidation failed, keeping the snapshot:", lastErr?.message ?? lastErr);
+      setLoading(false);
+      return;
+    }
+
+    // No snapshot: Russian ISPs throttle the CDN in front of Supabase, so one failed
+    // fetch is expected noise. Retry before giving up — but never substitute
+    // invented prices for real ones.
+    for (let attempt = 2; attempt <= 3; attempt++) {
+      await new Promise((r) => setTimeout(r, 600 * (attempt - 1)));
+      if (!alive()) return;
       try {
-        const result = await withTimeout(fetchFromSupabase(), FETCH_TIMEOUT_MS);
-        if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "live";
-        // Title Case is an English rule (lib/text.js) — applied to the English
-        // payload BEFORE translations are laid over it, never to other languages.
-        const localized = localizeMenu(titleCaseMenu(result.menu), result.translations);
-        // Next load paints this instead of the shipped defaults (see App.jsx).
-        writeCachedContent(LANG, localized.content);
-        setData(localized);
-        setLoading(false);
-        return;
+        if (await tryLive(NO_SNAPSHOT_TIMEOUT_MS)) return;
       } catch (err) {
         lastErr = err;
-        if (attempt < 3) await new Promise((r) => setTimeout(r, 600 * attempt));
       }
     }
+    if (!alive()) return;
 
     console.error("Menu fetch failed after 3 attempts:", lastErr);
     if (typeof window !== "undefined") window.__SHISHKA_MENU_SOURCE__ = "error";
-    setData(null);
-    setError(lastErr);
+    if (!haveData.current) {
+      setData(null);
+      setError(lastErr);
+    }
     setLoading(false);
-  }, []);
+  }, [show]);
 
   useEffect(() => {
     load();
 
-    if (!canRealtime) return;
+    // Unmount: abort in-flight requests and invalidate the running load().
+    const stop = () => {
+      generation.current++;
+      abortRef.current?.abort();
+    };
+
+    if (!canRealtime) return stop;
 
     const channel = supabase
       .channel("menu-live")
@@ -355,7 +516,10 @@ export function useMenu() {
       .on("postgres_changes", { event: "*", schema: "public", table: "site_content" }, load)
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      stop();
+      supabase.removeChannel(channel);
+    };
   }, [load]);
 
   return { data, loading, error };
