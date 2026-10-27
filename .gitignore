@@ -11,3 +11,6 @@ dist
 .claude/.session-id
 # Supabase CLI scratch state (project link, temp build dirs)
 supabase/.temp/
+
+# Build-time menu snapshot (scripts/snapshot-menu.mjs) — generated, never committed
+public/menu-snapshot.json

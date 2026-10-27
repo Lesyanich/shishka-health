@@ -45,3 +45,19 @@ jobs:
       # Reads production with the public anon key — no secret required.
       - name: Check the menu contract
         run: node scripts/contract-check.mjs
+
+  # The build already refuses to run without a valid snapshot (prebuild). This job
+  # makes that gate visible and checks the produced file explicitly: non-empty,
+  # every contracts/menu-contract.json resource present, minRows met, selected
+  # columns present. See docs/static-menu-snapshot.md.
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch the menu snapshot (anon key, read-only)
+        run: node scripts/snapshot-menu.mjs
+      - name: Snapshot is non-empty and matches the contract
+        run: node scripts/snapshot-check.mjs

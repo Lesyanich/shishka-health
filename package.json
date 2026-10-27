@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/snapshot-menu.mjs",
     "build": "vite build && node scripts/aeo-prerender.mjs",
     "aeo": "node scripts/aeo-prerender.mjs",
     "preview": "vite preview",
     "ds:check": "node design-system/check-coverage.mjs",
     "contract:check": "node scripts/contract-check.mjs",
+    "snapshot": "node scripts/snapshot-menu.mjs",
+    "snapshot:check": "node scripts/snapshot-check.mjs",
     "boundary:check": "node scripts/no-writes.mjs"
   },
   "dependencies": {
