@@ -53,6 +53,28 @@ rendered "The menu is temporarily unavailable" — a DB outage became a site out
    `sb_secret_`. It reads `VITE_SUPABASE_ANON_KEY` (what Vercel, `supabase.js` and the prerender use),
    then `SUPABASE_ANON_KEY` (the name in the contract comment), then the contract's `anonKey`.
 
+## Build-time fallback to the last production snapshot (CEO-approved)
+
+If the database is **unreachable at build time**, `prebuild` ships the last good production snapshot
+instead of failing, so code-only changes can still deploy during a DB outage. Rules
+(`scripts/snapshot-menu.mjs`):
+
+- Only when the fetch fails after its 3 attempts for **network error, timeout or HTTP 5xx**. A 4xx
+  (schema/auth), an invalid anon key, a contract mismatch, or invalid/empty data from a reachable
+  database still **fail the build** — no fallback.
+- It downloads `https://shishka.health/menu-snapshot.json` (override: `SNAPSHOT_FALLBACK_URL`, used for
+  tests), runs `validateSnapshot` + the contract check on it, and **refuses if `generatedAt` is older
+  than 48 h** (`SNAPSHOT_FALLBACK_MAX_AGE_HOURS`, default 48). A missing/invalid fallback fails the build
+  as before.
+- The file is written with `stale: true` and `staleSince`, and its **original `generatedAt` is never
+  refreshed**, so a chain of fallbacks cannot extend its life: after 48 h the build fails again.
+- The build log carries a loud banner plus a GitHub-style `::warning title=Stale menu snapshot::`
+  line. Look for `STALE MENU SNAPSHOT` in the Vercel build log.
+- Runtime: a `stale` snapshot is painted and logged (`menu snapshot is STALE`), and live revalidation
+  runs as usual.
+- The very first production deploy of this feature has no `/menu-snapshot.json` to fall back to (404 ->
+  build fails); the fallback exists from the second successful deploy on.
+
 ## Trade-off: freshness
 
 A price/photo/availability change is **not visible on the site until the next deploy** — except for

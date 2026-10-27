@@ -432,6 +432,9 @@ export function useMenu() {
     const snapshotP = loadSnapshot(import.meta.env.BASE_URL || "/")
       .then((snap) => {
         if (!snap) return null;
+        // Built while the database was unreachable (scripts/snapshot-menu.mjs fallback).
+        // Still painted; live revalidation below runs as usual.
+        if (snap.stale) console.warn(`menu snapshot is STALE (generated ${snap.generatedAt}); revalidating live`);
         const narrowed = { ...snap.raw, translations: snap.raw.translations[LANG] ?? [] };
         if (!haveData.current && alive()) show(narrowed, "snapshot", [], gen);
         snapRef.current = narrowed; // only after it rendered without throwing

@@ -81,6 +81,11 @@ async function getPage(path) {
     }
     if (attempt < ATTEMPTS) await new Promise((r) => setTimeout(r, 800 * attempt));
   }
+  // Only "the database could not be reached" qualifies for the stale fallback: network
+  // errors, timeouts and HTTP 5xx. A 4xx (schema/auth answer) or unparseable body is a real
+  // finding about a reachable database and must fail the build.
+  const status = Number(/^HTTP (\d{3})/.exec(String(last?.message))?.[1]);
+  last.transient = !(status >= 400 && status < 500) && !(last instanceof SyntaxError);
   throw last;
 }
 
@@ -104,12 +109,55 @@ async function getAll(resource, queryOverride) {
   }
 }
 
-async function main() {
-  // A stale file from an earlier run must never be mistaken for this run's output.
-  rmSync(OUT, { force: true });
+/* ------------------------------------------------------------ stale fallback */
 
-  assertAnonKey(KEY);
+// When the database is UNREACHABLE at build time (network / timeout / 5xx — never a 4xx,
+// a contract mismatch, a bad key, or invalid data from a reachable database), ship the last
+// good production snapshot instead of failing the build. It is revalidated, age-capped and
+// marked stale:true with its ORIGINAL generatedAt, so repeated fallbacks cannot extend its
+// life: after FALLBACK_MAX_AGE_HOURS the build fails again and Vercel keeps the old deploy.
+const FALLBACK_URL = process.env.SNAPSHOT_FALLBACK_URL || "https://shishka.health/menu-snapshot.json";
+const FALLBACK_MAX_AGE_HOURS = Number(process.env.SNAPSHOT_FALLBACK_MAX_AGE_HOURS || 48);
 
+async function fetchFallback(cause) {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
+  let snap;
+  try {
+    const res = await fetch(FALLBACK_URL, { signal: ac.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    snap = await res.json();
+  } catch (err) {
+    throw new Error(`database unreachable (${cause.message}) and the fallback snapshot ${FALLBACK_URL} could not be fetched: ${err.message}`);
+  } finally {
+    clearTimeout(timer);
+  }
+  const problems = [...validateSnapshot(snap), ...checkSnapshotAgainstContract(snap, contract)];
+  if (problems.length) {
+    throw new Error(`database unreachable (${cause.message}) and the fallback snapshot is invalid: ${problems.join("; ")}`);
+  }
+  const ageH = (Date.now() - Date.parse(snap.generatedAt)) / 3.6e6;
+  if (!(ageH <= FALLBACK_MAX_AGE_HOURS)) {
+    throw new Error(
+      `database unreachable (${cause.message}) and the fallback snapshot is ${ageH.toFixed(1)} h old ` +
+        `(generatedAt ${snap.generatedAt}); the limit is ${FALLBACK_MAX_AGE_HOURS} h`,
+    );
+  }
+  // generatedAt is deliberately NOT touched. A snapshot that was itself a fallback keeps
+  // its original date, so a chain of fallbacks still hits the age cap.
+  return { snap: { ...snap, stale: true, staleSince: snap.staleSince ?? new Date().toISOString() }, ageH, cause };
+}
+
+function banner(f) {
+  const msg =
+    `STALE MENU SNAPSHOT: Supabase was unreachable at build time (${f.cause.message}); shipping the last ` +
+    `production snapshot generated ${f.snap.generatedAt} (${f.ageH.toFixed(1)} h old, limit ${FALLBACK_MAX_AGE_HOURS} h). ` +
+    `Prices/availability may be out of date. Re-run the build once the database is back.`;
+  console.warn("\n" + "!".repeat(78) + `\n[snapshot] ${msg}\n` + "!".repeat(78) + "\n");
+  console.warn(`::warning title=Stale menu snapshot::${msg}`);
+}
+
+async function fetchFresh() {
   const [dishes, allTags, content, allModifiers, tiers] = await Promise.all([
     getAll("menu_public"),
     getAll("nomenclature_tags"),
@@ -134,18 +182,42 @@ async function main() {
 
   const problems = [...validateSnapshot(snap), ...checkSnapshotAgainstContract(snap, contract)];
   if (problems.length) {
+    // A reachable database that answers with invalid data is NOT an outage: no fallback.
     console.error("[snapshot] REFUSING to write a snapshot that breaks the contract:");
     for (const p of problems) console.error(`  - ${p}`);
     process.exit(1);
   }
+  return {
+    snap,
+    note: `tags ${allTags.length}->${tags.length}, modifiers ${allModifiers.length}->${modifiers.length}`,
+  };
+}
+
+async function main() {
+  // A stale file from an earlier run must never be mistaken for this run's output.
+  rmSync(OUT, { force: true });
+
+  assertAnonKey(KEY);
+
+  let snap, note = "";
+  try {
+    ({ snap, note } = await fetchFresh());
+  } catch (err) {
+    if (!err.transient) throw err; // 4xx, bad data, bad key: fail the build
+    const f = await fetchFallback(err);
+    snap = f.snap;
+    note = "STALE FALLBACK";
+    banner(f);
+  }
 
   mkdirSync(dirname(OUT), { recursive: true });
   writeFileSync(OUT, JSON.stringify(snap));
+  const r = snap.raw;
   const kb = (JSON.stringify(snap).length / 1024).toFixed(0);
   console.log(
-    `[snapshot] ${OUT.replace(process.cwd() + "/", "")} — ${dishes.length} dishes, ${tags.length} tags, ` +
-      `${content.length} content rows, ${modifiers.length} modifier rows, ${tiers.length} tiers, ` +
-      `translations ${SNAPSHOT_LANGS.map((l) => `${l}:${translations[l].length}`).join(" ")} (${kb} KB; tags ${allTags.length}->${tags.length}, modifiers ${allModifiers.length}->${modifiers.length})`,
+    `[snapshot] ${OUT.replace(process.cwd() + "/", "")} — ${r.dishes.length} dishes, ${r.tags.length} tags, ` +
+      `${r.content.length} content rows, ${r.modifiers.length} modifier rows, ${r.tiers.length} tiers, ` +
+      `translations ${SNAPSHOT_LANGS.map((l) => `${l}:${r.translations[l].length}`).join(" ")} (${kb} KB; ${note})`,
   );
 }
 
