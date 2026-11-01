@@ -17,6 +17,10 @@
 // that isn't in that list.
 const WIDTHS = [96, 128, 256, 384, 640, 828, 1080, 1200, 1920];
 
+// Quality for dish photos in the menu card and the dish dialog. Raised from the default 75 after a
+// live test (2026-11-01, MC 6e539e98): ~+2.5–3 dB PSNR, visibly sharper; first screen ~311 → 439 KB.
+export const DISH_PHOTO_QUALITY = 85;
+
 const ALLOWED_HOSTS = new Set([
   "qcqgtcsjoacuktcewpvo.supabase.co", // Supabase Storage (behind Cloudflare)
   "d8j0ntlcm91z4.cloudfront.net", // legacy CloudFront-hosted render

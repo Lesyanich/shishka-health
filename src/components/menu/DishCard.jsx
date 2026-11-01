@@ -4,7 +4,7 @@ import { Badge } from "../primitives/Badge.jsx";
 import { StarIcon, PlusIcon, CheckIcon } from "../Icons.jsx";
 import { PriceSeal } from "./PriceSeal.jsx";
 import { KcalSeal } from "./KcalSeal.jsx";
-import { optimizedSrc } from "../../lib/img.js";
+import { DISH_PHOTO_QUALITY, optimizedSrc } from "../../lib/img.js";
 import { t, unit } from "../../i18n/index.js";
 
 /*
@@ -121,7 +121,7 @@ function DishCardNext({
         {showImg ? (
           <img
             className="shk-dish__img"
-            src={optimizedSrc(image, 640)}
+            src={optimizedSrc(image, 640, DISH_PHOTO_QUALITY)}
             alt={name}
             loading="lazy"
             onError={() => setImgOk(false)}
@@ -270,7 +270,7 @@ function DishCardLegacy({
           <>
             <img
               className="shk-card__img"
-              src={optimizedSrc(image, 640)}
+              src={optimizedSrc(image, 640, DISH_PHOTO_QUALITY)}
               alt={name}
               loading="lazy"
               onError={() => setImgOk(false)}
