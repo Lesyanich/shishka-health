@@ -160,12 +160,9 @@ export default function App() {
   }, [bySlug]);
 
   /*
-    A `?dish=` link arriving cold, once the menu has loaded.
-
-    On desktop there is no dish dialog at all (§4.5) — the full card already
-    shows the description, the macros and the weight inline — so
-    the parameter is dropped rather than honoured by a sheet that exists nowhere
-    else on that breakpoint.
+    A `?dish=` link arriving cold, once the menu has loaded. Honoured on every
+    breakpoint: mobile shows it as the bottom sheet, desktop as the centred
+    dialog. An unknown slug is dropped from the URL.
   */
   const [landed, setLanded] = useState(false);
   useEffect(() => {
@@ -173,25 +170,20 @@ export default function App() {
     setLanded(true);
     const want = new URL(window.location.href).searchParams.get("dish");
     if (!want) return;
-    const dish = !wide && bySlug.get(want);
+    const dish = bySlug.get(want);
     if (dish) setSelected(dish);
     else history.replaceState(null, "", urlFor(null));
-  }, [dishes.length, bySlug, wide, landed, urlFor]);
-
-  // Leaving the breakpoint where the sheet exists must not leave it open.
-  useEffect(() => {
-    if (wide && selected) closeDish();
-  }, [wide, selected, closeDish]);
+  }, [dishes.length, bySlug, landed, urlFor]);
 
   /*
     Quick-add straight from the card. A dish that REQUIRES a choice (a modifier
-    group with minSelect > 0) has no single price to add, so it opens instead —
-    and on desktop, where nothing opens, it is simply not addable from the card.
+    group with minSelect > 0) has no single price to add, so it opens instead,
+    on every breakpoint — the guest makes the choice in the dialog.
   */
   const quickAdd = (dish) => {
     if (!dish || dish.comingSoon || dish.price == null) return;
     if (dish.modifierGroups?.some((g) => (g.minSelect ?? 0) > 0)) {
-      if (!wide) openDish(dish);
+      openDish(dish);
       return;
     }
     cart.addDish(dish);
@@ -245,7 +237,7 @@ export default function App() {
 
       <DishDialog
         open={!!selected}
-        sheet
+        sheet={!wide}
         dish={selected}
         onClose={closeDish}
         onShare={selected ? () => handleShare(selected) : undefined}

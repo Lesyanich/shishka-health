@@ -39,7 +39,7 @@ fold shows food, prices, hours or address, and the floating "Order" button opens
 | Desktop | Menu (first screen) | Sticky **left** nav with scroll-spy, 3-column full cards, sticky cart | `D-category.dc.html` |
 
 One model, two placements of the nav: a rail on top under 1024 px, a column on the left above it.
-Desktop has no dish pop-up; mobile keeps one, because its cards cannot show everything inline.
+~~Desktop has no dish pop-up.~~ **Superseded 2026-11-07 (CEO):** desktop opens the dish as a centred dialog, mobile as a sheet. The desktop card shows facts inline, but ingredients, full nutrition and modifiers (coffee boosters) exist only in the dialog.
 
 ## 2. Menu structure
 
@@ -172,7 +172,7 @@ content max 1440 px, centred.
    row of the same chips; the left nav and the sticky cart are unchanged.
    Section: H2 40 px, `from ฿…`, subcategory tabs, then a 3-column grid
    (gap 20 px, row gap 36 px). 64 px between sections. First section starts right under the header.
-5. Dish card shows everything inline, no pop-up: photo with kcal seal, name + price, description,
+5. Dish card shows facts inline (the name also opens the dialog — see the 2026-11-07 note above): photo with kcal seal, name + price, description,
    3 macro tiles, weight + allergens, Add button.
 6. Right column is sticky: Your order, and under it Visit us (hours, address, Get directions).
 7. DRINK and dips on desktop: 4-column grid with a 1-line description. Open question: do they need

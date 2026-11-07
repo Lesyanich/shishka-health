@@ -114,9 +114,17 @@ DO NOT switch to Playfair/Karla (the skill's restaurant default) — off-brand h
   scroller so the pinned Add bar stays put, and it closes by swipe-down and
   browser Back as well — it carries its own `?dish=<slug>` URL. The swipe only
   arms at `scrollTop === 0`, so reading the sheet never dismisses it.
-- **Desktop (≥1024px) opens no dish dialog at all** (SPEC §4.5). The `grid-full`
-  card is a document, not a control: description, macros, weight and allergens
-  are inline, and only Add is interactive. Do not add an opener back to it.
+- **Desktop (≥1024px) opens the dish as a centred dialog** (`DishDialog` without
+  `sheet`). The `grid-full` card shows description, macros, weight and allergens
+  inline, but the ingredients, full nutrition and every modifier (coffee boosters,
+  milk) exist only in the dialog — so the name is the open control on every
+  breakpoint, and a dish with a required choice opens instead of quick-adding.
+  Never ship a breakpoint where a dish cannot be opened. (Reverses the old
+  SPEC §4.5 "no dialog on desktop" — CEO, 2026-11-07: desktop guests could not
+  see the composition or choose boosters.)
+- The list-row "+" sits at the END of the row, never inside the 76px photo box:
+  that box is `overflow:hidden`, and a "+" inside it was clipped whenever a photo
+  filled it.
 
 ### Tabs (`CategoryTabs`)
 - `role="tablist"/tab"` + `aria-selected` (✓).

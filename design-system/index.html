@@ -455,7 +455,7 @@ tabular-nums but NOT .shk-data: the brand sets the seal in the sans display face
     <section class="ds-section" id="dish">
       <div class="ds-h">Dish Card — redesign variants <span style="font-size:var(--text-sm);color:var(--accent)">menu redesign</span></div>
       <p class="ds-lead">Three variants replacing the cut-out tile above. Photo sits <code>contain</code> on a <code>--surface-2</code> box (plated dishes shot square — <code>cover</code> would crop the plate). <strong>Not mounted yet:</strong> PR 3 and PR 4 switch App.jsx over, and the legacy tile is deleted then.</p>
-      <p class="ds-lead"><strong>A11y — what changed.</strong> The legacy tile is a <code>&lt;div role="button"&gt;</code> with the price-seal <code>&lt;button&gt;</code> nested inside it: a control inside a control. These split them. The dish name is a real <code>&lt;button&gt;</code> whose <code>::after</code> is stretched across the card, so the photo is in the hit area without nesting, and "+" is a sibling layered above it. Two tab stops, no nesting. Desktop has no dish dialog at all, so <code>grid-full</code> has no open target — only Add is interactive.</p>
+      <p class="ds-lead"><strong>A11y — what changed.</strong> The legacy tile is a <code>&lt;div role="button"&gt;</code> with the price-seal <code>&lt;button&gt;</code> nested inside it: a control inside a control. These split them. The dish name is a real <code>&lt;button&gt;</code> whose <code>::after</code> is stretched across the card, so the photo is in the hit area without nesting, and "+" is a sibling layered above it. Two tab stops, no nesting. Every variant, <code>grid-full</code> included, opens the dish dialog from the name; Add is layered above the stretched hit area.</p>
 
       <div class="ds-sub">grid-compact — mobile 2-column grid</div>
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;max-width:390px">
@@ -502,7 +502,7 @@ tabular-nums but NOT .shk-data: the brand sets the seal in the sans display face
         </article>
       </div>
 
-      <div class="ds-sub">grid-full — desktop, everything inline, no dialog</div>
+      <div class="ds-sub">grid-full — desktop, facts inline, the name opens the dialog</div>
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:620px">
         <article class="shk-dish shk-dish--grid-full">
           <div class="shk-dish__media">
@@ -702,7 +702,7 @@ The sheet has MASTER's whole modal contract (hooks/useModal.js): focus in on ope
 The slug comes from the ENGLISH section name, so #wraps is the same anchor on /ru, /th and /ar — not a UUID, and not a translated word.</div>
 
       <div class="ds-sub">dish sheet — pinned bar with the quantity stepper (§3)</div>
-      <p class="ds-lead"><code>&lt;DishDialog sheet /&gt;</code> is the mobile shape of the dialog documented under <a href="#detail">Dish detail</a>: <code>shk-dlg--sheet</code> sits at <code>100dvh − 56px</code>, scrolls itself (so the bar below stays put), closes by swipe-down, ✕, scrim tap, Escape <em>and</em> browser Back — it has its own <code>?dish=&lt;slug&gt;</code> URL. Desktop passes no <code>sheet</code> and opens no dialog at all (§4.5): the <code>grid-full</code> card already carries the description, macros, weight and allergens.</p>
+      <p class="ds-lead"><code>&lt;DishDialog sheet /&gt;</code> is the mobile shape of the dialog documented under <a href="#detail">Dish detail</a>: <code>shk-dlg--sheet</code> sits at <code>100dvh − 56px</code>, scrolls itself (so the bar below stays put), closes by swipe-down, ✕, scrim tap, Escape <em>and</em> browser Back — it has its own <code>?dish=&lt;slug&gt;</code> URL. Desktop passes no <code>sheet</code> and gets the centred dialog: the <code>grid-full</code> card carries the description, macros, weight and allergens, but ingredients, full nutrition and modifiers live only in the dialog.</p>
       <div style="max-width:390px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--radius-md);overflow:hidden">
         <div class="shk-dlg__bar" style="position:static">
           <div class="shk-dlg__step" role="group" aria-label="Quantity">
