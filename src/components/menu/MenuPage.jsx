@@ -171,11 +171,12 @@ export function MenuPage({ data, sections = [], resultsTick = 0, loading, error,
         domId={idFor.get(s.id)}
         wide={wide}
         addedIds={addedIds}
-        /* Desktop has NO dish pop-up (§4.5): the full card shows everything
-           inline, so there is nothing for a dialog to add. Passing no opener is
-           what makes DishCard render the name as plain text instead of a
-           control that would open nothing. */
-        onOpen={wide ? undefined : onOpenDish}
+        /* Every breakpoint opens the dish. §4.5 once said desktop needs no
+           dialog because the full card shows everything inline — it does not:
+           the ingredients, the full nutrition and every modifier (coffee
+           boosters, milk) live only in the dialog, so desktop guests could
+           neither read them nor pick one (CEO, 2026-11-07). */
+        onOpen={onOpenDish}
         onQuickAdd={onQuickAdd}
       />
     </div>

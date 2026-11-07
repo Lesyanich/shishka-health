@@ -16,12 +16,13 @@ import { t, unit } from "../../i18n/index.js";
 
   Redesign variants (spec §5, the `.shk-dish` family):
     grid-compact  mobile 2-col grid — photo, kcal seal, name, price, round "+"
-    grid-full     desktop 3-col     — everything inline: description, macro
-                  tiles, weight/allergens, a labelled Add button, no dialog
-    list-row      drinks and dips   — 76px photo left, name and price right
+    grid-full     desktop 3-col     — description, macro tiles, weight/allergens
+                  inline, a labelled Add button; the name opens the dish dialog
+    list-row      drinks and dips   — 76px photo left, name and price, "+" right
 
-  `grid-full` has no open target on purpose: desktop has no dish pop-up at all
-  (spec §4), so the card is a document, not a control. Only Add is interactive.
+  Every variant opens the dish dialog. `grid-full` used to be a document with
+  no open target (old spec §4.5), but ingredients, full nutrition and modifiers
+  live only in the dialog, so desktop guests could not see or choose them.
 
   A11y. The legacy tile is a <div role="button"> with the PriceSeal <button>
   nested inside it — a control inside a control, which is why MASTER's "MUST
@@ -83,7 +84,8 @@ function DishCardNext({
   // Only ORDERING is gated for a dish you cannot buy today; reading about it
   // is not (same call the legacy tile makes, see its comment).
   const addable = !comingSoon && !soldOut && typeof onQuickAdd === "function";
-  const openable = !full && typeof onClick === "function";
+  const openable = typeof onClick === "function";
+  const list = variant === "list-row";
 
   const cls = [
     "shk-dish",
@@ -137,10 +139,10 @@ function DishCardNext({
         {highProtein && <span className="shk-dish__hp">{t("dish.highProtein")}</span>}
         {soldOut && <span className="shk-dish__soldout">{t("dish.soldOut")}</span>}
 
-        {/* The round "+" rides on the photo (compact and list only). Sibling of
-            the open button, never its child, and layered above the stretched
-            hit area so it stays independently clickable. */}
-        {!full && addable && addButton("fab")}
+        {/* The round "+" rides on the photo (compact only). Sibling of the open
+            button, never its child, and layered above the stretched hit area so
+            it stays independently clickable. */}
+        {!full && !list && addable && addButton("fab")}
       </div>
 
       <div className="shk-dish__head">
@@ -165,6 +167,11 @@ function DishCardNext({
           </span>
         )}
       </div>
+
+      {/* list-row: "+" at the end of the row. It used to sit inside the 76px
+          photo box, whose overflow:hidden clipped it whenever a photo filled
+          the box — so only dishes WITHOUT a photo showed their "+". */}
+      {list && addable && addButton("fab")}
 
       {full && description && <p className="shk-dish__desc">{description}</p>}
 

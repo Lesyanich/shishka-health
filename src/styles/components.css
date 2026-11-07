@@ -2022,6 +2022,10 @@ button.shk-seal:active { transform: scale(0.93); }
   flex-shrink: 0;
 }
 .shk-dish__add--pill svg { width: 16px; height: 16px; }
+.shk-dish__add--pill { position: relative; z-index: 2; }
+@media (hover: hover) {
+  .shk-dish__open:hover { text-decoration: underline; text-underline-offset: 3px; }
+}
 
 /* list-row — drinks and dips: people pick those by name and price, so the
    photo shrinks to a 76px thumbnail and the row reads as a list (spec §3.5). */
@@ -2036,10 +2040,13 @@ button.shk-seal:active { transform: scale(0.93); }
 /* Stays 44px: the row is tighter than the grid card, but the tap target is a
    floor, not a style choice (MASTER, spec §5). Only the shadow goes. */
 .shk-dish--list-row .shk-dish__add--fab {
-  position: static; width: 44px; height: 44px; box-shadow: none;
+  position: relative; right: auto; bottom: auto; flex: none;
+  width: 44px; height: 44px; box-shadow: none;
 }
 
-/* grid-full — the desktop card. Everything inline, no dialog. */
+/* grid-full — the desktop card. Facts inline; the name opens the dialog
+   (ingredients, full nutrition, modifiers). The pill sits above the
+   stretched open target so Add stays its own click. */
 .shk-dish--grid-full { --dish-media-h: 210px; gap: 6px; }
 .shk-dish--grid-full .shk-dish__media { border-radius: 26px; }
 .shk-dish--grid-full .shk-dish__seal { right: 10px; top: 10px; }
