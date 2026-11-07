@@ -48,6 +48,7 @@ export default {
 
   "dlg.share": "شارك الطبق",
   "dlg.close": "إغلاق",
+  "dlg.photo": "الصورة {n} من {total}",
   "dlg.addToOrder": "أضف إلى الطلب",
   "dlg.pickRequired": "اختر الخيارات المطلوبة",
   "dlg.benefits": "الفوائد",

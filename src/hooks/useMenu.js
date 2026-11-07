@@ -274,10 +274,12 @@ function buildMenu(raw) {
       // a "from" floor, so suppress it there.
       priceFrom: priceDefault != null ? null : dishFloor(price, modifierGroups),
       // Card (main page) prefers the customer override photo; the dialog keeps
-      // the base image_url. They differ only where a dish has a dedicated
-      // main-page shot (e.g. spring rolls); elsewhere both resolve to the same.
+      // the base image_url. Where the two differ (wraps: the card shows the
+      // wrap opened up, image_url is the rolled wrap) the dialog shows BOTH as
+      // a swipeable gallery, card photo first — see `gallery` below.
       cardImage: d.customer_photo_url ?? d.image_url ?? null,
       image_url: d.image_url ?? d.customer_photo_url ?? null,
+      gallery: [...new Set([d.customer_photo_url, d.image_url].filter(Boolean))],
       is_featured: d.is_featured,
       stockState,
       comingSoon,

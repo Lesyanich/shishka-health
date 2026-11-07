@@ -79,6 +79,13 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
 
   const [imgOk, setImgOk] = useState(true);
   useEffect(() => setImgOk(true), [dish?.image_url]);
+  // Which gallery photo is in view (wraps carry two: opened + rolled).
+  const [slide, setSlide] = useState(0);
+  const stripRef = useRef(null);
+  useEffect(() => {
+    setSlide(0);
+    if (stripRef.current) stripRef.current.scrollLeft = 0;
+  }, [dish?.id, open]);
 
   // Current build reported by the ModifierBuilder: selected options, configured
   // total, requiredMet flag, and the add-ons' nutrition (for the live counter).
@@ -100,6 +107,12 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
     modifierGroups = [],
   } = dish;
   const photo = image ?? image_url;
+  // Two or more distinct photos → a scroll-snap strip with dots; one → as before.
+  const photos = dish.gallery?.length > 1 ? dish.gallery : null;
+  const goTo = (i) => {
+    const el = stripRef.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+  };
   // Build-your-own dishes (a required modifier group) price "from ฿X": the base
   // plus the cheapest mandatory add-ons. The flat base alone isn't orderable.
   const buildYourOwn = priceFrom != null;
@@ -186,7 +199,42 @@ export function DishDialog({ open, onClose, dish, onShare, onAdd, sheet = false 
           </div>
         </div>
         <div className="shk-dlg__media">
-          {photo && imgOk ? (
+          {photos ? (
+            <>
+              <div
+                className="shk-dlg__strip"
+                ref={stripRef}
+                onScroll={(e) => {
+                  const el = e.currentTarget;
+                  setSlide(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)));
+                }}
+                // Horizontal swipes belong to the strip, not the sheet's swipe-down.
+                onTouchStart={(e) => e.stopPropagation()}
+              >
+                {photos.map((src, i) => (
+                  <img
+                    key={src}
+                    className="shk-dlg__img shk-dlg__slide"
+                    src={optimizedSrc(src, 960, DISH_PHOTO_QUALITY)}
+                    alt={`${name} — ${t("dlg.photo", { n: i + 1, total: photos.length })}`}
+                    loading={i === 0 ? "eager" : "lazy"}
+                  />
+                ))}
+              </div>
+              <div className="shk-dlg__dots">
+                {photos.map((src, i) => (
+                  <button
+                    key={src}
+                    type="button"
+                    className={`shk-dlg__dot${i === slide ? " is-on" : ""}`}
+                    aria-label={t("dlg.photo", { n: i + 1, total: photos.length })}
+                    aria-current={i === slide ? "true" : undefined}
+                    onClick={() => goTo(i)}
+                  />
+                ))}
+              </div>
+            </>
+          ) : photo && imgOk ? (
             <>
               <img
                 className="shk-dlg__img"
