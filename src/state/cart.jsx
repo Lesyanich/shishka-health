@@ -36,7 +36,9 @@ export function CartProvider({ children }) {
 
     // A build-your-own dish: carries its chosen options + the configured unit
     // price so the line bills the real total, not the bare base. Never stacks.
-    // build = { options: [{group, name, priceDelta}], total }
+    // build = { options: [{group, name, priceDelta}], total, nutrition }
+    // `nutrition` is the chosen add-ons' own КБЖУ (ModifierBuilder's
+    // selectedNutrition), kept so the cart's "What you'll get" counts them.
     const addConfiguredDish = (dish, build, qty = 1) =>
       setLines((prev) => [
         ...prev,
@@ -45,7 +47,7 @@ export function CartProvider({ children }) {
           id: newId(),
           dish,
           qty: Math.max(1, Math.round(Number(qty) || 1)),
-          config: { options: build?.options ?? [] },
+          config: { options: build?.options ?? [], nutrition: build?.nutrition ?? null },
           price: build?.total ?? (Number(dish.price) || 0),
         },
       ]);
