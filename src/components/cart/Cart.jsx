@@ -47,7 +47,18 @@ function orderInfo(lines) {
   };
   for (const l of lines) {
     if (l.kind === "bundle") (l.children || []).forEach((c) => add(c.dish, (c.qty || 1) * l.qty));
-    else add(l.dish, l.qty);
+    else {
+      add(l.dish, l.qty);
+      // A build adds its chosen options on top of the base dish — otherwise a
+      // smoothie with yogurt, whey and fruit read as the bare 114 kcal base.
+      const n = l.config?.nutrition;
+      if (n) {
+        calories += (Number(n.calories) || 0) * l.qty;
+        protein += (Number(n.protein) || 0) * l.qty;
+        carbs += (Number(n.carbs) || 0) * l.qty;
+        fat += (Number(n.fat) || 0) * l.qty;
+      }
+    }
   }
   const benefits = [...bm.values()];
   const proteinPill = benefits.find((b) => b.slug === "protein");
