@@ -19,8 +19,11 @@ rendered "The menu is temporarily unavailable" — a DB outage became a site out
    or duplicate ids. There is no skip flag. (`aeo-prerender.mjs` already fails the same way.)
 3. **Runtime** — `src/hooks/useMenu.js`:
    - `index.html` preloads `/menu-snapshot.json`; the hook paints from it immediately;
-   - in parallel it asks Supabase (through the `/sb` proxy) with an `AbortController`, 4 s deadline (two sequential round trips),
-     one attempt;
+   - in parallel it asks Supabase (through the `/sb` proxy) with an `AbortController`, 4 s first deadline (two sequential round trips).
+     A miss keeps the snapshot on screen and retries **in the background** (`BACKGROUND_RETRIES`:
+     after 1 s with a 12 s deadline, then after 4 s with 25 s); live data is swapped in when it
+     arrives. Before 2026-11-08 it was one attempt only, and a cold load left guests on the
+     last-deploy menu (Custom Smoothie at ฿89 a day after OS migs 619-630);
    - the live answer replaces the snapshot **atomically for the menu**: dishes + tags + modifiers (+
      translations for non-English pages) are one unit, because tags carry allergens and modifiers carry
      "From X" prices — live dishes over snapshot tags would show a dish as allergen-free. Live replaces
@@ -78,7 +81,8 @@ instead of failing, so code-only changes can still deploy during a DB outage. Ru
 ## Trade-off: freshness
 
 A price/photo/availability change is **not visible on the site until the next deploy** — except for
-guests whose browser reaches Supabase within 4 s, who get live data over the snapshot. Hence the
+guests whose browser reaches Supabase within ~45 s of opening the page (4 s first try, then two
+background retries), who get live data over the snapshot. Hence the
 rebuild trigger below. Without it the worst-case staleness is "until someone pushes to main".
 
 ## Rebuild trigger (spec — the OS-side half is NOT built in this repo)
@@ -111,5 +115,6 @@ Failure of the hook is harmless: the site keeps the previous snapshot and live-r
 npm run build                 # snapshot + vite + aeo
 # serve dist/ with /sb proxied to a black hole (10.255.255.1) -> menu must still render from the snapshot
 # serve dist/ with /sb proxied to Supabase                    -> __SHISHKA_MENU_SOURCE__ === "live"
-npm run snapshot:check        # offline contract check of public/menu-snapshot.json
+# serve dist/ with /sb delayed 5 s for the first 6 s           -> "snapshot" at first, "live" by ~10 s
+npm run snapshot:check        # offline contract check of public/menu-snapshot.json (+ its age)
 ```
