@@ -132,8 +132,19 @@ function DishCardNext({
           <Placeholder category={category} />
         )}
 
-        {kcal != null && (
-          <KcalSeal className="shk-dish__seal" kcal={kcal} size={full ? "lg" : "md"} />
+        {/* The stamp carries the price; kcal moved to the macro row (full) or
+            under the name (compact). CEO 2026-11-08. A dish with no price keeps
+            kcal on the stamp. */}
+        {price != null ? (
+          <KcalSeal
+            className="shk-dish__seal"
+            price={price}
+            currency={currency}
+            ariaLabel={t("card.priceLabel", { name, price })}
+            size={full ? "lg" : "md"}
+          />
+        ) : (
+          kcal != null && <KcalSeal className="shk-dish__seal" kcal={kcal} size={full ? "lg" : "md"} />
         )}
 
         {highProtein && <span className="shk-dish__hp">{t("dish.highProtein")}</span>}
@@ -160,10 +171,17 @@ function DishCardNext({
               the heading: the accessible name of the open button stays the English one. */}
           {nameLocal && <span className="shk-dish__sub">{nameLocal}</span>}
         </div>
-        {price != null && (
+        {/* Price lives on the stamp now. The list row has no stamp (hidden in CSS),
+            so it keeps the price here; the compact grid shows kcal in its place. */}
+        {list && price != null && (
           <span className="shk-dish__price">
             {currency}
             {price}
+          </span>
+        )}
+        {!list && !full && kcal != null && price != null && (
+          <span className="shk-dish__kcal">
+            {kcal} <small>{t("card.kcal")}</small>
           </span>
         )}
       </div>
@@ -175,8 +193,14 @@ function DishCardNext({
 
       {full && description && <p className="shk-dish__desc">{description}</p>}
 
-      {full && (protein > 0 || carbs > 0 || fat > 0) && (
-        <div className="shk-dish__macros">
+      {full && (protein > 0 || carbs > 0 || fat > 0 || (kcal != null && price != null)) && (
+        <div className={`shk-dish__macros${kcal != null && price != null ? " shk-dish__macros--kcal" : ""}`}>
+          {kcal != null && price != null && (
+            <div className="shk-dish__macro shk-dish__macro--kcal">
+              <span className="shk-dish__macro-val">{kcal}</span>
+              <span className="shk-dish__macro-key">{t("card.kcal")}</span>
+            </div>
+          )}
           {[
             ["protein", protein, t("dish.macroProtein")],
             ["carbs", carbs, t("dish.macroCarbs")],

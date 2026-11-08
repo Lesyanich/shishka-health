@@ -36,17 +36,26 @@ const POINTS = Array.from({ length: TEETH * 2 }, (_, i) => {
 // md = mobile grid card, lg = desktop card, xl = the dish sheet. Spec §5.
 const SIZES = { md: 62, lg: 70, xl: 84 };
 
-export function KcalSeal({ kcal, size = "md", className = "", ...rest }) {
+// `price` swaps the payload: the stamp carries the price ("฿240") instead of
+// kcal, and the unit line goes (CEO 2026-11-08: price on the stamp, kcal in the
+// macro row). Still never interactive: "+" stays its own button.
+export function KcalSeal({ kcal, price = null, currency = "฿", ariaLabel, size = "md", className = "", ...rest }) {
   const px = SIZES[size] ?? SIZES.md;
+  const isPrice = price != null;
+  const text = isPrice ? `${currency}${price}` : kcal;
+  // Fit the figure on the face: a 4-character price reads at the kcal size,
+  // longer ones step down so they never touch the teeth.
+  const len = String(text).length;
+  const k = isPrice ? (len <= 4 ? 0.3 : len === 5 ? 0.25 : 0.21) : 0.274;
 
   return (
     <span
-      className={`shk-kseal shk-kseal--${size} ${className}`.trim()}
+      className={`shk-kseal shk-kseal--${size}${isPrice ? " shk-kseal--price" : ""} ${className}`.trim()}
       // The stack scales off one font-size so md/lg/xl stay proportional:
       // 17px number on a 62px stamp is the mockup's ratio.
-      style={{ width: px, height: px, fontSize: `${(px * 0.274).toFixed(2)}px` }}
+      style={{ width: px, height: px, fontSize: `${(px * k).toFixed(2)}px` }}
       role="img"
-      aria-label={t("seal.kcalAria", { kcal })}
+      aria-label={ariaLabel ?? (isPrice ? `${price} THB` : t("seal.kcalAria", { kcal }))}
       {...rest}
     >
       <svg className="shk-kseal__ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -54,8 +63,8 @@ export function KcalSeal({ kcal, size = "md", className = "", ...rest }) {
         <circle className="shk-kseal__face" cx={C} cy={C} r={R_FACE} />
       </svg>
       <span className="shk-kseal__stack" aria-hidden="true">
-        <span className="shk-kseal__num">{kcal}</span>
-        <span className="shk-kseal__unit">{t("card.kcal")}</span>
+        <span className="shk-kseal__num">{text}</span>
+        {!isPrice && <span className="shk-kseal__unit">{t("card.kcal")}</span>}
       </span>
     </span>
   );
