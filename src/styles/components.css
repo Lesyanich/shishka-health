@@ -2081,6 +2081,16 @@ button.shk-seal:active { transform: scale(0.93); }
 /* kcal joined the macro row when the price moved onto the stamp (CEO 2026-11-08):
    four tiles, kcal first, its label in body ink and upper case like the others. */
 .shk-dish__macros--kcal { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* Four narrower tiles: tighter tracking and side padding so PROTEIN fits a ~54px tile. */
+.shk-dish__macros--kcal .shk-dish__macro { padding-inline: 2px; }
+.shk-dish__macros--kcal .shk-dish__macro-key { letter-spacing: 0.02em; font-size: 10px; }
+/* Four tiles need ~230px. A narrower card (tablet / small laptop, ~150px in the
+   2-col layout) cut PROTEIN to "PROTE", so below that the row folds to 2 x 2.
+   The macros row itself is the query container, so the card layout is untouched. */
+.shk-dish--grid-full .shk-dish__macros-wrap { container-type: inline-size; }
+@container (max-width: 230px) {
+  .shk-dish__macros--kcal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .shk-dish__macro--kcal .shk-dish__macro-key { color: var(--text-body); text-transform: uppercase; }
 /* Compact grid: kcal sits where the price used to, beside the name. */
 .shk-dish__kcal {

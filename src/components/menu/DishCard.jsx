@@ -194,6 +194,7 @@ function DishCardNext({
       {full && description && <p className="shk-dish__desc">{description}</p>}
 
       {full && (protein > 0 || carbs > 0 || fat > 0 || (kcal != null && price != null)) && (
+        <div className="shk-dish__macros-wrap">
         <div className={`shk-dish__macros${kcal != null && price != null ? " shk-dish__macros--kcal" : ""}`}>
           {kcal != null && price != null && (
             <div className="shk-dish__macro shk-dish__macro--kcal">
@@ -214,6 +215,7 @@ function DishCardNext({
               <span className="shk-dish__macro-key">{label}</span>
             </div>
           ))}
+        </div>
         </div>
       )}
 
