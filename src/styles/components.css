@@ -2078,6 +2078,16 @@ button.shk-seal:active { transform: scale(0.93); }
 /* Protein is the one macro the brand actually sells on, so it carries the
    accent. Never colour ALONE: the word PROTEIN is right there (MASTER). */
 .shk-dish__macro--protein .shk-dish__macro-key { color: var(--accent); }
+/* kcal joined the macro row when the price moved onto the stamp (CEO 2026-11-08):
+   four tiles, kcal first, its label in body ink and upper case like the others. */
+.shk-dish__macros--kcal { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.shk-dish__macro--kcal .shk-dish__macro-key { color: var(--text-body); text-transform: uppercase; }
+/* Compact grid: kcal sits where the price used to, beside the name. */
+.shk-dish__kcal {
+  flex-shrink: 0; font-size: 14px; font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums; color: var(--text-muted); white-space: nowrap;
+}
+.shk-dish__kcal small { font-size: 11px; font-weight: var(--fw-semibold); }
 .shk-dish__foot {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-2); margin-top: var(--sp-1);
