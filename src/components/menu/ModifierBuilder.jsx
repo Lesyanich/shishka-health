@@ -108,6 +108,8 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
     });
   }, [selected, groups, extra, total, requiredMet, onChange]);
 
+  const photoBuilder = groups.filter((g) => g.options.some((o) => o.image)).length >= 3;
+
   return (
     <div className="shk-build">
       <div className="shk-build__head">
@@ -135,8 +137,10 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
           : null;
         // A group with pick photos (Build Your Bowl, shishka-os mig 644) renders as
         // photo tiles; a pick without a photo in it gets a lettered disc so the
-        // grid stays even. Groups with no photos keep the text chips.
-        const photos = g.options.some((o) => o.image);
+        // grid stays even. In a photo builder (several photo groups, i.e. the
+        // bowls) every group is tiles, so a row with no photos yet (the Premium
+        // proteins) does not drop back to chips. Elsewhere, no photos = chips.
+        const photos = photoBuilder || g.options.some((o) => o.image);
         return (
         <div key={gi} className={`shk-build__group ${isRadio ? "shk-build__group--radio" : ""} ${photos ? "shk-build__group--photos" : ""}`}>
           <div className="shk-build__group-name">
