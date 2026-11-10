@@ -72,7 +72,7 @@
     {
       "name": "menu_modifiers",
       "kind": "view",
-      "select": "dish_id,group_name,group_sort,group_min_select,group_max_select,option_name,option_emoji,price_delta,is_default,sort_order,calories,protein,carbs,fat",
+      "select": "dish_id,group_name,group_sort,group_min_select,group_max_select,option_name,option_emoji,price_delta,is_default,sort_order,calories,protein,carbs,fat,option_image_url",
       "minRows": 1
     },
     {
