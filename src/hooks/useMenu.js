@@ -116,7 +116,7 @@ async function fetchRawFromSupabase(signal) {
       inBatches(ids, (chunk) =>
         abortable(supabase
           .from("menu_modifiers")
-          .select("dish_id, group_name, group_sort, group_min_select, group_max_select, option_name, option_emoji, price_delta, is_default, sort_order, calories, protein, carbs, fat")
+          .select("dish_id, group_name, group_sort, group_min_select, group_max_select, option_name, option_emoji, price_delta, is_default, sort_order, calories, protein, carbs, fat, option_image_url")
           .in("dish_id", chunk))),
     ]);
   }
@@ -165,6 +165,8 @@ function buildMenu(raw) {
     groups.get(r.group_name).options.push({
       name: r.option_name,
       emoji: r.option_emoji || null,
+      // Pick photo (shishka-os mig 644): the Build Your Bowl picker shows it as a tile.
+      image: r.option_image_url || null,
       priceDelta: Number(r.price_delta) || 0,
       isDefault: !!r.is_default,
       sort: r.sort_order ?? 0,

@@ -1397,6 +1397,44 @@ button.shk-seal:active { transform: scale(0.93); }
    swap (e.g. no bread) reads as a saving, not a charge. */
 .shk-build__opt-delta.is-included { font-family: var(--font-sans); color: var(--text-faint); text-transform: uppercase; letter-spacing: var(--tracking-overline); font-size: var(--text-2xs); }
 .shk-build__opt-delta.is-save { color: var(--brand-green); }
+/* Photo tiles (Build Your Bowl, CEO 2026-11-11): the A3 menu's cut-out photo
+   on a round plate, the name under it. Same selection rules as the chips. */
+.shk-build__tiles {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: var(--sp-2);
+}
+.shk-build__tile {
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-1) var(--sp-2); border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-subtle); background: var(--surface-1);
+  color: var(--text-strong); cursor: pointer; text-align: center; min-width: 0;
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.shk-build__tile:hover { border-color: var(--border-strong); }
+.shk-build__tile:active { transform: scale(0.97); }
+.shk-build__tile.is-on { border-color: var(--brand-green); background: rgba(91, 122, 61, 0.12); }
+.shk-build__tile.is-disabled { opacity: 0.38; cursor: not-allowed; }
+.shk-build__tile-shot {
+  position: relative; width: 64px; height: 64px; flex: none;
+  display: grid; place-items: center;
+}
+.shk-build__tile-shot img { width: 100%; height: 100%; object-fit: contain; }
+.shk-build__tile-mono {
+  width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface-inset); border: 1px solid var(--border-subtle);
+  font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--text-lg); color: var(--text-muted);
+}
+.shk-build__tile-check {
+  position: absolute; top: -2px; right: -4px; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--brand-green); color: var(--cream-50);
+  box-shadow: 0 0 0 2px var(--surface-1);
+}
+.shk-build__tile-name {
+  font-size: var(--text-xs); line-height: 1.2; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.shk-build__tile .shk-build__opt-delta { line-height: 1; }
+@media (prefers-reduced-motion: reduce) { .shk-build__tile:active { transform: none; } }
 .shk-build__total {
   display: flex; align-items: baseline; justify-content: space-between;
   margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle);

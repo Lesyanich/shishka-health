@@ -108,6 +108,8 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
     });
   }, [selected, groups, extra, total, requiredMet, onChange]);
 
+  const photoBuilder = groups.filter((g) => g.options.some((o) => o.image)).length >= 3;
+
   return (
     <div className="shk-build">
       <div className="shk-build__head">
@@ -133,13 +135,19 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
           : min > 0 ? t("build.pickAtLeast", { min })
           : max != null ? t("build.pickUpTo", { max })
           : null;
+        // A group with pick photos (Build Your Bowl, shishka-os mig 644) renders as
+        // photo tiles; a pick without a photo in it gets a lettered disc so the
+        // grid stays even. In a photo builder (several photo groups, i.e. the
+        // bowls) every group is tiles, so a row with no photos yet (the Premium
+        // proteins) does not drop back to chips. Elsewhere, no photos = chips.
+        const photos = photoBuilder || g.options.some((o) => o.image);
         return (
-        <div key={gi} className={`shk-build__group ${isRadio ? "shk-build__group--radio" : ""}`}>
+        <div key={gi} className={`shk-build__group ${isRadio ? "shk-build__group--radio" : ""} ${photos ? "shk-build__group--photos" : ""}`}>
           <div className="shk-build__group-name">
             {g.name}
             {req && <span className="shk-build__group-req"> · {req}</span>}
           </div>
-          <div className="shk-build__opts">
+          <div className={photos ? "shk-build__tiles" : "shk-build__opts"}>
             {g.options.map((o, oi) => {
               const key = `${gi}:${oi}`;
               const on = selected.has(key);
@@ -152,6 +160,31 @@ export function ModifierBuilder({ basePrice = 0, currency = "฿", groups = [], 
               if (isRadio && on) priceLabel = <span className="shk-build__opt-delta is-included">{t("build.included")}</span>;
               else if (rel > 0) priceLabel = <span className="shk-build__opt-delta num">+{currency}{rel}</span>;
               else if (rel < 0) priceLabel = <span className="shk-build__opt-delta num is-save">−{currency}{Math.abs(rel)}</span>;
+              if (photos) return (
+                <button
+                  type="button"
+                  key={oi}
+                  className={`shk-build__tile ${on ? "is-on" : ""} ${blocked ? "is-disabled" : ""}`}
+                  onClick={() => toggle(gi, oi)}
+                  aria-pressed={on}
+                  role={isRadio ? "radio" : undefined}
+                  aria-checked={isRadio ? on : undefined}
+                  disabled={blocked}
+                >
+                  <span className="shk-build__tile-shot" aria-hidden="true">
+                    {o.image
+                      ? <img src={o.image} alt="" loading="lazy" decoding="async" width="72" height="72" />
+                      : <span className="shk-build__tile-mono">{o.emoji || o.name.charAt(0)}</span>}
+                    {on && (
+                      <span className="shk-build__tile-check">
+                        <svg viewBox="0 0 16 16" width="12" height="12"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </span>
+                    )}
+                  </span>
+                  <span className="shk-build__tile-name">{o.name}</span>
+                  {priceLabel}
+                </button>
+              );
               return (
                 <button
                   type="button"
