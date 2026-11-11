@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 
 /*
   The in-restaurant TV board: the whole menu on two full-screen pages — food,
-  then drinks — each held for a minute (CEO 2026-11-11: "each will stay 1 min").
+  then drinks — each held for 30 seconds (CEO 2026-11-11, down from 1 min).
 
   The pages are 1920x1080 images built by scripts/tv-board-sample.py in the OS
   repo (the A3 menu style: colour sections, photo cards, price, kcal, protein).
@@ -20,7 +20,7 @@ const PAGES = [
   { src: "/board/drinks.png", alt: "Drinks menu" },
 ];
 
-const DEFAULT_SLIDE_SECONDS = 60;
+const DEFAULT_SLIDE_SECONDS = 30;
 const MIN_SLIDE_SECONDS = 3;
 const MAX_SLIDE_SECONDS = 600;
 
