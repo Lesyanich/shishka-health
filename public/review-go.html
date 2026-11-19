@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>SHiSHKA — leave a review</title>
+<!--
+  Review-sticker QR hop: HTTPS://SHISHKA.HEALTH/R (vercel.json rewrites /r and /R here).
+  MC 8c134ffc (shishka-os mig 677). Printed stickers are out: this page must ALWAYS land the guest on Google.
+
+  1. Send ONE background beacon to the OS edge function review-scan (same origin, proxied by the /sb rewrite).
+     The page never waits for it; if Supabase is slow or down the guest still goes straight to Google.
+  2. Forward to the Google write-review page with location.replace (no extra back-button step).
+  Without JavaScript (link previewers, some in-app scanners) nothing is counted and the meta refresh forwards.
+  Nothing personal leaves the phone: the tag from ?s= and "has this browser scanned before" (localStorage).
+  This page writes nothing itself — the count is recorded by shishka-os (repo boundary).
+-->
+<meta http-equiv="refresh" content="1;url=https://search.google.com/local/writereview?placeid=ChIJe3f6Su4pUDARs3vXOqWIJpw">
+<script>
+(function () {
+  var GOOGLE = "https://search.google.com/local/writereview?placeid=ChIJe3f6Su4pUDARs3vXOqWIJpw";
+  try {
+    var tag = (new URLSearchParams(location.search).get("s") || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 32);
+    var seen = false;
+    try {
+      seen = !!localStorage.getItem("shk_review_scan");
+      localStorage.setItem("shk_review_scan", "1");
+    } catch (e) {}
+    var body = JSON.stringify({ s: tag || null, r: seen });
+    var url = "/sb/functions/v1/review-scan";
+    if (!(navigator.sendBeacon && navigator.sendBeacon(url, body))) {
+      fetch(url, { method: "POST", body: body, keepalive: true, credentials: "omit" }).catch(function () {});
+    }
+  } catch (e) {}
+  location.replace(GOOGLE);
+})();
+</script>
+<style>
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+         background: #fff; color: #1E3903; font: 16px/1.4 -apple-system, "SF Pro Text", "Albert Sans", system-ui, sans-serif; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+  <p><a href="https://search.google.com/local/writereview?placeid=ChIJe3f6Su4pUDARs3vXOqWIJpw">Opening Google reviews…</a></p>
+</body>
+</html>

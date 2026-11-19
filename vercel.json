@@ -12,11 +12,9 @@
       { "protocol": "https", "hostname": "d8j0ntlcm91z4.cloudfront.net" }
     ]
   },
-  "redirects": [
-    { "source": "/r", "destination": "https://search.google.com/local/writereview?placeid=ChIJe3f6Su4pUDARs3vXOqWIJpw", "permanent": false },
-    { "source": "/R", "destination": "https://search.google.com/local/writereview?placeid=ChIJe3f6Su4pUDARs3vXOqWIJpw", "permanent": false }
-  ],
   "rewrites": [
+    { "source": "/r", "destination": "/review-go.html" },
+    { "source": "/R", "destination": "/review-go.html" },
     {
       "source": "/sb/:path*",
       "destination": "https://qcqgtcsjoacuktcewpvo.supabase.co/:path*"
