@@ -42,6 +42,7 @@ export default {
 
   "dlg.share": "Поделиться",
   "dlg.close": "Закрыть",
+  "dlg.photo": "Фото {n} из {total}",
   "dlg.addToOrder": "Добавить в заказ",
   "dlg.pickRequired": "Выберите обязательные опции",
   "dlg.benefits": "Польза",

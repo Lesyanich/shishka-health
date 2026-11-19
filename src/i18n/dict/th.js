@@ -39,6 +39,7 @@ export default {
 
   "dlg.share": "แชร์เมนูนี้",
   "dlg.close": "ปิด",
+  "dlg.photo": "รูปที่ {n} จาก {total}",
   "dlg.addToOrder": "เพิ่มลงออเดอร์",
   "dlg.pickRequired": "เลือกตัวเลือกที่จำเป็นก่อน",
   "dlg.benefits": "ประโยชน์",
