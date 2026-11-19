@@ -92,8 +92,14 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     process.exit(1);
   }
   const r = snap.raw;
+  // Age is information, not a failure: menu data changes in shishka-os without a site
+  // deploy, so an old snapshot is normal — the browser revalidates it live (useMenu.js).
+  // It tells you how far a guest whose live fetch fails would be behind.
+  const ageH = (Date.now() - Date.parse(snap.generatedAt)) / 3.6e6;
+  const age = ageH < 48 ? `${ageH.toFixed(1)} h` : `${(ageH / 24).toFixed(1)} days`;
   console.log(
     `snapshot-check ok: ${r.dishes.length} dishes, ${r.tags.length} tags, ${r.content.length} content, ` +
-      `${r.modifiers.length} modifiers, ${r.tiers.length} tiers, generated ${snap.generatedAt}`,
+      `${r.modifiers.length} modifiers, ${r.tiers.length} tiers, generated ${snap.generatedAt} (${age} old)` +
+      (snap.stale ? `, STALE fallback since ${snap.staleSince}` : ""),
   );
 }
