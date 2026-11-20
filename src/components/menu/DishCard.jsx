@@ -91,6 +91,7 @@ function DishCardNext({
   const cls = [
     "shk-dish",
     `shk-dish--${variant}`,
+    byo ? "shk-dish--byo" : "",
     added ? "is-added" : "",
     soldOut ? "is-soldout" : "",
     comingSoon ? "is-coming-soon" : "",
