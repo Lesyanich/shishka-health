@@ -46,6 +46,7 @@ export default {
   "seal.kcalAria": "{kcal} kcal",
   "dish.inOrder": "{name} is in your order",
   "dish.highProtein": "High protein",
+  "dish.buildYourOwn": "Build your own",
   "dish.soldOut": "Sold out today",
   "dish.add": "Add",
   "dish.added": "Added",
