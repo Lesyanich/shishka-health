@@ -131,6 +131,7 @@ export function MenuSection({ section, domId, wide, addedIds, onOpen, onQuickAdd
               weight={dish.portion_size}
               weightUnit={dish.portion_unit}
               highProtein={isHighProtein(dish.protein)}
+              byo={dish.product_code?.startsWith("SALE-BYO_") ?? false}
               category={section.name}
               comingSoon={dish.stockState === "coming_soon"}
               soldOut={dish.stockState === "out_of_stock"}

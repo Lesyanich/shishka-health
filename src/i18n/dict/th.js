@@ -193,6 +193,7 @@ export default {
   "filter.buttonActive": "ตัวกรอง ใช้งานอยู่ {n} รายการ",
   "filter.shown": "เมนูที่แสดง",
   "dish.highProtein": "โปรตีนสูง",
+  "dish.buildYourOwn": "จัดเองได้",
   "dish.soldOut": "วันนี้หมดแล้ว",
   "dish.add": "เพิ่ม",
   "dish.added": "เพิ่มแล้ว",

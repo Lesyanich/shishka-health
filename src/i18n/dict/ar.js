@@ -208,6 +208,7 @@ export default {
   "filter.buttonActive": "الفلاتر، المفعّل: {n}",
   "filter.shown": "الأطباق المعروضة",
   "dish.highProtein": "غني بالبروتين",
+  "dish.buildYourOwn": "اصنعه بنفسك",
   "dish.soldOut": "نفد اليوم",
   "dish.add": "أضف",
   "dish.added": "تمت الإضافة",

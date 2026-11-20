@@ -66,6 +66,7 @@ function DishCardNext({
   fat = 0,
   allergens = [],
   highProtein = false,
+  byo = false,
   category,
   variant,
   comingSoon = false,
@@ -90,6 +91,7 @@ function DishCardNext({
   const cls = [
     "shk-dish",
     `shk-dish--${variant}`,
+    byo ? "shk-dish--byo" : "",
     added ? "is-added" : "",
     soldOut ? "is-soldout" : "",
     comingSoon ? "is-coming-soon" : "",
@@ -135,7 +137,10 @@ function DishCardNext({
         {/* The stamp carries the price; kcal moved to the macro row (full) or
             under the name (compact). CEO 2026-11-08. A dish with no price keeps
             kcal on the stamp. */}
-        {price != null ? (
+        {/* Build-your-own bowls (KP-FIN-BYO) carry their price next to the name,
+            not on the stamp, and a "Build your own" flag instead of High protein.
+            CEO 2026-11-20. */}
+        {byo ? null : price != null ? (
           <KcalSeal
             className="shk-dish__seal"
             price={price}
@@ -147,7 +152,11 @@ function DishCardNext({
           kcal != null && <KcalSeal className="shk-dish__seal" kcal={kcal} size={full ? "lg" : "md"} />
         )}
 
-        {highProtein && <span className="shk-dish__hp">{t("dish.highProtein")}</span>}
+        {byo ? (
+          <span className="shk-dish__hp">{t("dish.buildYourOwn")}</span>
+        ) : (
+          highProtein && <span className="shk-dish__hp">{t("dish.highProtein")}</span>
+        )}
         {soldOut && <span className="shk-dish__soldout">{t("dish.soldOut")}</span>}
 
         {/* The round "+" rides on the photo (compact only). Sibling of the open
@@ -173,13 +182,13 @@ function DishCardNext({
         </div>
         {/* Price lives on the stamp now. The list row has no stamp (hidden in CSS),
             so it keeps the price here; the compact grid shows kcal in its place. */}
-        {list && price != null && (
+        {(list || byo) && price != null && (
           <span className="shk-dish__price">
             {currency}
             {price}
           </span>
         )}
-        {!list && !full && kcal != null && price != null && (
+        {!list && !full && !byo && kcal != null && price != null && (
           <span className="shk-dish__kcal">
             {kcal} <small>{t("card.kcal")}</small>
           </span>
