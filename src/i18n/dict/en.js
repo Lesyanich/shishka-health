@@ -129,6 +129,7 @@ export default {
   // dish dialog
   "dlg.share": "Share dish",
   "dlg.close": "Close",
+  "dlg.photo": "Photo {n} of {total}",
   "dlg.addToOrder": "Add to order",
   "dlg.pickRequired": "Pick the required options",
   "dlg.benefits": "Benefits",
