@@ -343,7 +343,8 @@ function buildMenu(raw) {
 // Since the build-time snapshot (MC 46810edc) the guest never waits on it: the
 // page paints from /menu-snapshot.json and this fetch only REVALIDATES, so it gets
 // a short deadline and one attempt — if fresher data does not arrive in time the
-// snapshot simply stays. Live data is merged over the snapshot PER RESOURCE
+// snapshot stays on screen while it is retried in the background (BACKGROUND_RETRIES below).
+// Live data is merged over the snapshot PER RESOURCE
 // (lib/menuSnapshot.js mergeLive): an errored, empty, truncated or below-contract
 // resource keeps its snapshot rows. Only when NO snapshot exists (vite dev, or a
 // deployment predating the snapshot) does the old behaviour apply: 3 attempts x 8 s,
@@ -351,6 +352,18 @@ function buildMenu(raw) {
 // 4 s, not 3: the live fetch is now two sequential round trips (dishes, then the tags and
 // modifiers of exactly those dishes). Measured ~0.9 s + ~0.6 s through a cold local proxy.
 const REVALIDATE_TIMEOUT_MS = 4000;
+// A miss of that first deadline is NOT the end (2026-11-08: a cold load kept the snapshot,
+// and guests saw the Custom Smoothie as of the last site deploy — ฿89, no fruit group — a
+// day after shishka-os migs 619-630 changed it). The snapshot stays on screen and the fetch
+// is retried in the background with longer deadlines; live data is swapped in when it
+// arrives. Measured 2026-11-08 from Phuket on a warm prod proxy: dishes 1.27 s, then tags +
+// modifiers 0.82 s, ~2.1 s end to end — half the first deadline gone before any cold start
+// of the Nano database or a slow mobile link. Each retry is one bounded attempt (a throttled
+// socket never answers, so every attempt still needs a deadline). [delay before, deadline].
+const BACKGROUND_RETRIES = [
+  [1000, 12000],
+  [4000, 25000],
+];
 const NO_SNAPSHOT_TIMEOUT_MS = 8000;
 
 /** One bounded live fetch -> raw rows (null per failed resource). Rejects on timeout/abort. */
@@ -471,9 +484,23 @@ export function useMenu() {
 
     await snapshotP;
     if (snapRef.current || haveData.current) {
-      // The snapshot is on screen. Say so quietly; the guest sees a full menu.
-      console.warn("menu revalidation failed, keeping the snapshot:", lastErr?.message ?? lastErr);
+      // The snapshot is on screen, so the guest already sees a full menu and waits on
+      // nothing. Keep trying in the background; whatever arrives replaces the snapshot.
       setLoading(false);
+      for (const [delay, timeoutMs] of BACKGROUND_RETRIES) {
+        console.warn(
+          `menu revalidation missed (${lastErr?.message ?? lastErr}); showing the snapshot, retrying live in the background`,
+        );
+        await new Promise((r) => setTimeout(r, delay));
+        if (!alive()) return;
+        try {
+          if (await tryLive(timeoutMs)) return;
+        } catch (err) {
+          lastErr = err;
+        }
+        if (!alive()) return;
+      }
+      console.warn("menu revalidation failed, keeping the snapshot:", lastErr?.message ?? lastErr);
       return;
     }
 
