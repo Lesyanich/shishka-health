@@ -190,6 +190,7 @@ export default {
   "menu.categories": "أقسام القائمة",
   "menu.subcategories": "الأقسام الفرعية لـ{name}",
   "menu.allSub": "الكل",
+  "menu.signatures": "أطباقنا المميزة",
   "menu.from": "يبدأ من {price}",
   "menu.comingSoonSection": "قريبًا",
   "menu.railSoon": "{name} · قريبًا",

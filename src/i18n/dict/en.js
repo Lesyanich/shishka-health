@@ -67,6 +67,7 @@ export default {
   "menu.categories": "Menu categories",
   "menu.subcategories": "{name} subcategories",
   "menu.allSub": "All",
+  "menu.signatures": "Our signatures",
   "menu.from": "from {price}",
   "menu.comingSoonSection": "Coming soon",
   // The rail label for a category whose every dish is coming soon (§2).

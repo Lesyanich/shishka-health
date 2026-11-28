@@ -199,6 +199,7 @@ export default {
   "menu.categories": "Категории меню",
   "menu.subcategories": "{name}: подкатегории",
   "menu.allSub": "Все",
+  "menu.signatures": "Наши фирменные",
   "menu.from": "от {price}",
   "menu.comingSoonSection": "Скоро",
   "menu.railSoon": "{name} · скоро",
