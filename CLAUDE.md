@@ -39,6 +39,14 @@ Conversation in the human's language (CEO → Russian). Storage — code, commit
 Brand: royal-green `#1E3903` canvas · cream `#FBF8F0` text · spice-red `#B62A23` CTA · gold `#F0CE83` prices ·
 SF Pro / Albert Sans · "from the SOIL to the SOUL".
 
+## Menu data reaches guests at build time
+`npm run build` bakes `public/menu-snapshot.json` (scripts/snapshot-menu.mjs). The browser paints
+that snapshot, then tries a live refresh with a 4 s deadline (`REVALIDATE_TIMEOUT_MS`,
+src/hooks/useMenu.js). Measured 2026-11-28: that refresh times out on every load in production,
+so a DB edit (price, photo, `is_featured`, availability) shows to guests only after the **next
+deploy** of `main`. After a data change that must be visible now, merge any PR to `main` (git-only
+deploys, never `vercel deploy`). Fix tracked in MC.
+
 ## Git
 - Never commit to `main`. Branch `feature/web/<description>`.
 - Conventional commits in English. Preview locally before push (CEO reviews a link first).
