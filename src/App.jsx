@@ -176,13 +176,15 @@ export default function App() {
   }, [dishes.length, bySlug, landed, urlFor]);
 
   /*
-    Quick-add straight from the card. A dish that REQUIRES a choice (a modifier
-    group with minSelect > 0) has no single price to add, so it opens instead,
-    on every breakpoint — the guest makes the choice in the dialog.
+    Quick-add straight from the card. A dish with ANY modifier group opens
+    instead, on every breakpoint: a required group has no single price to add,
+    and an optional one (sauces, boosters, base upgrades) is an add-on the guest
+    should see before the dish lands in the order (CEO 2026-11-08). Only a dish
+    without options goes straight to the order.
   */
   const quickAdd = (dish) => {
     if (!dish || dish.comingSoon || dish.price == null) return;
-    if (dish.modifierGroups?.some((g) => (g.minSelect ?? 0) > 0)) {
+    if (dish.modifierGroups?.length) {
       openDish(dish);
       return;
     }
