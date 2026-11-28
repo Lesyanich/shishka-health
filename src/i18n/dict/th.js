@@ -176,6 +176,7 @@ export default {
   "menu.categories": "หมวดหมู่เมนู",
   "menu.subcategories": "หมวดย่อยของ {name}",
   "menu.allSub": "ทั้งหมด",
+  "menu.signatures": "เมนูซิกเนเจอร์",
   "menu.from": "เริ่มต้น {price}",
   "menu.comingSoonSection": "เร็ว ๆ นี้",
   "menu.railSoon": "{name} · เร็ว ๆ นี้",

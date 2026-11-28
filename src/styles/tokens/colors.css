@@ -31,6 +31,7 @@
   --red-400: #DD6155;
   --red-300: #EC9389;
   --red-100: #F8DAD5;
+  --red-50:  #FDF2F0;
 
   /* --- ANTIOXIDANT PURPLE — secondary ------------------------------------ */
   --purple-900: #2E0E30;
@@ -121,6 +122,11 @@
   --selected-hover: var(--red-500);
   --selected-ink:   var(--red-700); /* red-on-white, e.g. the count chip */
   --selected-glow:  rgba(182, 42, 35, 0.40);
+  /* The order basket's own surfaces: once something is in it, the sheet reads
+     as part of the same red "in your order" language instead of neutral cream. */
+  --selected-wash:   var(--red-50);   /* basket sheet background            */
+  --selected-wash-2: var(--red-100);  /* filled controls on that background  */
+  --selected-line:   rgba(182, 42, 35, 0.18);
 
   /* "You are here" — the active category tab. Lands on the same red as
      --selected today, but it is deliberately its OWN token, because it means

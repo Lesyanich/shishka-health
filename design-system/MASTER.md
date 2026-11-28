@@ -47,7 +47,7 @@ Source: `src/styles/tokens/colors.css`; the active surface/text/border aliases c
 | Hairlines | `--border` / `--border-strong` | `rgba(30,57,3,.14 / .26)` |
 | Open status dot | `--status-open` / `--status-closed` | `#3F8A2A` · `--ink-400` |
 
-Gold (`--honey-300`) and brand-purple are **not** in play on the light theme: gold is unreadable on white, so prices carry royal-green, and purple's "selected" job went to royal-green too (see the overrides at the foot of `theme-light.css`). They remain brand colours for print and signage.
+Gold (`--honey-300`) and brand-purple are **not** in play on the light theme: gold is unreadable on white, so prices carry royal-green. The one exception is a price set on a dark photo fade (the drink showcase card), where honey on near-black clears AA. Purple's "selected / in your order" job went to `--selected` energy red (colors.css): the Order button, every added "+", and the basket's `--selected-wash` once it holds an item. They remain brand colours for print and signage.
 
 **Verified contrast — measured against the live white canvas `#FFFFFF`** (recompute with `design-system/` scripts if a token changes; figures below computed 2026-10-17):
 - `--text-strong` royal-green → **12.79:1** ✓ AAA · `--menu-price` (same ink) → **12.79:1** ✓ AAA

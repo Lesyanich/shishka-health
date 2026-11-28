@@ -19,6 +19,11 @@ import { t, unit } from "../../i18n/index.js";
     grid-full     desktop 3-col     — description, macro tiles, weight/allergens
                   inline, a labelled Add button; the name opens the dish dialog
     list-row      drinks and dips   — 76px photo left, name and price, "+" right
+    showcase      a drink section's FEATURED dishes (is_featured, set in the admin
+                  panel) — tall photo card in a sideways carousel, name, two lines
+                  of description and price over the photo
+    tile          the rest of that section — small 3-across photo tile, name,
+                  price, "+" in the photo's corner
 
   Every variant opens the dish dialog. `grid-full` used to be a document with
   no open target (old spec §4.5), but ingredients, full nutrition and modifiers
@@ -87,6 +92,11 @@ function DishCardNext({
   const addable = !comingSoon && !soldOut && typeof onQuickAdd === "function";
   const openable = typeof onClick === "function";
   const list = variant === "list-row";
+  const showcase = variant === "showcase";
+  const tile = variant === "tile";
+  // Price sits in the text, not on a stamp: the list row has no room for one,
+  // the showcase puts it over the photo, and the tile is too small for both.
+  const inlinePrice = list || byo || showcase || tile;
 
   const cls = [
     "shk-dish",
@@ -140,7 +150,7 @@ function DishCardNext({
         {/* Build-your-own bowls (KP-FIN-BYO) carry their price next to the name,
             not on the stamp, and a "Build your own" flag instead of High protein.
             CEO 2026-11-20. */}
-        {byo ? null : price != null ? (
+        {inlinePrice ? null : price != null ? (
           <KcalSeal
             className="shk-dish__seal"
             price={price}
@@ -155,7 +165,7 @@ function DishCardNext({
         {byo ? (
           <span className="shk-dish__hp">{t("dish.buildYourOwn")}</span>
         ) : (
-          highProtein && <span className="shk-dish__hp">{t("dish.highProtein")}</span>
+          highProtein && !tile && !showcase && <span className="shk-dish__hp">{t("dish.highProtein")}</span>
         )}
         {soldOut && <span className="shk-dish__soldout">{t("dish.soldOut")}</span>}
 
@@ -182,13 +192,13 @@ function DishCardNext({
         </div>
         {/* Price lives on the stamp now. The list row has no stamp (hidden in CSS),
             so it keeps the price here; the compact grid shows kcal in its place. */}
-        {(list || byo) && price != null && (
+        {inlinePrice && price != null && (
           <span className="shk-dish__price">
             {currency}
             {price}
           </span>
         )}
-        {!list && !full && !byo && kcal != null && price != null && (
+        {!inlinePrice && !full && kcal != null && price != null && (
           <span className="shk-dish__kcal">
             {kcal} <small>{t("card.kcal")}</small>
           </span>
@@ -200,7 +210,7 @@ function DishCardNext({
           the box — so only dishes WITHOUT a photo showed their "+". */}
       {list && addable && addButton("fab")}
 
-      {full && description && <p className="shk-dish__desc">{description}</p>}
+      {(full || showcase) && description && <p className="shk-dish__desc">{description}</p>}
 
       {full && (protein > 0 || carbs > 0 || fat > 0 || (kcal != null && price != null)) && (
         <div className="shk-dish__macros-wrap">
