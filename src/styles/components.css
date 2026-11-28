@@ -1972,6 +1972,9 @@ button.shk-seal:active { transform: scale(0.93); }
      to fill cuts the plate. The tinted box is the frame. */
   object-fit: contain; display: block;
 }
+/* Build-your-own bowls show a grid of salad-bar pans, not a plated dish:
+   nothing to cut, so they fill the frame edge to edge. */
+.shk-dish--byo .shk-dish__img { object-fit: cover; }
 .shk-dish__seal { position: absolute; right: 6px; top: 6px; }
 
 /* High-protein flag: ≥30g, one rule shared with lib/benefits.js (spec §7). */

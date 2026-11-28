@@ -183,6 +183,7 @@ export default {
   "seal.kcalAria": "{kcal} ккал",
   "dish.inOrder": "«{name}» в вашем заказе",
   "dish.highProtein": "Много белка",
+  "dish.buildYourOwn": "Собери сам",
   "dish.soldOut": "На сегодня закончилось",
   "dish.add": "Добавить",
   "dish.added": "Добавлено",
